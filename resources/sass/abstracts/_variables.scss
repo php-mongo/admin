@@ -1,0 +1,151 @@
+// Color Palette
+$cosmicColor:                       #5525ff;
+$bradyColor:                        #00c3ff;
+$quepalColor:                       #00b09b;
+$iceColor:                          #af99ff;
+$lightGrey:                         #f4f7f9;
+$lightWhite:                        #fefeee;
+$regularGrey:                       #ebebeb;
+$lighterGrey:                       #e0e0e0;
+$lightGreyColor:                    #888888;
+$midGreyColor:                      #666666;
+$formGreyColor:                     #555555;
+$darkGreyColor:                     #444444;
+$premiumColor:                      #4169e1;
+
+// Colors
+$blue:                              #3490dc;
+$darkBlue:                          #000080;
+$indigo:                            #6574cd;
+$purple:                            #9561e2;
+$pink:                              #f66d9b;
+$red:                               #e3342f;
+$orange:                            #f6993f;
+$yellow:                            #ffed4a;
+$green:                             #38c172;
+$teal:                              #4dc0b5;
+$cyan:                              #6cb2eb;
+$white:                             #ffffff;
+$offWhite:                          #f9f9f9;
+$cccColor:                          #cccccc;
+
+// Platform Colors
+$baseColor:                         #242424;
+$headingColor:                      $baseColor;
+$primaryColor:                      $cosmicColor;
+$secondaryColor:                    $bradyColor;
+$dangerColor:                       #e10a0a;
+$infoColor:                         #a6a6a6;
+$galleryColor:                      #bebebe;
+$linkColor:                         #00B7FF;
+$linkActiveBackground:              #286090;
+$tabBgColor:                        #F5F5F5;
+$tabColor:                          #235a81;
+
+// list
+$listColor:                         $primaryColor;
+$outerListBackground:               #d6d6e5;
+$innerColor:                        $baseColor;
+$innerBackground:                   #fdfdfd;
+
+// Body
+$body-bg:                           #ffffff;
+$bodyFontColor:                     #333;
+
+// nav
+$navBgColor:                        #eeeeee;
+
+// Dbs
+$dbsBgColor:                        #f3f3f3;
+
+// main panel
+$tableHeaderBg:                     #bbbbbb;
+$infoBgColor:                       #f9f9f9;
+
+// resizers
+$resizerBgColor:                    #aaaaaa;
+$resizerHoverColor:                 #c4e1a4;
+
+// collapse
+$collapseBgColor:                   #dddddd;
+$collapseBorder:                    #888888;
+
+// Typography
+$font-family-sans-serif:            'Nunito', sans-serif;
+$font-size-base:                    0.9rem;
+$line-height-base:                  1.6;
+
+// Form
+$inputBorder:                       #cccccc;
+$formBackgroundColor:               #e2e2e2;
+$spanHasSuccess:                    #00a000;
+
+// borders
+$successBorder:                     #00C853;
+$errorBorder:                       #FF0000;
+$messageBorder:                     $bradyColor;
+
+// Inputs
+$inputBorderColor:                  #dee1e5;
+$inputBorderColorHover:             $primaryColor;
+$inputBorderColorFocus:             $primaryColor;
+$inputBorderColorSelected:          $primaryColor;
+$inputBorderColorDisabled:          lighten($baseColor,20%);
+$fieldColorError:                   $red;
+$fieldBorderError:                  #a12121;
+$fieldBorderSuccess:                #21a121;
+$focusBorder:                       #66afe9;
+
+// Buttons
+$buttonBackground:                  #286090;
+$buttonBackgroundHover:             darken($buttonBackground, 10%);
+$buttonBackgroundHeaderHover:       #204d74;
+$buttonColor:                       #fff;
+$buttonColorHover:                  #fff;
+$menuButtonBackground:              #337ab7;
+$menuButtonBorder:                  #2e6da4;
+$menuButtonBorderHover:             #122b40;
+$galleryListColor:                  #686868;
+$memberButtonColor:                 $linkColor;
+$linkButtonColor:                   #817ee3;
+
+// Font
+$baseFontFamily:                    'Fira Sans', sans-serif;
+$headingFontFamily:                 'Apercu', sans-serif;
+$buttonFontFamily:                  $headingFontFamily;
+$whiteFont:                         $buttonColor;
+$textInfoColor:                     #31708f;
+
+// more buttons
+$buttonPrimaryBackground:           $primaryColor;
+$buttonPrimaryBackgroundHover:      darken($buttonPrimaryBackground,10%);
+$buttonPrimaryColor:                #fff;
+$buttonPrimaryColorHover:           #fff;
+$buttonSecondaryBackground:         transparent;
+$buttonSecondaryBackgroundHover:    transparent;
+$buttonSecondaryColor:              $primaryColor;
+$buttonSecondaryColorHover:         $buttonSecondaryColor;
+$buttonBorderedBorderColor:         $inputBorderColor;
+$buttonBorderedBorderColorHover:    $primaryColor;
+$buttonBorderedColor:               $primaryColor;
+$buttonBorderedColorHover:          $primaryColor;
+
+// pages
+$pageBackgroundColor:               #fcfcfc;
+
+// More
+$moreBackgroundColor:               #337ab7;
+$moreBackgroundColorHover:          $linkActiveBackground;
+$moreBorderColor:                   #2e6da4;
+$moreBorderColorHover:              #204d74;
+
+// Modal
+$modalBorderColor:                  #dddddd;
+
+// Error notices
+$formErrorColor:                    #800000;
+$noticeColor:                       #242E38;
+$errorColor:                        $noticeColor;
+
+// stuff
+$global-radius:                     6px;

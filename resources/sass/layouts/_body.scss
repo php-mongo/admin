@@ -1,0 +1,46 @@
+body {
+    padding: 0;
+    position: relative;
+    color: $bodyFontColor;
+    margin: 0;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    background-color: $body-bg;
+
+    .content-container {
+        margin-top: 3rem;
+    }
+
+    a {
+        color: $linkColor;
+
+        &.router-link-active {
+            color: $whiteFont;
+            background-color: $regularGrey !important;
+            border-radius: 7px;
+        }
+
+        &.router-link-logo{
+            background-color: transparent !important;
+        }
+    }
+
+    form {
+        .is-invalid {
+            border-color: $formErrorColor;
+        }
+
+        .invalid-feedback {
+            color: $formErrorColor;
+        }
+
+        .button {
+            border-radius: $form-button-radius;
+        }
+    }
+
+    .pma-link {
+        color: $linkColor;
+        cursor: pointer;
+    }
+
+}

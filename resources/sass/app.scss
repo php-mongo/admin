@@ -1,0 +1,44 @@
+@charset "UTF-8";
+
+/*=================================================================
+    Builds the application style structure
+        https://sass-guidelin.es/#the-7-1-pattern
+  ================================================================= */
+
+/**
+ *  Table of contents
+ *
+ *  1. Abstracts
+ */
+@import "abstracts/_variables.scss";
+
+/**
+ *  2. Foundation Sites
+ */
+@import "../../node_modules/foundation-sites/assets/foundation.scss";
+
+/**
+ *  3. Vendor
+ */
+
+/**
+ *  4. Theme
+ */
+@import "themes/colors";
+
+/**
+ *  5. Layouts
+ */
+@import "layouts/_body.scss";
+@import "layouts/_page.scss";
+
+/**
+ *  6. Pages
+ */
+@import "pages/admin.scss";
+
+/**
+ *  7. Utils
+ */
+@import "utils/utils.scss";
+

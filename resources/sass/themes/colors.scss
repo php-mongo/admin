@@ -1,0 +1,28 @@
+.background-quepal {
+  background:$quepalColor url('/img/background-quepal.svg') no-repeat center center;
+  background-size:cover;
+}
+.fill-quepal {background:$quepalColor !important;}
+.color-quepal {color:$quepalColor !important;}
+
+.background-brady {
+  background:$bradyColor url('/img/background-brady.svg') no-repeat center center;
+  background-size:cover;
+}
+.fill-brady {background:$bradyColor !important;}
+.color-brady {color:$bradyColor !important;}
+
+.background-cosmic {
+  background:$cosmicColor url('/img/background-cosmic.svg') no-repeat center center;
+  background-size:cover;
+}
+.fill-cosmic {background:$cosmicColor !important;}
+.color-cosmic {color:$cosmicColor !important;}
+
+.background-ice {
+  background:$iceColor url('/img/background-ice.svg') no-repeat center center;
+  background-size:cover;
+}
+.fill-ice {background:$iceColor !important;}
+.color-ice {color:$iceColor !important;}
+

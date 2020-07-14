@@ -1,0 +1,41 @@
+{
+  "private": true,
+  "scripts": {
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --disable-host-check --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "npm run development -- --watch",
+    "watch-poll": "npm run watch -- --watch-poll"
+  },
+  "dependencies": {
+    "core-js": "^3.6.5",
+    "vue-cookie": "^1.1.4",
+    "vue-cookies": "^1.7.0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.4.0",
+    "axios": "^0.19",
+    "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^8.1.0",
+    "cross-env": "^7.0",
+    "es6-promise": "^4.2.8",
+    "foundation-sites": "^6.6.3",
+    "jquery": "^3.5.1",
+    "laravel-mix": "^5.0.4",
+    "laravel-vue-pagination": "^2.3.1",
+    "lodash": "^4.17.13",
+    "popper": "^1.0.1",
+    "popper.js": "^1.16.1",
+    "resolve-url-loader": "^3.1.0",
+    "sass": "^1.15.2",
+    "sass-loader": "^8.0.0",
+    "vue": "^2.6.11",
+    "vue-router": "^3.3.4",
+    "vue-template-compiler": "^2.6.11",
+    "vuex": "^3.5.1",
+    "what-input": "^5.2.10"
+  }
+}

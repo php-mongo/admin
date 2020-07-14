@@ -1,0 +1,15 @@
+div.page {
+    min-height: calc(100vh - 152px);
+    padding: 20px;
+
+    div p img {
+        width: auto;
+        -webkit-border-radius: 20px;
+        -moz-border-radius: 20px;
+        border-radius: 20px;
+    }
+
+    .text-info {
+        color: $textInfoColor;
+    }
+}
