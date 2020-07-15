@@ -60,28 +60,43 @@
                 font-size: 1.2rem;
                 padding: 4px;
             }
-            table .info {
+            table td {
                 background-color: $infoBgColor;
                 padding: 4px 4px 4px 8px;
+
+                input {
+                    margin: 3px 0 0 0;
+                }
             }
-            table.bordered th.bb {
-                border-bottom: 1px solid $infoColor;
+            table.bordered td.tr, table.collection td.tr {
+                text-align: right;
+                width: 50%;
             }
-            table.bordered th.rb {
-                border-right: 1px solid $infoColor;
+            table.collection td {
+                p {
+                    padding-left: 25%;
+                }
             }
-            table.bordered td {
-                border-bottom: 1px solid $infoColor;
-                text-align: left;
-            }
-            table.bordered td.rb, table.collection td.rb {
-                border-right: 1px solid $infoColor;
-            }
-            table.bordered td.text-center {
-                text-align: center !important;
-            }
-            table td input {
-                margin: 3px 0 0 0;
+            table.bordered {
+                th.bb {
+                    border-bottom: 1px solid $infoColor;
+                }
+                th.rb {
+                    border-right: 1px solid $infoColor;
+                }
+                td {
+                    border-bottom: 1px solid $infoColor;
+                    text-align: left;
+                }
+                td.rb, table.collection td.rb {
+                    border-right: 1px solid $infoColor;
+                }
+                td.text-center {
+                    text-align: center !important;
+                }
+                td.vat {
+                    vertical-align: top;
+                }
             }
         }
     }
@@ -134,10 +149,6 @@
             */
             getDatabase() {
                 return this.$store.getters.getDatabase;
-            },
-
-            deleteAllDatabases() {
-                return this.deleteAll;
             }
         },
 
@@ -224,31 +235,6 @@
             },
 
             /*
-            *   Check and uncheck all databases for the Check all function
-            */
-            checkAllDbs() {
-                if (this.deleteAll === true) {
-                    console.log("checking all available databases...");
-                    EventBus.$emit('check-all-databases');
-                }
-                else {
-                    console.log("un checking all available databases...");
-                    EventBus.$emit('uncheck-all-databases');
-                }
-            },
-
-            removeDbFromArray( db ) {
-              let dbs = this.checked;
-              let checked = [];
-              dbs.forEach(function(value, index) {
-                  if (value !== db) {
-                      checked.push(value);
-                  }
-              });
-              this.checked = checked;
-            },
-
-            /*
             *   Show component
             */
             showComponent() {
@@ -267,9 +253,6 @@
         *    get on ur bikes and ride !!
         */
         mounted() {
-            // load al the default view server data
-        //    this.$store.dispatch( 'loadDatabases' );
-
             /*
             *    Hide this component
             */
@@ -280,7 +263,7 @@
             /*
             *    Show this component
             */
-            EventBus.$on('show-database', function() {
+            EventBus.$on('show-database', function(name) {
                 this.showComponent();
             }.bind(this));
         },

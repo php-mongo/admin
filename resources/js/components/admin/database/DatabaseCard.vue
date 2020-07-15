@@ -14,43 +14,74 @@
 
 <template>
     <div class="database-inner" v-show="show">
-        <form id="db-list">
-            <table class="bordered unstriped">
-                <tr>
-                    <th colspan="2" class="bb"><span v-text="showLanguage('database', 'database', getDbName(db))"></span> </th>
-                </tr>
-                <tr>
-                    <th v-text="showLanguage('database', 'collections')" class="bb br"></th>
-                    <th v-text="showLanguage('database', 'statistics')" class="bb"></th>
-                </tr>
-                <tr>
-                    <td>
-                        <table class="collection unstriped">
-                            <tr>
-                                <td v-text="showLanguage('database', 'collections')" class="br"></td>
-                                <td>{{ db.stats.collections }}</td>
-                            </tr>
-                            <tr>
-                                <td class="br">
-                                    <p><span class="pma-link" v-text="showLanguage('database', 'dropAll')"></span></p>
-                                </td>
-                                <td>
-                                    <p><span class="pma-link" v-text="showLanguage('database', 'clearAll')"></span></p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="2">
-                                    <p>Collections go here</p>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                    <td>
-                        // statistics
-                    </td>
-                </tr>
-            </table>
-        </form>
+        <table class="bordered unstriped">
+            <tr>
+                <th colspan="2" class="bb"><span v-text="showLanguage('database', 'database', getDbName(db))"></span> </th>
+            </tr>
+            <tr>
+                <th v-text="showLanguage('database', 'collections')" class="bb rb"></th>
+                <th v-text="showLanguage('database', 'statistics')" class="bb"></th>
+            </tr>
+            <tr>
+                <td class="vat" style="width: 50%">
+                    <table class="collection unstriped">
+                        <tr>
+                            <td v-text="showLanguage('database', 'collections')" class="text-center rb" style="width: 50%;"></td>
+                            <td class="text-center">
+                                {{ getCollectionCount }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-center rb">
+                                <p><span class="pma-link" v-text="showLanguage('database', 'dropAll')"></span></p>
+                            </td>
+                            <td class="text-center">
+                                <p><span class="pma-link" v-text="showLanguage('database', 'clearAll')"></span></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" class="collection-list">
+                                <collection-card v-for="(collection, index) in db.collections" :key="index" v-bind:collection="collection"></collection-card>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td style="width: 50%;">
+                    <table class="collection unstriped">
+                        <tr>
+                            <td class="tr rb" v-text="showLanguage('database', 'objects')"></td>
+                            <td>
+                                {{ getObjectsCount }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tr rb" v-text="showLanguage('database', 'avgObjSize')"></td>
+                            <td>
+                                {{ humanReadable(db.stats.avgObjSize) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tr rb" v-text="showLanguage('database', 'dataSize')"></td>
+                            <td>
+                                {{ humanReadable(db.stats.dataSize) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tr rb" v-text="showLanguage('database', 'storageSize')"></td>
+                            <td>
+                                {{ humanReadable(db.stats.storageSize) }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="tr rb" v-text="showLanguage('database', 'indexSize')"></td>
+                            <td>
+                                {{ humanReadable(db.stats.indexSize) }}
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
     </div>
 </template>
 
@@ -60,7 +91,19 @@
     */
     import { EventBus } from '../../../event-bus.js';
 
+    /*
+    *   Import components for the Databases View
+    */
+    import CollectionCard from './CollectionCard';
+
     export default {
+        /*
+        *   Register the components to be used by the home page.
+        */
+        components: {
+            CollectionCard
+        },
+
         /*
         *   The component accepts one db as a property
         */
@@ -69,7 +112,8 @@
         data() {
             return {
                 show: false,
-                name: null
+                name: null,
+                stats: {}
             }
         },
 
@@ -77,19 +121,17 @@
         * Defines the computed properties on the component.
         */
         computed: {
-            setCollections: ( collections ) => {
-                console.log("collections: " + collections);
-                let x = 0;
-                let str = '';
-                for( x in collections) {
-                    str += '<p><span class="pma-link">' + collections[x].collection.name + '</span></p>';
-                }
-                return str;
-            }/*,
+            statsLength() {
+                return typeof this.db.stats == 'object';
+            },
 
-            dbLength() {
-                return this.db.stats.length > 0;
-            }*/
+            getCollectionCount: function() {
+                return this.stats['collections'];
+            },
+
+            getObjectsCount: function() {
+                return this.stats['objects'];
+            }
         },
 
         /*
@@ -110,11 +152,11 @@
             /*
             *   There are two versions of DB name returned
             */
-            getDbName( db ) {
+            getDbName: function(db) {
                 if (db) {
-                    if (db.databaseName) {
-                        this.name = db.databaseName;
-                        return db.databaseName;
+                    if (db.db.databaseName) {
+                        this.name = db.db.databaseName;
+                        return db.db.databaseName;
                     }
                     else {db.name;
                         this.name = db.name;
@@ -143,13 +185,26 @@
                     return Math.round(bytes/1024/1024/1024, precision) + "g";
                 }
                 return bytes;
-            }
+            }//,
+
+            /*setStats() {
+                this.stats = this.db.stats;
+            }*/
         },
 
         mounted() {
             EventBus.$on('show-database', function() {
+
+                this.stats = this.$store.getters.getStats;
                 this.show = true;
+
             }.bind(this));
-        }
+        }//,
+
+        /*watch: {
+            statsLength() {
+                this.setStats();
+            }
+        }*/
     }
 </script>

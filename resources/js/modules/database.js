@@ -43,7 +43,8 @@ export const database = {
 
             DatabaseApi.getDatabases()
                 .then( ( response ) => {
-                    commit( 'setDatabases', response.data.databases );
+                    console.log(response.data.data.databases);
+                    commit( 'setDatabases', response.data.data.databases );
                     commit( 'setDatabasesLoadStatus', 2 );
                 })
                 .catch( (error) => {
@@ -62,8 +63,8 @@ export const database = {
 
             DatabaseApi.getDatabase( data )
                 .then( ( response ) => {
-                    console.log(response.data.database);
-                    commit( 'setDatabase', response.data.database );
+                    console.log(response.data.data.database);
+                    commit( 'setDatabase', response.data.data.database );
                     commit( 'setDatabaseLoadStatus', 2 );
                 })
                 .catch( (error) => {
@@ -82,7 +83,8 @@ export const database = {
 
             DatabaseApi.createDatabase( data )
                 .then( ( response ) => {
-                    commit( 'setCreatedDatabase', response.data.database );
+                    console.log(response.data.data);
+                    commit( 'setCreatedDatabase', response.data.data.database );
                     commit( 'setCreateDatabaseStatus', 2 );
                 })
                 .catch( (error) => {
@@ -100,6 +102,7 @@ export const database = {
 
             DatabaseApi.deleteDatabase( data )
                 .then( ( response ) => {
+                    console.log(response.data.data);
                     commit( 'setDeletedDatabase', data );
                     commit( 'setDeleteDatabaseStatus', 2 );
                 })
@@ -116,17 +119,20 @@ export const database = {
     */
     mutations: {
         /*
-       *   Set the database load status
-       */
+        *   Set the database load status
+        */
         setDatabasesLoadStatus( state, status ) {
             state.databaseLoadStatus = status;
         },
 
         /*
         *   Sets the databases
+        *   ToDo: !! to prevent loading errors we need to add a 'default' Database to the database object
+        *   We can use the admin db as default
         */
         setDatabases( state, databases ) {
             state.databases = databases;
+            state.database  = databases.find(db => db.db.name === 'admin');
         },
 
         /*
@@ -272,6 +278,15 @@ export const database = {
         */
         getDeleteDatabaseStatus( state ) {
             return state.deleteDatabaseStatus;
+        },
+
+        /*
+        *   Get the stats array (object) from the database object
+        */
+        getStats( state ) {
+            if (state.database) {
+                return state.database.stats;
+            }
         },
 
         getErrorData( state ) {

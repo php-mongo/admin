@@ -73,7 +73,7 @@
         <nav class="crumb-navigation">
             <ul class="links">
                 <li class="crumb-link text-left">
-                    <img src="/img/icon/database.png" /> <span class="pma-link" v-on:click="loadDatabase($event)">DB-Name</span>
+                    <img src="/img/icon/database.png" /> <span class="pma-link" v-on:click="loadDatabase($event)">{{databaseName}}</span>
                 </li>
             </ul>
         </nav>

@@ -49,48 +49,37 @@ class DatabasesController extends Controller implements Unserializable
     /**
      * Get one or All databases
      *
-     * @param $name
-     * @return array
+     * @param   $name
+     * @return  array
      */
     private function getAllDatabases($name = false)
     {
-        // only one DB by nae
+        // only one DB by name
         if ($name) {
-            //$database = (new MongoDB\Client)->$name;
-            $database = $this->client->selectDatabase( $name );
-
-         //   echo '<pre>'; var_dump($database); echo '</pre>';
-
-            $stats = $database->command(array('dbstats' => 1))->toArray()[0];
+            $database   = $this->client->selectDatabase( $name );
+            $stats      = $database->command(array('dbstats' => 1))->toArray()[0];
             $statistics = [];
+            // break out the stats into an array
             foreach ($stats as $key => $value) {
                 $statistics[ $key ] = $value;
             }
-
-            //echo '<pre>'; var_dump($name); echo '</pre>'; die;
-            //echo '<pre>'; var_dump($database->getName()); echo '</pre>'; die;
-
+            // the collections object should contain any relative objects
             $collections = $this->getCollections($name, true);
-
-      //      echo '<pre>'; var_dump($collections); echo '</pre>'; die;
-
-            $arr = array("db" => $database->__debugInfo(), "stats" => $statistics, "collections" => $collections);
-
-         //   echo '<pre>'; var_dump($arr); echo '</pre>'; die;
+            $arr         = array("db" => $database->__debugInfo(), "stats" => $statistics, "collections" => $collections);
 
         } else {
             $arr   = [];
             $index = 0;
             foreach ($this->client->listDatabases() as $db) {
-                $dbn = $db->getName();
-                $database = (new MongoDB\Client)->$dbn;
-                $stats = $database->command(array('dbstats' => 1))->toArray()[0];
+                $dbn        = $db->getName();
+                $database   = (new MongoDB\Client)->$dbn;
+                $stats      = $database->command(array('dbstats' => 1))->toArray()[0];
                 $statistics = [];
+                // break out the stats into an array
                 foreach ($stats as $key => $value) {
                     $statistics[ $key ] = $value;
                 }
-                //    echo '<pre>'; var_dump($statistics); echo '</pre>';
-                //   echo '<pre>'; var_dump($this->$this->bsonUnserialize($stats)); echo '</pre>';
+                // this set of collections wont need the objects
                 $collections = $this->getCollections($db->getName());
                 $arr[]       = array("id" => $index, "db" => $db->__debugInfo(), "stats" => $statistics, "collections" => $collections);
                 $index++;
@@ -101,6 +90,8 @@ class DatabasesController extends Controller implements Unserializable
     }
 
     /**
+     * Returns the collections belonging to each given database
+     *
      * @param   string    $db           string DB Name
      * @param   bool      $getObjects
      * @return  array
@@ -112,7 +103,7 @@ class DatabasesController extends Controller implements Unserializable
         $database = (new MongoDB\Client)->$db;
         /** @var MongoDB\Model\CollectionInfo $collection */
         foreach ($database->listCollections() as $collection) {
-        //    echo '<pre>'; var_dump($collection); echo '</pre>'; die;
+            // we only need to objects when its database view
             if ($getObjects) {
                 $arr[] = array("id" => $index, "collection" => $collection->__debugInfo(), "objects" => $this->getObjects($db, $collection->getName()));
             } else {
@@ -124,8 +115,10 @@ class DatabasesController extends Controller implements Unserializable
     }
 
     /**
-     * @param   string  $db
-     * @param   string  $collection
+     * Returns the objects for the given collection
+     *
+     * @param   string  $db             string DB Name
+     * @param   string  $collection     string Collection name
      * @return  array
      */
     private function getObjects($db, $collection)
@@ -134,11 +127,13 @@ class DatabasesController extends Controller implements Unserializable
         $cursor  = (new MongoDB\Client)->$db->selectCollection($collection);
         $objects = $cursor->find();
         $arr['objects'] = $objects->toArray();
-        $arr['count'] = count($arr['objects']);
+        $arr['count']   = count($arr['objects']);
         return $arr;
     }
 
     /**
+     * Used to confirm that a database has been dropped
+     *
      * @param string $name
      * @param array $result
      * @return array
@@ -152,7 +147,7 @@ class DatabasesController extends Controller implements Unserializable
     }
 
     /**
-     * DbsController constructor.
+     * DatabasesController constructor.
      */
     public function __construct()
     {
@@ -172,7 +167,8 @@ class DatabasesController extends Controller implements Unserializable
     {
         // get the databases
         $databases = $this->getAllDatabases();
-        return response()->json( array('databases' => $databases));
+        //return response()->json( array('databases' => $databases));
+        return response()->success('success', array('databases' => $databases));
     }
 
     /**
@@ -188,11 +184,16 @@ class DatabasesController extends Controller implements Unserializable
     {
         // get the databases
         $database = $this->getAllDatabases($name);
-        return response()->json( array('database' => $database));
+        //return response()->json( array('database' => $database));
+        return response()->success('success', array('database' => $database));
     }
 
     /**
      * Creating a new MongoDB database
+     *
+     * URL:         /api/v1/databases/create
+     * Method:      POST
+     * Description: Create a new database using the given name
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -226,11 +227,16 @@ class DatabasesController extends Controller implements Unserializable
         }
         $arr = array("id" => $index, "db" => $database->__debugInfo(), "stats" => $statistics, "collections" => $this->getCollections($db));
 
-        return response()->json( array('database' => $arr ));
+        //return response()->json( array('database' => $arr ));
+        return response()->success('success', array('database' => $arr ));
     }
 
     /**
      * Deleting a MongoDB database
+     *
+     * URL:         /api/v1/databases/delete
+     * Method:      POST
+     * Description: Delete the database matching the given name
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
@@ -246,17 +252,15 @@ class DatabasesController extends Controller implements Unserializable
                     /** @var MongoDB\Model\BSONDocument $result */
                     $result = $db->drop();
                     $status[] = $this->setDeleteStatus( $name, $result->getArrayCopy());
-                 //   echo '<pre>'; var_dump($name); echo '</pre>';
-                 //   echo '<pre>'; var_dump($result); echo '</pre>';
-                 //   die;
                 }
             }
         }
-
-        return response()->json( array('status' => $status ));
+        //return response()->json( array('status' => $status ));
+        return response()->success('success', array('status' => $status ));
     }
 
     /**
+     *
      * @inheritDoc
      */
     public function bsonUnserialize(array $data)

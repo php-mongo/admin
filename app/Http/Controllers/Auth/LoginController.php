@@ -49,6 +49,8 @@ class LoginController extends Controller
     }
 
     /**
+     * Hanldes our loging via API request
+     *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -57,8 +59,6 @@ class LoginController extends Controller
 
         // get the creds
         $credentials = $request->only([$this->getUser(), 'password']);
-
-     //   echo '<pre>'; var_dump($credentials); echo '</pre>'; die;
 
         // check the creds
         if (!$token = auth()->attempt($credentials)) {
@@ -71,7 +71,7 @@ class LoginController extends Controller
         // generate the user's token from Passport
         $token = $user->createToken('PHPMongoAdmin')->accessToken;
 
-        // login thr user
+        // login the user
         Auth::login( $user );
 
         // check to see if they still have their 'app-member' cookie
@@ -86,6 +86,8 @@ class LoginController extends Controller
     }
 
     /**
+     * Handle logout requests
+     *
      * @param Request $request
      * @param $uid
      * @return \Illuminate\Http\JsonResponse
@@ -101,6 +103,8 @@ class LoginController extends Controller
     }
 
     /**
+     * Returns an authenticated user
+     *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -110,19 +114,22 @@ class LoginController extends Controller
     }
 
     /**
+     * Generates the response with the Passport Token
+     *
      * @param $token
      * @return \Illuminate\Http\JsonResponse
      */
     protected function respondWithToken($token)
     {
-        $d7 = 60 * 60 * 27 * 28; // 28 days
+        // ToDo: setup a mechanism to set this expiry duration via an admin panel and use a dynamic value
+        $days = 60 * 60 * 27 * 28; // 28 days
         return response()->json([
             'success' => true,
             'uid' => Auth::id(),
             'token' => $token,
             'time' => time(),
             'token_type' => 'bearer',
-            'expires_in' => time() + $d7
+            'expires_in' => time() + $days
         ]);
 //        return response()->json([
 //            'success' => true,

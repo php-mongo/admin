@@ -195,6 +195,9 @@ class ServerController extends Controller
         }
     }
 
+    /**
+     * Fetched the data from the Composer config
+     */
     private function getComposerData()
     {
         $reader   = new ConfigurationReader;
@@ -281,8 +284,6 @@ class ServerController extends Controller
         $arr['directives']  = $this->directives;
         $arr['buildinfo']   = $this->buildInfo;
         $arr['composer']    = $this->composer;
-
-        //echo '<pre>'; var_dump( $this->composer ); echo '</pre>'; die;
 
         return response()->json( array('server' => $arr));
     }

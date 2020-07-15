@@ -46,21 +46,27 @@ class SetupController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
-      //  echo '<pre>'; var_dump($_POST); echo '</pre>'; die;
     }
 
+    /**
+     * Loads the initial setup laylout
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function getSetup()
     {
         return view('public.setup');
     }
 
+    /**
+     * Saves the Control User
+     *
+     * @param StoreControlUser $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
     public function saveSetup(StoreControlUser $request)
     {
-        //echo '<pre>'; var_dump($_POST); echo '</pre>'; die;
-     //   echo '<pre>'; var_dump($request); echo '</pre>'; die;
         $data = $request->validated();
-
-    //    echo '<pre>'; var_dump($data); echo '</pre>'; die;
 
         // new user
         $user               = new User();
@@ -74,7 +80,6 @@ class SetupController extends Controller
 
         $user->save();
 
-        //return $user;
         return redirect('/admin');
     }
 }

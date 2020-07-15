@@ -2,51 +2,85 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f038c1f9-10f1-4a52-9d58-2bcc5e6e3316" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/config/mongo.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/js/components/admin/database/top/DatabaseCrumbs.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/js/components/admin/database/top/DatabaseNav.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/js/components/admin/database/top/DatabaseTopView.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/js/components/admin/server/BuildCard.vue" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/resources/js/modules/server.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/Providers/JsonServiceProvider.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php-mongo-admin.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php-mongo-admin.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/php.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/php.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/laravel-plugin.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/laravel-plugin.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Api/UsersController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Api/UsersController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Classes/UnserialiseDocument.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Classes/UnserialiseDocument.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Api/DatabasesController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Api/DatabasesController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Api/DbsController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Api/DbsController.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Api/ServerController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Api/ServerController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Auth/LoginController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Auth/LoginController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Web/AppController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Web/AppController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/Http/Middleware/Authenticate.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Middleware/Authenticate.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Controllers/Web/SetupController.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Controllers/Web/SetupController.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/Http/Middleware/ConfirmSetup.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Middleware/ConfirmSetup.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.json" beforeDir="false" afterPath="$PROJECT_DIR$/composer.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" afterPath="$PROJECT_DIR$/composer.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/css/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/public/css/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Http/Requests/EditUserRequest.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Http/Requests/EditUserRequest.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/Database.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Database.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/Models/Db.php" beforeDir="false" afterPath="$PROJECT_DIR$/app/Models/Db.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/composer.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/app.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config/mongo.php" beforeDir="false" afterPath="$PROJECT_DIR$/config/mongo.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/arrow-ltr.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/arrow-ltr.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/accept.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/accept.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/add.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/add.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/arrow_refresh.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/arrow_refresh.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/connect.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/connect.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/cross.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/cross.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/database.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/database.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/databases.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/databases.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/grid.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/grid.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/key.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/key.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/pma-home.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/pma-home.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/pma-world.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/pma-world.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/report.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/report.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/server.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/server.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/servers.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/servers.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/submenu_bullet.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/submenu_bullet.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/table-systemjs.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/table-systemjs.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/img/icon/table.png" beforeDir="false" afterPath="$PROJECT_DIR$/public/img/icon/table.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/public/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/api/latest.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/api/admin.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/api/user.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/api/user.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/GalleryCard.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/GalleryView.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/ListCard.vue" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/components/global/LoginModal.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/global/LoginModal.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/components/global/Navigation.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/top/TopNav.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/components/global/SiteFooter.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/global/SiteFooter.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/layouts/Layout.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/layouts/Layout.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/layouts/Public.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/layouts/Public.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/modules/admin.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/modules/admin-source.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/modules/application.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/modules/application.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/modules/users.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/modules/users.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/Admin.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/Admin.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/pages/Login.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/Login.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/routes.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/routes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/js/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/store.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/lang/en/login.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lang/en/login.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/lang/en/nav.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lang/en/nav.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/lang/en/title.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lang/en/title.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/sass/abstracts/_variables.scss" beforeDir="false" afterPath="$PROJECT_DIR$/resources/sass/abstracts/_variables.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/sass/layouts/_body.scss" beforeDir="false" afterPath="$PROJECT_DIR$/resources/sass/layouts/_body.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/sass/layouts/_page.scss" beforeDir="false" afterPath="$PROJECT_DIR$/resources/sass/layouts/_page.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/sass/pages/admin.scss" beforeDir="false" afterPath="$PROJECT_DIR$/resources/sass/pages/admin.scss" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/views/public/login.blade.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/public/login.blade.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/routes/api.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/api.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/api/database.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/api/database.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/api/dbs.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/api/dbs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/api/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/api/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/ListCard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/ListCard.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/PanelView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/PanelView.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/database/CollectionCard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/database/CollectionCard.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/database/DatabaseCard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/database/DatabaseCard.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/database/DatabaseView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/database/DatabaseView.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/database/top/DatabaseCrumbs.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/database/top/DatabaseCrumbs.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/database/top/DatabaseNav.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/database/top/DatabaseNav.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/database/top/DatabaseTopView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/database/top/DatabaseTopView.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/databases/DatabaseCard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/databases/DatabaseCard.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/databases/DatabasesView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/databases/DatabasesView.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/dbs/CollectionCard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/dbs/CollectionCard.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/dbs/DbsCard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/dbs/DbsCard.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/dbs/DbsTop.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/dbs/DbsTop.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/dbs/DbsView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/dbs/DbsView.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/phpmongo/Author.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/phpmongo/Author.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/phpmongo/PhpMongo.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/phpmongo/PhpMongo.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/phpmongo/PhpMongoAdmin.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/phpmongo/PhpMongoAdmin.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/server/BuildCard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/server/BuildCard.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/server/BuildInfo.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/server/BuildInfo.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/server/CommandLine.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/server/CommandLine.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/server/ConnectionCard.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/server/ConnectionCard.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/server/Directive.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/server/Directive.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/server/Directives.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/server/Directives.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/server/ServerView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/server/ServerView.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/server/WebServer.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/server/WebServer.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/top/Top.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/top/Top.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/admin/top/TopView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/admin/top/TopView.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/components/global/PublicHeader.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/components/global/PublicHeader.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/mixins/filters/DbsTextFilter.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/mixins/filters/DbsTextFilter.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/modules/database.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/modules/database.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/modules/dbs.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/modules/dbs.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/modules/server.js" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/modules/server.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/pages/Contact.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/Contact.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/js/pages/Privacy.vue" beforeDir="false" afterPath="$PROJECT_DIR$/resources/js/pages/Privacy.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/lang/en/database.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lang/en/database.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/lang/en/databases.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lang/en/databases.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/lang/en/dbs.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lang/en/dbs.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/lang/en/phpmongo.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lang/en/phpmongo.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/lang/en/server.php" beforeDir="false" afterPath="$PROJECT_DIR$/resources/lang/en/server.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/views/public/login.blade.php.backup" beforeDir="false" afterPath="$PROJECT_DIR$/resources/views/public/login.blade.php.backup" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/routes/web.php" beforeDir="false" afterPath="$PROJECT_DIR$/routes/web.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -226,19 +260,19 @@
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="W:\sites\php-mongo-admin\resources\js\components\admin\database" />
-      <recent name="W:\sites\php-mongo-admin\resources\lang\en" />
-      <recent name="W:\sites\php-mongo-admin\public\img" />
-      <recent name="W:\sites\php-mongo-admin\app\Models" />
-      <recent name="W:\sites\php-mongo-admin\app\Http\Controllers\Api" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="W:\sites\php-mongo-admin\resources\js\components\admin\databases" />
       <recent name="W:\sites\php-mongo-admin\resources\js\components\admin\phpmongo" />
       <recent name="W:\sites\php-mongo-admin\resources\js\components\admin\top" />
       <recent name="W:\sites\php-mongo-admin\public\img\icon" />
       <recent name="W:\sites\php-mongo-admin\resources\js\components\admin\dbs" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="W:\sites\php-mongo-admin\resources\js\components\admin\database" />
+      <recent name="W:\sites\php-mongo-admin\resources\lang\en" />
+      <recent name="W:\sites\php-mongo-admin\public\img" />
+      <recent name="W:\sites\php-mongo-admin\app\Models" />
+      <recent name="W:\sites\php-mongo-admin\app\Http\Controllers\Api" />
     </key>
   </component>
   <component name="SvnConfiguration">
@@ -256,7 +290,7 @@
       <workItem from="1593589856502" duration="167399000" />
       <workItem from="1594035192293" duration="1034000" />
       <workItem from="1594036258652" duration="139365000" />
-      <workItem from="1594721273493" duration="427000" />
+      <workItem from="1594721273493" duration="16185000" />
     </task>
     <servers />
   </component>
@@ -294,10 +328,10 @@
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="740" y="293" key="FileChooserDialogImpl/0.0.1920.1080@0.0.1920.1080" timestamp="1594372201506" />
-    <state x="764" y="353" key="NewPhpClassDialog" timestamp="1594537243324">
+    <state x="764" y="353" key="NewPhpClassDialog" timestamp="1594806535584">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state x="764" y="353" key="NewPhpClassDialog/0.0.1920.1080@0.0.1920.1080" timestamp="1594537243324" />
+    <state x="764" y="353" key="NewPhpClassDialog/0.0.1920.1080@0.0.1920.1080" timestamp="1594806535584" />
     <state x="795" y="462" key="NewPhpFileDialog" timestamp="1594113495932">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
@@ -314,10 +348,10 @@
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="92" y="92" width="1736" height="896" key="dock-window-1/0.0.1920.1080@0.0.1920.1080" timestamp="1593852429175" />
-    <state x="657" y="144" width="736" height="664" key="find.popup" timestamp="1594124477023">
+    <state x="657" y="144" width="736" height="664" key="find.popup" timestamp="1594814046191">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
-    <state x="657" y="144" width="736" height="664" key="find.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1594124477023" />
+    <state x="657" y="144" width="736" height="664" key="find.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1594814046191" />
     <state x="616" y="245" key="run.anything.popup" timestamp="1594539417635">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
@@ -326,5 +360,16 @@
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="623" y="235" width="672" height="678" key="search.everywhere.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1594648431466" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="php">
+          <url>file://$PROJECT_DIR$/app/Http/Controllers/Api/DbsController.php</url>
+          <line>10</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

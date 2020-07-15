@@ -2,12 +2,16 @@
 
 namespace App\Http\Middleware;
 
+/**
+ * @uses
+ */
 use Closure;
-
 use App\Models\User;
 
-use Illuminate\Support\Facades\Hash;
-
+/**
+ * Class ConfirmSetup
+ * @package App\Http\Middleware
+ */
 class ConfirmSetup
 {
     /**
@@ -27,6 +31,9 @@ class ConfirmSetup
     }
 
     /**
+     * This method simply checks that we have a Control User already setup
+     * At least one control user must be created during the initial setup
+     *
      * @param $users
      * @return bool
      */
@@ -34,16 +41,6 @@ class ConfirmSetup
     {
         foreach ($users as $user) {
             if ($user['control_user'] == 1 && $user['active'] == 1) {
-        //        $user               = User::where('id', $user['id'])->get();
-
-             //   echo '<pre>'; var_dump($user); echo '</pre>'; die;
-
-                //$user->password     = Hash::make('9aa7969b');
-               // $user->save();
-
-        //        $password     = Hash::make('9aa7969b');
-         //       $user->toQuery()->update([ 'password' => $password]);
-
                 return true;
             }
         }

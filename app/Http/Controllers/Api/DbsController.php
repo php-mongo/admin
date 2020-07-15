@@ -6,20 +6,31 @@
 namespace App\Http\Controllers\Api;
 
 /*
-    Defines the requests used by the controller.
-*/
+ *   Defines the requests used by the controller.
+ */
 use Illuminate\Http\Request;
 
 /*
-    Defined controllers used by the controller
-*/
+ *   Defined controllers used by the controller
+ */
 use App\Http\Controllers\Controller;
 
+/*
+ * Used models
+ */
 use App\Models\Db;
 
+/*
+ * Used libraries
+ */
 use MongoDB;
 
 
+/**
+ * Class DbsController
+ *
+ * @package App\Http\Controllers\Api
+ */
 class DbsController extends Controller
 {
     /**
@@ -93,7 +104,6 @@ class DbsController extends Controller
     {
         // get the dbs
         $dbs = $this->getAllDbs();
-    //     echo '<pre>'; var_dump($dbs); echo '</pre>'; die;
         return response()->json( array('dbs' => $dbs));
     }
 }

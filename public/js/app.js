@@ -2044,6 +2044,53 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/CollectionCard.vue?vue&type=script&lang=js&":
+/*!***********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/babel-loader/lib??ref--11-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/CollectionCard.vue?vue&type=script&lang=js& ***!
+  \***********************************************************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/*
+* Import the Event bus
+*/
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  /*
+  *   The component accepts one db as a property
+  */
+  props: ['collection'],
+
+  /*
+  *   Defined methods for the component
+  */
+  methods: {
+    /*
+    *   Calls the Translation and Language service
+    */
+    showLanguage: function showLanguage(context, key) {
+      // return this.$trans( context, key );
+      return this.$store.getters.getLanguageString(context, key);
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/DatabaseCard.vue?vue&type=script&lang=js&":
 /*!*********************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/babel-loader/lib??ref--11-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/DatabaseCard.vue?vue&type=script&lang=js& ***!
@@ -2054,6 +2101,52 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
+/* harmony import */ var _CollectionCard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CollectionCard */ "./resources/js/components/admin/database/CollectionCard.vue");
+function _typeof(obj) {
+  "@babel/helpers - typeof";
+
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    _typeof = function _typeof(obj) {
+      return typeof obj;
+    };
+  } else {
+    _typeof = function _typeof(obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return _typeof(obj);
+} //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2115,7 +2208,21 @@ __webpack_require__.r(__webpack_exports__);
 * Import the Event bus
 */
 
+
+
+/*
+*   Import components for the Databases View
+*/
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
+  /*
+  *   Register the components to be used by the home page.
+  */
+  components: {
+    CollectionCard: _CollectionCard__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
+
   /*
   *   The component accepts one db as a property
   */
@@ -2123,7 +2230,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       show: false,
-      name: null
+      name: null,
+      stats: {}
     };
   },
 
@@ -2131,22 +2239,15 @@ __webpack_require__.r(__webpack_exports__);
   * Defines the computed properties on the component.
   */
   computed: {
-    setCollections: function setCollections(collections) {
-      console.log("collections: " + collections);
-      var x = 0;
-      var str = '';
-
-      for (x in collections) {
-        str += '<p><span class="pma-link">' + collections[x].collection.name + '</span></p>';
-      }
-
-      return str;
+    statsLength: function statsLength() {
+      return _typeof(this.db.stats) == 'object';
+    },
+    getCollectionCount: function getCollectionCount() {
+      return this.stats['collections'];
+    },
+    getObjectsCount: function getObjectsCount() {
+      return this.stats['objects'];
     }
-    /*,
-    dbLength() {
-       return this.db.stats.length > 0;
-    }*/
-
   },
 
   /*
@@ -2170,9 +2271,9 @@ __webpack_require__.r(__webpack_exports__);
     */
     getDbName: function getDbName(db) {
       if (db) {
-        if (db.databaseName) {
-          this.name = db.databaseName;
-          return db.databaseName;
+        if (db.db.databaseName) {
+          this.name = db.db.databaseName;
+          return db.db.databaseName;
         } else {
           db.name;
           this.name = db.name;
@@ -2206,13 +2307,26 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       return bytes;
-    }
+    } //,
+
+    /*setStats() {
+        this.stats = this.db.stats;
+    }*/
+
   },
   mounted: function mounted() {
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database', function () {
+      this.stats = this.$store.getters.getStats;
       this.show = true;
     }.bind(this));
-  }
+  } //,
+
+  /*watch: {
+      statsLength() {
+          this.setStats();
+      }
+  }*/
+
 });
 
 /***/ }),
@@ -2229,6 +2343,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
 /* harmony import */ var _top_DatabaseTopView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./top/DatabaseTopView */ "./resources/js/components/admin/database/top/DatabaseTopView.vue");
 /* harmony import */ var _DatabaseCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DatabaseCard */ "./resources/js/components/admin/database/DatabaseCard.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2364,9 +2493,6 @@ __webpack_require__.r(__webpack_exports__);
     */
     getDatabase: function getDatabase() {
       return this.$store.getters.getDatabase;
-    },
-    deleteAllDatabases: function deleteAllDatabases() {
-      return this.deleteAll;
     }
   },
 
@@ -2460,29 +2586,6 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /*
-    *   Check and uncheck all databases for the Check all function
-    */
-    checkAllDbs: function checkAllDbs() {
-      if (this.deleteAll === true) {
-        console.log("checking all available databases...");
-        _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('check-all-databases');
-      } else {
-        console.log("un checking all available databases...");
-        _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('uncheck-all-databases');
-      }
-    },
-    removeDbFromArray: function removeDbFromArray(db) {
-      var dbs = this.checked;
-      var checked = [];
-      dbs.forEach(function (value, index) {
-        if (value !== db) {
-          checked.push(value);
-        }
-      });
-      this.checked = checked;
-    },
-
-    /*
     *   Show component
     */
     showComponent: function showComponent() {
@@ -2501,9 +2604,6 @@ __webpack_require__.r(__webpack_exports__);
   *    get on ur bikes and ride !!
   */
   mounted: function mounted() {
-    // load al the default view server data
-    //    this.$store.dispatch( 'loadDatabases' );
-
     /*
     *    Hide this component
     */
@@ -2514,7 +2614,7 @@ __webpack_require__.r(__webpack_exports__);
     *    Show this component
     */
 
-    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database', function () {
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database', function (name) {
       this.showComponent();
     }.bind(this));
   },
@@ -2985,7 +3085,6 @@ __webpack_require__.r(__webpack_exports__);
     *   Calls the Translation and Language service
     */
     showLanguage: function showLanguage(context, key) {
-      // return this.$trans( context, key );
       return this.$store.getters.getLanguageString(context, key);
     },
 
@@ -9298,7 +9397,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-database-view {\n  float: left;\n  width: 96%;\n}\n.pma-database-view .database-inner form {\n  margin-bottom: 10px;\n}\n.pma-database-view .database-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-database-view .database-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-database-view .database-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-database-view .database-inner p.drop {\n  padding-left: 5px;\n}\n.pma-database-view .database-inner p.drop label {\n  display: inline-block;\n}\n.pma-database-view .database-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-database-view .database-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-database-view .database-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-database-view .database-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-database-view .database-inner table .info {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n}\n.pma-database-view .database-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-database-view .database-inner table.bordered td.rb, .pma-database-view .database-inner table.collection td.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered td.text-center {\n  text-align: center !important;\n}\n.pma-database-view .database-inner table td input {\n  margin: 3px 0 0 0;\n}", ""]);
+exports.push([module.i, ".pma-database-view {\n  float: left;\n  width: 96%;\n}\n.pma-database-view .database-inner form {\n  margin-bottom: 10px;\n}\n.pma-database-view .database-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-database-view .database-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-database-view .database-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-database-view .database-inner p.drop {\n  padding-left: 5px;\n}\n.pma-database-view .database-inner p.drop label {\n  display: inline-block;\n}\n.pma-database-view .database-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-database-view .database-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-database-view .database-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-database-view .database-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-database-view .database-inner table td {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n}\n.pma-database-view .database-inner table td input {\n  margin: 3px 0 0 0;\n}\n.pma-database-view .database-inner table.bordered td.tr, .pma-database-view .database-inner table.collection td.tr {\n  text-align: right;\n  width: 50%;\n}\n.pma-database-view .database-inner table.collection td p {\n  padding-left: 25%;\n}\n.pma-database-view .database-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-database-view .database-inner table.bordered td.rb, .pma-database-view .database-inner table.bordered table.collection td.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered td.text-center {\n  text-align: center !important;\n}\n.pma-database-view .database-inner table.bordered td.vat {\n  vertical-align: top;\n}", ""]);
 
 // exports
 
@@ -56969,6 +57068,34 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/CollectionCard.vue?vue&type=template&id=518d4807&":
+/*!********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/CollectionCard.vue?vue&type=template&id=518d4807& ***!
+  \********************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("p", [
+    _c("span", { staticClass: "pma-link" }, [
+      _vm._v(_vm._s(_vm.collection.collection.name))
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/DatabaseCard.vue?vue&type=template&id=d3a91bb8&":
 /*!******************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/DatabaseCard.vue?vue&type=template&id=d3a91bb8& ***!
@@ -56993,90 +57120,200 @@ var render = function() {
       staticClass: "database-inner"
     },
     [
-      _c("form", { attrs: { id: "db-list" } }, [
-        _c("table", { staticClass: "bordered unstriped" }, [
-          _c("tr", [
-            _c("th", { staticClass: "bb", attrs: { colspan: "2" } }, [
-              _c("span", {
-                domProps: {
-                  textContent: _vm._s(
-                    _vm.showLanguage(
-                      "database",
-                      "database",
-                      _vm.getDbName(_vm.db)
-                    )
+      _c("table", { staticClass: "bordered unstriped" }, [
+        _c("tr", [
+          _c("th", { staticClass: "bb", attrs: { colspan: "2" } }, [
+            _c("span", {
+              domProps: {
+                textContent: _vm._s(
+                  _vm.showLanguage(
+                    "database",
+                    "database",
+                    _vm.getDbName(_vm.db)
                   )
-                }
-              })
-            ])
-          ]),
-          _vm._v(" "),
-          _c("tr", [
-            _c("th", {
-              staticClass: "bb br",
-              domProps: {
-                textContent: _vm._s(_vm.showLanguage("database", "collections"))
-              }
-            }),
-            _vm._v(" "),
-            _c("th", {
-              staticClass: "bb",
-              domProps: {
-                textContent: _vm._s(_vm.showLanguage("database", "statistics"))
+                )
               }
             })
-          ]),
+          ])
+        ]),
+        _vm._v(" "),
+        _c("tr", [
+          _c("th", {
+            staticClass: "bb rb",
+            domProps: {
+              textContent: _vm._s(_vm.showLanguage("database", "collections"))
+            }
+          }),
           _vm._v(" "),
-          _c("tr", [
-            _c("td", [
-              _c("table", { staticClass: "collection unstriped" }, [
-                _c("tr", [
-                  _c("td", {
-                    staticClass: "br",
-                    domProps: {
-                      textContent: _vm._s(
-                        _vm.showLanguage("database", "collections")
-                      )
-                    }
-                  }),
-                  _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(_vm.db.stats.collections))])
-                ]),
+          _c("th", {
+            staticClass: "bb",
+            domProps: {
+              textContent: _vm._s(_vm.showLanguage("database", "statistics"))
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("tr", [
+          _c("td", { staticClass: "vat", staticStyle: { width: "50%" } }, [
+            _c("table", { staticClass: "collection unstriped" }, [
+              _c("tr", [
+                _c("td", {
+                  staticClass: "text-center rb",
+                  staticStyle: { width: "50%" },
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("database", "collections")
+                    )
+                  }
+                }),
                 _vm._v(" "),
-                _c("tr", [
-                  _c("td", { staticClass: "br" }, [
-                    _c("p", [
-                      _c("span", {
-                        staticClass: "pma-link",
-                        domProps: {
-                          textContent: _vm._s(
-                            _vm.showLanguage("database", "dropAll")
-                          )
-                        }
-                      })
-                    ])
-                  ]),
-                  _vm._v(" "),
-                  _c("td", [
-                    _c("p", [
-                      _c("span", {
-                        staticClass: "pma-link",
-                        domProps: {
-                          textContent: _vm._s(
-                            _vm.showLanguage("database", "clearAll")
-                          )
-                        }
-                      })
-                    ])
+                _c("td", { staticClass: "text-center" }, [
+                  _vm._v(
+                    "\n                            " +
+                      _vm._s(_vm.getCollectionCount) +
+                      "\n                        "
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", [
+                _c("td", { staticClass: "text-center rb" }, [
+                  _c("p", [
+                    _c("span", {
+                      staticClass: "pma-link",
+                      domProps: {
+                        textContent: _vm._s(
+                          _vm.showLanguage("database", "dropAll")
+                        )
+                      }
+                    })
                   ])
                 ]),
                 _vm._v(" "),
-                _vm._m(0)
+                _c("td", { staticClass: "text-center" }, [
+                  _c("p", [
+                    _c("span", {
+                      staticClass: "pma-link",
+                      domProps: {
+                        textContent: _vm._s(
+                          _vm.showLanguage("database", "clearAll")
+                        )
+                      }
+                    })
+                  ])
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", [
+                _c(
+                  "td",
+                  { staticClass: "collection-list", attrs: { colspan: "2" } },
+                  _vm._l(_vm.db.collections, function(collection, index) {
+                    return _c("collection-card", {
+                      key: index,
+                      attrs: { collection: collection }
+                    })
+                  }),
+                  1
+                )
               ])
-            ]),
-            _vm._v(" "),
-            _c("td", [
-              _vm._v("\n                    // statistics\n                ")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("td", { staticStyle: { width: "50%" } }, [
+            _c("table", { staticClass: "collection unstriped" }, [
+              _c("tr", [
+                _c("td", {
+                  staticClass: "tr rb",
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("database", "objects"))
+                  }
+                }),
+                _vm._v(" "),
+                _c("td", [
+                  _vm._v(
+                    "\n                            " +
+                      _vm._s(_vm.getObjectsCount) +
+                      "\n                        "
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", [
+                _c("td", {
+                  staticClass: "tr rb",
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("database", "avgObjSize")
+                    )
+                  }
+                }),
+                _vm._v(" "),
+                _c("td", [
+                  _vm._v(
+                    "\n                            " +
+                      _vm._s(_vm.humanReadable(_vm.db.stats.avgObjSize)) +
+                      "\n                        "
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", [
+                _c("td", {
+                  staticClass: "tr rb",
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("database", "dataSize")
+                    )
+                  }
+                }),
+                _vm._v(" "),
+                _c("td", [
+                  _vm._v(
+                    "\n                            " +
+                      _vm._s(_vm.humanReadable(_vm.db.stats.dataSize)) +
+                      "\n                        "
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", [
+                _c("td", {
+                  staticClass: "tr rb",
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("database", "storageSize")
+                    )
+                  }
+                }),
+                _vm._v(" "),
+                _c("td", [
+                  _vm._v(
+                    "\n                            " +
+                      _vm._s(_vm.humanReadable(_vm.db.stats.storageSize)) +
+                      "\n                        "
+                  )
+                ])
+              ]),
+              _vm._v(" "),
+              _c("tr", [
+                _c("td", {
+                  staticClass: "tr rb",
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("database", "indexSize")
+                    )
+                  }
+                }),
+                _vm._v(" "),
+                _c("td", [
+                  _vm._v(
+                    "\n                            " +
+                      _vm._s(_vm.humanReadable(_vm.db.stats.indexSize)) +
+                      "\n                        "
+                  )
+                ])
+              ])
             ])
           ])
         ])
@@ -57084,18 +57321,7 @@ var render = function() {
     ]
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("td", { attrs: { colspan: "2" } }, [
-        _c("p", [_vm._v("Collections go here")])
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -57172,7 +57398,7 @@ var render = function() {
                 }
               }
             },
-            [_vm._v("DB-Name")]
+            [_vm._v(_vm._s(_vm.databaseName))]
           )
         ])
       ])
@@ -79022,6 +79248,75 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/admin/database/CollectionCard.vue":
+/*!*******************************************************************!*\
+  !*** ./resources/js/components/admin/database/CollectionCard.vue ***!
+  \*******************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _CollectionCard_vue_vue_type_template_id_518d4807___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./CollectionCard.vue?vue&type=template&id=518d4807& */ "./resources/js/components/admin/database/CollectionCard.vue?vue&type=template&id=518d4807&");
+/* harmony import */ var _CollectionCard_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CollectionCard.vue?vue&type=script&lang=js& */ "./resources/js/components/admin/database/CollectionCard.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _CollectionCard_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _CollectionCard_vue_vue_type_template_id_518d4807___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _CollectionCard_vue_vue_type_template_id_518d4807___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/admin/database/CollectionCard.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/admin/database/CollectionCard.vue?vue&type=script&lang=js&":
+/*!********************************************************************************************!*\
+  !*** ./resources/js/components/admin/database/CollectionCard.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_babel_loader_lib_index_js_ref_11_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CollectionCard_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/babel-loader/lib??ref--4-0!../../../../../node_modules/babel-loader/lib??ref--11-0!../../../../../node_modules/vue-loader/lib??vue-loader-options!./CollectionCard.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/CollectionCard.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_babel_loader_lib_index_js_ref_11_0_node_modules_vue_loader_lib_index_js_vue_loader_options_CollectionCard_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/admin/database/CollectionCard.vue?vue&type=template&id=518d4807&":
+/*!**************************************************************************************************!*\
+  !*** ./resources/js/components/admin/database/CollectionCard.vue?vue&type=template&id=518d4807& ***!
+  \**************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CollectionCard_vue_vue_type_template_id_518d4807___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../node_modules/vue-loader/lib??vue-loader-options!./CollectionCard.vue?vue&type=template&id=518d4807& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/CollectionCard.vue?vue&type=template&id=518d4807&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CollectionCard_vue_vue_type_template_id_518d4807___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_CollectionCard_vue_vue_type_template_id_518d4807___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/admin/database/DatabaseCard.vue":
 /*!*****************************************************************!*\
   !*** ./resources/js/components/admin/database/DatabaseCard.vue ***!
@@ -82689,7 +82984,8 @@ var database = {
           dispatch = _ref.dispatch;
       commit('setDatabasesLoadStatus', 1);
       _api_database_js__WEBPACK_IMPORTED_MODULE_0__["default"].getDatabases().then(function (response) {
-        commit('setDatabases', response.data.databases);
+        console.log(response.data.data.databases);
+        commit('setDatabases', response.data.data.databases);
         commit('setDatabasesLoadStatus', 2);
       })["catch"](function (error) {
         commit('setDatabases', []);
@@ -82710,8 +83006,8 @@ var database = {
           dispatch = _ref2.dispatch;
       commit('setDatabaseLoadStatus', 1);
       _api_database_js__WEBPACK_IMPORTED_MODULE_0__["default"].getDatabase(data).then(function (response) {
-        console.log(response.data.database);
-        commit('setDatabase', response.data.database);
+        console.log(response.data.data.database);
+        commit('setDatabase', response.data.data.database);
         commit('setDatabaseLoadStatus', 2);
       })["catch"](function (error) {
         commit('setDatabase', {});
@@ -82732,7 +83028,8 @@ var database = {
           dispatch = _ref3.dispatch;
       commit('setCreateDatabaseStatus', 1);
       _api_database_js__WEBPACK_IMPORTED_MODULE_0__["default"].createDatabase(data).then(function (response) {
-        commit('setCreatedDatabase', response.data.database);
+        console.log(response.data.data);
+        commit('setCreatedDatabase', response.data.data.database);
         commit('setCreateDatabaseStatus', 2);
       })["catch"](function (error) {
         commit('setCreateDatabaseStatus', 3);
@@ -82750,6 +83047,7 @@ var database = {
           dispatch = _ref4.dispatch;
       commit('setDeleteDatabaseStatus', 1);
       _api_database_js__WEBPACK_IMPORTED_MODULE_0__["default"].deleteDatabase(data).then(function (response) {
+        console.log(response.data.data);
         commit('setDeletedDatabase', data);
         commit('setDeleteDatabaseStatus', 2);
       })["catch"](function (error) {
@@ -82773,9 +83071,14 @@ var database = {
 
     /*
     *   Sets the databases
+    *   ToDo: !! to prevent loading errors we need to add a 'default' Database to the database object
+    *   We can use the admin db as default
     */
     setDatabases: function setDatabases(state, databases) {
       state.databases = databases;
+      state.database = databases.find(function (db) {
+        return db.db.name === 'admin';
+      });
     },
 
     /*
@@ -82926,6 +83229,15 @@ var database = {
     */
     getDeleteDatabaseStatus: function getDeleteDatabaseStatus(state) {
       return state.deleteDatabaseStatus;
+    },
+
+    /*
+    *   Get the stats array (object) from the database object
+    */
+    getStats: function getStats(state) {
+      if (state.database) {
+        return state.database.stats;
+      }
     },
     getErrorData: function getErrorData(state) {
       return state.errorData;

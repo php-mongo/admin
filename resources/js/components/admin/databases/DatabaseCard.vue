@@ -69,7 +69,6 @@
             *   Calls the Translation and Language service
             */
             showLanguage( context, key ) {
-                // return this.$trans( context, key );
                 return this.$store.getters.getLanguageString( context, key );
             },
 

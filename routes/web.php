@@ -46,7 +46,7 @@ Route::get('/js/lang.js', function() {
         return $strings;
     });
 
-
+    header('Content-Type: text/javascript');
     // this needs to support chinese chars
     echo('window.i18n = ' . json_encode( $strings, JSON_UNESCAPED_UNICODE ) . ';');
     exit();
