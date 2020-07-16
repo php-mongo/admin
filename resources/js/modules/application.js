@@ -33,7 +33,8 @@ export const application = {
         countries: {},
         states: [],
         suburb: '',
-        postcode: ''
+        postcode: '',
+        activePanel: null
     },
 
     actions: {
@@ -59,6 +60,9 @@ export const application = {
             }
         },
 
+        /*
+        *   Commit the language
+        */
         commitLanguage( { commit, dispatch }, data) {
             commit( 'setLanguageStatus', 0);
             commit( 'setLanguage', data);
@@ -66,12 +70,18 @@ export const application = {
             commit( 'setLanguageStatus', 2);
         },
 
+        /*
+        * Set the default language - uses predefined config
+        */
         setDefaultLanguage( { commit, state }, data) {
             commit( 'setLanguageStatus', 0);
             commit( 'setLanguageArray' );
             commit( 'setLanguageStatus', 2);
         },
 
+        /*
+        * Get the users location from IPINFO
+        */
         getLocation( { commit, state, dispatch }) {
             commit( 'setLocationStatus', 1 );
 
@@ -116,6 +126,9 @@ export const application = {
             }
         },
 
+        /*
+        * Apply the detected location
+        */
         applyCurrentLocation( { commit, state }, data ) {
             if (data.location) {
                 let current = {};
@@ -132,14 +145,23 @@ export const application = {
             }
         },
 
+        /*
+        * Set country from cookie
+        */
         setCountryNameFromCookie( { commit }, data) {
             commit( 'setCountryName', data);
         },
 
+        /*
+        * Set the countries array
+        */
         setCountries( { commit }, data ) {
             commit( 'setCountries', data);
         },
 
+        /*
+        *   Get states for the current country (limited data at the moment)
+        */
         getStates( { commit }, data ) {
             UserAPI.getUserStates( data )
                 .then( ( response ) => {
@@ -148,6 +170,13 @@ export const application = {
                 .catch( (error) => {
                     console.log(error);
                 })
+        },
+
+        /*
+        *   Set the active 'main panel' - used for styling
+        */
+        setActivePanel( { commit }, data ) {
+            commit( 'setActivePanel', data );
         }
     },
 
@@ -215,6 +244,10 @@ export const application = {
 
         setSuburb( state, suburb ) {
             state.suburb = suburb;
+        },
+
+        setActivePanel({commit}, data) {
+            state.activePanel = data;
         }
     },
 
@@ -263,7 +296,7 @@ export const application = {
             return state.countries;
         },
 
-        getStates ( state ) {
+        getStates( state ) {
             return state.states;
         },
 
@@ -277,6 +310,10 @@ export const application = {
 
         getState( state ) {
             return state.currentLocation.state;
+        },
+
+        getActivePanel( state ) {
+            return state.activePanel;
         }
     }
 };

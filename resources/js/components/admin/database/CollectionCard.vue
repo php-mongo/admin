@@ -3,9 +3,9 @@
 </style>
 
 <template>
-    <p>
+    <li class="coll">
         <span class="pma-link">{{ collection.collection.name }}</span>
-    </p>
+    </li>
 </template>
 
 <script>

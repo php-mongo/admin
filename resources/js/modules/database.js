@@ -23,6 +23,7 @@ export const database = {
         databases: [],
         databasesLoadStatus: 0,
         database: {},
+        activeDatabase: null,
         databaseLoadStatus: 0,
         displayDatabase: {},
         displayDatabaseStatus: 0,
@@ -64,6 +65,7 @@ export const database = {
             DatabaseApi.getDatabase( data )
                 .then( ( response ) => {
                     console.log(response.data.data.database);
+                    commit( 'setActiveDatabase', data );
                     commit( 'setDatabase', response.data.data.database );
                     commit( 'setDatabaseLoadStatus', 2 );
                 })
@@ -111,6 +113,13 @@ export const database = {
                     commit( 'setErrorData', error);
                     console.log(error);
                 });
+        },
+
+        /*
+        *   Set the active database - useful for database loading child component actions
+        */
+        setActiveDatabase( { commit }, data ) {
+            commit( 'setActiveDatabase', data );
         }
     },
 
@@ -204,6 +213,13 @@ export const database = {
         */
         setErrorData( state, error ) {
             state.errorData = error;
+        },
+
+        /*
+        *   Set the active database
+        */
+        setActiveDatabase(state, database) {
+            state.activeDatabase = database;
         }
     },
 
@@ -289,8 +305,18 @@ export const database = {
             }
         },
 
+        /*
+        *   Fetch any active error
+        */
         getErrorData( state ) {
             return state.errorData;
+        },
+
+        /*
+        *   Get the active database
+        */
+        getActiveDatabase( state) {
+            return state.activeDatabase;
         }
     }
 };

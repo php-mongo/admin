@@ -2203,6 +2203,7 @@ function _typeof(obj) {
 //
 //
 //
+//
 
 /*
 * Import the Event bus
@@ -5464,6 +5465,7 @@ __webpack_require__.r(__webpack_exports__);
   */
   data: function data() {
     return {
+      activePanel: null,
       isLoggedIn: null,
       user: {}
     };
@@ -5474,7 +5476,7 @@ __webpack_require__.r(__webpack_exports__);
   */
   computed: {
     /*
-    * Retrieves the User Load Status from Vuex
+    *   Retrieves the User Load Status from Vuex
     */
     userLoadStatus: function userLoadStatus() {
       return this.$store.getters.getUserLoadStatus === 2;
@@ -5502,6 +5504,13 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /*
+    *   Get the active panel
+    */
+    getActivePanel: function getActivePanel(panel) {
+      return this.activePanel === panel;
+    },
+
+    /*
     *   Return the logged is state
     */
     userLoggedIn: function userLoggedIn() {
@@ -5519,6 +5528,8 @@ __webpack_require__.r(__webpack_exports__);
     *   Load main panel content vie event
     */
     loadPanel: function loadPanel(item) {
+      this.activePanel = item; //this.$store.dispatch('setActivePanel', item);
+
       console.log("loading panel item: " + item);
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('hide-panels');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-' + item);
@@ -9397,7 +9408,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-database-view {\n  float: left;\n  width: 96%;\n}\n.pma-database-view .database-inner form {\n  margin-bottom: 10px;\n}\n.pma-database-view .database-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-database-view .database-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-database-view .database-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-database-view .database-inner p.drop {\n  padding-left: 5px;\n}\n.pma-database-view .database-inner p.drop label {\n  display: inline-block;\n}\n.pma-database-view .database-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-database-view .database-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-database-view .database-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-database-view .database-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-database-view .database-inner table td {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n}\n.pma-database-view .database-inner table td input {\n  margin: 3px 0 0 0;\n}\n.pma-database-view .database-inner table.bordered td.tr, .pma-database-view .database-inner table.collection td.tr {\n  text-align: right;\n  width: 50%;\n}\n.pma-database-view .database-inner table.collection td p {\n  padding-left: 25%;\n}\n.pma-database-view .database-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-database-view .database-inner table.bordered td.rb, .pma-database-view .database-inner table.bordered table.collection td.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered td.text-center {\n  text-align: center !important;\n}\n.pma-database-view .database-inner table.bordered td.vat {\n  vertical-align: top;\n}", ""]);
+exports.push([module.i, ".pma-database-view {\n  float: left;\n  width: 96%;\n}\n.pma-database-view .database-inner form {\n  margin-bottom: 10px;\n}\n.pma-database-view .database-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-database-view .database-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-database-view .database-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-database-view .database-inner p.drop {\n  padding-left: 5px;\n}\n.pma-database-view .database-inner p.drop label {\n  display: inline-block;\n}\n.pma-database-view .database-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-database-view .database-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-database-view .database-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-database-view .database-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-database-view .database-inner table td {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n}\n.pma-database-view .database-inner table td input {\n  margin: 3px 0 0 0;\n}\n.pma-database-view .database-inner table.bordered td.tr, .pma-database-view .database-inner table.collection td.tr {\n  text-align: right;\n  width: 50%;\n}\n.pma-database-view .database-inner table.collection td li.coll {\n  margin-left: 20%;\n}\n.pma-database-view .database-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-database-view .database-inner table.bordered td.rb, .pma-database-view .database-inner table.bordered table.collection td.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered td.text-center {\n  text-align: center !important;\n}\n.pma-database-view .database-inner table.bordered td.vat {\n  vertical-align: top;\n}", ""]);
 
 // exports
 
@@ -9815,7 +9826,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "nav.panel-navigation {\n  min-height: 40px;\n  border-top: 1px solid #aaa;\n}\nnav.panel-navigation ul.links {\n  display: block;\n  float: left;\n  list-style: none;\n  margin: 0;\n}\nnav.panel-navigation ul.links li {\n  background-color: #F5F5F5;\n  border-right: 2px solid #ffffff;\n  border-left: 1px solid #cccccc;\n  border-bottom: 1px solid #cccccc;\n  display: inline-block;\n  float: left;\n  list-style-type: none;\n  padding: 0 10px;\n}\nnav.panel-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 40px;\n  padding: 8px;\n  color: #235a81;\n  cursor: pointer;\n}\nnav.panel-navigation ul.links li span:hover {\n  color: #333;\n}\nnav.panel-navigation ul.links li .active {\n  background-color: #ffffff;\n  border-bottom: 1px solid #ffffff;\n  border-right: 0;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
+exports.push([module.i, "nav.panel-navigation {\n  min-height: 40px;\n  border-top: 1px solid #aaa;\n}\nnav.panel-navigation ul.links {\n  display: block;\n  float: left;\n  list-style: none;\n  margin: 0;\n}\nnav.panel-navigation ul.links li {\n  background-color: #F5F5F5;\n  border-right: 2px solid #ffffff;\n  border-left: 1px solid #cccccc;\n  border-bottom: 1px solid #cccccc;\n  display: inline-block;\n  float: left;\n  list-style-type: none;\n  padding: 0 10px;\n}\nnav.panel-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 40px;\n  padding: 8px;\n  color: #235a81;\n  cursor: pointer;\n}\nnav.panel-navigation ul.links li span:hover {\n  color: #333;\n}\nnav.panel-navigation ul.links li.active {\n  background-color: #ffffff;\n  border-bottom: 1px solid #ffffff;\n  border-right: 0;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
 
 // exports
 
@@ -57083,7 +57094,7 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("p", [
+  return _c("li", { staticClass: "coll" }, [
     _c("span", { staticClass: "pma-link" }, [
       _vm._v(_vm._s(_vm.collection.collection.name))
     ])
@@ -57122,7 +57133,7 @@ var render = function() {
     [
       _c("table", { staticClass: "bordered unstriped" }, [
         _c("tr", [
-          _c("th", { staticClass: "bb", attrs: { colspan: "2" } }, [
+          _c("th", { staticClass: "text-center bb" }, [
             _c("span", {
               domProps: {
                 textContent: _vm._s(
@@ -57134,7 +57145,9 @@ var render = function() {
                 )
               }
             })
-          ])
+          ]),
+          _vm._v(" "),
+          _c("th", { staticClass: "bb" }, [_vm._v(" ")])
         ]),
         _vm._v(" "),
         _c("tr", [
@@ -57177,7 +57190,9 @@ var render = function() {
               ]),
               _vm._v(" "),
               _c("tr", [
-                _c("td", { staticClass: "text-center rb" }, [
+                _c("td", { staticClass: "text-center rb" }, [_vm._v(" ")]),
+                _vm._v(" "),
+                _c("td", { staticClass: "text-center" }, [
                   _c("p", [
                     _c("span", {
                       staticClass: "pma-link",
@@ -57186,12 +57201,8 @@ var render = function() {
                           _vm.showLanguage("database", "dropAll")
                         )
                       }
-                    })
-                  ])
-                ]),
-                _vm._v(" "),
-                _c("td", { staticClass: "text-center" }, [
-                  _c("p", [
+                    }),
+                    _vm._v(" | "),
                     _c("span", {
                       staticClass: "pma-link",
                       domProps: {
@@ -57208,13 +57219,18 @@ var render = function() {
                 _c(
                   "td",
                   { staticClass: "collection-list", attrs: { colspan: "2" } },
-                  _vm._l(_vm.db.collections, function(collection, index) {
-                    return _c("collection-card", {
-                      key: index,
-                      attrs: { collection: collection }
-                    })
-                  }),
-                  1
+                  [
+                    _c(
+                      "ul",
+                      _vm._l(_vm.db.collections, function(collection, index) {
+                        return _c("collection-card", {
+                          key: index,
+                          attrs: { collection: collection }
+                        })
+                      }),
+                      1
+                    )
+                  ]
                 )
               ])
             ])
@@ -59063,7 +59079,7 @@ var render = function() {
   return _c("nav", { staticClass: "panel-navigation" }, [
     _c("div", { staticClass: "text-left" }, [
       _c("ul", { staticClass: "links" }, [
-        _c("li", [
+        _c("li", { class: { active: _vm.getActivePanel("databases") } }, [
           _c(
             "span",
             {
@@ -59086,7 +59102,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _c("li", [
+        _c("li", { class: { active: _vm.getActivePanel("execute") } }, [
           _c(
             "span",
             {
@@ -59109,7 +59125,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _c("li", [
+        _c("li", { class: { active: _vm.getActivePanel("server") } }, [
           _c(
             "span",
             {
@@ -59132,7 +59148,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _c("li", [
+        _c("li", { class: { active: _vm.getActivePanel("status") } }, [
           _c(
             "span",
             {
@@ -59155,7 +59171,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _c("li", [
+        _c("li", { class: { active: _vm.getActivePanel("processes") } }, [
           _c(
             "span",
             {
@@ -59178,7 +59194,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _c("li", [
+        _c("li", { class: { active: _vm.getActivePanel("command") } }, [
           _c(
             "span",
             {
@@ -59201,7 +59217,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _c("li", [
+        _c("li", { class: { active: _vm.getActivePanel("users") } }, [
           _c(
             "span",
             {
@@ -59224,7 +59240,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _c("li", [
+        _c("li", { class: { active: _vm.getActivePanel("master") } }, [
           _c(
             "span",
             {
@@ -82693,7 +82709,8 @@ var application = {
     countries: {},
     states: [],
     suburb: '',
-    postcode: ''
+    postcode: '',
+    activePanel: null
   },
   actions: {
     /*
@@ -82719,6 +82736,10 @@ var application = {
         commit('setLanguageStatus', 3);
       }
     },
+
+    /*
+    *   Commit the language
+    */
     commitLanguage: function commitLanguage(_ref2, data) {
       var commit = _ref2.commit,
           dispatch = _ref2.dispatch;
@@ -82727,6 +82748,10 @@ var application = {
       commit('setLanguageArray');
       commit('setLanguageStatus', 2);
     },
+
+    /*
+    * Set the default language - uses predefined config
+    */
     setDefaultLanguage: function setDefaultLanguage(_ref3, data) {
       var commit = _ref3.commit,
           state = _ref3.state;
@@ -82734,6 +82759,10 @@ var application = {
       commit('setLanguageArray');
       commit('setLanguageStatus', 2);
     },
+
+    /*
+    * Get the users location from IPINFO
+    */
     getLocation: function getLocation(_ref4) {
       var commit = _ref4.commit,
           state = _ref4.state,
@@ -82776,6 +82805,10 @@ var application = {
         });
       }
     },
+
+    /*
+    * Apply the detected location
+    */
     applyCurrentLocation: function applyCurrentLocation(_ref5, data) {
       var commit = _ref5.commit,
           state = _ref5.state;
@@ -82793,14 +82826,26 @@ var application = {
         console.log("current location cannot be set: " + data.location);
       }
     },
+
+    /*
+    * Set country from cookie
+    */
     setCountryNameFromCookie: function setCountryNameFromCookie(_ref6, data) {
       var commit = _ref6.commit;
       commit('setCountryName', data);
     },
+
+    /*
+    * Set the countries array
+    */
     setCountries: function setCountries(_ref7, data) {
       var commit = _ref7.commit;
       commit('setCountries', data);
     },
+
+    /*
+    *   Get states for the current country (limited data at the moment)
+    */
     getStates: function getStates(_ref8, data) {
       var commit = _ref8.commit;
       _api_user_js__WEBPACK_IMPORTED_MODULE_0__["default"].getUserStates(data).then(function (response) {
@@ -82808,6 +82853,14 @@ var application = {
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+
+    /*
+    *   Set the active 'main panel' - used for styling
+    */
+    setActivePanel: function setActivePanel(_ref9, data) {
+      var commit = _ref9.commit;
+      commit('setActivePanel', data);
     }
   },
   mutations: {
@@ -82865,6 +82918,10 @@ var application = {
     },
     setSuburb: function setSuburb(state, suburb) {
       state.suburb = suburb;
+    },
+    setActivePanel: function setActivePanel(_ref10, data) {
+      var commit = _ref10.commit;
+      state.activePanel = data;
     }
   },
   getters: {
@@ -82921,6 +82978,9 @@ var application = {
     },
     getState: function getState(state) {
       return state.currentLocation.state;
+    },
+    getActivePanel: function getActivePanel(state) {
+      return state.activePanel;
     }
   }
 };

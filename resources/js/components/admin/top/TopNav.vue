@@ -33,12 +33,12 @@
                         color: $bodyFontColor;
                     }
                 }
+            }
 
-                .active {
-                    background-color: $white;
-                    border-bottom: 1px solid $white;
-                    border-right: 0;
-                }
+            li.active {
+                background-color: $white;
+                border-bottom: 1px solid $white;
+                border-right: 0;
             }
         }
     }
@@ -66,28 +66,28 @@
     <nav class="panel-navigation">
         <div class="text-left">
             <ul class="links">
-                <li>
+                <li v-bind:class="{active: getActivePanel('databases')}">
                     <span v-on:click="loadPanel('databases', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'databasesTitle')" v-text="showLanguage('nav', 'databases')"></span></span>
                 </li>
-                <li>
+                <li v-bind:class="{active: getActivePanel('execute')}">
                     <span v-on:click="loadPanel('execute', $event)"><img src="/img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('nav', 'execute')"></span></span>
                 </li>
-                <li>
+                <li v-bind:class="{active: getActivePanel('server')}">
                     <span v-on:click="loadPanel('server', $event)"><img src="/img/icon/server.png" /> <span v-bind:title="showLanguage('title', 'serverTitle')" v-text="showLanguage('nav', 'server')"></span></span>
                 </li>
-                <li>
+                <li v-bind:class="{active: getActivePanel('status')}">
                     <span v-on:click="loadPanel('status', $event)"><img src="/img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'statusTitle')" v-text="showLanguage('nav', 'status')"></span></span>
                 </li>
-                <li>
+                <li v-bind:class="{active: getActivePanel('processes')}">
                     <span v-on:click="loadPanel('processes', $event)"><img src="/img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'processesTitle')" v-text="showLanguage('nav', 'processes')"></span></span>
                 </li>
-                <li>
+                <li v-bind:class="{active: getActivePanel('command')}">
                     <span v-on:click="loadPanel('command', $event)"><img src="/img/icon/s-icon.gif" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('nav', 'command')"></span></span>
                 </li>
-                <li>
+                <li v-bind:class="{active: getActivePanel('users')}">
                     <span v-on:click="loadPanel('users', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'usersTitle')" v-text="showLanguage('nav', 'users')"></span></span>
                 </li>
-                <li>
+                <li v-bind:class="{active: getActivePanel('master')}">
                     <span v-on:click="loadPanel('master', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'masterTitle')" v-text="showLanguage('nav', 'master')"></span></span>
                 </li>
             </ul>
@@ -107,6 +107,7 @@
         */
         data() {
             return {
+                activePanel: null,
                 isLoggedIn: null,
                 user: {}
             };
@@ -117,7 +118,7 @@
         */
         computed: {
             /*
-            * Retrieves the User Load Status from Vuex
+            *   Retrieves the User Load Status from Vuex
             */
             userLoadStatus() {
                 return (this.$store.getters.getUserLoadStatus === 2);
@@ -145,6 +146,13 @@
             },
 
             /*
+            *   Get the active panel
+            */
+            getActivePanel: function(panel) {
+                return this.activePanel === panel;
+            },
+
+            /*
             *   Return the logged is state
             */
             userLoggedIn() {
@@ -162,6 +170,8 @@
             *   Load main panel content vie event
             */
             loadPanel( item ) {
+                this.activePanel = item;
+                //this.$store.dispatch('setActivePanel', item);
                 console.log("loading panel item: " + item);
                 EventBus.$emit('hide-panels');
                 EventBus.$emit('show-' + item);

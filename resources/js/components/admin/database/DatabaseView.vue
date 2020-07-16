@@ -73,8 +73,8 @@
                 width: 50%;
             }
             table.collection td {
-                p {
-                    padding-left: 25%;
+                li.coll {
+                    margin-left: 20%;
                 }
             }
             table.bordered {

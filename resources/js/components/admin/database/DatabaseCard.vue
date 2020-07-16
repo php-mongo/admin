@@ -16,7 +16,8 @@
     <div class="database-inner" v-show="show">
         <table class="bordered unstriped">
             <tr>
-                <th colspan="2" class="bb"><span v-text="showLanguage('database', 'database', getDbName(db))"></span> </th>
+                <th class="text-center bb"><span v-text="showLanguage('database', 'database', getDbName(db))"></span> </th>
+                <th class="bb">&nbsp;</span> </th>
             </tr>
             <tr>
                 <th v-text="showLanguage('database', 'collections')" class="bb rb"></th>
@@ -32,16 +33,16 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-center rb">
-                                <p><span class="pma-link" v-text="showLanguage('database', 'dropAll')"></span></p>
-                            </td>
+                            <td class="text-center rb">&nbsp;</td>
                             <td class="text-center">
-                                <p><span class="pma-link" v-text="showLanguage('database', 'clearAll')"></span></p>
+                                <p><span class="pma-link" v-text="showLanguage('database', 'dropAll')"></span> | <span class="pma-link" v-text="showLanguage('database', 'clearAll')"></span></p>
                             </td>
                         </tr>
                         <tr>
                             <td colspan="2" class="collection-list">
-                                <collection-card v-for="(collection, index) in db.collections" :key="index" v-bind:collection="collection"></collection-card>
+                                <ul>
+                                    <collection-card v-for="(collection, index) in db.collections" :key="index" v-bind:collection="collection"></collection-card>
+                                </ul>
                             </td>
                         </tr>
                     </table>

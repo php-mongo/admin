@@ -6,9 +6,10 @@
         padding-left: 50px;
     }
     nav.crumb-navigation {
+        background-color: $lightGreyColor;
         min-height: 33px;
         max-width: 100%;
-        background-color: $lightGreyColor;
+        padding-left: 14px;
 
         ul.links {
             display: inline-block;
