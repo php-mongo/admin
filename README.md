@@ -12,25 +12,23 @@ The familiar interface allows you to manage many different aspects of your Mongo
 - Processing overview.
 - Administration tools.
 
-PhpMongoAdmin is accessible, eeasy to setup, easy to learn and provides plenty of tools required for day to daya MongoDB management.
+PhpMongoAdmin is accessible, easy to setup, easy to learn and provides plenty of tools required for day to day MongoDB management.
 
 ## Learning MongoDB
 
 PhpMongoAdmin provides full [documentation](https://phpmongoadmin.com/docs) along with some video tutorials, making it a breeze to get started with the management interface.
 
-If you've used other tools like PhpMyAdmin or the old RockMongo application the you'll find PhpMongoAdmin to be very familiar.
+If you've used other tools like PhpMyAdmin or the old RockMongo application then you'll find PhpMongoAdmin to be very familiar.
 
 ## PhpMongoAdmin Sponsors
 
-We are very new, and have big plans for our up and coming set of tools. If your keen to get involved as a Sponsor or Developer please let us know, we welcome all potential partners
+We are very new, and have big plans for our up and coming range of MongoDB tools. If your keen to get involved as a Sponsor or Developer please let us know, we welcome all potential partners.
 
 ### Premium Partners
 
 - **[MFMAW](https://mfmaw.com/)**
 
 ### Community Sponsors
-
-<a href="https://op.gg"><img src="http://opgg-static.akamaized.net/icon/t.rectangle.png" width="150"></a>
 
 - [LOTS OF ROOM HERE]
 - [MFMAW](https://mfmaw.com)
