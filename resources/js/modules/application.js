@@ -33,8 +33,7 @@ export const application = {
         countries: {},
         states: [],
         suburb: '',
-        postcode: '',
-        activePanel: null
+        postcode: ''
     },
 
     actions: {
@@ -71,7 +70,7 @@ export const application = {
         },
 
         /*
-        * Set the default language - uses predefined config
+        *   Set the default language - uses predefined config
         */
         setDefaultLanguage( { commit, state }, data) {
             commit( 'setLanguageStatus', 0);
@@ -80,7 +79,7 @@ export const application = {
         },
 
         /*
-        * Get the users location from IPINFO
+        *   Get the user's location from IPINFO
         */
         getLocation( { commit, state, dispatch }) {
             commit( 'setLocationStatus', 1 );
@@ -127,7 +126,7 @@ export const application = {
         },
 
         /*
-        * Apply the detected location
+        *   Apply the detected location
         */
         applyCurrentLocation( { commit, state }, data ) {
             if (data.location) {
@@ -146,14 +145,14 @@ export const application = {
         },
 
         /*
-        * Set country from cookie
+        *   Set country from cookie
         */
         setCountryNameFromCookie( { commit }, data) {
             commit( 'setCountryName', data);
         },
 
         /*
-        * Set the countries array
+        *   Set the countries array
         */
         setCountries( { commit }, data ) {
             commit( 'setCountries', data);
@@ -170,13 +169,6 @@ export const application = {
                 .catch( (error) => {
                     console.log(error);
                 })
-        },
-
-        /*
-        *   Set the active 'main panel' - used for styling
-        */
-        setActivePanel( { commit }, data ) {
-            commit( 'setActivePanel', data );
         }
     },
 
@@ -244,10 +236,6 @@ export const application = {
 
         setSuburb( state, suburb ) {
             state.suburb = suburb;
-        },
-
-        setActivePanel({commit}, data) {
-            state.activePanel = data;
         }
     },
 
@@ -310,10 +298,6 @@ export const application = {
 
         getState( state ) {
             return state.currentLocation.state;
-        },
-
-        getActivePanel( state ) {
-            return state.activePanel;
         }
     }
 };

@@ -4,7 +4,7 @@
 
 <template>
     <li class="coll">
-        <span class="pma-link">{{ collection.collection.name }}</span>
+        <span class="pma-link" @click="$emit('loadCollection', collection.collection.name)">{{ collection.collection.name }}</span>
     </li>
 </template>
 
@@ -29,7 +29,6 @@
             *   Calls the Translation and Language service
             */
             showLanguage( context, key ) {
-                // return this.$trans( context, key );
                 return this.$store.getters.getLanguageString( context, key );
             }
         }

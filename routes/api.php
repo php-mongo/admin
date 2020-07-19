@@ -176,6 +176,50 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
 
     /*
     * -------------------------------------------------------
+    * Get one Collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/{database}/{collection}
+    * Controller:  API/CollectionController@getCollection
+    * Method:      GET
+    * Description: Gets one collection with all associated data
+    */
+    Route::get('/collection/{database}/{collection}', 'Api\CollectionController@getCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Create new Collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/create
+    * Controller:  API/CollectionController@createCollection
+    * Method:      POST
+    * Description: Creates a new collection and returns the collection data
+    */
+    Route::post('/collection/create', 'Api\CollectionController@createCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Update a Collection(private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/update
+    * Controller:  API/CollectionController@updatCollection
+    * Method:      PUT
+    * Description: Updates a collection and returns the collection data
+    */
+    Route::put('/collection/update', 'Api\CollectionController@updateCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Delete a Collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/delete
+    * Controller:  API/CollectionController@deleteCollection
+    * Method:      POST
+    * Description: Deletes a collection and returns s success status
+    */
+    Route::post('/collection/delete', 'Api\CollectionController@deleteCollection');
+
+    /*
+    * -------------------------------------------------------
     * Get a single Ads (public route)
     * -------------------------------------------------------
     * URL:         /api/v1/latest/{slug}

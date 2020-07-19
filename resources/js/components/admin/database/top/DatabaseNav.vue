@@ -63,32 +63,41 @@
 </style>
 
 <template>
-    <nav class="database-navigation">
+    <nav class="database-navigation" v-show="show">
         <div class="text-left">
             <ul class="links">
-                <li>
-                    <span v-on:click="loadPanel('satistics', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'databasesTitle')" v-text="showLanguage('database', 'statistics')"></span></span>
+                <li v-bind:class="{active: getActivePanel('statistics')}">
+                    <span v-on:click="loadPanel('statistics', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'statisticsTitle')" v-text="showLanguage('database', 'statistics')"></span></span>
                 </li>
-                <li>
-                    <span v-on:click="loadPanel('new-collection', $event)"><img src="/img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('database', 'newCollection')"></span></span>
+                <li v-bind:class="{active: getActivePanel('newCollection')}">
+                    <span v-on:click="loadPanel('newCollection', $event)"><img src="/img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'newCollectionTitle')" v-text="showLanguage('database', 'newCollection')"></span></span>
                 </li>
-                <li>
-                    <span v-on:click="loadPanel('command', $event)"><img src="/img/icon/server.png" /> <span v-bind:title="showLanguage('title', 'serverTitle')" v-text="showLanguage('database', 'command')"></span></span>
+                <li v-bind:class="{active: getActivePanel('command')}">
+                    <span v-on:click="loadPanel('command', $event)"><img src="/img/icon/server.png" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('database', 'command')"></span></span>
                 </li>
-                <li>
-                    <span v-on:click="loadPanel('execute', $event)"><img src="/img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'statusTitle')" v-text="showLanguage('database', 'execute')"></span></span>
+                <li v-bind:class="{active: getActivePanel('execute')}">
+                    <span v-on:click="loadPanel('execute', $event)"><img src="/img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('database', 'execute')"></span></span>
                 </li>
-                <li>
-                    <span v-on:click="loadPanel('transfer', $event)"><img src="/img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'processesTitle')" v-text="showLanguage('database', 'transfer')"></span></span>
+                <li v-bind:class="{active: getActivePanel('transfer')}">
+                    <span v-on:click="loadPanel('transfer', $event)"><img src="/img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'transferTitle')" v-text="showLanguage('database', 'transfer')"></span></span>
                 </li>
-                <li>
-                    <span v-on:click="loadPanel('export', $event)"><img src="/img/icon/s-icon.gif" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('database', 'export')"></span></span>
+                <li v-bind:class="{active: getActivePanel('export')}">
+                    <span v-on:click="loadPanel('export', $event)"><img src="/img/icon/s-icon.gif" /> <span v-bind:title="showLanguage('title', 'exportTitle')" v-text="showLanguage('database', 'export')"></span></span>
                 </li>
-                <li>
-                    <span v-on:click="loadPanel('import', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'usersTitle')" v-text="showLanguage('database', 'import')"></span></span>
+                <li v-bind:class="{active: getActivePanel('import')}">
+                    <span v-on:click="loadPanel('import', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'importTitle')" v-text="showLanguage('database', 'import')"></span></span>
                 </li>
-                <li>
-                    <span v-on:click="loadPanel('profile', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'masterTitle')" v-text="showLanguage('database', 'profile')"></span></span>
+                <li v-bind:class="{active: getActivePanel('profile')}">
+                    <span v-on:click="loadPanel('profile', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'profileTitle')" v-text="showLanguage('database', 'profile')"></span></span>
+                </li>
+                <li v-bind:class="{active: getActivePanel('repair')}">
+                    <span v-on:click="loadPanel('repair', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'repairTitle')" v-text="showLanguage('database', 'repair')"></span></span>
+                </li>
+                <li v-bind:class="{active: getActivePanel('authentication')}">
+                    <span v-on:click="loadPanel('authentication', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'authenticationTitle')" v-text="showLanguage('database', 'authentication')"></span></span>
+                </li>
+                <li v-bind:class="{active: getActivePanel('drop')}">
+                    <span v-on:click="loadPanel('drop', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'dropTitle')" v-text="showLanguage('database', 'drop')"></span></span>
                 </li>
             </ul>
         </div>
@@ -107,15 +116,25 @@
         */
         data() {
             return {
-                current: null
+                activePanel: null,
+                current: null,
+                show: false
             };
         },
 
         /*
-        * Defines the computed properties on the component.
+        *   Defines the computed properties on the component.
         */
         computed: {
+            // Dr Smith! It does not compute!
+            checkDatabase() {
+                return this.$store.getters.getActiveDatabase
+            },
 
+            // Dr Smith! It does not compute!
+            checkCollection() {
+                return !this.$store.getters.getActiveCollection;
+            }
         },
 
         /*
@@ -133,14 +152,41 @@
             *   Load database panel content via event
             */
             loadPanel( item ) {
+                this.activePanel = item;
                 console.log("loading database panel item: " + item);
                 EventBus.$emit('hide-database-panels');
                 EventBus.$emit('show-database-' + item);
+            },
+
+            /*
+            *   Get the active panel
+            */
+            getActivePanel: function(panel) {
+                return this.activePanel === panel;
+            },
+
+            showNavigation() {
+                this.show = true; //this.$store.getters.getActiveDatabase;
+            },
+
+            hideNavigation() {
+                this.show = false;
             }
         },
 
         mounted() {
+         //   this.showNavigation()
+        },
 
+        watch: {
+            checkDatabase() {
+                this.showNavigation();
+            },
+
+            checkCollection() {
+                this.hideNavigation();
+
+            }
         }
     }
 </script>

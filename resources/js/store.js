@@ -26,15 +26,17 @@ Vue.use( Vuex );
 */
 import { application } from './modules/application';
 
-import { display } from './modules/display.js';
+import { display } from './modules/display';
 
-import { filters } from './modules/filters.js';
+import { filters } from './modules/filters';
 
 import { database } from "./modules/database";
 
-import { server } from './modules/server.js';
+import { collection } from "./modules/collection"
 
-import { users } from './modules/users.js';
+import { server } from './modules/server';
+
+import { users } from './modules/users';
 
 const vuexStore = new Vuex.Store({
     modules: {
@@ -42,6 +44,7 @@ const vuexStore = new Vuex.Store({
         display,
         filters,
         database,
+        collection,
         server,
         users
     }

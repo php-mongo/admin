@@ -4,9 +4,9 @@
 */
 namespace App\Models;
 
-use MongoDB\Model\DatabaseInfo;
+use MongoDB\Model\CollectionInfo;
 
-class Database extends DatabaseInfo
+class Collection extends CollectionInfo
 {
     public function getInfo()
     {

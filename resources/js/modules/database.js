@@ -116,7 +116,8 @@ export const database = {
         },
 
         /*
-        *   Set the active database - useful for database loading child component actions
+        *   Set the active database - useful for database tracking
+        *   ToDo: this also gets set when the DB is fetched - this may be redundant
         */
         setActiveDatabase( { commit }, data ) {
             commit( 'setActiveDatabase', data );

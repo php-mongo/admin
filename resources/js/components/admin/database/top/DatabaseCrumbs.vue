@@ -1,6 +1,5 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
-
     .crumb-nav-wrapper {
         background-color: $lightGreyColor;
         padding-left: 50px;
@@ -10,62 +9,47 @@
         min-height: 33px;
         max-width: 100%;
         padding-left: 14px;
-
         ul.links {
             display: inline-block;
             margin: 0;
-
             li {
                 display: inline-block;
                 list-style-type: none;
                 margin-left: 7px;
-
-                span {
+                span.crumb {
                     font-weight: bold;
                     font-size: 12px;
                     line-height: 33px;
                     color: $white;
-
                     &:hover {
                         color: $linkColor;
                         text-decoration: underline;
                     }
                 }
+                span.dbl-arr {
+                    color: $white;
+                    margin-right: 5px;
+                }
             }
         }
     }
-
     /* Small only - (max-width: 39.9375em) */
     @media screen and (max-width: 769px) {
-        nav.top-navigation {
-            div.text-center {
-                a {
-                    span.logo {
-                        font-size: 20px;
-                        padding-top: 8px;
-                    }
-                }
-            }
+        nav.crumb-navigation {
+            /* nothing yet */
         }
     }
-
     /* Medium only - (min-width: 40em) and (max-width: 63.9375em) */
     @media (min-width: 769px) and (max-width: 992px) {
-        nav.top-navigation {
-            div.text-center {
-                a {
-                    span.logo {
-                        font-size: 25px;
-                        padding-top: 4px;
-                    }
-                }
-            }
+        nav.crumb-navigation {
+            /* nothing yet */
         }
     }
-
     /* Large only - (min-width: 64em) and (max-width: 74.9375em) */
     @media (min-width: 993px) and (max-width: 2048px) {
-
+        nav.crumb-navigation {
+            /* nothing yet */
+        }
     }
 </style>
 
@@ -74,24 +58,32 @@
         <nav class="crumb-navigation">
             <ul class="links">
                 <li class="crumb-link text-left">
-                    <img src="/img/icon/database.png" /> <span class="pma-link" v-on:click="loadDatabase($event)">{{databaseName}}</span>
+                    <img src="/img/icon/database.png" /> <span class="crumb pma-link" v-on:click="loadDatabase($event)">{{databaseName}}</span>
                 </li>
+                <crumb @loadCrumb="loadCrumb" v-for="(crumb, index) in this.crumbs" :key="index" v-bind:crumb="crumb"></crumb>
             </ul>
         </nav>
     </div>
 </template>
 <script>
     /*
-    *   Import the application JS config
-    */
-    import { MONGO_CONFIG } from "../../../../config.js";
-
-    /*
     *   Imports the event bus.
     */
     import { EventBus } from '../../../../event-bus.js';
 
+    /*
+    *   Import components for the Databases View
+    */
+    import Crumb from "./Crumb";
+
     export default {
+        /*
+        *   Register the components to be used by the home page.
+        */
+        components: {
+            Crumb
+        },
+
         /*
         *   Data used with this component
         */
@@ -106,11 +98,19 @@
         *   Defines the computed properties on the component.
         */
         computed: {
+
             /*
             *   Return the site name from config
             */
-           databaseName() {
+            databaseName() {
                 return this.activeDb;
+            },
+
+            /*
+            *   Handle the collection crumb
+            */
+            checkActiveCollection() {
+               return this.$store.getters.getActiveCollection;
             }
         },
 
@@ -126,10 +126,36 @@
                 return this.$store.getters.getLanguageString( context, key );
             },
 
+            /*
+            *   Load the database from crumbs
+            */
             loadDatabase() {
                 console.log("re-loading database view");
-                EventBus.$emit('hide-panels');
+                // clear the crumbs
+                this.crumbs = [];
+                EventBus.$emit('hide-collection-panels');
                 EventBus.$emit('show-database', this.activeDb);
+            },
+
+            /*
+            *   Run a crumb action
+            */
+            loadCrumb( crumb ) {
+                console.log("loading crumb: " + crumb);
+            },
+
+            /*
+            *   Set the collection crumb
+            */
+            setCollectionCrumb(clear) {
+                if (clear) {
+                    console.log("clearing activeCollection value...");
+                    this.$store.dispatch('setActiveCollection', null)
+                } else {
+                    let name = this.$store.getters.getActiveCollection;
+                    let crumb = {type: 'collection', name: name};
+                    this.crumbs.push(crumb);
+                }
             }
         },
 
@@ -140,7 +166,14 @@
             EventBus.$on('show-database', function(db) {
                 console.log("db to crumbs: " + db);
                 this.activeDb = db;
+
             }.bind(this));
+        },
+
+        watch: {
+            checkActiveCollection() {
+                this.setCollectionCrumb();
+            }
         }
     }
 </script>

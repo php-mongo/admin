@@ -17,7 +17,7 @@
         <table class="bordered unstriped">
             <tr>
                 <th class="text-center bb"><span v-text="showLanguage('database', 'database', getDbName(db))"></span> </th>
-                <th class="bb">&nbsp;</span> </th>
+                <th class="bb">&nbsp;</th>
             </tr>
             <tr>
                 <th v-text="showLanguage('database', 'collections')" class="bb rb"></th>
@@ -41,7 +41,7 @@
                         <tr>
                             <td colspan="2" class="collection-list">
                                 <ul>
-                                    <collection-card v-for="(collection, index) in db.collections" :key="index" v-bind:collection="collection"></collection-card>
+                                    <collection-card @loadCollection="loadCollection" v-for="(collection, index) in db.collections" :key="index" v-bind:collection="collection"></collection-card>
                                 </ul>
                             </td>
                         </tr>
@@ -58,25 +58,25 @@
                         <tr>
                             <td class="tr rb" v-text="showLanguage('database', 'avgObjSize')"></td>
                             <td>
-                                {{ humanReadable(db.stats.avgObjSize) }}
+                                {{ humanReadable(getAvgObjSize) }}
                             </td>
                         </tr>
                         <tr>
                             <td class="tr rb" v-text="showLanguage('database', 'dataSize')"></td>
                             <td>
-                                {{ humanReadable(db.stats.dataSize) }}
+                                {{ humanReadable(getDataSize) }}
                             </td>
                         </tr>
                         <tr>
                             <td class="tr rb" v-text="showLanguage('database', 'storageSize')"></td>
                             <td>
-                                {{ humanReadable(db.stats.storageSize) }}
+                                {{ humanReadable(getStorageSize) }}
                             </td>
                         </tr>
                         <tr>
                             <td class="tr rb" v-text="showLanguage('database', 'indexSize')"></td>
                             <td>
-                                {{ humanReadable(db.stats.indexSize) }}
+                                {{ humanReadable(getIndexSize) }}
                             </td>
                         </tr>
                     </table>
@@ -110,6 +110,10 @@
         */
         props: ['db'],
 
+        /*
+        *   Data requirements for this component
+        *   ToDo: some of our DB objects dont have a db.stats child - especially in default mode - so we load a stats inti out data ans use computed values
+        */
         data() {
             return {
                 show: false,
@@ -122,16 +126,46 @@
         * Defines the computed properties on the component.
         */
         computed: {
-            statsLength() {
-                return typeof this.db.stats == 'object';
-            },
-
+            /*
+            *   Collections count
+            */
             getCollectionCount: function() {
                 return this.stats['collections'];
             },
 
+            /*
+            *   Objects count
+            */
             getObjectsCount: function() {
                 return this.stats['objects'];
+            },
+
+            /*
+            *   Average Objects Size
+            */
+            getAvgObjSize: function() {
+                return this.stats['avgObjSize'];
+            },
+
+            /*
+            *   Data size
+            */
+            getDataSize: function() {
+                return this.stats['dataSize'];
+            },
+
+            /*
+            *   Storage size
+            */
+            getStorageSize: function() {
+                return this.stats['storageSize'];
+            },
+
+            /*
+            *   Index size
+            */
+            getIndexSize: function() {
+                return this.stats['indexSize'];
             }
         },
 
@@ -155,13 +189,15 @@
             */
             getDbName: function(db) {
                 if (db) {
-                    if (db.db.databaseName) {
-                        this.name = db.db.databaseName;
-                        return db.db.databaseName;
-                    }
-                    else {db.name;
-                        this.name = db.name;
-                        return db.name;
+                    if (db.db) {
+                        if (db.db.databaseName) {
+                            this.name = db.db.databaseName;
+                            return db.db.databaseName;
+                        }
+                        else {db.db.name;
+                            this.name = db.db.name;
+                            return db.db.name;
+                        }
                     }
                 }
             },
@@ -186,26 +222,37 @@
                     return Math.round(bytes/1024/1024/1024, precision) + "g";
                 }
                 return bytes;
-            }//,
+            },
 
-            /*setStats() {
-                this.stats = this.db.stats;
-            }*/
+            /*
+            *   Load the collection panel !! child component event !!
+            */
+            loadCollection(collection) {
+                console.log("load collection: " + collection);
+                // send collection for tracking
+                this.$store.dispatch('setActiveCollection', collection );
+                // load
+                let data = {database: this.name, collection: collection };
+                this.$store.dispatch('loadCollection', data );
+                // hide this panel
+                this.show = false;
+                // event to hide the db panel
+                EventBus.$emit('hide-panels');
+                // event to enable collection panel
+                EventBus.$emit('show-collection');
+            }
         },
 
+        /*
+        *   Handle mounted method requirements
+        */
         mounted() {
             EventBus.$on('show-database', function() {
-
+                // I was messing around trying to get this panel working correctly and loaded the db.child stats object - partly in use
                 this.stats = this.$store.getters.getStats;
                 this.show = true;
 
             }.bind(this));
-        }//,
-
-        /*watch: {
-            statsLength() {
-                this.setStats();
-            }
-        }*/
+        }
     }
 </script>

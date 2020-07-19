@@ -37,6 +37,9 @@
         */
         props: ['db'],
 
+        /*
+        *   We keep a reference to the associate database name
+        */
         data() {
             return {
                 dbs: null,
@@ -50,12 +53,8 @@
         */
         computed: {
             /*
-            *
+            *   Sets the checkbox to checked or unchecked dynamically
             */
-            countCollections() {
-                return ' (' + this.db.collections.length + ')';
-            },
-
             isChecked() {
                 return this.checked;
             }
@@ -86,7 +85,11 @@
                 }
             },
 
+            /*
+            *   Load the database panel
+            */
             showDatabase(database) {
+                this.$store.dispatch('setActiveDatabase', this.name);
                 this.$store.dispatch('loadDatabase', this.name);
                 EventBus.$emit('hide-panels');
                 EventBus.$emit('show-database', this.name);
@@ -114,32 +117,47 @@
                 return bytes;
             },
 
+            /*
+            *   The status will govern the checkbox's state
+            */
             checkDatabase(status) {
                 this.checked = status;
             },
 
+            /*
+            *   Method handles the checkbox click
+            */
             selectCheckbox() {
                 this.checked = !this.checked;
             }
         },
 
+        /*
+        *   Handle mounted method requirements
+        */
         mounted() {
             EventBus.$on('check-all-databases', function() {
                 // exclude admin & local from deletion
                 if (this.name !== 'admin' && this.name !== 'local') {
                     this.checkDatabase(true);
-                // EventBus.$emit('track-checked-db', this.name );
                 }
 
             }.bind(this));
+
             EventBus.$on('uncheck-all-databases', function() {
                 this.checkDatabase(false);
-             //   EventBus.$emit('untrack-checked-db', this.name );
 
             }.bind(this));
         },
 
+        /*
+        *   Who watches the watchers?
+        */
         watch: {
+            /*
+            *   ToDo: It probably would have been cleaner to pass the @click event directly to the parent
+            *   But this is working so I'll leave it for now
+            */
             isChecked() {
                 if (this.checked === true) {
                     if (this.name !== 'admin' && this.name !== 'local') {

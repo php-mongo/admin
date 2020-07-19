@@ -39,22 +39,25 @@
     <div id="pma-database-top-panel" class="pma-database-top-panel">
         <database-crumbs></database-crumbs>
         <database-nav></database-nav>
+        <collection-nav></collection-nav>
     </div>
 </template>
 <script>
     /*
     *   Import components for the Gallery View
     */
-    import DatabaseNav from "./DatabaseNav";
     import DatabaseCrumbs from "./DatabaseCrumbs";
+    import DatabaseNav from "./DatabaseNav";
+    import CollectionNav from "./CollectionNav";
 
     export default {
         /*
         *   Registers child components with the component.
         */
         components: {
+            DatabaseCrumbs,
             DatabaseNav,
-            DatabaseCrumbs
+            CollectionNav
         }
     }
 </script>
