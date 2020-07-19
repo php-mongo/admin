@@ -89,7 +89,20 @@
         */
         data() {
             return {
-                crumbs: [],
+                crumbs: [
+                    {
+                        type: 'collection',
+                        name: null,
+                        link: true,
+                        option: null
+                    },
+                    {
+                        type: 'function',
+                        name: null,
+                        link: false,
+                        option: null
+                    }
+                ],
                 activeDb: 'N/A'
             };
         },
@@ -111,6 +124,13 @@
             */
             checkActiveCollection() {
                return this.$store.getters.getActiveCollection;
+            },
+
+            /*
+            *   Monitor for active database
+            */
+            checkActiveDatabase() {
+                return this.$store.getters.getActiveDatabase;
             }
         },
 
@@ -130,10 +150,12 @@
             *   Load the database from crumbs
             */
             loadDatabase() {
-                console.log("re-loading database view");
+                // console.log("re-loading database view");
+                this.$store.dispatch('setActiveCollection', null);
                 // clear the crumbs
-                this.crumbs = [];
-                EventBus.$emit('hide-collection-panels');
+                this.crumbs[0].name = null;
+                this.crumbs[1].name = null;
+                EventBus.$emit('hide-panels');
                 EventBus.$emit('show-database', this.activeDb);
             },
 
@@ -147,14 +169,18 @@
             /*
             *   Set the collection crumb
             */
-            setCollectionCrumb(clear) {
-                if (clear) {
-                    console.log("clearing activeCollection value...");
-                    this.$store.dispatch('setActiveCollection', null)
-                } else {
-                    let name = this.$store.getters.getActiveCollection;
-                    let crumb = {type: 'collection', name: name};
-                    this.crumbs.push(crumb);
+            setCollectionCrumb() {
+                this.crumbs[0].name = this.$store.getters.getActiveCollection;
+            },
+
+            checkDb() {
+                if (!this.activeDb || this.activeDb === 'N/A') {
+                    this.activeDb = this.$store.getters.getActiveDatabase;
+                    if (!this.activeDb) {
+                        // try pulling name from collection data
+                        let collection = this.$store.getters.getCollection;
+                        this.activeDb = collection.collection.databaseName;
+                    }
                 }
             }
         },
@@ -168,11 +194,17 @@
                 this.activeDb = db;
 
             }.bind(this));
+
+            this.checkDb();
         },
 
         watch: {
             checkActiveCollection() {
                 this.setCollectionCrumb();
+            },
+
+            checkActiveDatabase() {
+                this.checkDb();
             }
         }
     }

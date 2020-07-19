@@ -15,7 +15,7 @@
         </div>
         <div class="pma-icons text-center">
             <span class="pma-link" v-on:click="loadHome()"><img src="/img/icon/pma-home.png" /> <span v-text="showLanguage('dbs', 'host')"></span></span>
-            <span class="pma-link" v-on:click="loadOverview()"><img src="/img/icon/pma-world.png" /> <span v-text="showLanguage('dbs', 'overview')"></span>Overview</span>
+            <span class="pma-link" v-on:click="loadOverview()"><img src="/img/icon/pma-world.png" /> <span v-text="showLanguage('dbs', 'overview')"></span></span>
         </div>
     </div>
 </template>
@@ -25,11 +25,6 @@
 *  Imports the PHP Mongo Admin URL from the config.
 */
     import { MONGO_CONFIG } from "../../../config";
-
-    /*
-    *   Imports the mixins used by the component.
-    */
-
     /*
     * Import the Event bus
     */
@@ -73,14 +68,27 @@
             *   Refresh all views to default | initial page load
             */
             loadHome() {
-                console.log("loading home")
+            //    console.log("loading home");
+                EventBus.$emit('hide-collection-lists');
+                EventBus.$emit('close-collection-panels');
+                EventBus.$emit('hide-panels');
+                // force a reload of the databases
+                this.$store.dispatch('loadDatabases');
+                //EventBus.$emit('clear-active-nav');
+                this.$store.dispatch('setActiveNav', null);
+                EventBus.$emit('show-server');
+                EventBus.$emit('show-mongo');
             },
 
             /*
             *   Load the full server overview in the main panel
             */
             loadOverview() {
-                console.log('loading overview in main panel')
+            //    console.log('loading overview in main panel');
+                EventBus.$emit('close-collection-panels');
+                EventBus.$emit('hide-panels');
+                EventBus.$emit('show-databases');
+                this.$store.dispatch('setActiveNav', 'databases');
             }
         }
     }

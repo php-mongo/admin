@@ -88,7 +88,7 @@
             /*
             *   Load the database panel
             */
-            showDatabase(database) {
+            showDatabase() {
                 this.$store.dispatch('setActiveDatabase', this.name);
                 this.$store.dispatch('loadDatabase', this.name);
                 EventBus.$emit('hide-panels');

@@ -30,13 +30,6 @@
 
 <script>
     /*
-    * Imports the event bus
-    *  v-on:scroll="weAreScrolling($event)"
-    *  v-on:scroll.native="weAreScrolling($event)"
-    */
-    import { EventBus } from '../event-bus.js';
-
-    /*
     *   Import components
     */
     import Navigation from '../components/admin/top/TopNav.vue';

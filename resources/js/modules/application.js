@@ -33,7 +33,8 @@ export const application = {
         countries: {},
         states: [],
         suburb: '',
-        postcode: ''
+        postcode: '',
+        activeNav: null
     },
 
     actions: {
@@ -169,7 +170,17 @@ export const application = {
                 .catch( (error) => {
                     console.log(error);
                 })
+        },
+
+        /*
+        *   Set or clear the active navigation items
+        *   ToDo: this allows clearing the activeNav value for the main navigation panel - until a better way surfaces
+        */
+        setActiveNav( { commit }, data ) {
+            console.log("setting active nav: " + data);
+            commit( 'setActiveNav', data );
         }
+
     },
 
     mutations: {
@@ -236,6 +247,13 @@ export const application = {
 
         setSuburb( state, suburb ) {
             state.suburb = suburb;
+        },
+
+        /*
+        *   Set the active navigation panel - this stores the panel name sent in events
+        */
+        setActiveNav(state, panel) {
+            state.activeNav = panel;
         }
     },
 
@@ -298,6 +316,13 @@ export const application = {
 
         getState( state ) {
             return state.currentLocation.state;
+        },
+
+        /*
+        *   Get the active navigation panel
+        */
+        getActiveNav(state, panel) {
+            return state.activeNav;
         }
     }
 };

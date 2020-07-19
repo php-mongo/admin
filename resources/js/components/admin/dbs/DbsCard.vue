@@ -27,7 +27,7 @@
     <li ref="db" class="db-inner" v-show="show">
         <img alt="Database icon" src="/img/icon/database.png" /> <span class="pma-link" v-on:click="showCollectionsList(db.db.name)">{{getDbName(db)}}</span> {{countCollections}}
         <ul ref="coll" class="collections hide-list">
-            <collection-card v-for="collection in db.collections" :key="(collection.id + 1)" v-bind:collection="collection"></collection-card>
+            <collection-card @loadCollection="loadCollection" v-for="collection in db.collections" :key="(collection.id + 1)" v-bind:collection="collection"></collection-card>
         </ul>
     </li>
 </template>
@@ -62,7 +62,8 @@
         */
         data(){
             return {
-                show: true
+                show: true,
+                activeDb: null
             }
         },
 
@@ -82,6 +83,7 @@
             */
             EventBus.$on('hide-collection-lists', function( ) {
                 this.hideCollections();
+
             }.bind(this));
 
             /*
@@ -149,12 +151,30 @@
             showCollectionsList( db ) {
                 // hide all that are showing
                 EventBus.$emit('hide-collection-lists', {});
-                console.log('revealing collections: ' + db);
+                this.activeDb = db;
                 this.$jqf(this.$refs.coll).replace(['hide-list', 'active']);
             },
 
+            /*
+            *   Hide the collections
+            */
             hideCollections() {
+                this.activeDb = null;
                 this.$jqf(this.$refs.coll).replace(['active', 'hide-list']);
+            },
+
+            loadCollection( collection ) {
+                console.log("loading collection from left nav: " + collection);
+                // send collection and db for tracking
+                this.$store.dispatch('setActiveDatabase', this.activeDb );
+                this.$store.dispatch('setActiveCollection', collection );
+                // load
+                let data = {database: this.activeDb, collection: collection };
+                this.$store.dispatch('loadCollection', data );
+                // event to hide panels
+                EventBus.$emit('hide-panels');
+                // event to enable collection panel
+                EventBus.$emit('show-collection');
             },
 
             /*

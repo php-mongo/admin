@@ -166,7 +166,7 @@
             },
 
             showNavigation() {
-                this.show = true; //this.$store.getters.getActiveDatabase;
+                this.show = true;
             },
 
             hideNavigation() {
@@ -175,10 +175,18 @@
         },
 
         mounted() {
-         //   this.showNavigation()
-        },
+             EventBus.$on('show-database-nav', function() {
+                 this.showNavigation();
 
-        watch: {
+             }.bind(this));
+
+            EventBus.$on('show-collection-nav', function() {
+                this.hideNavigation();
+
+            }.bind(this));
+        }//,
+
+        /*watch: {
             checkDatabase() {
                 this.showNavigation();
             },
@@ -187,6 +195,6 @@
                 this.hideNavigation();
 
             }
-        }
+        }*/
     }
 </script>

@@ -130,6 +130,10 @@
             isMember() {
                 let isMember = this.$cookie.get('app-member');
                 return ((isMember && isMember.length >= 3) || this.userLoadStatus);
+            },
+
+            activeNav() {
+                this.activePanel = this.$store.getters.getActiveNav;
             }
         },
 
@@ -153,6 +157,13 @@
             },
 
             /*
+            *   Set the active panel
+            */
+            setActivePanel: function() {
+                this.activePanel = this.$store.getters.getActivePanel;
+            },
+
+            /*
             *   Return the logged is state
             */
             userLoggedIn() {
@@ -167,20 +178,30 @@
             },
 
             /*
-            *   Load main panel content vie event
+            *   Load main panel content via event
             */
             loadPanel( item ) {
-                this.activePanel = item;
-                //this.$store.dispatch('setActivePanel', item);
-                console.log("loading panel item: " + item);
+                this.$store.dispatch('setActiveNav', item);
+            //    this.activePanel = item;
                 EventBus.$emit('hide-panels');
                 EventBus.$emit('show-' + item);
+                console.log("loaded panel item: " + item);
             }
         },
 
         mounted() {
             this.userLoggedIn();
             this.getUser();
+
+            /*EventBus.$on('clear-active-nav', function() {
+                this.activePanel = null;
+            }.bind(this));*/
+        },
+
+       watch: {
+            activeNav() {
+                this.setActivePanel()
+            }
         }
     }
 </script>

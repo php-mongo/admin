@@ -251,6 +251,10 @@
                 this.completeLogout();
             },
 
+            completeLogout() {
+                console.log("is the logout completed?");
+            },
+
             /*
             *   Checks whether the user is logged in
             */
@@ -270,7 +274,14 @@
             * Load the home default views
             */
             loadHome() {
-                console.log("loadinghgome...");
+                EventBus.$emit('hide-collection-lists');
+                EventBus.$emit('hide-panels');
+                // force a reload of the databases
+                this.$store.dispatch('loadDatabases');
+                //EventBus.$emit('clear-active-nav');
+                this.$store.dispatch('setActiveNav', null);
+                EventBus.$emit('show-server');
+                EventBus.$emit('show-mongo');
             }
         },
 

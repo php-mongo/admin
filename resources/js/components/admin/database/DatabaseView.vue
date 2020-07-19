@@ -238,6 +238,8 @@
             *   Show component
             */
             showComponent() {
+                this.$store.dispatch("setActiveCollection", null);
+                EventBus.$emit('show-database-nav');
                 this.show = true;
             },
 
@@ -256,22 +258,24 @@
             /*
             *    Hide this component
             */
-            EventBus.$on('hide-panels', function( ) {
+            EventBus.$on('hide-panels', function() {
                 this.hideComponent();
+
             }.bind(this));
 
             /*
             *    Show this component
             */
-            EventBus.$on('show-database', function(name) {
+            EventBus.$on('show-database', function() {
                 this.showComponent();
+
             }.bind(this));
         },
 
         watch: {
-            getDatabase() {
+            /*getDatabase() {
                 this.showComponent();
-            }
+            }*/
         }
     }
 </script>

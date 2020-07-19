@@ -234,12 +234,12 @@
                 // load
                 let data = {database: this.name, collection: collection };
                 this.$store.dispatch('loadCollection', data );
-                // hide this panel
-                this.show = false;
-                // event to hide the db panel
+                // event to hide th db panel
                 EventBus.$emit('hide-panels');
                 // event to enable collection panel
                 EventBus.$emit('show-collection');
+                // hide this panel
+                this.show = false;
             }
         },
 

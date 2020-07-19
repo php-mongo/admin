@@ -52,7 +52,6 @@
 
             EventBus.$on('no-results-found', function( data ){
                 this.errorMessage = data.notification;
-
                 this.show = false;
 
             }.bind(this));

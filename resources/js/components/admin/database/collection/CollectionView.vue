@@ -156,7 +156,6 @@
            *   Calls the Translation and Language service
            */
             showLanguage( context, key ) {
-                // return this.$trans( context, key );
                 return this.$store.getters.getLanguageString( context, key );
             },
 
@@ -164,8 +163,8 @@
             *   Show component
             */
             showComponent() {
+                EventBus.$emit('show-collection-nav');
                 this.show = true;
-                // trigger the collection nav
             },
 
             /*
@@ -183,15 +182,17 @@
             /*
             *    Hide this component
             */
-            EventBus.$on('hide-collection-panels', function( ) {
+            EventBus.$on('hide-panels', function( ) {
                 this.hideComponent();
+
             }.bind(this));
 
             /*
             *    Show this component
             */
-            EventBus.$on('show-collection', function(name) {
+            EventBus.$on('show-collection', function() {
                 this.showComponent();
+
             }.bind(this));
         }//,
 

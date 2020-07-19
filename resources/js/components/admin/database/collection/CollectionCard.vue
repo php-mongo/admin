@@ -43,7 +43,7 @@
 </style>
 
 <template>
-    <div class="collection-inner" v-show="show">
+    <div class="collection-inner" v-show="show && collection">
         <table>
             <tr>
                 <td class="v-top">
@@ -354,7 +354,7 @@
         },
 
         mounted() {
-            EventBus.$on('show-database', function() {
+            EventBus.$on('show-collection', function() {
                 this.show = true;
 
             }.bind(this));

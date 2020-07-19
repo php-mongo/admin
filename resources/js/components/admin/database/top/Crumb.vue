@@ -3,8 +3,10 @@
 </style>
 
 <template>
-    <li class="crumb-link text-left">
-       <span class="dbl-arr">>></span> <img :src="'/img/icon/' + getCrumbType + '.png'" /> <span class="crumb pma-link" @click="$emit('loadCrumb', crumb.name)">{{getCrumbName(crumb)}}</span>
+    <li class="crumb-link text-left" v-if="crumb.name !== null">
+       <span class="dbl-arr">>></span> <img :src="'/img/icon/' + getCrumbType + '.png'" />
+        <span v-if="crumb.link === true" class="crumb pma-link" @click="$emit('loadCrumb', crumb.name)">{{getCrumbName(crumb)}}</span>
+        <span v-if="crumb.link === false" class="pma-text">{{getCrumbName(crumb)}}</span>
     </li>
 </template>
 
@@ -18,7 +20,9 @@
         data() {
             return {
                 name: 'n/a',
-                type: null
+                type: null,
+                link: false,
+                option: null
             }
         },
 
@@ -34,6 +38,7 @@
                 if (crumb) {
                     if (crumb.name) {
                         this.name = crumb.name;
+                        this.option = crumb.option
                     }
                     if (crumb.type) {
                         this.type = crumb.type;

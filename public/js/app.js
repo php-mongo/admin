@@ -2348,13 +2348,13 @@ __webpack_require__.r(__webpack_exports__);
         database: this.name,
         collection: collection
       };
-      this.$store.dispatch('loadCollection', data); // hide this panel
-
-      this.show = false; // event to hide the db panel
+      this.$store.dispatch('loadCollection', data); // event to hide th db panel
 
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('hide-panels'); // event to enable collection panel
 
-      _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-collection');
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-collection'); // hide this panel
+
+      this.show = false;
     }
   },
 
@@ -2630,6 +2630,8 @@ __webpack_require__.r(__webpack_exports__);
     *   Show component
     */
     showComponent: function showComponent() {
+      this.$store.dispatch("setActiveCollection", null);
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-database-nav');
       this.show = true;
     },
 
@@ -2655,14 +2657,14 @@ __webpack_require__.r(__webpack_exports__);
     *    Show this component
     */
 
-    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database', function (name) {
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database', function () {
       this.showComponent();
     }.bind(this));
   },
   watch: {
-    getDatabase: function getDatabase() {
-      this.showComponent();
-    }
+    /*getDatabase() {
+        this.showComponent();
+    }*/
   }
 });
 
@@ -3007,7 +3009,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database', function () {
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-collection', function () {
       this.show = true;
     }.bind(this));
   },
@@ -3189,7 +3191,6 @@ __webpack_require__.r(__webpack_exports__);
     *   Calls the Translation and Language service
     */
     showLanguage: function showLanguage(context, key) {
-      // return this.$trans( context, key );
       return this.$store.getters.getLanguageString(context, key);
     },
 
@@ -3197,7 +3198,8 @@ __webpack_require__.r(__webpack_exports__);
     *   Show component
     */
     showComponent: function showComponent() {
-      this.show = true; // trigger the collection nav
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-collection-nav');
+      this.show = true;
     },
 
     /*
@@ -3215,14 +3217,14 @@ __webpack_require__.r(__webpack_exports__);
     /*
     *    Hide this component
     */
-    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('hide-collection-panels', function () {
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('hide-panels', function () {
       this.hideComponent();
     }.bind(this));
     /*
     *    Show this component
     */
 
-    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-collection', function (name) {
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-collection', function () {
       this.showComponent();
     }.bind(this));
   } //,
@@ -3455,16 +3457,27 @@ __webpack_require__.r(__webpack_exports__);
     *   We only show this navigation when we have an active collection
     */
     showNavigation: function showNavigation() {
-      this.show = this.$store.getters.getActiveCollection !== null;
+      this.show = true; // this.$store.getters.getActiveCollection !== null;
+    },
+    hideNavigation: function hideNavigation() {
+      this.show = false;
     }
   },
-  mounted: function mounted() {//    this.showNavigation()
-  },
-  watch: {
-    checkCollection: function checkCollection() {
+  mounted: function mounted() {
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-collection-nav', function () {
       this.showNavigation();
-    }
-  }
+    }.bind(this));
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database-nav', function () {
+      this.hideNavigation();
+    }.bind(this));
+  } //,
+
+  /* watch: {
+       checkCollection() {
+           this.showNavigation();
+       }
+   }*/
+
 });
 
 /***/ }),
@@ -3488,6 +3501,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
   *   The component accepts one crumb as a property
@@ -3496,7 +3511,9 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       name: 'n/a',
-      type: null
+      type: null,
+      link: false,
+      option: null
     };
   },
   computed: {
@@ -3509,6 +3526,7 @@ __webpack_require__.r(__webpack_exports__);
       if (crumb) {
         if (crumb.name) {
           this.name = crumb.name;
+          this.option = crumb.option;
         }
 
         if (crumb.type) {
@@ -3624,7 +3642,17 @@ __webpack_require__.r(__webpack_exports__);
   */
   data: function data() {
     return {
-      crumbs: [],
+      crumbs: [{
+        type: 'collection',
+        name: null,
+        link: true,
+        option: null
+      }, {
+        type: 'function',
+        name: null,
+        link: false,
+        option: null
+      }],
       activeDb: 'N/A'
     };
   },
@@ -3645,6 +3673,13 @@ __webpack_require__.r(__webpack_exports__);
     */
     checkActiveCollection: function checkActiveCollection() {
       return this.$store.getters.getActiveCollection;
+    },
+
+    /*
+    *   Monitor for active database
+    */
+    checkActiveDatabase: function checkActiveDatabase() {
+      return this.$store.getters.getActiveDatabase;
     }
   },
 
@@ -3664,10 +3699,12 @@ __webpack_require__.r(__webpack_exports__);
     *   Load the database from crumbs
     */
     loadDatabase: function loadDatabase() {
-      console.log("re-loading database view"); // clear the crumbs
+      // console.log("re-loading database view");
+      this.$store.dispatch('setActiveCollection', null); // clear the crumbs
 
-      this.crumbs = [];
-      _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('hide-collection-panels');
+      this.crumbs[0].name = null;
+      this.crumbs[1].name = null;
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('hide-panels');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-database', this.activeDb);
     },
 
@@ -3681,17 +3718,18 @@ __webpack_require__.r(__webpack_exports__);
     /*
     *   Set the collection crumb
     */
-    setCollectionCrumb: function setCollectionCrumb(clear) {
-      if (clear) {
-        console.log("clearing activeCollection value...");
-        this.$store.dispatch('setActiveCollection', null);
-      } else {
-        var name = this.$store.getters.getActiveCollection;
-        var crumb = {
-          type: 'collection',
-          name: name
-        };
-        this.crumbs.push(crumb);
+    setCollectionCrumb: function setCollectionCrumb() {
+      this.crumbs[0].name = this.$store.getters.getActiveCollection;
+    },
+    checkDb: function checkDb() {
+      if (!this.activeDb || this.activeDb === 'N/A') {
+        this.activeDb = this.$store.getters.getActiveDatabase;
+
+        if (!this.activeDb) {
+          // try pulling name from collection data
+          var collection = this.$store.getters.getCollection;
+          this.activeDb = collection.collection.databaseName;
+        }
       }
     }
   },
@@ -3704,10 +3742,14 @@ __webpack_require__.r(__webpack_exports__);
       console.log("db to crumbs: " + db);
       this.activeDb = db;
     }.bind(this));
+    this.checkDb();
   },
   watch: {
     checkActiveCollection: function checkActiveCollection() {
       this.setCollectionCrumb();
+    },
+    checkActiveDatabase: function checkActiveDatabase() {
+      this.checkDb();
     }
   }
 });
@@ -3889,22 +3931,30 @@ __webpack_require__.r(__webpack_exports__);
       return this.activePanel === panel;
     },
     showNavigation: function showNavigation() {
-      this.show = true; //this.$store.getters.getActiveDatabase;
+      this.show = true;
     },
     hideNavigation: function hideNavigation() {
       this.show = false;
     }
   },
-  mounted: function mounted() {//   this.showNavigation()
-  },
-  watch: {
-    checkDatabase: function checkDatabase() {
+  mounted: function mounted() {
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database-nav', function () {
       this.showNavigation();
-    },
-    checkCollection: function checkCollection() {
+    }.bind(this));
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-collection-nav', function () {
       this.hideNavigation();
-    }
-  }
+    }.bind(this));
+  } //,
+
+  /*watch: {
+      checkDatabase() {
+          this.showNavigation();
+      },
+       checkCollection() {
+          this.hideNavigation();
+       }
+  }*/
+
 });
 
 /***/ }),
@@ -4084,7 +4134,7 @@ __webpack_require__.r(__webpack_exports__);
     /*
     *   Load the database panel
     */
-    showDatabase: function showDatabase(database) {
+    showDatabase: function showDatabase() {
       this.$store.dispatch('setActiveDatabase', this.name);
       this.$store.dispatch('loadDatabase', this.name);
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('hide-panels');
@@ -4728,7 +4778,8 @@ __webpack_require__.r(__webpack_exports__);
   */
   data: function data() {
     return {
-      show: true
+      show: true,
+      activeDb: null
     };
   },
 
@@ -4812,11 +4863,32 @@ __webpack_require__.r(__webpack_exports__);
     showCollectionsList: function showCollectionsList(db) {
       // hide all that are showing
       _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('hide-collection-lists', {});
-      console.log('revealing collections: ' + db);
+      this.activeDb = db;
       this.$jqf(this.$refs.coll).replace(['hide-list', 'active']);
     },
+
+    /*
+    *   Hide the collections
+    */
     hideCollections: function hideCollections() {
+      this.activeDb = null;
       this.$jqf(this.$refs.coll).replace(['active', 'hide-list']);
+    },
+    loadCollection: function loadCollection(collection) {
+      console.log("loading collection from left nav: " + collection); // send collection and db for tracking
+
+      this.$store.dispatch('setActiveDatabase', this.activeDb);
+      this.$store.dispatch('setActiveCollection', collection); // load
+
+      var data = {
+        database: this.activeDb,
+        collection: collection
+      };
+      this.$store.dispatch('loadCollection', data); // event to hide panels
+
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('hide-panels'); // event to enable collection panel
+
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-collection');
     },
 
     /*
@@ -4906,10 +4978,6 @@ __webpack_require__.r(__webpack_exports__);
 */
 
 /*
-*   Imports the mixins used by the component.
-*/
-
-/*
 * Import the Event bus
 */
 
@@ -4952,14 +5020,27 @@ __webpack_require__.r(__webpack_exports__);
     *   Refresh all views to default | initial page load
     */
     loadHome: function loadHome() {
-      console.log("loading home");
+      //    console.log("loading home");
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('hide-collection-lists');
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('close-collection-panels');
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('hide-panels'); // force a reload of the databases
+
+      this.$store.dispatch('loadDatabases'); //EventBus.$emit('clear-active-nav');
+
+      this.$store.dispatch('setActiveNav', null);
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-server');
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-mongo');
     },
 
     /*
     *   Load the full server overview in the main panel
     */
     loadOverview: function loadOverview() {
-      console.log('loading overview in main panel');
+      //    console.log('loading overview in main panel');
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('close-collection-panels');
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('hide-panels');
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-databases');
+      this.$store.dispatch('setActiveNav', 'databases');
     }
   }
 });
@@ -6315,6 +6396,9 @@ __webpack_require__.r(__webpack_exports__);
       });
       this.completeLogout();
     },
+    completeLogout: function completeLogout() {
+      console.log("is the logout completed?");
+    },
 
     /*
     *   Checks whether the user is logged in
@@ -6335,7 +6419,14 @@ __webpack_require__.r(__webpack_exports__);
     * Load the home default views
     */
     loadHome: function loadHome() {
-      console.log("loadinghgome...");
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('hide-collection-lists');
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('hide-panels'); // force a reload of the databases
+
+      this.$store.dispatch('loadDatabases'); //EventBus.$emit('clear-active-nav');
+
+      this.$store.dispatch('setActiveNav', null);
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-server');
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-mongo');
     }
   },
 
@@ -6491,6 +6582,9 @@ __webpack_require__.r(__webpack_exports__);
     isMember: function isMember() {
       var isMember = this.$cookie.get('app-member');
       return isMember && isMember.length >= 3 || this.userLoadStatus;
+    },
+    activeNav: function activeNav() {
+      this.activePanel = this.$store.getters.getActiveNav;
     }
   },
 
@@ -6514,6 +6608,13 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /*
+    *   Set the active panel
+    */
+    setActivePanel: function setActivePanel() {
+      this.activePanel = this.$store.getters.getActivePanel;
+    },
+
+    /*
     *   Return the logged is state
     */
     userLoggedIn: function userLoggedIn() {
@@ -6528,19 +6629,27 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /*
-    *   Load main panel content vie event
+    *   Load main panel content via event
     */
     loadPanel: function loadPanel(item) {
-      this.activePanel = item; //this.$store.dispatch('setActivePanel', item);
+      this.$store.dispatch('setActiveNav', item); //    this.activePanel = item;
 
-      console.log("loading panel item: " + item);
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('hide-panels');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-' + item);
+      console.log("loaded panel item: " + item);
     }
   },
   mounted: function mounted() {
     this.userLoggedIn();
     this.getUser();
+    /*EventBus.$on('clear-active-nav', function() {
+        this.activePanel = null;
+    }.bind(this));*/
+  },
+  watch: {
+    activeNav: function activeNav() {
+      this.setActivePanel();
+    }
   }
 });
 
@@ -9742,17 +9851,16 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../event-bus.js */ "./resources/js/event-bus.js");
-/* harmony import */ var _components_admin_top_TopNav_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/admin/top/TopNav.vue */ "./resources/js/components/admin/top/TopNav.vue");
-/* harmony import */ var _components_global_SuccessNotification_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/global/SuccessNotification.vue */ "./resources/js/components/global/SuccessNotification.vue");
-/* harmony import */ var _components_global_ErrorNotification_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/global/ErrorNotification.vue */ "./resources/js/components/global/ErrorNotification.vue");
-/* harmony import */ var _components_global_MessageNotification__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/global/MessageNotification */ "./resources/js/components/global/MessageNotification.vue");
-/* harmony import */ var _components_admin_NoResultsFound__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/admin/NoResultsFound */ "./resources/js/components/admin/NoResultsFound.vue");
-/* harmony import */ var _components_global_SiteFooter_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/global/SiteFooter.vue */ "./resources/js/components/global/SiteFooter.vue");
-/* harmony import */ var _components_global_RegisterModal_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/global/RegisterModal.vue */ "./resources/js/components/global/RegisterModal.vue");
-/* harmony import */ var _components_global_LoginModal_vue__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../components/global/LoginModal.vue */ "./resources/js/components/global/LoginModal.vue");
-/* harmony import */ var _components_global_LanguageModal__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../components/global/LanguageModal */ "./resources/js/components/global/LanguageModal.vue");
-/* harmony import */ var _components_global_SetupModal_vue__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../components/global/SetupModal.vue */ "./resources/js/components/global/SetupModal.vue");
+/* harmony import */ var _components_admin_top_TopNav_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../components/admin/top/TopNav.vue */ "./resources/js/components/admin/top/TopNav.vue");
+/* harmony import */ var _components_global_SuccessNotification_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/global/SuccessNotification.vue */ "./resources/js/components/global/SuccessNotification.vue");
+/* harmony import */ var _components_global_ErrorNotification_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/global/ErrorNotification.vue */ "./resources/js/components/global/ErrorNotification.vue");
+/* harmony import */ var _components_global_MessageNotification__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/global/MessageNotification */ "./resources/js/components/global/MessageNotification.vue");
+/* harmony import */ var _components_admin_NoResultsFound__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/admin/NoResultsFound */ "./resources/js/components/admin/NoResultsFound.vue");
+/* harmony import */ var _components_global_SiteFooter_vue__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/global/SiteFooter.vue */ "./resources/js/components/global/SiteFooter.vue");
+/* harmony import */ var _components_global_RegisterModal_vue__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/global/RegisterModal.vue */ "./resources/js/components/global/RegisterModal.vue");
+/* harmony import */ var _components_global_LoginModal_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/global/LoginModal.vue */ "./resources/js/components/global/LoginModal.vue");
+/* harmony import */ var _components_global_LanguageModal__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../components/global/LanguageModal */ "./resources/js/components/global/LanguageModal.vue");
+/* harmony import */ var _components_global_SetupModal_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../components/global/SetupModal.vue */ "./resources/js/components/global/SetupModal.vue");
 //
 //
 //
@@ -9783,12 +9891,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-
-/*
-* Imports the event bus
-*  v-on:scroll="weAreScrolling($event)"
-*  v-on:scroll.native="weAreScrolling($event)"
-*/
 
 /*
 *   Import components
@@ -9803,19 +9905,18 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
 /* harmony default export */ __webpack_exports__["default"] = ({
   components: {
-    Navigation: _components_admin_top_TopNav_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
-    SuccessNotification: _components_global_SuccessNotification_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
-    ErrorNotification: _components_global_ErrorNotification_vue__WEBPACK_IMPORTED_MODULE_3__["default"],
-    MessageNotification: _components_global_MessageNotification__WEBPACK_IMPORTED_MODULE_4__["default"],
-    NoResultsFound: _components_admin_NoResultsFound__WEBPACK_IMPORTED_MODULE_5__["default"],
-    SiteFooter: _components_global_SiteFooter_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
-    RegisterModal: _components_global_RegisterModal_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
-    LoginModal: _components_global_LoginModal_vue__WEBPACK_IMPORTED_MODULE_8__["default"],
-    LanguageModal: _components_global_LanguageModal__WEBPACK_IMPORTED_MODULE_9__["default"],
-    SetupModal: _components_global_SetupModal_vue__WEBPACK_IMPORTED_MODULE_10__["default"]
+    Navigation: _components_admin_top_TopNav_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
+    SuccessNotification: _components_global_SuccessNotification_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
+    ErrorNotification: _components_global_ErrorNotification_vue__WEBPACK_IMPORTED_MODULE_2__["default"],
+    MessageNotification: _components_global_MessageNotification__WEBPACK_IMPORTED_MODULE_3__["default"],
+    NoResultsFound: _components_admin_NoResultsFound__WEBPACK_IMPORTED_MODULE_4__["default"],
+    SiteFooter: _components_global_SiteFooter_vue__WEBPACK_IMPORTED_MODULE_5__["default"],
+    RegisterModal: _components_global_RegisterModal_vue__WEBPACK_IMPORTED_MODULE_6__["default"],
+    LoginModal: _components_global_LoginModal_vue__WEBPACK_IMPORTED_MODULE_7__["default"],
+    LanguageModal: _components_global_LanguageModal__WEBPACK_IMPORTED_MODULE_8__["default"],
+    SetupModal: _components_global_SetupModal_vue__WEBPACK_IMPORTED_MODULE_9__["default"]
   },
   method: {
     getCountryFromCookie: function getCountryFromCookie() {
@@ -58662,7 +58763,12 @@ var render = function() {
     "div",
     {
       directives: [
-        { name: "show", rawName: "v-show", value: _vm.show, expression: "show" }
+        {
+          name: "show",
+          rawName: "v-show",
+          value: _vm.show && _vm.collection,
+          expression: "show && collection"
+        }
       ],
       staticClass: "collection-inner"
     },
@@ -59709,24 +59815,34 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("li", { staticClass: "crumb-link text-left" }, [
-    _c("span", { staticClass: "dbl-arr" }, [_vm._v(">>")]),
-    _vm._v(" "),
-    _c("img", { attrs: { src: "/img/icon/" + _vm.getCrumbType + ".png" } }),
-    _vm._v(" "),
-    _c(
-      "span",
-      {
-        staticClass: "crumb pma-link",
-        on: {
-          click: function($event) {
-            return _vm.$emit("loadCrumb", _vm.crumb.name)
-          }
-        }
-      },
-      [_vm._v(_vm._s(_vm.getCrumbName(_vm.crumb)))]
-    )
-  ])
+  return _vm.crumb.name !== null
+    ? _c("li", { staticClass: "crumb-link text-left" }, [
+        _c("span", { staticClass: "dbl-arr" }, [_vm._v(">>")]),
+        _vm._v(" "),
+        _c("img", { attrs: { src: "/img/icon/" + _vm.getCrumbType + ".png" } }),
+        _vm._v(" "),
+        _vm.crumb.link === true
+          ? _c(
+              "span",
+              {
+                staticClass: "crumb pma-link",
+                on: {
+                  click: function($event) {
+                    return _vm.$emit("loadCrumb", _vm.crumb.name)
+                  }
+                }
+              },
+              [_vm._v(_vm._s(_vm.getCrumbName(_vm.crumb)))]
+            )
+          : _vm._e(),
+        _vm._v(" "),
+        _vm.crumb.link === false
+          ? _c("span", { staticClass: "pma-text" }, [
+              _vm._v(_vm._s(_vm.getCrumbName(_vm.crumb)))
+            ])
+          : _vm._e()
+      ])
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -60502,12 +60618,21 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("li", { ref: "colbox", staticClass: "collection-list-item" }, [
     _c("img", {
-      attrs: { alt: "Collection icon", src: "/img/icon/table.png" }
+      attrs: { alt: "Collection icon", src: "/img/icon/collection.png" }
     }),
     _vm._v(" "),
-    _c("span", { staticClass: "pma-link" }, [
-      _vm._v(_vm._s(_vm.collection.collection.name))
-    ])
+    _c(
+      "span",
+      {
+        staticClass: "pma-link",
+        on: {
+          click: function($event) {
+            return _vm.$emit("loadCollection", _vm.collection.collection.name)
+          }
+        }
+      },
+      [_vm._v(_vm._s(_vm.collection.collection.name))]
+    )
   ])
 }
 var staticRenderFns = []
@@ -60565,7 +60690,8 @@ var render = function() {
         _vm._l(_vm.db.collections, function(collection) {
           return _c("collection-card", {
             key: collection.id + 1,
-            attrs: { collection: collection }
+            attrs: { collection: collection },
+            on: { loadCollection: _vm.loadCollection }
           })
         }),
         1
@@ -60639,8 +60765,7 @@ var render = function() {
             domProps: {
               textContent: _vm._s(_vm.showLanguage("dbs", "overview"))
             }
-          }),
-          _vm._v("Overview")
+          })
         ]
       )
     ])
@@ -85657,7 +85782,8 @@ var application = {
     countries: {},
     states: [],
     suburb: '',
-    postcode: ''
+    postcode: '',
+    activeNav: null
   },
   actions: {
     /*
@@ -85800,6 +85926,16 @@ var application = {
       })["catch"](function (error) {
         console.log(error);
       });
+    },
+
+    /*
+    *   Set or clear the active navigation items
+    *   ToDo: this allows clearing the activeNav value for the main navigation panel - until a better way surfaces
+    */
+    setActiveNav: function setActiveNav(_ref9, data) {
+      var commit = _ref9.commit;
+      console.log("setting active nav: " + data);
+      commit('setActiveNav', data);
     }
   },
   mutations: {
@@ -85857,6 +85993,13 @@ var application = {
     },
     setSuburb: function setSuburb(state, suburb) {
       state.suburb = suburb;
+    },
+
+    /*
+    *   Set the active navigation panel - this stores the panel name sent in events
+    */
+    setActiveNav: function setActiveNav(state, panel) {
+      state.activeNav = panel;
     }
   },
   getters: {
@@ -85913,6 +86056,13 @@ var application = {
     },
     getState: function getState(state) {
       return state.currentLocation.state;
+    },
+
+    /*
+    *   Get the active navigation panel
+    */
+    getActiveNav: function getActiveNav(state, panel) {
+      return state.activeNav;
     }
   }
 };

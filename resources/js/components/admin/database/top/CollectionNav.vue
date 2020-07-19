@@ -179,18 +179,31 @@
             *   We only show this navigation when we have an active collection
             */
             showNavigation() {
-                this.show = this.$store.getters.getActiveCollection !== null;
+                this.show = true;// this.$store.getters.getActiveCollection !== null;
+            },
+
+            hideNavigation() {
+                this.show = false;
             }
         },
 
         mounted() {
-        //    this.showNavigation()
-        },
+            EventBus.$on('show-collection-nav', function() {
+                this.showNavigation();
 
-        watch: {
+            }.bind(this));
+
+            EventBus.$on('show-database-nav', function() {
+                this.hideNavigation()
+
+            }.bind(this));
+
+        }//,
+
+       /* watch: {
             checkCollection() {
                 this.showNavigation();
             }
-        }
+        }*/
     }
 </script>
