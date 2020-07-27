@@ -23,7 +23,10 @@
         "docs": "http://docs.phpmongoadmin.com/",
         "email": "support@phpmongoadmin.com",
         "issues": "https://github.com/phpmongodb/admin/issues",
-        "source": "https://github.com/phpmongodb/admin"
+        "source": "https://github.com/phpmongodb/admin",
+        "authentication": "https://docs.mongodb.com/manual/core/authentication",
+        "users": "https://docs.mongodb.com/manual/tutorial/manage-users-and-roles",
+        "configuration": "https://docs.mongodb.com/manual/reference/configuration-options"
     },
     "license": "MIT",
     "require": {
@@ -39,7 +42,8 @@
         "laravel/framework": "^7.18.0",
         "laravel/passport": "^9.3",
         "laravel/tinker": "^2.0",
-        "mongodb/mongodb": "^1.6"
+        "mongodb/mongodb": "^1.6",
+        "ext-mongo": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

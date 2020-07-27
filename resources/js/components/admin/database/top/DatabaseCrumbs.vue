@@ -1,11 +1,11 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
     .crumb-nav-wrapper {
-        background-color: $lightGreyColor;
+        background-color: $lighterGreyColor;
         padding-left: 50px;
     }
     nav.crumb-navigation {
-        background-color: $lightGreyColor;
+        background-color: $lighterGreyColor;
         min-height: 33px;
         max-width: 100%;
         padding-left: 14px;
@@ -60,7 +60,14 @@
                 <li class="crumb-link text-left">
                     <img src="/img/icon/database.png" /> <span class="crumb pma-link" v-on:click="loadDatabase($event)">{{databaseName}}</span>
                 </li>
-                <crumb @loadCrumb="loadCrumb" v-for="(crumb, index) in this.crumbs" :key="index" v-bind:crumb="crumb"></crumb>
+                <li class="crumb-link text-left" v-if="crumbs[0].name !== null">
+                    <span class="dbl-arr">>></span> <img src="/img/icon/collection.png" />
+                    <span class="crumb pma-link" v-on:click="loadCrumb( crumb[0].name )">{{ getCollectionCrumbName }}</span>
+                </li>
+                <li class="crumb-link text-left" v-if="crumbs[1].name !== null">
+                    <span class="dbl-arr">>></span> <img src="/img/icon/function.png" />
+                    <span class="pma-text">{{ getFunctionCrumbName }}</span>
+                </li>
             </ul>
         </nav>
     </div>
@@ -73,15 +80,16 @@
 
     /*
     *   Import components for the Databases View
+    *   <crumb @loadCrumb="loadCrumb" v-for="(crumb, index) in this.crumbs" :key="index" v-bind:crumb="crumb"></crumb>
     */
-    import Crumb from "./Crumb";
+    //import Crumb from "./Crumb";
 
     export default {
         /*
         *   Register the components to be used by the home page.
         */
         components: {
-            Crumb
+        //    Crumb
         },
 
         /*
@@ -103,7 +111,9 @@
                         option: null
                     }
                 ],
-                activeDb: 'N/A'
+                activeDb: 'N/A',
+                activeDatabase: null,
+                activeCollection: null
             };
         },
 
@@ -111,7 +121,6 @@
         *   Defines the computed properties on the component.
         */
         computed: {
-
             /*
             *   Return the site name from config
             */
@@ -119,18 +128,34 @@
                 return this.activeDb;
             },
 
+            getCollectionCrumbName() {
+                return this.crumbs[0].name;
+            },
+
+            getFunctionCrumbName() {
+                return this.crumbs[1].name;
+            },
+
             /*
             *   Handle the collection crumb
             */
             checkActiveCollection() {
-               return this.$store.getters.getActiveCollection;
+               this.activeCollection = this.$store.getters.getActiveCollection;
             },
+
+            watchActiveCollection() {
+                return this.activeCollection;
+            },
+
+            /*setActiveCollection() {
+                this.crumbs[0].name = this.activeCollection;
+            },*/
 
             /*
             *   Monitor for active database
             */
             checkActiveDatabase() {
-                return this.$store.getters.getActiveDatabase;
+                this.activeDatabase = this.$store.getters.getActiveDatabase;
             }
         },
 
@@ -170,16 +195,22 @@
             *   Set the collection crumb
             */
             setCollectionCrumb() {
-                this.crumbs[0].name = this.$store.getters.getActiveCollection;
+                this.crumbs[0].name = this.activeCollection;// this.$store.getters.getActiveCollection;
             },
 
             checkDb() {
                 if (!this.activeDb || this.activeDb === 'N/A') {
-                    this.activeDb = this.$store.getters.getActiveDatabase;
+                    this.activeDb = this.activeDatabase; // this.$store.getters.getActiveDatabase;
                     if (!this.activeDb) {
                         // try pulling name from collection data
-                        let collection = this.$store.getters.getCollection;
-                        this.activeDb = collection.collection.databaseName;
+                        console.log("cant find activeDb - looking in collection!!!");
+                        if (this.activeCollection) {
+                            let collection = this.$store.getters.getCollection;
+                            if (collection) {
+                                console.log("crumbs coll: " + collection);
+                                this.activeDb = collection.collection.databaseName;
+                            }
+                        }
                     }
                 }
             }
@@ -199,7 +230,7 @@
         },
 
         watch: {
-            checkActiveCollection() {
+            watchActiveCollection() {
                 this.setCollectionCrumb();
             },
 

@@ -4,16 +4,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Pagination Language Lines
+    | Pagination Language
     |--------------------------------------------------------------------------
     |
-    | The following language lines are used by the paginator library to build
-    | the simple pagination links. You are free to change them to anything
-    | you want to customize your views to better match your application.
+    | Used for any required pagination positions
     |
     */
 
-    'previous' => '&laquo; Previous',
-    'next' => 'Next &raquo;',
+    "displaying" => "Displaying",
+    "documents" => "documents",
+    "first" => "|| First",
+    "from" => "from",
+    "last" => "Last ||",
+    "next" => "Next",
+    "next_" => "Next &raquo;",
+    "previous" => "Previous",
+    "previous_" => "&laquo; Previous",
+    "total" => "total"
 
 ];

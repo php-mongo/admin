@@ -223,7 +223,10 @@ class ServerController extends Controller
             "docs" => $obj->support->docs,
             "email" => $obj->support->email,
             "issues" => $obj->support->issues,
-            "source" => $obj->support->source
+            "source" => $obj->support->source,
+            "authentication" => $obj->support->authentication,
+            "users" => $obj->support->users,
+            "configuration" => $obj->support->configuration
         );
         $composer['license']     = $data->license();
         $composer['version']     = $data->version();

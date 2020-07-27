@@ -68,6 +68,9 @@ export default function makeJqf() {
             },
             hide: function() {
                 element.style.display = 'none';
+            },
+            css: function(e, v) {
+                element.style[e] = v;
             }
         };
     }

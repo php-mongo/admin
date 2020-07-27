@@ -2,7 +2,7 @@
     @import '~@/abstracts/_variables.scss';
 
     .top-nav-wrapper {
-        background-color: $lightGreyColor;
+        background-color: $darkGreyColor;
         padding-left: 50px;
     }
     nav.top-navigation {

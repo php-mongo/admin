@@ -78,6 +78,13 @@ export const database = {
         },
 
         /*
+        *   Because we set the 'admin' database on site - we can clear the stored DB before rendering the single DB view
+        */
+        clearDatabase( { commit }) {
+            commit ( 'clearDatabaseObject' );
+        },
+
+        /*
         *   Create a new database - add result to database array
         */
         createDatabase( { commit, rootState, dispatch }, data ) {
@@ -157,6 +164,13 @@ export const database = {
         */
         setDatabase( state, database ) {
             state.database = database;
+        },
+
+        /*
+        * Clears the DB so that its data wont show on initial component rendering
+        */
+        clearDatabaseObject( state, empty ) {
+            state.database = {};
         },
 
         /*

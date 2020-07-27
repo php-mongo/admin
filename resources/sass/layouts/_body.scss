@@ -6,6 +6,10 @@ body {
     font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
     background-color: $body-bg;
 
+    .hidden-element {
+        display: none;
+    }
+
     .content-container {
         margin-top: 3rem;
     }

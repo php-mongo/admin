@@ -39,6 +39,44 @@
                 padding: 5px;
             }
         }
+        .fields-control {
+            display: none;
+        }
+        .collection-document {
+            border: 2px #ccc solid;
+            margin-bottom: 10px;
+            min-height: 100px;
+            position: relative;
+
+            &:hover {
+                background-color: $offWhite;
+            }
+
+            .doc-nav {
+                border-bottom: 1px #999 solid;
+                display: inline-block;
+                margin: 0 0 5px 50px;
+                padding: 5px 0 0 0;
+            }
+            .doc-data {
+                display: block;
+                max-height: 150px;
+                overflow-y: hidden;
+                padding: 0 0 5px 50px;
+                width: 99%;
+            }
+            .doc-text {
+                max-height: 150px;
+                overflow-y: auto;
+                padding: 0 0 5px 50px;
+                width: 99%;
+            }
+            .doc-right-to-top {
+                bottom: 5px;
+                position: absolute;
+                right: 10px;
+            }
+        }
     }
 </style>
 
@@ -49,7 +87,7 @@
                 <td class="v-top">
                     <textarea class="criteria" rows="7" cols="70" v-model="form.criteria"></textarea><br/>
                     <div id="newObjInput" v-show="rules.modify">
-                        New Object(see <a href="http://www.mongodb.org/display/DOCS/Updating" target="_blank">Updating</a> operators):<br/>
+                        <span v-text="showLanguage('collection', 'newObject')"></span>(see <a href="http://www.mongodb.org/display/DOCS/Updating" target="_blank" v-text="showLanguage('collection', 'updating')"></a> operators):<br/>
                         <textarea id="newObj" name="newObj" rows="5" cols="70" v-model="form.newObj"></textarea>
                     </div>
                 </td>
@@ -58,29 +96,29 @@
                     <p>
                         <input type="text" v-model="form.field[0]" />
                         <select v-model="form.order[0]">
-                            <option value="asc" :selected="orderDefault[0] === 'asc'">ASC</option>
-                            <option value="desc" :selected="orderDefault[0] === 'desc'">DESC</option>
+                            <option value="asc" :selected="orderDefault[0] === 'asc'" v-text="showLanguage('collection', 'asc')"></option>
+                            <option value="desc" :selected="orderDefault[0] === 'desc'" v-text="showLanguage('collection', 'desc')"></option>
                         </select>
                     </p>
                     <p>
                         <input type="text" v-model="form.field[1]" />
                         <select v-model="form.order[1]">
-                            <option value="asc" :selected="orderDefault[1] === 'asc'">ASC</option>
-                            <option value="desc" :selected="orderDefault[1] === 'desc'">DESC</option>
+                            <option value="asc" :selected="orderDefault[1] === 'asc'" v-text="showLanguage('collection', 'asc')"></option>
+                            <option value="desc" :selected="orderDefault[1] === 'desc'" v-text="showLanguage('collection', 'desc')"></option>
                         </select>
                     </p>
                     <p>
                         <input type="text" v-model="form.field[2]" />
                         <select v-model="form.order[2]">
-                            <option value="asc" :selected="orderDefault[2] === 'asc'">ASC</option>
-                            <option value="desc" :selected="orderDefault[2] === 'desc'">DESC</option>
+                            <option value="asc" :selected="orderDefault[2] === 'asc'" v-text="showLanguage('collection', 'asc')"></option>
+                            <option value="desc" :selected="orderDefault[2] === 'desc'" v-text="showLanguage('collection', 'desc')"></option>
                         </select>
                     </p>
                     <p>
                         <input type="text" v-model="form.field[3]" />
                         <select v-model="form.order[3]">
-                            <option value="asc" :selected="orderDefault[3] === 'asc'">ASC</option>
-                            <option value="desc" :selected="orderDefault[3] === 'desc'">DESC</option>
+                            <option value="asc" :selected="orderDefault[3] === 'asc'" v-text="showLanguage('collection', 'asc')"></option>
+                            <option value="desc" :selected="orderDefault[3] === 'desc'" v-text="showLanguage('collection', 'desc')"></option>
                         </select>
                     </p>
                 </td>
@@ -91,30 +129,30 @@
                     <span id="fieldsAndHints" v-show="rules.findAll">
                         <span v-if="nativeFields">
                             <span class="pma-link" v-on:onclick="showQueryFields($event)" title="Choose fields to display">
-                                Fields(<span id="query_fields_count">{{queryFieldsCount}}</span>)
+                                <span v-text="showLanguage('collection', 'fields')"></span>(<span id="query_fields_count">{{queryFieldsCount}}</span>)
                                 <span class="f11">▼</span>
                             </span>
                             |
                             <span class="pma-link" v-on:onclick="showQueryHints($event)" title="Choose indexes will be used in query">
-                                Hints(<span id="query_hints_count">{{queryHintsCount}}</span>)
+                                <span v-text="showLanguage('collection', 'hints')"></span>(<span id="query_hints_count">{{queryHintsCount}}</span>)
                                 <span class="f11">▼</span>
                             </span>
                             |
                         </span>
                     </span>
                     <!-- end query fields and hints -->
-                    <label id="limitLabel" v-show="rules.findAll">Limit:<input type="text" v-model="form.limit" size="5" /> |</label>
+                    <label id="limitLabel" v-show="rules.findAll"><span v-text="showLanguage('collection', 'limit')"></span>: <input type="text" v-model="form.limit" size="5" /> |</label>
                     <span id="pageSetLabel" v-show="rules.findAll">
                         <select title="Rows per Page" v-model="form.pageSize">
                             <page-size-option v-for="(size, index) in pageSizes" :key="index" v-bind:size="size" v-bind:value="pageSizeDefault"></page-size-option>
                         </select>
                         |
                     </span>
-                    Action:
+                    <span v-text="showLanguage('collection', 'action')"></span>:
                     <select v-model="form.command" v-on:change="changeCommand($event)">
-                        <option value="findAll" :selected="commandDefault === 'findAll'">findAll</option>
-                        <option value="remove" :selected="commandDefault === 'remove'">remove</option>
-                        <option value="modify" :selected="commandDefault === 'modify'">modify</option>
+                        <option value="findAll" :selected="commandDefault === 'findAll'" v-text="showLanguage('collection', 'findAll')"></option>
+                        <option value="remove" :selected="commandDefault === 'remove'" v-text="showLanguage('collection', 'remove')"></option>
+                        <option value="modify" :selected="commandDefault === 'modify'" v-text="showLanguage('collection', 'modify')"></option>
                     </select>
                 </td>
             </tr>
@@ -123,12 +161,38 @@
                     <input type="submit" value="Submit Query" v-on:click="submitQuery" />
                     <input type="button" value="Explain" v-on:click="explainQuery" />
                     <input type="button" value="Clear Conditions" v-on:click="clearForm" />
-                    [<a href="http://rockmongo.com/wiki/queryExamples?lang=en_us" target="_blank">Query Examples</a>]
-                    <span v-if="cost">Cost {{ roundCost }}s</span>
+                    [<a href="http://rockmongo.com/wiki/queryExamples?lang=en_us" target="_blank" v-text="showLanguage('collection', 'queryExamples')"></a>]
+                    <span v-if="cost"><span v-text="showLanguage('collection', 'cost')"></span> {{ roundCost }}s</span>
                     <p v-if="message" class="error">{{ message }}</p>
                 </td>
             </tr>
-    </table>
+        </table>
+        <div id="query-fields-list" ref="query-fields-list" class="fields-menu">
+            <span class="fields-control"><span class="pma-link" title="Click to close" v-on:click="closeQueryFields()"><img alt="Select" src="/img/icon/accept.png" /></span></span>
+            <ul>
+                <!-- to do fields list -->
+            </ul>
+        </div>
+        <div id="query-hints-list" ref="query-hints-list" class="fields-menu">
+            <span class="fields-control"><span class="pma-link" title="Click to close" v-on:click="closeQueryHints()"><img alt="Select" src="/img/icon/accept.png" /></span></span>
+            <ul>
+                <!-- to do hints list -->
+            </ul>
+        </div>
+        <div id="records" ref="records">
+            <div class="records-header">
+                <p class="page-message" v-if="page.find.message">{{ page.find.message }}</p>
+                <pagination
+                    @pageChange="pageChange(p)"
+                    v-bind:max-visible-buttons="3"
+                    v-bind:total-pages="totalPages"
+                    v-bind:total="getTotal"
+                    v-bind:limit="getLimit"
+                    v-bind:current-page="1"
+                    ></pagination>
+            </div>
+            <document v-for="(document, index) in getDocuments" :key="index" v-bind:index="index" v-bind:document="document" v-bind:collection="getCollection"></document>
+        </div>
     </div>
 </template>
 
@@ -142,13 +206,17 @@
     *   Import components for the Databases View
     */
     import PageSizeOption from "./PageSizeOption";
+    import Document from "./Document";
+    import Pagination from "./Pagination";
 
     export default {
         /*
         *   Register the components to be used by the home page.
         */
         components: {
-            PageSizeOption
+            PageSizeOption,
+            Document,
+            Pagination
         },
 
         /*
@@ -156,10 +224,14 @@
         */
         props: ['collection'],
 
+        /*
+        *   Data housing for our collections
+        */
         data() {
             return {
                 show: false,
                 name: null,
+                count: 0,
                 stats: {},
                 criteriaDefault: '{\n' +
                     '\t\n' +
@@ -218,6 +290,16 @@
                 queryFields: [],
                 queryHints: [],
                 cost: '0.000186',
+                page: {
+                    find: {
+                        count: 0,
+                        message: null
+                    },
+                    query: {
+                        success: null,
+                        message: null
+                    }
+                },
                 message: null
             }
         },
@@ -226,6 +308,18 @@
         * Defines the computed properties on the component.
         */
         computed: {
+            totalPages() {
+                return Math.ceil(this.count / this.pageSizeDefault);
+            },
+
+            getTotal() {
+                return this.collection.objects.count;
+            },
+
+            getLimit() {
+                return this.pageSizeDefault;
+            },
+
             currentFormat() {
                 return this.format;
             },
@@ -240,6 +334,24 @@
 
             queryHintsCount() {
                 return this.queryHints.length;
+            },
+
+            getDocuments() {
+                if (this.collection && this.collection.objects) {
+                    return this.collection.objects.objects;
+                }
+                return [];
+            },
+
+            getCount() {
+                if (this.collection && this.collection.objects) {
+                    this.count = this.collection.objects.count;
+                }
+                return this.count;
+            },
+
+            getCollection() {
+                return this.collection.collection;
             }
         },
 
@@ -350,6 +462,18 @@
                     command: 'findAll'
                 };
                 console.log(this.form);
+            },
+
+            closeQueryFields() {
+                console.log("close query fields");
+            },
+
+            closeQueryHints() {
+                console.log("close query hints");
+            },
+
+            pageChange(p) {
+                console.log("p: " + p);
             }
         },
 

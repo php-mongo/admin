@@ -8036,6 +8036,10 @@ body {
   background-color: #ffffff;
 }
 
+body .hidden-element {
+  display: none;
+}
+
 body .content-container {
   margin-top: 3rem;
 }

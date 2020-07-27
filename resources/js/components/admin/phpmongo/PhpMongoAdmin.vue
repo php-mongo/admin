@@ -27,10 +27,13 @@
            <tr>
                <td class="server-info rb" v-text="showLanguage('phpmongo', 'support')"></td>
                <td class="server-info">
-                   <p><span class="title" v-text="showLanguage('phpmongo', 'docs')"></span>: {{ pma.support.docs}} </p>
-                   <p><span class="title" v-text="showLanguage('phpmongo', 'email')"></span>: {{ pma.support.email }} </p>
-                   <p><span class="title" v-text="showLanguage('phpmongo', 'issues')"></span>: {{ pma.support.issues }} </p>
-                   <p><span class="title" v-text="showLanguage('phpmongo', 'source')"></span>: {{ pma.support.source}} </p>
+                   <p><span class="title" v-text="showLanguage('phpmongo', 'docs')"></span>: <a href="{ pma.support.docs }" target="_blank">{{ pma.support.docs }}</a> </p>
+                   <p><span class="title" v-text="showLanguage('phpmongo', 'email')"></span>: <a href="{ pma.support.email }" target="_blank">{{ pma.support.email }}</a> </p>
+                   <p><span class="title" v-text="showLanguage('phpmongo', 'issues')"></span>: <a href="{ pma.support.issues }" target="_blank">{{ pma.support.issues }}</a> </p>
+                   <p><span class="title" v-text="showLanguage('phpmongo', 'source')"></span>: <a href="{ pma.support.source }" target="_blank">{{ pma.support.source }}</a> </p>
+                   <p><span class="title" v-text="showLanguage('phpmongo', 'authentication')"></span>: <a href="{ pma.support.authentication }" target="_blank">{{ pma.support.authentication }}</a> </p>
+                   <p><span class="title" v-text="showLanguage('phpmongo', 'users')"></span>: <a href="{ pma.support.users }" target="_blank">{{ pma.support.users }}</a> </p>
+                   <p><span class="title" v-text="showLanguage('phpmongo', 'configuration')"></span>: <a href="{ pma.support.configuration }" target="_blank">{{ pma.support.configuration }}</a> </p>
                </td>
            </tr>
            <tr>

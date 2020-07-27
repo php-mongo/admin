@@ -64,7 +64,7 @@
                 background-color: $infoBgColor;
                 padding: 4px 4px 4px 8px;
             }
-            table.bordered td.tr, table.collection td.tr {
+            /*table.bordered td.tr, table.collection td.tr {
                 text-align: right;
                 width: 50%;
             }
@@ -93,7 +93,7 @@
                 td.vat {
                     vertical-align: top;
                 }
-            }
+            }*/
         }
     }
 </style>
@@ -153,8 +153,8 @@
         */
         methods: {
             /*
-           *   Calls the Translation and Language service
-           */
+            *   Calls the Translation and Language service
+            */
             showLanguage( context, key ) {
                 return this.$store.getters.getLanguageString( context, key );
             },
@@ -194,12 +194,6 @@
                 this.showComponent();
 
             }.bind(this));
-        }//,
-
-        /*watch: {
-            getCollection() {
-                this.showComponent();
-            }
-        }*/
+        }
     }
 </script>

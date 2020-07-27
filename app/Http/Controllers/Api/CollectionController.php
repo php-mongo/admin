@@ -1,60 +1,115 @@
 <?php
 
 /*
-    Defines a namespace for the controller.
-*/
+ *  Defines a namespace for the controller.
+ */
 namespace App\Http\Controllers\Api;
 
 /*
-    Defines the requests used by the controller.
-*/
+ *   Defines the requests used by the controller.
+ */
+
+use App\Helpers\MongoHelper;
 use Illuminate\Http\Request;
 
 /*
-    Defined controllers used by the controller
-*/
+ *  Defined application classes
+ */
 use App\Http\Controllers\Controller;
-
 use App\Models\Collection;
-
-use MongoDB;
-
-use MongoDB\BSON\Unserializable;
-
 use App\Http\Classes\UnserialiseDocument;
+use App\Http\Classes\ExportDocument;
+use App\Http\Classes\HighlightDocument;
 
+/*
+ * Vendors
+ */
+use MongoDB\BSON\Unserializable;
+use MongoDB;
+use phpDocumentor\Reflection\Types\Mixed_;
 
+/**
+ * Class CollectionController
+ * @package App\Http\Controllers\Api
+ */
 class CollectionController extends Controller implements Unserializable
 {
     /**
-     * @var null|string $slug
-     */
-    private $slug = null;
-
-    /**
-     * @var int
+     * @var     int         $limit      how many documents should be fetched for each page
      */
     private $limit = 30;
 
     /**
-     * @var MongoDB\Client
+     * ToDo: Set a default here for now - we'll be passing this a config -> or as a request parameter
+     *
+     * @var     string      $format
+     */
+    private $format = 'json';
+
+    /**
+     * ToDo: Set a default here for now - we'll be passing this a config -> or as a request parameter
+     *
+     * @var     string      $render
+     */
+    private $render = 'default';
+
+    private $fields = [];
+
+    /**
+     * @var     MongoDB\Client  $client
      */
     private $client;
 
     /**
-     * @var $unserialised MongoDB\Model\BSONArray
+     * @var     MongoDB\Model\BSONArray $unserialised
      */
     private $unserialised;
 
     /**
-     * @var $database
+     * @var     string      $database       mongo database name
      */
     private $database;
 
     /**
-     * @var $collection
+     * @var     string      $collection     mongo collection name
      */
     private $collection;
+
+    /**
+     * @var     array       $collectionStatistics
+     */
+    private $collectionStatistics;
+
+    /**
+     * @param   string      $search
+     *
+     * @return  mixed
+     */
+    private function findCollectionStatisticsValue( $search )
+    {
+        foreach ($this->collectionStatistics as $key => $value) {
+            if ($key == $search && !is_array( $value)) {
+                return $value;
+            }
+        }
+        return '';
+    }
+
+    /**
+     * @return array
+     */
+    private function getCollectionStatistics( ): array
+    {
+        return $this->collectionStatistics;
+    }
+
+    /**
+     * @param array $collectionStatistics
+     */
+    private function setCollectionStatistics(array $collectionStatistics): void
+    {
+        $this->collectionStatistics = $collectionStatistics;
+    }
 
     /**
      * Returns the collection
@@ -67,6 +122,7 @@ class CollectionController extends Controller implements Unserializable
     {
         /** @var MongoDB\Collection $collection */
         $collection = (new MongoDB\Client)->$database->$collection;
+
         $objectsObj = $this->getObjects($database, $collection->getCollectionName());
         $data       = $collection->__debugInfo();
 
@@ -121,23 +177,64 @@ class CollectionController extends Controller implements Unserializable
             $statistics[ $key ] = $value;
         }
 
+        // save the stats for reference
+        $this->setCollectionStatistics( $statistics );
+
         /**
          * Extract the BSON docs from $objects
          */
-        $objects = [];
-        $objects['count'] = $objectsObj['count'];
+        $objects    = [];
         $objectsArr = $objectsObj['objects'];
-        $arr = [];
+        $arr        = [];
+
+        /** @var ExportDocument $docExport */
+        $docExport  = new ExportDocument();
+
+        /** @var HighlightDocument $docHighlight */
+        $docHighlight = new HighlightDocument();
+        $objects['count'] = $objectsObj['count'];
+
+        $documentsArray = [];
+        foreach ($objectsArr as $document) {
+            MongoHelper::prepareDocument( $document, $documentsArray,$this->fields );
+        }
+        $i = 0;
         foreach ($objectsArr as $key => $obj) {
-            if ($obj instanceof MongoDB\Model\BSONDocument) {
-                $obj = $obj->getArrayCopy();
-                // ToDo !! convert the _id into aa array
-                /** @var MongoDB\BSON\ObjectId $id */
-                $id         = $obj['_id'];
-                $oid        = $id->serialize();
-                $obj['_id'] =  array('oid' => $id);
-            }
+            // set the text key value -> default as php
+            $docExport->setVar($obj);
+            $docExport->setParams([]);
+            // always set 'array' as the default for this
+            $text = $docExport->export($this->format);
+
+            // set the data key
+            $data = $docHighlight->highlight( $documentsArray[$i], $this->format, true);
+
+        //    echo '<pre>'; var_dump($text); echo '</pre>'; die;
+
+            $obj['text'] = $text;
+            $obj['data'] = $data;
+
+            // set the 'can_delete' bool
+            $obj['can_delete'] = (isset($obj['_id']) && $this->findCollectionStatisticsValue('capped') == false);
+
+            // set the 'can_modify' bool
+            $obj['can_modify'] = (isset($obj['_id']));
+
+            // set the 'can_duplicate' bool
+            $obj['can_duplicate'] = (isset($obj['_id']));
+
+            // set the 'can_add_field' bool
+            $obj['can_add_field'] = (isset($obj['_id']) && $this->findCollectionStatisticsValue('capped') == false);
+
+            // set the 'can_refresh' bool
+            $obj['can_refresh'] = (isset($obj['_id']));
+
             $arr[$key] = $obj;
+
+            $i++;
+
+         //   echo '<pre>'; var_dump($arr); echo '</pre>'; die;
+
         }
         $objects['objects'] = $arr;
         $arr = array("collection" => $collection->__debugInfo(), "objects" => $objects, "stats" => $statistics, "server" => $serverData);
@@ -154,11 +251,18 @@ class CollectionController extends Controller implements Unserializable
      */
     private function getObjects($db, $collection)
     {
-        $arr     = [];
-        $cursor  = (new MongoDB\Client)->$db->selectCollection($collection);
-        $objects = $cursor->find();
-        $arr['objects'] = $objects->toArray();
-        $arr['count']   = count($arr['objects']);
+        // no errors this way
+        $arr = array(
+            "objects" => [],
+            "count" => 0
+        );
+        $cursor    = (new MongoDB\Client)->$db->selectCollection($collection);
+        $objects   = $cursor->find();
+        $array     =  $objects->toArray();
+        foreach ($array as $object) {
+            $arr['objects'][] = $object;
+        }
+        $arr['count'] = count($arr['objects']);
         return $arr;
     }
 
@@ -188,7 +292,7 @@ class CollectionController extends Controller implements Unserializable
     /**
      * Display a single collection.
      *
-     * URL:         /api/v1/collection/{database}/{$collection}
+     * URL:         /api/v1/collection/{database}/{collection}
      * Method:      GET
      * Description: Fetches a collection with objects and stats
      *

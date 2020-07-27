@@ -11,7 +11,9 @@
 return [
 
     "access" => "Access",
+    "authentication" => "Authentication",
     "authors" => "Authors",
+    "configuration" => "Configuration",
     "description" => "Description",
     "docs" => "Docs",
     "email" => "Email",
@@ -25,6 +27,7 @@ return [
     "role" => "Role",
     "source" => "Source",
     "support" => "Support",
+    "users" => "Users",
     "version" => "Version"
 
 ];

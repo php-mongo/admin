@@ -37,8 +37,15 @@
             }
             table.bordered td.rb {
                 border-right: 1px solid $infoColor;
-                min-width: 40%;
+                min-width: 25%;
                 text-align: right !important;
+            }
+            .server-info {
+                .title {
+                    display: inline-block;
+                    min-width: 90px;
+                    text-align: right;
+                }
             }
         }
     }

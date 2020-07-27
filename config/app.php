@@ -125,6 +125,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Base user configurations
+    |--------------------------------------------------------------------------
+    |
+    | A nice home for default user configurations
+    |
+    */
+    'limit' => env('LIMIT', 50),
+
+    'format' => env('FORMAT', 'json'),
+
+    'display' => env('DISPLAY', 'array'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------
     |
@@ -216,6 +230,7 @@ return [
         'Lang' => Illuminate\Support\Facades\Lang::class,
         'Log' => Illuminate\Support\Facades\Log::class,
         'Mail' => Illuminate\Support\Facades\Mail::class,
+        'MongoHelper' => App\Helpers\MongoHelper::class,
         'Notification' => Illuminate\Support\Facades\Notification::class,
         'Password' => Illuminate\Support\Facades\Password::class,
         'Queue' => Illuminate\Support\Facades\Queue::class,
