@@ -7,7 +7,7 @@
         <document-nav @expand="expand($event)" @text="text($event)" v-bind:document="document" v-bind:collection="collection" v-bind:index="index"></document-nav>
         <div :id="'text_' + index" :class="'doc-data index-' + index" ref="data-document" v-html="document.data"></div>
         <div :id="'field_' + index" class="doc-text hidden-element" ref="text-document">
-            <textarea rows="7" cols="60" v-on:dblclick="selectAll($event)">{{ document.text }}</textarea>
+            <textarea ref="textbox" rows="7" cols="60" v-on:dblclick="selectAll($event)">{{ document.text }}</textarea>
         </div>
         <div class="doc-right-to-top"><span class="pma-link">Top</span></div>
     </div>
@@ -15,21 +15,21 @@
 
 <script>
     /*
-    *   Import components
-    */
+     *   Import components
+     */
     import DocumentNav from "./DocumentNav";
 
     export default {
         /*
-        *   Register the components to be used by the home page.
-        */
+         *   Register the child components to be used by the document
+         */
         components: {
             DocumentNav
         },
 
         /*
-        *   Document properties
-        */
+         *   Document properties
+         */
         props: ['document','collection','index'],
 
         data() {
@@ -39,19 +39,29 @@
             }
         },
 
+        /*
+         *  Component methods
+         */
         methods: {
             /*
-            *   Calls the Translation and Language service
-            */
+             *   Calls the Translation and Language service
+             */
             showLanguage( context, key ) {
                 return this.$store.getters.getLanguageString( context, key );
             },
 
+            /**
+             *  Focus the textarea field
+             */
             selectAll(event) {
-                console.log("selecting all text...");
-                console.log(event);
+                event.target.focus();
             },
 
+            /**
+             *  Expand the main data document view - works for both JSON and Array views
+             *
+             *  @param event
+             */
             expand(event) {
                 console.log(event);
                 if (this.expanded === true) {
@@ -74,6 +84,11 @@
                 }
             },
 
+            /**
+             *  Show / Hide the Textarea (array view)
+             *
+             *  @param event
+             */
             text(event) {
                 console.log(event);
                 if (this.showText === true) {

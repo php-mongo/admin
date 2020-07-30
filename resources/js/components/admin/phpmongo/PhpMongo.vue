@@ -2,6 +2,7 @@
     @import '~@/abstracts/_variables.scss';
     .pma-mongo-view {
         float: left;
+        height: auto;
         margin-left: 20px;
         width: 48%;
 

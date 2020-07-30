@@ -162,8 +162,9 @@
             /*
             *   Show component
             */
-            showComponent() {
-                EventBus.$emit('show-collection-nav');
+            showComponent(collection) {
+                EventBus.$emit('show-collection-nav', collection );
+                this.collection = this.$store.getters.getCollection;
                 this.show = true;
             },
 
@@ -190,8 +191,8 @@
             /*
             *    Show this component
             */
-            EventBus.$on('show-collection', function() {
-                this.showComponent();
+            EventBus.$on('show-collection', function(collection) {
+                this.showComponent(collection);
 
             }.bind(this));
         }

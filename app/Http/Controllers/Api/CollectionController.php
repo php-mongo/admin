@@ -113,6 +113,8 @@ class CollectionController extends Controller implements Unserializable
 
     /**
      * Returns the collection
+     * Todo: !! taking the long road with this request as we want 'ALL' available data
+     * @todo consider using $objects = new MongoDB\Client->$db->$collection to fetch objects seperately
      *
      * @param   string    $database     string DB Name
      * @param   string    $collection   string Collection Name
@@ -209,8 +211,6 @@ class CollectionController extends Controller implements Unserializable
             // set the data key
             $data = $docHighlight->highlight( $documentsArray[$i], $this->format, true);
 
-        //    echo '<pre>'; var_dump($text); echo '</pre>'; die;
-
             $obj['text'] = $text;
             $obj['data'] = $data;
 
@@ -232,8 +232,6 @@ class CollectionController extends Controller implements Unserializable
             $arr[$key] = $obj;
 
             $i++;
-
-         //   echo '<pre>'; var_dump($arr); echo '</pre>'; die;
 
         }
         $objects['objects'] = $arr;
@@ -363,6 +361,8 @@ class CollectionController extends Controller implements Unserializable
     }
 
     /**
+     * Mostly we dont need this as we want to strip out all the bits individually
+     * In most cases ->getArrayCopy() or ->__toString() suffice
      *
      * @inheritDoc
      */

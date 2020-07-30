@@ -2,6 +2,7 @@
     @import '~@/abstracts/_variables.scss';
     .pma-server-view {
         float: left;
+        height: 105vh;
         width: 48%;
 
         .server-inner {

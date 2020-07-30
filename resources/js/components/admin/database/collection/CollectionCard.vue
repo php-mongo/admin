@@ -29,6 +29,9 @@
         .f11 {
             font-size: 11px;
         }
+        .page-message {
+            font-weight: 600;
+        }
         .buttons {
             span, label, input, select {
                 display: inline-block;
@@ -183,12 +186,12 @@
             <div class="records-header">
                 <p class="page-message" v-if="page.find.message">{{ page.find.message }}</p>
                 <pagination
-                    @pageChange="pageChange(p)"
-                    v-bind:max-visible-buttons="3"
+                    @pageChanged="pageChanged($event)"
+                    v-bind:max-visible-buttons="getMaxButtons"
                     v-bind:total-pages="totalPages"
                     v-bind:total="getTotal"
                     v-bind:limit="getLimit"
-                    v-bind:current-page="1"
+                    v-bind:current-page="getCurrentPage"
                     ></pagination>
             </div>
             <document v-for="(document, index) in getDocuments" :key="index" v-bind:index="index" v-bind:document="document" v-bind:collection="getCollection"></document>
@@ -231,8 +234,14 @@
             return {
                 show: false,
                 name: null,
+                start: 0,
+                showing: 0,
+                end: 0,
+                current: 1,
                 count: 0,
                 stats: {},
+                allObjects: [],
+                visibleObjects:[],
                 criteriaDefault: '{\n' +
                     '\t\n' +
                     '}',
@@ -286,6 +295,7 @@
                 pageSizes: [
                     10, 15, 20, 30, 50, 100, 200
                 ],
+                maxPageButtonDisplay: 3,
                 nativeFields: null,
                 queryFields: [],
                 queryHints: [],
@@ -313,11 +323,34 @@
             },
 
             getTotal() {
-                return this.collection.objects.count;
+                if (this.collection) {
+                    if (this.collection.objects) {
+                        if (this.collection.objects.count == 0) {
+                            this.page.find.message = 'The collection >> ' + this.collection.collection.collectionName + ' << has no documents';
+                            this.clearValues();
+                        } else {
+                            this.page.find.message = null;
+                        }
+                        return this.collection.objects.count;
+                    }
+                }
+                return 0;
+            },
+
+            getCount() {
+                return this.count;
+            },
+
+            getCurrentPage() {
+               return this.current;
             },
 
             getLimit() {
                 return this.pageSizeDefault;
+            },
+
+            getMaxButtons() {
+                return this.maxPageButtonDisplay;
             },
 
             currentFormat() {
@@ -337,21 +370,18 @@
             },
 
             getDocuments() {
-                if (this.collection && this.collection.objects) {
-                    return this.collection.objects.objects;
+                if (this.visibleObjects && this.visibleObjects.length >= 1) {
+                    return this.visibleObjects;
                 }
                 return [];
             },
 
-            getCount() {
-                if (this.collection && this.collection.objects) {
-                    this.count = this.collection.objects.count;
-                }
-                return this.count;
-            },
-
             getCollection() {
                 return this.collection.collection;
+            },
+
+            getObjects() {
+                return this.collection.objects;
             }
         },
 
@@ -399,7 +429,7 @@
 
             setFormat() {
                 let format = this.$store.getters.getCurrentFormat;
-                if (format !== this. format) {
+                if (format !== this.format) {
                     this.format = format;
                 }
             },
@@ -472,21 +502,63 @@
                 console.log("close query hints");
             },
 
-            pageChange(p) {
-                console.log("p: " + p);
+            pageChanged(page) {
+                this.current = page;
+                console.log("p in: " + p);
+                console.log("p out: " + p);
+                let x = 0;
+                let p = page - 1;
+                this.visibleObjects = [];
+                this.start = (p * this.pageSizeDefault);
+                this.end = page * this.pageSizeDefault; // not really using this
+                for (x = this.start; x  < this.pageSizeDefault * page; x+=1) {
+                    if (this.allObjects[x]) {
+                        this.visibleObjects.push(this.allObjects[x]);
+                    }
+                }
+            },
+
+            handlePageLoad() {
+                let x = 0;
+                // need to clear this to remove residual results
+                this.clearValues();
+                if (this.collection && this.collection.objects) {
+                    this.count = this.collection.objects.count;
+                    this.allObjects = this.collection.objects.objects;
+                    for (x = this.start; x  < this.pageSizeDefault; x+=1) {
+                        this.visibleObjects.push(this.allObjects[x]);
+                    }
+                }
+            },
+
+            clearValues() {
+                this.allObjects     = [];
+                this.visibleObjects = [];
+                this.showing        = 0;
+                this.start          = 0;
+                this.end            = 0;
+                this.current        = 1;
+                this.count          = 0;
             }
         },
 
         mounted() {
             EventBus.$on('show-collection', function() {
                 this.show = true;
-
             }.bind(this));
+        },
+
+        destroyed() {
+            this.clearValues();
         },
 
         watch: {
             getCurrentFormat() {
                 this.setFormat();
+            },
+
+            getObjects() {
+                this.handlePageLoad();
             }
         }
     }

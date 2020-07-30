@@ -1,8 +1,10 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
     .main-content {
-        padding: 0;
+        height: 100vh;
         margin: 0;
+        overflow: hidden;
+        padding: 0;
     }
 </style>
 

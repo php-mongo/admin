@@ -179,7 +179,7 @@
             *   We only show this navigation when we have an active collection
             */
             showNavigation() {
-                this.show = true;// this.$store.getters.getActiveCollection !== null;
+                this.show = true;
             },
 
             hideNavigation() {
@@ -188,7 +188,7 @@
         },
 
         mounted() {
-            EventBus.$on('show-collection-nav', function() {
+            EventBus.$on('show-collection-nav', function(collection) {
                 this.showNavigation();
 
             }.bind(this));

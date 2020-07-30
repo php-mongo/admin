@@ -1,20 +1,28 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
     .pma-main-panel {
-        height: 100%;
+        height: 95vh;
         margin-left: 245px;
-        padding: 20px 0 0 20px;
+        overflow-x: auto;
+        padding: 20px 0 20px 20px;
         width:auto;
+
+        .pma-main-inner {
+            margin: 0;
+            width: 88vw;
+        }
     }
 </style>
 
 <template>
-    <div class="pma-main-panel">
-        <server-view></server-view>
-        <php-mongo></php-mongo>
-        <databases-view></databases-view>
-        <database-view></database-view>
-        <collection-view></collection-view>
+    <div id="pma-main-panel" class="pma-main-panel" ref="pmapanel">
+        <div class="pma-main-inner" ref="pmainner">
+            <server-view></server-view>
+            <php-mongo></php-mongo>
+            <databases-view></databases-view>
+            <database-view></database-view>
+            <collection-view></collection-view>
+        </div>
     </div>
 </template>
 
@@ -38,6 +46,6 @@
             DatabasesView,
             DatabaseView,
             CollectionView
-        },
+        }
     }
 </script>

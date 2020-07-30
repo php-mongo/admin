@@ -23,13 +23,19 @@
                 button {
                     cursor: pointer;
                 }
+
+                button[disabled="disabled"] {
+                    &:hover {
+                        background-color: transparent;
+                    }
+                }
             }
         }
     }
 </style>
 <template>
     <div class="pagination-wrapper">
-        <p class="page" v-if="show"><span v-text="showLanguage('collection', 'displaying')"></span> {{ getCount }} <span v-text="showLanguage('pagination', 'from')"></span> {{ getTotal }} <span v-text="showLanguage('collection', 'documents')"></span></p>
+        <p class="page" v-if="show"><span v-text="showLanguage('collection', 'displaying')"></span> {{ getStart }}  <span>to</span> {{ getEnd }} <span v-text="showLanguage('pagination', 'from')"></span> {{ getTotal }} <span v-text="showLanguage('collection', 'documents')"></span></p>
         <ul class="pagination">
             <li class="pagination-item">
                 <button type="button" @click="onClickFirst" :disabled="isInFirstPage" v-text="showLanguage('pagination', 'first')"></button>
@@ -92,12 +98,16 @@
                     if (this.currentPage === 1) {
                         return 1;
                     }
-                    // when on the last page
+                    // need to keep the startPage less than totalPages less maxVisibleButton plus 1 to maintain the correct indexing
+                    if ((this.totalPages - this.currentPage) < this.maxVisibleButtons) {
+                        return this.totalPages - this.maxVisibleButtons + 1;
+                    }
+                    // when on the last page !! this will most likely never occur due to the previous check
                     if (this.currentPage === this.totalPages) {
-                        return this.totalPages - this.maxVisibleButtons;
+                        return this.totalPages - this.maxVisibleButtons + 1;
                     }
                     // when in between
-                    return this.currentPage - 1;
+                    return this.currentPage;
                 },
 
                 /*
@@ -105,14 +115,26 @@
                 */
                 pages() {
                     const range = [];
-                    for (let i = this.startPage; i <= Math.min(this.startPage + this.maxVisibleButtons -1, this.totalPages); i+=1) {
-                        range.push({ name: i, isDisabled: 1 === this.currentPage });
+                    for (let i = this.startPage; i <= Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages); i+=1) {
+                        range.push({ name: i, isDisabled: i === this.currentPage });
                     }
                     return range;
                 },
 
                 getCount() {
+                    if (this.total > this.limit) {
+                        return this.limit;
+
+                    }
                     return Math.max(this.limit, this.total);
+                },
+
+                getStart() {
+                    return ((this.currentPage - 1) * this.limit) + 1;
+                },
+
+                getEnd() {
+                    return Math.min(this.currentPage * this.limit, this.total);
                 },
 
                 getTotal() {

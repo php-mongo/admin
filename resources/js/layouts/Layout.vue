@@ -79,6 +79,12 @@
                 console.log("scrolling...");
                 console.log(event.target.scrollHeight);
                 console.log(event.target.scrollTop);
+            },
+
+            handleScroll() {
+                const viewportHeight = window.innerHeight;
+                const docHeight = document.body.offsetHeight;
+                const scrollTop = document.documentElement.scrollTop;
             }
         },
 

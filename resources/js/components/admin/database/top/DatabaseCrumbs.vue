@@ -58,11 +58,11 @@
         <nav class="crumb-navigation">
             <ul class="links">
                 <li class="crumb-link text-left">
-                    <img src="/img/icon/database.png" /> <span class="crumb pma-link" v-on:click="loadDatabase($event)">{{databaseName}}</span>
+                    <img src="/img/icon/database.png" /> <span class="crumb pma-link" v-on:click="loadDatabase($event)">{{ databaseName }}</span>
                 </li>
-                <li class="crumb-link text-left" v-if="crumbs[0].name !== null">
+                <li class="crumb-link text-left" v-if="showCollection">
                     <span class="dbl-arr">>></span> <img src="/img/icon/collection.png" />
-                    <span class="crumb pma-link" v-on:click="loadCrumb( crumb[0].name )">{{ getCollectionCrumbName }}</span>
+                    <span class="crumb pma-link" v-on:click="loadCrumb( collectionName )">{{ collectionName }}</span>
                 </li>
                 <li class="crumb-link text-left" v-if="crumbs[1].name !== null">
                     <span class="dbl-arr">>></span> <img src="/img/icon/function.png" />
@@ -111,8 +111,9 @@
                         option: null
                     }
                 ],
-                activeDb: 'N/A',
+                activeDb: null,
                 activeDatabase: null,
+                activeColl: null,
                 activeCollection: null
             };
         },
@@ -125,11 +126,11 @@
             *   Return the site name from config
             */
             databaseName() {
-                return this.activeDb;
+                return this.activeDb ? this.activeDb : this.activeDatabase;
             },
 
-            getCollectionCrumbName() {
-                return this.crumbs[0].name;
+            collectionName() {
+                return this.activeColl ? this.activeColl : this.activeCollection;
             },
 
             getFunctionCrumbName() {
@@ -140,22 +141,22 @@
             *   Handle the collection crumb
             */
             checkActiveCollection() {
-               this.activeCollection = this.$store.getters.getActiveCollection;
+               this.activeCollection = this.activeColl = this.$store.getters.getActiveCollection;
             },
 
             watchActiveCollection() {
                 return this.activeCollection;
             },
 
-            /*setActiveCollection() {
-                this.crumbs[0].name = this.activeCollection;
-            },*/
-
             /*
             *   Monitor for active database
             */
             checkActiveDatabase() {
-                this.activeDatabase = this.$store.getters.getActiveDatabase;
+                this.activeDatabase = this.activeDb = this.$store.getters.getActiveDatabase;
+            },
+
+            showCollection() {
+                return (this.activeColl && this.activeCollection);
             }
         },
 
@@ -213,6 +214,10 @@
                         }
                     }
                 }
+            },
+
+            clearData() {
+                this.activeColl = this.activeCollection = this.activeDb = this.activeDatabase = null;
             }
         },
 
@@ -221,12 +226,26 @@
         */
         mounted() {
             EventBus.$on('show-database', function(db) {
-                console.log("db to crumbs: " + db);
+                // console.log("db to crumbs: " + db);
                 this.activeDb = db;
 
             }.bind(this));
 
+            EventBus.$on('show-collection-nav', function(collectionName) {
+                this.activeColl = this.activeCollection = collectionName;
+
+            }.bind(this));
+
+            EventBus.$on('show-databases', function(db) {
+                this.clearData();
+
+            }.bind(this));
+
             this.checkDb();
+        },
+
+        destroyed() {
+            this.clearData();
         },
 
         watch: {

@@ -2024,6 +2024,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Import components for the Panel View
@@ -2043,7 +2051,71 @@ __webpack_require__.r(__webpack_exports__);
     DatabasesView: _databases_DatabasesView__WEBPACK_IMPORTED_MODULE_2__["default"],
     DatabaseView: _database_DatabaseView__WEBPACK_IMPORTED_MODULE_3__["default"],
     CollectionView: _database_collection_CollectionView__WEBPACK_IMPORTED_MODULE_4__["default"]
+  },
+
+  /*computed: {
+      getClientHeight() {
+          if (document.getElementById("pma-main-panel")) {
+              return document.getElementById("pma-main-panel").clientHeight;
+          }
+          return 0; //document.getElementById("pma-main-panel").clientHeight != null ? document.getElementById("pma-main-panel").clientHeight : 0;
+      },
+       getInnerHeight() {
+          return document.getElementById("pma-main-panel").innerHeight;
+      },
+       getOffsetHeight() {
+          return document.getElementById("pma-main-panel").offsetHeight;
+      },
+       getScrollHeight() {
+          return document.getElementById("pma-main-panel").scrollHeight;
+      },
+       getScrollTop() {
+          return document.getElementById("pma-main-panel").scrollTop;
+      },
+       getRectangleTop() {
+          return document.getElementById("pma-main-panel").getBoundingClientRect().top;
+          //const oldOffset = top + scrollTop;
+          //return oldOffset - oldOffset * (viewportHeight / docHeight);
+      },
+       getRectangleBottom() {
+          return document.getElementById("pma-main-panel").getBoundingClientRect().bottom;
+      },
+       getRectangleLeft() {
+          return document.getElementById("pma-main-panel").getBoundingClientRect().left;
+      }
+  },*/
+  methods: {
+    /*showHeight() {
+        console.log(document.getElementById("pma-main-panel").clientHeight);
+    },*/
+    getHeight: function getHeight() {
+      //console.log("interval running");
+      //console.log(document.getElementById("pma-main-panel").clientHeight);
+      //console.log(document.getElementById("pma-main-panel").scrollHeight);
+      //console.log(document.getElementById("pma-main-panel").offsetHeight);
+      //console.log(document.getElementById("pma-main-panel").innerHeight);
+      if (document.getElementById("pma-main-panel").scrollHeight > document.getElementById("pma-main-panel").clientHeight) {
+        this.$jqf(this.$refs.pmainner).css('margin-right', '-16px');
+      } else {
+        this.$jqf(this.$refs.pmainner).css('margin-right', '0');
+      }
+    }
+    /*startInterval() {
+         this.intervalId = setInterval(() => {
+             this.getHeight()
+         }, 10);
+    }*/
+
+  },
+  mounted: function mounted() {//   this.startInterval();
   }
+  /*,
+  watch: {
+     getClientHeight() {
+         this.showHeight();
+     }
+  }*/
+
 });
 
 /***/ }),
@@ -2352,7 +2424,7 @@ __webpack_require__.r(__webpack_exports__);
 
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('hide-panels'); // event to enable collection panel
 
-      _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-collection'); // hide this panel
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-collection', collection); // hide this panel
 
       this.show = false;
     }
@@ -2881,6 +2953,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 
 /*
 * Import the Event bus
@@ -2915,8 +2990,14 @@ __webpack_require__.r(__webpack_exports__);
     return {
       show: false,
       name: null,
+      start: 0,
+      showing: 0,
+      end: 0,
+      current: 1,
       count: 0,
       stats: {},
+      allObjects: [],
+      visibleObjects: [],
       criteriaDefault: '{\n' + '\t\n' + '}',
       newObjDefault: '{\n' + '\t\'$set\': {\n' + '\t\t//your attributes\n' + '\t}\n' + '}',
       fieldDefault: '_id',
@@ -2956,6 +3037,7 @@ __webpack_require__.r(__webpack_exports__);
         findAll: true
       },
       pageSizes: [10, 15, 20, 30, 50, 100, 200],
+      maxPageButtonDisplay: 3,
       nativeFields: null,
       queryFields: [],
       queryHints: [],
@@ -2982,10 +3064,32 @@ __webpack_require__.r(__webpack_exports__);
       return Math.ceil(this.count / this.pageSizeDefault);
     },
     getTotal: function getTotal() {
-      return this.collection.objects.count;
+      if (this.collection) {
+        if (this.collection.objects) {
+          if (this.collection.objects.count == 0) {
+            this.page.find.message = 'The collection >> ' + this.collection.collection.collectionName + ' << has no documents';
+            this.clearValues();
+          } else {
+            this.page.find.message = null;
+          }
+
+          return this.collection.objects.count;
+        }
+      }
+
+      return 0;
+    },
+    getCount: function getCount() {
+      return this.count;
+    },
+    getCurrentPage: function getCurrentPage() {
+      return this.current;
     },
     getLimit: function getLimit() {
       return this.pageSizeDefault;
+    },
+    getMaxButtons: function getMaxButtons() {
+      return this.maxPageButtonDisplay;
     },
     currentFormat: function currentFormat() {
       return this.format;
@@ -3000,21 +3104,17 @@ __webpack_require__.r(__webpack_exports__);
       return this.queryHints.length;
     },
     getDocuments: function getDocuments() {
-      if (this.collection && this.collection.objects) {
-        return this.collection.objects.objects;
+      if (this.visibleObjects && this.visibleObjects.length >= 1) {
+        return this.visibleObjects;
       }
 
       return [];
     },
-    getCount: function getCount() {
-      if (this.collection && this.collection.objects) {
-        this.count = this.collection.objects.count;
-      }
-
-      return this.count;
-    },
     getCollection: function getCollection() {
       return this.collection.collection;
+    },
+    getObjects: function getObjects() {
+      return this.collection.objects;
     }
   },
 
@@ -3124,8 +3224,44 @@ __webpack_require__.r(__webpack_exports__);
     closeQueryHints: function closeQueryHints() {
       console.log("close query hints");
     },
-    pageChange: function pageChange(p) {
-      console.log("p: " + p);
+    pageChanged: function pageChanged(page) {
+      this.current = page;
+      console.log("p in: " + p);
+      console.log("p out: " + p);
+      var x = 0;
+      var p = page - 1;
+      this.visibleObjects = [];
+      this.start = p * this.pageSizeDefault;
+      this.end = page * this.pageSizeDefault; // not really using this
+
+      for (x = this.start; x < this.pageSizeDefault * page; x += 1) {
+        if (this.allObjects[x]) {
+          this.visibleObjects.push(this.allObjects[x]);
+        }
+      }
+    },
+    handlePageLoad: function handlePageLoad() {
+      var x = 0; // need to clear this to remove residual results
+
+      this.clearValues();
+
+      if (this.collection && this.collection.objects) {
+        this.count = this.collection.objects.count;
+        this.allObjects = this.collection.objects.objects;
+
+        for (x = this.start; x < this.pageSizeDefault; x += 1) {
+          this.visibleObjects.push(this.allObjects[x]);
+        }
+      }
+    },
+    clearValues: function clearValues() {
+      this.allObjects = [];
+      this.visibleObjects = [];
+      this.showing = 0;
+      this.start = 0;
+      this.end = 0;
+      this.current = 1;
+      this.count = 0;
     }
   },
   mounted: function mounted() {
@@ -3133,9 +3269,15 @@ __webpack_require__.r(__webpack_exports__);
       this.show = true;
     }.bind(this));
   },
+  destroyed: function destroyed() {
+    this.clearValues();
+  },
   watch: {
     getCurrentFormat: function getCurrentFormat() {
       this.setFormat();
+    },
+    getObjects: function getObjects() {
+      this.handlePageLoad();
     }
   }
 });
@@ -3317,8 +3459,9 @@ __webpack_require__.r(__webpack_exports__);
     /*
     *   Show component
     */
-    showComponent: function showComponent() {
-      _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-collection-nav');
+    showComponent: function showComponent(collection) {
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-collection-nav', collection);
+      this.collection = this.$store.getters.getCollection;
       this.show = true;
     },
 
@@ -3344,8 +3487,8 @@ __webpack_require__.r(__webpack_exports__);
     *    Show this component
     */
 
-    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-collection', function () {
-      this.showComponent();
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-collection', function (collection) {
+      this.showComponent(collection);
     }.bind(this));
   }
 });
@@ -3579,6 +3722,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
   *   The component accepts one db as a property
@@ -3619,15 +3768,20 @@ __webpack_require__.r(__webpack_exports__);
       // when on the first page
       if (this.currentPage === 1) {
         return 1;
-      } // when on the last page
+      } // need to keep the startPage less than totalPages less maxVisibleButton plus 1 to maintain the correct indexing
+
+
+      if (this.totalPages - this.currentPage < this.maxVisibleButtons) {
+        return this.totalPages - this.maxVisibleButtons + 1;
+      } // when on the last page !! this will most likely never occur due to the previous check
 
 
       if (this.currentPage === this.totalPages) {
-        return this.totalPages - this.maxVisibleButtons;
+        return this.totalPages - this.maxVisibleButtons + 1;
       } // when in between
 
 
-      return this.currentPage - 1;
+      return this.currentPage;
     },
 
     /*
@@ -3639,14 +3793,24 @@ __webpack_require__.r(__webpack_exports__);
       for (var i = this.startPage; i <= Math.min(this.startPage + this.maxVisibleButtons - 1, this.totalPages); i += 1) {
         range.push({
           name: i,
-          isDisabled: 1 === this.currentPage
+          isDisabled: i === this.currentPage
         });
       }
 
       return range;
     },
     getCount: function getCount() {
+      if (this.total > this.limit) {
+        return this.limit;
+      }
+
       return Math.max(this.limit, this.total);
+    },
+    getStart: function getStart() {
+      return (this.currentPage - 1) * this.limit + 1;
+    },
+    getEnd: function getEnd() {
+      return Math.min(this.currentPage * this.limit, this.total);
     },
     getTotal: function getTotal() {
       return this.total;
@@ -3882,14 +4046,14 @@ __webpack_require__.r(__webpack_exports__);
     *   We only show this navigation when we have an active collection
     */
     showNavigation: function showNavigation() {
-      this.show = true; // this.$store.getters.getActiveCollection !== null;
+      this.show = true;
     },
     hideNavigation: function hideNavigation() {
       this.show = false;
     }
   },
   mounted: function mounted() {
-    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-collection-nav', function () {
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-collection-nav', function (collection) {
       this.showNavigation();
     }.bind(this));
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database-nav', function () {
@@ -4025,8 +4189,9 @@ __webpack_require__.r(__webpack_exports__);
         link: false,
         option: null
       }],
-      activeDb: 'N/A',
+      activeDb: null,
       activeDatabase: null,
+      activeColl: null,
       activeCollection: null
     };
   },
@@ -4039,10 +4204,10 @@ __webpack_require__.r(__webpack_exports__);
     *   Return the site name from config
     */
     databaseName: function databaseName() {
-      return this.activeDb;
+      return this.activeDb ? this.activeDb : this.activeDatabase;
     },
-    getCollectionCrumbName: function getCollectionCrumbName() {
-      return this.crumbs[0].name;
+    collectionName: function collectionName() {
+      return this.activeColl ? this.activeColl : this.activeCollection;
     },
     getFunctionCrumbName: function getFunctionCrumbName() {
       return this.crumbs[1].name;
@@ -4052,21 +4217,20 @@ __webpack_require__.r(__webpack_exports__);
     *   Handle the collection crumb
     */
     checkActiveCollection: function checkActiveCollection() {
-      this.activeCollection = this.$store.getters.getActiveCollection;
+      this.activeCollection = this.activeColl = this.$store.getters.getActiveCollection;
     },
     watchActiveCollection: function watchActiveCollection() {
       return this.activeCollection;
     },
 
-    /*setActiveCollection() {
-        this.crumbs[0].name = this.activeCollection;
-    },*/
-
     /*
     *   Monitor for active database
     */
     checkActiveDatabase: function checkActiveDatabase() {
-      this.activeDatabase = this.$store.getters.getActiveDatabase;
+      this.activeDatabase = this.activeDb = this.$store.getters.getActiveDatabase;
+    },
+    showCollection: function showCollection() {
+      return this.activeColl && this.activeCollection;
     }
   },
 
@@ -4126,6 +4290,9 @@ __webpack_require__.r(__webpack_exports__);
           }
         }
       }
+    },
+    clearData: function clearData() {
+      this.activeColl = this.activeCollection = this.activeDb = this.activeDatabase = null;
     }
   },
 
@@ -4134,10 +4301,19 @@ __webpack_require__.r(__webpack_exports__);
   */
   mounted: function mounted() {
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database', function (db) {
-      console.log("db to crumbs: " + db);
+      // console.log("db to crumbs: " + db);
       this.activeDb = db;
     }.bind(this));
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-collection-nav', function (collectionName) {
+      this.activeColl = this.activeCollection = collectionName;
+    }.bind(this));
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-databases', function (db) {
+      this.clearData();
+    }.bind(this));
     this.checkDb();
+  },
+  destroyed: function destroyed() {
+    this.clearData();
   },
   watch: {
     watchActiveCollection: function watchActiveCollection() {
@@ -5271,8 +5447,8 @@ __webpack_require__.r(__webpack_exports__);
       this.$jqf(this.$refs.coll).replace(['active', 'hide-list']);
     },
     loadCollection: function loadCollection(collection) {
-      console.log("loading collection from left nav: " + collection); // send collection and db for tracking
-
+      //console.log("loading collection from left nav: " + collection);
+      // send collection and db for tracking
       this.$store.dispatch('setActiveDatabase', this.activeDb);
       this.$store.dispatch('setActiveCollection', collection); // load
 
@@ -5284,7 +5460,7 @@ __webpack_require__.r(__webpack_exports__);
 
       _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('hide-panels'); // event to enable collection panel
 
-      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-collection');
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-collection', collection);
     },
 
     /*
@@ -5650,6 +5826,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
 /* harmony import */ var _PhpMongoAdmin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PhpMongoAdmin */ "./resources/js/components/admin/phpmongo/PhpMongoAdmin.vue");
+//
 //
 //
 //
@@ -6310,6 +6487,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _WebServer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./WebServer */ "./resources/js/components/admin/server/WebServer.vue");
 /* harmony import */ var _Directives__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Directives */ "./resources/js/components/admin/server/Directives.vue");
 /* harmony import */ var _BuildInfo__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./BuildInfo */ "./resources/js/components/admin/server/BuildInfo.vue");
+//
 //
 //
 //
@@ -10335,6 +10513,11 @@ __webpack_require__.r(__webpack_exports__);
       console.log("scrolling...");
       console.log(event.target.scrollHeight);
       console.log(event.target.scrollTop);
+    },
+    handleScroll: function handleScroll() {
+      var viewportHeight = window.innerHeight;
+      var docHeight = document.body.offsetHeight;
+      var scrollTop = document.documentElement.scrollTop;
     }
   },
   mounted: function mounted() {
@@ -10580,6 +10763,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_admin_dbs_DbsView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/admin/dbs/DbsView */ "./resources/js/components/admin/dbs/DbsView.vue");
 /* harmony import */ var _components_admin_top_TopView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/admin/top/TopView */ "./resources/js/components/admin/top/TopView.vue");
 /* harmony import */ var _components_admin_PanelView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/admin/PanelView */ "./resources/js/components/admin/PanelView.vue");
+//
+//
 //
 //
 //
@@ -10880,7 +11065,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".pma-main-panel {\n  height: 100%;\n  margin-left: 245px;\n  padding: 20px 0 0 20px;\n  width: auto;\n}", ""]);
+exports.push([module.i, ".pma-main-panel {\n  height: 95vh;\n  margin-left: 245px;\n  overflow-x: auto;\n  padding: 20px 0 20px 20px;\n  width: auto;\n}\n.pma-main-panel .pma-main-inner {\n  margin: 0;\n  width: 88vw;\n}", ""]);
 
 // exports
 
@@ -10937,7 +11122,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, ".collection-inner .criteria {\n  height: 160px;\n  margin-bottom: 0;\n  max-width: 99%;\n}\n.collection-inner .v-top {\n  vertical-align: top;\n  width: 50%;\n}\n.collection-inner .field-orders p {\n  height: 40px;\n  margin-top: 0;\n}\n.collection-inner .field-orders p input, .collection-inner .field-orders p select {\n  display: inline-block;\n}\n.collection-inner .field-orders p input {\n  width: 200px;\n}\n.collection-inner .field-orders p select {\n  width: 120px;\n}\n.collection-inner .f11 {\n  font-size: 11px;\n}\n.collection-inner .buttons span, .collection-inner .buttons label, .collection-inner .buttons input, .collection-inner .buttons select {\n  display: inline-block;\n  width: auto;\n}\n.collection-inner .buttons input[type=submit], .collection-inner .buttons input[type=button] {\n  cursor: pointer;\n  padding: 5px;\n}\n.collection-inner .fields-control {\n  display: none;\n}\n.collection-inner .collection-document {\n  border: 2px #ccc solid;\n  margin-bottom: 10px;\n  min-height: 100px;\n  position: relative;\n}\n.collection-inner .collection-document:hover {\n  background-color: #f9f9f9;\n}\n.collection-inner .collection-document .doc-nav {\n  border-bottom: 1px #999 solid;\n  display: inline-block;\n  margin: 0 0 5px 50px;\n  padding: 5px 0 0 0;\n}\n.collection-inner .collection-document .doc-data {\n  display: block;\n  max-height: 150px;\n  overflow-y: hidden;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-text {\n  max-height: 150px;\n  overflow-y: auto;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-right-to-top {\n  bottom: 5px;\n  position: absolute;\n  right: 10px;\n}", ""]);
+exports.push([module.i, ".collection-inner .criteria {\n  height: 160px;\n  margin-bottom: 0;\n  max-width: 99%;\n}\n.collection-inner .v-top {\n  vertical-align: top;\n  width: 50%;\n}\n.collection-inner .field-orders p {\n  height: 40px;\n  margin-top: 0;\n}\n.collection-inner .field-orders p input, .collection-inner .field-orders p select {\n  display: inline-block;\n}\n.collection-inner .field-orders p input {\n  width: 200px;\n}\n.collection-inner .field-orders p select {\n  width: 120px;\n}\n.collection-inner .f11 {\n  font-size: 11px;\n}\n.collection-inner .page-message {\n  font-weight: 600;\n}\n.collection-inner .buttons span, .collection-inner .buttons label, .collection-inner .buttons input, .collection-inner .buttons select {\n  display: inline-block;\n  width: auto;\n}\n.collection-inner .buttons input[type=submit], .collection-inner .buttons input[type=button] {\n  cursor: pointer;\n  padding: 5px;\n}\n.collection-inner .fields-control {\n  display: none;\n}\n.collection-inner .collection-document {\n  border: 2px #ccc solid;\n  margin-bottom: 10px;\n  min-height: 100px;\n  position: relative;\n}\n.collection-inner .collection-document:hover {\n  background-color: #f9f9f9;\n}\n.collection-inner .collection-document .doc-nav {\n  border-bottom: 1px #999 solid;\n  display: inline-block;\n  margin: 0 0 5px 50px;\n  padding: 5px 0 0 0;\n}\n.collection-inner .collection-document .doc-data {\n  display: block;\n  max-height: 150px;\n  overflow-y: hidden;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-text {\n  max-height: 150px;\n  overflow-y: auto;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-right-to-top {\n  bottom: 5px;\n  position: absolute;\n  right: 10px;\n}", ""]);
 
 // exports
 
@@ -11032,7 +11217,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, ".pagination-wrapper {\n  display: inline-block;\n  font-weight: 600;\n  width: 99%;\n}\n.pagination-wrapper .page {\n  display: inline-block;\n  float: left;\n}\n.pagination-wrapper .pagination {\n  list-style-type: none;\n  float: right;\n}\n.pagination-wrapper .pagination .active {\n  background-color: #4dc0b5;\n}\n.pagination-wrapper .pagination .pagination-item {\n  display: inline-block;\n}\n.pagination-wrapper .pagination .pagination-item button {\n  cursor: pointer;\n}", ""]);
+exports.push([module.i, ".pagination-wrapper {\n  display: inline-block;\n  font-weight: 600;\n  width: 99%;\n}\n.pagination-wrapper .page {\n  display: inline-block;\n  float: left;\n}\n.pagination-wrapper .pagination {\n  list-style-type: none;\n  float: right;\n}\n.pagination-wrapper .pagination .active {\n  background-color: #4dc0b5;\n}\n.pagination-wrapper .pagination .pagination-item {\n  display: inline-block;\n}\n.pagination-wrapper .pagination .pagination-item button {\n  cursor: pointer;\n}\n.pagination-wrapper .pagination .pagination-item button[disabled=disabled]:hover {\n  background-color: transparent;\n}", ""]);
 
 // exports
 
@@ -11260,7 +11445,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-mongo-view {\n  float: left;\n  margin-left: 20px;\n  width: 48%;\n}\n.pma-mongo-view .mongo-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-mongo-view .mongo-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-mongo-view .mongo-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n}\n.pma-mongo-view .mongo-inner table td p {\n  text-align: left;\n  margin-bottom: 7px;\n}\n.pma-mongo-view .mongo-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-mongo-view .mongo-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-mongo-view .mongo-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-mongo-view .mongo-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n  min-width: 25%;\n  text-align: right !important;\n}\n.pma-mongo-view .mongo-inner .server-info .title {\n  display: inline-block;\n  min-width: 90px;\n  text-align: right;\n}", ""]);
+exports.push([module.i, ".pma-mongo-view {\n  float: left;\n  height: auto;\n  margin-left: 20px;\n  width: 48%;\n}\n.pma-mongo-view .mongo-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-mongo-view .mongo-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-mongo-view .mongo-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n}\n.pma-mongo-view .mongo-inner table td p {\n  text-align: left;\n  margin-bottom: 7px;\n}\n.pma-mongo-view .mongo-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-mongo-view .mongo-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-mongo-view .mongo-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-mongo-view .mongo-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n  min-width: 25%;\n  text-align: right !important;\n}\n.pma-mongo-view .mongo-inner .server-info .title {\n  display: inline-block;\n  min-width: 90px;\n  text-align: right;\n}", ""]);
 
 // exports
 
@@ -11412,7 +11597,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-server-view {\n  float: left;\n  width: 48%;\n}\n.pma-server-view .server-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-server-view .server-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-server-view .server-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n  text-align: center;\n}\n.pma-server-view .server-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-server-view .server-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-server-view .server-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  min-width: 100px;\n  text-align: left;\n}\n.pma-server-view .server-inner table.bordered td.w50 {\n  min-width: 49.9%;\n  text-align: right;\n}\n.pma-server-view .server-inner table.bordered td.title {\n  width: 15rem;\n}\n.pma-server-view .server-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n}", ""]);
+exports.push([module.i, ".pma-server-view {\n  float: left;\n  height: 105vh;\n  width: 48%;\n}\n.pma-server-view .server-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-server-view .server-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-server-view .server-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n  text-align: center;\n}\n.pma-server-view .server-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-server-view .server-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-server-view .server-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  min-width: 100px;\n  text-align: left;\n}\n.pma-server-view .server-inner table.bordered td.w50 {\n  min-width: 49.9%;\n  text-align: right;\n}\n.pma-server-view .server-inner table.bordered td.title {\n  width: 15rem;\n}\n.pma-server-view .server-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n}", ""]);
 
 // exports
 
@@ -11754,7 +11939,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".main-content {\n  padding: 0;\n  margin: 0;\n}", ""]);
+exports.push([module.i, ".main-content {\n  height: 100vh;\n  margin: 0;\n  overflow: hidden;\n  padding: 0;\n}", ""]);
 
 // exports
 
@@ -58912,19 +59097,29 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "pma-main-panel" },
+    {
+      ref: "pmapanel",
+      staticClass: "pma-main-panel",
+      attrs: { id: "pma-main-panel" }
+    },
     [
-      _c("server-view"),
-      _vm._v(" "),
-      _c("php-mongo"),
-      _vm._v(" "),
-      _c("databases-view"),
-      _vm._v(" "),
-      _c("database-view"),
-      _vm._v(" "),
-      _c("collection-view")
-    ],
-    1
+      _c(
+        "div",
+        { ref: "pmainner", staticClass: "pma-main-inner" },
+        [
+          _c("server-view"),
+          _vm._v(" "),
+          _c("php-mongo"),
+          _vm._v(" "),
+          _c("databases-view"),
+          _vm._v(" "),
+          _c("database-view"),
+          _vm._v(" "),
+          _c("collection-view")
+        ],
+        1
+      )
+    ]
   )
 }
 var staticRenderFns = []
@@ -60064,15 +60259,15 @@ var render = function() {
               _vm._v(" "),
               _c("pagination", {
                 attrs: {
-                  "max-visible-buttons": 3,
+                  "max-visible-buttons": _vm.getMaxButtons,
                   "total-pages": _vm.totalPages,
                   total: _vm.getTotal,
                   limit: _vm.getLimit,
-                  "current-page": 1
+                  "current-page": _vm.getCurrentPage
                 },
                 on: {
-                  pageChange: function($event) {
-                    return _vm.pageChange(_vm.p)
+                  pageChanged: function($event) {
+                    return _vm.pageChanged($event)
                   }
                 }
               })
@@ -60437,7 +60632,9 @@ var render = function() {
               textContent: _vm._s(_vm.showLanguage("collection", "displaying"))
             }
           }),
-          _vm._v(" " + _vm._s(_vm.getCount) + " "),
+          _vm._v(" " + _vm._s(_vm.getStart) + "  "),
+          _c("span", [_vm._v("to")]),
+          _vm._v(" " + _vm._s(_vm.getEnd) + " "),
           _c("span", {
             domProps: {
               textContent: _vm._s(_vm.showLanguage("pagination", "from"))
@@ -60850,7 +61047,7 @@ var render = function() {
           )
         ]),
         _vm._v(" "),
-        _vm.crumbs[0].name !== null
+        _vm.showCollection
           ? _c("li", { staticClass: "crumb-link text-left" }, [
               _c("span", { staticClass: "dbl-arr" }, [_vm._v(">>")]),
               _vm._v(" "),
@@ -60862,11 +61059,11 @@ var render = function() {
                   staticClass: "crumb pma-link",
                   on: {
                     click: function($event) {
-                      return _vm.loadCrumb(_vm.crumb[0].name)
+                      return _vm.loadCrumb(_vm.collectionName)
                     }
                   }
                 },
-                [_vm._v(_vm._s(_vm.getCollectionCrumbName))]
+                [_vm._v(_vm._s(_vm.collectionName))]
               )
             ])
           : _vm._e(),
@@ -87445,12 +87642,16 @@ var collection = {
         console.log(error);
       });
     },
+    setDbCollections: function setDbCollections(_ref5, data) {
+      var commit = _ref5.commit;
+      commit('setCollections', data);
+    },
 
     /*
     *   Set the active collection - used for collection tracking
     */
-    setActiveCollection: function setActiveCollection(_ref5, data) {
-      var commit = _ref5.commit;
+    setActiveCollection: function setActiveCollection(_ref6, data) {
+      var commit = _ref6.commit;
       console.log("setting active collection: " + data);
       commit('setActiveCollection', data);
     },
@@ -87458,8 +87659,8 @@ var collection = {
     /*
     *   Set the current format for data entry (json | array)
     */
-    setCurrentFormat: function setCurrentFormat(_ref6, data) {
-      var commit = _ref6.commit;
+    setCurrentFormat: function setCurrentFormat(_ref7, data) {
+      var commit = _ref7.commit;
       commit('setCurrentFormat', data);
     }
   },
@@ -87493,7 +87694,7 @@ var collection = {
     *   Sets the collection
     */
     setCollection: function setCollection(state, collection) {
-      console.log("saving collection: " + collection);
+      // console.log("saving collection: " + collection);
       state.collection = collection;
     },
 
@@ -87765,6 +87966,8 @@ var database = {
         commit('setActiveDatabase', data);
         commit('setDatabase', response.data.data.database);
         commit('setDatabaseLoadStatus', 2);
+        var collections = response.data.data.database.collections;
+        dispatch('setDbCollections', collections);
       })["catch"](function (error) {
         commit('setDatabase', {});
         commit('setDatabaseLoadStatus', 3);

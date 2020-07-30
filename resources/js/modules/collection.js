@@ -115,6 +115,10 @@ export const collection = {
                 });
         },
 
+        setDbCollections( { commit }, data) {
+            commit( 'setCollections', data);
+        },
+
         /*
         *   Set the active collection - used for collection tracking
         */
@@ -160,7 +164,7 @@ export const collection = {
         *   Sets the collection
         */
         setCollection( state, collection ) {
-            console.log("saving collection: " + collection);
+            // console.log("saving collection: " + collection);
             state.collection = collection;
         },
 

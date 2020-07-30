@@ -20,6 +20,7 @@ return [
     "next_" => "Next &raquo;",
     "previous" => "Previous",
     "previous_" => "&laquo; Previous",
+    "to" => "to",
     "total" => "total"
 
 ];

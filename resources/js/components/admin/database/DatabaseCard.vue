@@ -237,7 +237,7 @@
                 // event to hide th db panel
                 EventBus.$emit('hide-panels');
                 // event to enable collection panel
-                EventBus.$emit('show-collection');
+                EventBus.$emit('show-collection', collection );
                 // hide this panel
                 this.show = false;
             }

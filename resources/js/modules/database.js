@@ -68,6 +68,9 @@ export const database = {
                     commit( 'setActiveDatabase', data );
                     commit( 'setDatabase', response.data.data.database );
                     commit( 'setDatabaseLoadStatus', 2 );
+
+                    let collections = response.data.data.database.collections;
+                    dispatch('setDbCollections', collections);
                 })
                 .catch( (error) => {
                     commit( 'setDatabase', {} );

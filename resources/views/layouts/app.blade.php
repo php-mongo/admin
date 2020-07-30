@@ -27,7 +27,7 @@
     <script src="/js/lang.js" type="text/javascript"></script>
 </head>
 <body>
-    <div id="app" class="off-canvas-wrapper">
+    <div id="app" class="off-canvas-wrapper" ref="app-container">
         <router-view></router-view>
     </div>
     <!-- Scripts -->

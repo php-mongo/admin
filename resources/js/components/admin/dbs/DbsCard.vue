@@ -164,7 +164,7 @@
             },
 
             loadCollection( collection ) {
-                console.log("loading collection from left nav: " + collection);
+                //console.log("loading collection from left nav: " + collection);
                 // send collection and db for tracking
                 this.$store.dispatch('setActiveDatabase', this.activeDb );
                 this.$store.dispatch('setActiveCollection', collection );
@@ -174,7 +174,7 @@
                 // event to hide panels
                 EventBus.$emit('hide-panels');
                 // event to enable collection panel
-                EventBus.$emit('show-collection');
+                EventBus.$emit('show-collection', collection);
             },
 
             /*
