@@ -88,7 +88,7 @@
         <table>
             <tr>
                 <td class="v-top">
-                    <textarea class="criteria" rows="7" cols="70" v-model="form.criteria"></textarea><br/>
+                    <textarea class="criteria" rows="7" cols="70" v-model="form.criteria[currentFormat]"></textarea><br/>
                     <div id="newObjInput" v-show="rules.modify">
                         <span v-text="showLanguage('collection', 'newObject')"></span>(see <a href="http://www.mongodb.org/display/DOCS/Updating" target="_blank" v-text="showLanguage('collection', 'updating')"></a> operators):<br/>
                         <textarea id="newObj" name="newObj" rows="5" cols="70" v-model="form.newObj"></textarea>
@@ -194,28 +194,28 @@
                     v-bind:current-page="getCurrentPage"
                     ></pagination>
             </div>
-            <document v-for="(document, index) in getDocuments" :key="index" v-bind:index="index" v-bind:document="document" v-bind:collection="getCollection"></document>
+            <document v-for="(document, index) in getDocuments" :key="index" v-bind:index="index" v-bind:document="document" v-bind:collection="getCollection" v-bind:format="currentFormat"></document>
         </div>
     </div>
 </template>
 
 <script>
     /*
-    * Import the Event bus
-    */
+     * Import the Event bus
+     */
     import { EventBus } from '../../../../event-bus.js';
 
     /*
-    *   Import components for the Databases View
-    */
+     *   Import components for the Databases View
+     */
     import PageSizeOption from "./PageSizeOption";
     import Document from "./Document";
     import Pagination from "./Pagination";
 
     export default {
         /*
-        *   Register the components to be used by the home page.
-        */
+         *   Register the components to be used by the home page.
+         */
         components: {
             PageSizeOption,
             Document,
@@ -223,13 +223,13 @@
         },
 
         /*
-        *   The component accepts one db as a property
-        */
+         *   The component accepts one db as a property
+         */
         props: ['collection'],
 
         /*
-        *   Data housing for our collections
-        */
+         *   Data housing for our collections
+         */
         data() {
             return {
                 show: false,
@@ -261,9 +261,14 @@
                 pageSizeDefault: 10,
                 commandDefault: 'findAll',
                 form : {
-                    criteria: '{\n' +
-                        '\t\n' +
-                        '}',
+                    criteria: {
+                        json: '{\n' +
+                                    '\t\n' +
+                               '}',
+                        array: '(\n' +
+                                    '\t\n' +
+                                ')'
+                    },
                     newObj: '{\n' +
                         '\t\'$set\': {\n' +
                         '\t\t//your attributes\n' +
@@ -315,8 +320,8 @@
         },
 
         /*
-        * Defines the computed properties on the component.
-        */
+         * Defines the computed properties on the component.
+         */
         computed: {
             totalPages() {
                 return Math.ceil(this.count / this.pageSizeDefault);
@@ -386,12 +391,12 @@
         },
 
         /*
-        *   Defined methods for the component
-        */
+         *   Defined methods for the component
+         */
         methods: {
             /*
-            *   Calls the Translation and Language service
-            */
+             *   Calls the Translation and Language service
+             */
             showLanguage( context, key, str ) {
                 if (str) {
                     let string = this.$store.getters.getLanguageString( context, key );
@@ -401,8 +406,8 @@
             },
 
             /*
-            *   Make the byte human readable
-            */
+             *   Make the byte human readable
+             */
             humanReadable(bytes, precision) {
                 if (bytes === 0) {
                     return 0;
@@ -422,11 +427,9 @@
                 return bytes;
             },
 
-            setCurrentFormat( format ) {
-                this.$store.dispatch('setCurrentFormat', format);
-                this.format = format;
-            },
-
+            /*
+             *  This should respond to a change in the global 'format' setting
+             */
             setFormat() {
                 let format = this.$store.getters.getCurrentFormat;
                 if (format !== this.format) {
@@ -502,6 +505,25 @@
                 console.log("close query hints");
             },
 
+            /*
+             *  Set the active query format - passed from the Collection Navbar
+             *  The format value is passed to each document where the view is flipped accordingly
+             *
+             *  @var format string
+             */
+            setQueryFormat( format ) {
+                if (format) {
+                    this.format = format;
+                    // send to store in case other components need to access this value
+                    this.$store.dispatch('setCurrentFormat', format);
+                }
+            },
+
+            /*
+             * Handle the pagination process
+             *
+             * @var page integer This is the desired page number
+             */
             pageChanged(page) {
                 this.current = page;
                 console.log("p in: " + p);
@@ -518,6 +540,10 @@
                 }
             },
 
+            /*
+             *  On mount save the full collection objects (documents) if they exists
+             *  Iterate the objects and create a visibleObjects array according to te pagination parameters
+             */
             handlePageLoad() {
                 let x = 0;
                 // need to clear this to remove residual results
@@ -531,6 +557,9 @@
                 }
             },
 
+            /*
+             *  Clear all data to prevent overlaps and residual data
+             */
             clearValues() {
                 this.allObjects     = [];
                 this.visibleObjects = [];
@@ -542,16 +571,30 @@
             }
         },
 
+        /*
+         *  Don't fall off your horse!!
+         */
         mounted() {
-            EventBus.$on('show-collection', function() {
+            EventBus.$on('show-collection', () => {
                 this.show = true;
-            }.bind(this));
+
+            });
+
+            EventBus.$on('set-query-format', ( format ) => {
+                this.setQueryFormat( format );
+            });
         },
 
+        /*
+         *  In case of imenent destruction
+         */
         destroyed() {
             this.clearValues();
         },
 
+        /*
+         *  Who watches the wathers?
+         */
         watch: {
             getCurrentFormat() {
                 this.setFormat();

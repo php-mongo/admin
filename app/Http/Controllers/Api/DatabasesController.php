@@ -1,29 +1,41 @@
 <?php
 
-/*
-    Defines a namespace for the controller.
-*/
+/**
+ *  Defines a namespace for the controller.
+ */
 namespace App\Http\Controllers\Api;
 
-/*
-    Defines the requests used by the controller.
-*/
+/**
+ *  Defines the requests used by the controller.
+ */
 use Illuminate\Http\Request;
 
-/*
-    Defined controllers used by the controller
-*/
+/**
+ *  Defined controllers used by the controller
+ */
 use App\Http\Controllers\Controller;
 
-use App\Models\Database;
-
-use MongoDB;
-
-use MongoDB\BSON\Unserializable;
-
+/**
+ *  Internal classes etc etc
+ */
+use App\Http\Classes\MongoConnection as Mongo;
 use App\Http\Classes\UnserialiseDocument;
 
+/**
+ *  Models
+ */
+use App\Models\Database;
 
+/**
+ *  Mongo DB
+ */
+use MongoDB;
+use MongoDB\BSON\Unserializable;
+
+/**
+ * Class DatabasesController
+ * @package App\Http\Controllers\Api
+ */
 class DatabasesController extends Controller implements Unserializable
 {
     /**
@@ -40,6 +52,11 @@ class DatabasesController extends Controller implements Unserializable
      * @var MongoDB\Client
      */
     private $client;
+
+    /**
+     * @var Mongo
+     */
+    private $mongo;
 
     /**
      * @var $unserialised MongoDB\Model\BSONArray
@@ -72,7 +89,11 @@ class DatabasesController extends Controller implements Unserializable
             $index = 0;
             foreach ($this->client->listDatabases() as $db) {
                 $dbn        = $db->getName();
-                $database   = (new MongoDB\Client)->$dbn;
+                //$database   = (new MongoDB\Client)->$dbn;
+                // Todo: need to verify which method is the best path
+                // 1) $this->mongo->connectClientDb($dbn)  =  (new MongpDB\Client())->database
+                // 2) $this->client->selectDatabase($dbn)  = (new MongpDB\Client())->selectDatabase('database')
+                $database   = $this->mongo->connectClientDb($dbn);
                 $stats      = $database->command(array('dbstats' => 1))->toArray()[0];
                 $statistics = [];
                 // break out the stats into an array
@@ -100,10 +121,10 @@ class DatabasesController extends Controller implements Unserializable
     {
         $arr      = [];
         $index    = 0;
-        $database = (new MongoDB\Client)->$db;
+        $database = $this->client->selectDatabase( $db ); // (new MongoDB\Client)->$db;
         /** @var MongoDB\Model\CollectionInfo $collection */
         foreach ($database->listCollections() as $collection) {
-            // we only need to objects when its database view
+            // we only need to get objects when its database view
             if ($getObjects) {
                 $arr[] = array("id" => $index, "collection" => $collection->__debugInfo(), "objects" => $this->getObjects($db, $collection->getName()));
             } else {
@@ -121,10 +142,10 @@ class DatabasesController extends Controller implements Unserializable
      * @param   string  $collection     string Collection name
      * @return  array
      */
-    private function getObjects($db, $collection)
+    private function getObjects(string $db, string $collection)
     {
         $arr     = [];
-        $cursor  = (new MongoDB\Client)->$db->selectCollection($collection);
+        $cursor  = $this->mongo->connectClientDb($db)->selectCollection($collection); // (new MongoDB\Client)->$db->selectCollection($collection);
         $objects = $cursor->find();
         $arr['objects'] = $objects->toArray();
         $arr['count']   = count($arr['objects']);
@@ -151,7 +172,13 @@ class DatabasesController extends Controller implements Unserializable
      */
     public function __construct()
     {
-        $this->client = new MongoDB\Client;
+        /** @var \App\Models\User $user */
+        $user = auth()->guard('api')->user();
+        $this->mongo = new Mongo($user);
+        if ($this->mongo->checkConfig()) {
+            $this->mongo->connectClient();
+            $this->client = $this->mongo->getClient();
+        }
     }
 
     /**
@@ -167,7 +194,7 @@ class DatabasesController extends Controller implements Unserializable
     {
         // get the databases
         $databases = $this->getAllDatabases();
-        //return response()->json( array('databases' => $databases));
+
         return response()->success('success', array('databases' => $databases));
     }
 
@@ -184,7 +211,7 @@ class DatabasesController extends Controller implements Unserializable
     {
         // get the databases
         $database = $this->getAllDatabases($name);
-        //return response()->json( array('database' => $database));
+
         return response()->success('success', array('database' => $database));
     }
 
@@ -202,7 +229,8 @@ class DatabasesController extends Controller implements Unserializable
     {
         $db = $request->get('database');
         // create the database
-        $database = (new MongoDB\Client)->$db;
+        $database = $this->mongo->connectClientDb($db); // (new MongoDB\Client)->$db;
+
         // ToDo: we need to add a default collection to initialise the DB in MongoDB
         $database->createCollection('foo');
 
@@ -213,7 +241,7 @@ class DatabasesController extends Controller implements Unserializable
             $index++;
             if ($mdb->getName() == $db) {
                 $dbn      = $mdb->getName();
-                $database = (new MongoDB\Client)->$dbn;
+                $database = $this->mongo->connectClientDb( $dbn ); // (new MongoDB\Client)->$dbn;
             }
         }
         // the index  is used as a key in the front-end
@@ -227,7 +255,6 @@ class DatabasesController extends Controller implements Unserializable
         }
         $arr = array("id" => $index, "db" => $database->__debugInfo(), "stats" => $statistics, "collections" => $this->getCollections($db));
 
-        //return response()->json( array('database' => $arr ));
         return response()->success('success', array('database' => $arr ));
     }
 
@@ -248,14 +275,15 @@ class DatabasesController extends Controller implements Unserializable
         if ($names && is_array($names)) {
             foreach ($names as $name) {
                 if (!empty($name)) {
-                    $db = (new MongoDB\Client)->$name;
+                    $db = $this->mongo->connectClientDb( $name ); // (new MongoDB\Client)->$name;
+
                     /** @var MongoDB\Model\BSONDocument $result */
                     $result = $db->drop();
                     $status[] = $this->setDeleteStatus( $name, $result->getArrayCopy());
                 }
             }
         }
-        //return response()->json( array('status' => $status ));
+
         return response()->success('success', array('status' => $status ));
     }
 

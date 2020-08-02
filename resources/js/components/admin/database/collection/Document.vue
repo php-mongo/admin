@@ -5,9 +5,9 @@
 <template>
     <div class="collection-document">
         <document-nav @expand="expand($event)" @text="text($event)" v-bind:document="document" v-bind:collection="collection" v-bind:index="index"></document-nav>
-        <div :id="'text_' + index" :class="'doc-data index-' + index" ref="data-document" v-html="document.data"></div>
+        <div :id="'text_' + index" :class="'doc-data index-' + index" ref="data-document" v-html="getDataByFormat"></div>
         <div :id="'field_' + index" class="doc-text hidden-element" ref="text-document">
-            <textarea ref="textbox" rows="7" cols="60" v-on:dblclick="selectAll($event)">{{ document.text }}</textarea>
+            <textarea ref="textbox" rows="7" cols="60" v-on:dblclick="selectAll($event)">{{ getTextByFormat }}</textarea>
         </div>
         <div class="doc-right-to-top"><span class="pma-link">Top</span></div>
     </div>
@@ -30,12 +30,41 @@
         /*
          *   Document properties
          */
-        props: ['document','collection','index'],
+        props: ['document','collection','index','format'],
 
+        /*
+         *  Required data elements
+         */
         data() {
             return {
                 expanded: false,
                 showText: false
+            }
+        },
+
+        computed: {
+            /*
+             *  When a format is selected in the Collection nav, this method flips the visible data content
+             */
+            getDataByFormat( document ) {
+                if (this.format === 'json') {
+                    return this.document.data;
+                }
+                if (this.format === 'array') {
+                    return this.document.text;
+                }
+            },
+
+            /*
+             *  When a format is selected in the Collection nav, this method flips the textarea content
+             */
+            getTextByFormat( document ) {
+                if (this.format === 'json') {
+                    return this.document.text;
+                }
+                if (this.format === 'array') {
+                    return this.document.data;
+                }
             }
         },
 
@@ -45,25 +74,29 @@
         methods: {
             /*
              *   Calls the Translation and Language service
+             *
+             *  @param context string This defines (page-name).php parent language group
+             *  @param key string     This defines the key item to select from the language group
              */
             showLanguage( context, key ) {
                 return this.$store.getters.getLanguageString( context, key );
             },
 
-            /**
+            /*
              *  Focus the textarea field
+             *
+             *  @param event
              */
             selectAll(event) {
                 event.target.focus();
             },
 
-            /**
+            /*
              *  Expand the main data document view - works for both JSON and Array views
              *
              *  @param event
              */
             expand(event) {
-                console.log(event);
                 if (this.expanded === true) {
                     this.expanded = false;
                     if (this.showText === true) {
@@ -84,13 +117,12 @@
                 }
             },
 
-            /**
-             *  Show / Hide the Textarea (array view)
+            /*
+             *  Show / Hide the Textarea (default array view) and data container (default JSON view)
              *
              *  @param event
              */
             text(event) {
-                console.log(event);
                 if (this.showText === true) {
                     this.showText = false;
                     this.$jqf(this.$refs['text-document']).hide();

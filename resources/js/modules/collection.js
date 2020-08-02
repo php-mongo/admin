@@ -45,7 +45,6 @@ export const collection = {
 
             CollectionApi.getCollections()
                 .then( ( response ) => {
-                    console.log(response.data.data.collections);
                     commit( 'setCollections', response.data.data.collections );
                     commit( 'setCollectionsLoadStatus', 2 );
                 })
@@ -65,7 +64,6 @@ export const collection = {
 
             CollectionApi.getCollection( data )
                 .then( ( response ) => {
-                   // console.log(response.data.data.collection);
                     commit( 'setCollection', response.data.data.collection );
                     commit( 'setCollectionLoadStatus', 2 );
                 })
@@ -85,7 +83,6 @@ export const collection = {
 
             CollectionApi.createCollection( data )
                 .then( ( response ) => {
-                    console.log(response.data.data);
                     commit( 'setCreatedCollection', response.data.data.collection );
                     commit( 'setCreateCollectionStatus', 2 );
                 })
@@ -104,7 +101,6 @@ export const collection = {
 
             CollectionApi.deleteCollection( data )
                 .then( ( response ) => {
-                    console.log(response.data.data);
                     commit( 'setDeletedCollection', data );
                     commit( 'setDeleteCollectionStatus', 2 );
                 })

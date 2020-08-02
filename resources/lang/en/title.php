@@ -40,7 +40,7 @@ return [
     "refreshTitle" => "Refresh this view",
     "renameTitle" => "Rename this item",
     "repairTitle" => "Run repair tools on this database",
-    "serverTitle" => "View the MongoDB Server details",
+    "serversTitle" => "View and manage your Server configurations",
     "setupTitle" => "Setup a new PHP Mongo Admin account",
     "statistics" => "View statistics for this collection",
     "statusTitle" => "View the MongoDB Server status",

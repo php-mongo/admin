@@ -15,6 +15,11 @@ class ServersTable extends Migration
     {
         Schema::create('servers', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id');
+            $table->string('host');
+            $table->string('port');
+            $table->string('username');
+            $table->string('password');
             $table->timestamps();
         });
     }

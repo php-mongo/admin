@@ -22,6 +22,7 @@
             <databases-view></databases-view>
             <database-view></database-view>
             <collection-view></collection-view>
+            <servers-view></servers-view>
         </div>
     </div>
 </template>
@@ -35,6 +36,7 @@
     import DatabasesView from "./databases/DatabasesView";
     import DatabaseView from "./database/DatabaseView";
     import CollectionView from "./database/collection/CollectionView";
+    import ServersView from "./servers/ServersView";
 
     export default {
         /*
@@ -45,7 +47,8 @@
             PhpMongo,
             DatabasesView,
             DatabaseView,
-            CollectionView
+            CollectionView,
+            ServersView
         }
     }
 </script>

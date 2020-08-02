@@ -15,6 +15,8 @@
 
         <message-notification></message-notification>
 
+        <delete-confirmation></delete-confirmation>
+
         <router-view></router-view>
 
         <no-results-found></no-results-found>
@@ -40,6 +42,8 @@
 
     import MessageNotification from "../components/global/MessageNotification";
 
+    import DeleteConfirmation from "../components/global/DeleteConfirmation";
+
     import NoResultsFound from "../components/admin/NoResultsFound";
 
     import SiteFooter from "../components/global/SiteFooter.vue";
@@ -58,6 +62,7 @@
             SuccessNotification,
             ErrorNotification,
             MessageNotification,
+            DeleteConfirmation,
             NoResultsFound,
             SiteFooter,
             RegisterModal,

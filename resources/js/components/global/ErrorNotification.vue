@@ -6,7 +6,7 @@
         z-index: 999999;
         left: 0;
         right: 0;
-        top: 0;
+        top: 25vh;
 
         div.error-notification  {
             background: $white;
@@ -14,7 +14,7 @@
             border-left: 5px solid $errorBorder;
             border-right: 5px solid $errorBorder;
             min-height: 50px;
-            line-height: 50px;
+            line-height: 60px;
             margin: 85px auto auto auto;
             min-width: 400px;
             max-width: 800px;
@@ -37,6 +37,8 @@
     <div class="error-notification-container" v-show="show">
       <div class="error-notification">
         <img src="/img/error.svg"/> {{ errorMessage }}
+          <button>Confirm deletion</button>
+          <button>Cancel</button>
       </div>
     </div>
   </transition>
@@ -55,28 +57,36 @@
     data(){
       return {
         errorMessage: '',
-        show: false
+        show: false,
+        id: null
       }
+    },
+
+    computer: {
+        confirmDeletion() {
+            this.$emit('confirm-deletion', this.id);
+        }
     },
 
     /*
       When mounted, bind the show error event.
     */
     mounted(){
-      EventBus.$on('show-error', function( data ){
+      EventBus.$on('show-deletion', ( data ) => {
         this.errorMessage = data.notification;
         this.show = true;
-        let timer = data.timer ? data.timer : 5000;
+        this.id   = data;
+        // let timer = data.timer ? data.timer : 5000;
 
         /*
           Default display duration is 5 seconds.
         */
-        setTimeout( function() {
-          this.show = false;
+        //setTimeout( function() {
+        //  this.show = false;
+        //
+        //}.bind(this), timer);
 
-        }.bind(this), timer);
-
-      }.bind(this));
+      });
     }
   }
 </script>

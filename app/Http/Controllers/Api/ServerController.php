@@ -1,27 +1,38 @@
 <?php
 
-/*
+/**
  *   Defines a namespace for the controller.
  */
 namespace App\Http\Controllers\Api;
 
-/*
+/**
  *   Defines the requests used by the controller.
  */
 use Illuminate\Http\Request;
 
-/*
+/**
  *   Defined controllers used by the controller
  */
 use App\Http\Controllers\Controller;
+
+/**
+ *  Internal classes etc etc
+ */
+use App\Http\Classes\MongoConnection as Mongo;
 
 /**
  * MongoDB
  */
 use MongoDB;
 
+/**
+ * Used ti reard the compooser file
+ */
 use Eloquent\Composer\Configuration\ConfigurationReader;
 
+/**
+ * All good things coie to an end !!
+ */
 use Exception;
 
 /**
@@ -39,6 +50,11 @@ class ServerController extends Controller
      * @var int
      */
     private $limit = 30;
+
+    /**
+     * @var MongoConnection
+     */
+    private $mongo;
 
     /**
      * @var MongoDB\Driver\Manager
@@ -80,6 +96,9 @@ class ServerController extends Controller
      */
     private $connection;
 
+    /**
+     * @var $composer array
+     */
     private $composer;
 
     /**
@@ -89,8 +108,7 @@ class ServerController extends Controller
     {
         // command line - run on admin table
         try {
-            $arr = [];
-            $this->commandLine = "";
+            $arr    = [];
             $cursor = $this->database->command(array("getCmdLineOpts" => 1));
             foreach ($cursor as $document) {
                 if (isset($document['argv'])) {
@@ -175,8 +193,8 @@ class ServerController extends Controller
     private function getConnection()
     {
         try {
-            $port = '';
-            $host = 'localhost';
+            $port   = '';
+            $host   = 'localhost';
             $cursor = $this->database->command(array("getCmdLineOpts" => 1));
             foreach ($cursor as $document) {
                 if (isset($document['parsed']['net']['port'])) {
@@ -184,10 +202,10 @@ class ServerController extends Controller
                 }
             }
             $this->connection = array(
-                "Host" =>  $host,
-                "Port" => $port,
-                "Username" => "******",
-                "Password" => "******"
+                "Host"      =>  $host,
+                "Port"      => $port,
+                "Username"  => "******",
+                "Password"  => "******"
             );
 
         } catch (Exception $e) {
@@ -200,10 +218,10 @@ class ServerController extends Controller
      */
     private function getComposerData()
     {
-        $reader   = new ConfigurationReader;
-        $data     = $reader->read('/var/hosting/sites/php-mongo-admin/composer.json');
-        $obj      = $data->rawData();
-        $composer = [];
+        $reader                  = new ConfigurationReader;
+        $data                    = $reader->read('/var/hosting/sites/php-mongo-admin/composer.json');
+        $obj                     = $data->rawData();
+        $composer                = [];
         $composer['name']        = $data->name();
         $composer['description'] = $data->description();
         $composer['keywords']    = join(" , ", $data->keywords());
@@ -211,27 +229,26 @@ class ServerController extends Controller
         $arr                     = $obj->authors;
         $authors                 = [];
         foreach ($arr as $author) {
-            $authors[] = array(
-                "name" => $author->name,
-                "email" => $author->email,
-                "homepage" => $author->homepage,
-                "role" => $author->role
+            $authors[]      = array (
+                "name"      => $author->name,
+                "email"     => $author->email,
+                "homepage"  => $author->homepage,
+                "role"      => $author->role
             );
         }
-        $composer['authors']     = $authors;
-        $composer['support']     = array(
-            "docs" => $obj->support->docs,
-            "email" => $obj->support->email,
-            "issues" => $obj->support->issues,
-            "source" => $obj->support->source,
-            "authentication" => $obj->support->authentication,
-            "users" => $obj->support->users,
-            "configuration" => $obj->support->configuration
+        $composer['authors']    = $authors;
+        $composer['support']    = array(
+            "docs"              => $obj->support->docs,
+            "email"             => $obj->support->email,
+            "issues"            => $obj->support->issues,
+            "source"            => $obj->support->source,
+            "authentication"    => $obj->support->authentication,
+            "users"             => $obj->support->users,
+            "configuration"     => $obj->support->configuration
         );
-        $composer['license']     = $data->license();
-        $composer['version']     = $data->version();
-
-        $this->composer = $composer;
+        $composer['license']    = $data->license();
+        $composer['version']    = $data->version();
+        $this->composer         = $composer;
     }
 
     /**
@@ -239,10 +256,17 @@ class ServerController extends Controller
      */
     public function __construct()
     {
+        /** @var \App\Models\User $user */
+        $user        = auth()->guard('api')->user();
+        $this->mongo = new Mongo($user);
+        if ($this->mongo->checkConfig()) {
+            $this->database = $this->mongo->connectClientDb('admin');
+        }
+
         // ToDo: for now just use the config value = these need to be reading the 'current server' once we implement server configs
-        $uri = "mongodb://" . config('mongo.servers.0.host') . ":" . config('mongo.servers.0.port');
-        $this->manager = new MongoDB\Driver\Manager($uri);
-        $this->database = (new MongoDB\Client)->admin;
+        //$uri = "mongodb://" . config('mongo.servers.0.host') . ":" . config('mongo.servers.0.port');
+        //$this->manager = new MongoDB\Driver\Manager($uri);
+        //$this->database = (new MongoDB\Client)->admin;
     }
 
     /**
@@ -288,6 +312,6 @@ class ServerController extends Controller
         $arr['buildinfo']   = $this->buildInfo;
         $arr['composer']    = $this->composer;
 
-        return response()->json( array('server' => $arr));
+        return response()->success('success',  array('server' => $arr));
     }
 }

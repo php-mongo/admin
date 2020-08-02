@@ -72,9 +72,6 @@
                 <li v-bind:class="{active: getActivePanel('execute')}">
                     <span v-on:click="loadPanel('execute', $event)"><img src="/img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('nav', 'execute')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('server')}">
-                    <span v-on:click="loadPanel('server', $event)"><img src="/img/icon/server.png" /> <span v-bind:title="showLanguage('title', 'serverTitle')" v-text="showLanguage('nav', 'server')"></span></span>
-                </li>
                 <li v-bind:class="{active: getActivePanel('status')}">
                     <span v-on:click="loadPanel('status', $event)"><img src="/img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'statusTitle')" v-text="showLanguage('nav', 'status')"></span></span>
                 </li>
@@ -86,6 +83,9 @@
                 </li>
                 <li v-bind:class="{active: getActivePanel('users')}">
                     <span v-on:click="loadPanel('users', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'usersTitle')" v-text="showLanguage('nav', 'users')"></span></span>
+                </li>
+                <li v-bind:class="{active: getActivePanel('servers')}">
+                    <span v-on:click="loadPanel('servers', $event)"><img src="/img/icon/servers2.png" /> <span v-bind:title="showLanguage('title', 'serversTitle')" v-text="showLanguage('nav', 'servers')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('master')}">
                     <span v-on:click="loadPanel('master', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'masterTitle')" v-text="showLanguage('nav', 'master')"></span></span>

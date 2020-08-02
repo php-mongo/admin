@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Default use statements
+ */
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -110,12 +113,60 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
 
     /*
     * -------------------------------------------------------
-    * Get all Dbs (private route)
+    * Get all Servers configurations (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/servers
+    * Controller:  API/ServersController@index
+    * Method:      GET
+    * Description: Gets all of the current Servers for current user
+    */
+    Route::get('/servers', 'Api\ServersController@index');
+    // Todo: resources are not returning the format we need (as yet)
+    /*Route::get('/servers', function() {
+        return ServerResource::collection(Server::all());
+    });*/
+
+    /*
+    * -------------------------------------------------------
+    * Create a new Server configurations (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/servers
+    * Controller:  API/ServersController@index
+    * Method:      GET
+    * Description: Gets all of the current Servers for current user
+    */
+    Route::post('/servers', 'Api\ServersController@store');
+
+    /*
+    * -------------------------------------------------------
+    * Activate a Server configuration (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/servers
+    * Controller:  API/ServersController@activate
+    * Method:      GET
+    * Description: Activates a server configuration
+    */
+    Route::post('/servers/activate', 'Api\ServersController@activate');
+
+    /*
+    * -------------------------------------------------------
+    * Delete a Server configuration (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/servers/{server}
+    * Controller:  API/ServersController@destroy
+    * Method:      GET
+    * Description: Activates a server configuration
+    */
+    Route::delete('/servers/{id}', 'Api\ServersController@destroy');
+
+    /*
+    * -------------------------------------------------------
+    * Get a Server's details (private route)
     * -------------------------------------------------------
     * URL:         /api/v1/server
     * Controller:  API/ServerController@getServer
     * Method:      GET
-    * Description: Gets all the dbs (databases)
+    * Description: Gets all of the current Server information
     */
     Route::get('/server', 'Api\ServerController@getServer');
 

@@ -5,23 +5,21 @@
  */
 namespace App\Http\Controllers\Api;
 
-/*
+/**
  *   Defines the requests used by the controller.
  */
-
-use App\Helpers\MongoHelper;
 use Illuminate\Http\Request;
 
-/*
+/**
  *  Defined application classes
  */
 use App\Http\Controllers\Controller;
-use App\Models\Collection;
-use App\Http\Classes\UnserialiseDocument;
 use App\Http\Classes\ExportDocument;
 use App\Http\Classes\HighlightDocument;
+use App\Http\Classes\MongoConnection as Mongo;
+use App\Helpers\MongoHelper;
 
-/*
+/**
  * Vendors
  */
 use MongoDB\BSON\Unserializable;
@@ -53,7 +51,15 @@ class CollectionController extends Controller implements Unserializable
      */
     private $render = 'default';
 
+    /**
+     * @var     array       $fields
+     */
     private $fields = [];
+
+    /**
+     * @var Mongo $mongo
+     */
+    private $mongo;
 
     /**
      * @var     MongoDB\Client  $client
@@ -123,7 +129,7 @@ class CollectionController extends Controller implements Unserializable
     private function getOneCollection($database, $collection)
     {
         /** @var MongoDB\Collection $collection */
-        $collection = (new MongoDB\Client)->$database->$collection;
+        $collection = $this->mongo->connectClientCollection( $database, $collection );
 
         $objectsObj = $this->getObjects($database, $collection->getCollectionName());
         $data       = $collection->__debugInfo();
@@ -138,7 +144,7 @@ class CollectionController extends Controller implements Unserializable
         $serverData['info'] = $server->getInfo();
 
         // get the database
-        $db         = (new MongoDB\Client)->$database;
+        $db         = $this->mongo->connectClientDb( $database );
 
         /** @var MongoDB\Driver\Cursor $stats Fetch the collection statistics*/
         $stats      = $db->command( array("collStats" => $collection->getCollectionName()) );
@@ -254,7 +260,7 @@ class CollectionController extends Controller implements Unserializable
             "objects" => [],
             "count" => 0
         );
-        $cursor    = (new MongoDB\Client)->$db->selectCollection($collection);
+        $cursor    = $this->client->$db->selectCollection($collection);
         $objects   = $cursor->find();
         $array     =  $objects->toArray();
         foreach ($array as $object) {
@@ -284,7 +290,13 @@ class CollectionController extends Controller implements Unserializable
      */
     public function __construct()
     {
-        $this->client = new MongoDB\Client;
+        /** @var \App\Models\User $user */
+        $user = auth()->guard('api')->user();
+        $this->mongo = new Mongo($user);
+        if ($this->mongo->checkConfig()) {
+            $this->mongo->connectClient();
+            $this->client = $this->mongo->getClient();
+        }
     }
 
     /**
@@ -304,8 +316,10 @@ class CollectionController extends Controller implements Unserializable
         if (isset($database, $collection)) {
             // get the collection
             $collection = $this->getOneCollection($database, $collection);
+
             return response()->success('success', array('collection' => $collection));
         }
+
         return response()->error('failed', array('message' => 'required parameters missing'));
     }
 
@@ -325,10 +339,10 @@ class CollectionController extends Controller implements Unserializable
         $collection = $request->get('collection');
 
         // create the collection
-        $database = (new MongoDB\Client)->$database;
+        $database = $this->mongo->connectClientDb($database);
         $database->createCollection($collection);
+        $arr      = $this->$this->getOneCollection($database, $collection);
 
-        $arr = $this->$this->getOneCollection($database, $collection);
         return response()->success('success', array('database' => $arr ));
     }
 
@@ -346,13 +360,13 @@ class CollectionController extends Controller implements Unserializable
     {
         $database    = $request->get('database');
         $collections = $request->get('collection', false);
-        $status = array();
+        $status      = array();
         if ($collections && is_array($collections)) {
             foreach ($collections as $name) {
                 if (!empty($name)) {
-                    $collection = (new MongoDB\Client)->$database->$name;
+                    $collection = $this->mongo->connectClientCollection($database, $name);
                     /** @var MongoDB\Model\BSONDocument $result */
-                    $result = $collection->drop();
+                    $result   = $collection->drop();
                     $status[] = $this->setDeleteStatus( $name, $result->getArrayCopy());
                 }
             }

@@ -6,7 +6,7 @@
         z-index: 999999;
         left: 0;
         right: 0;
-        top: 0;
+        top: 25vh;
 
         div.success-notification {
             background: $white;
@@ -14,7 +14,7 @@
             border-left: 5px solid $successBorder;
             border-right: 5px solid $successBorder;
             min-height: 50px;
-            line-height: 50px;
+            line-height: 60px;
             margin: 85px auto auto auto;
             min-width: 400px;
             max-width: 800px;

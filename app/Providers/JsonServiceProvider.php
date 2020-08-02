@@ -31,13 +31,13 @@ class JsonServiceProvider extends ServiceProvider
          * Handle success responses
          */
         $factory->macro('success', function( $message = '', $data = null ) use ($factory) {
-           $format = [
-               'status' => 'ok',
-               'success' => true,
-               'message' => $message,
-               'data' => $data
-           ];
-           return $factory->make($format);
+            $format = [
+                'status' => 'ok',
+                'success' => true,
+                'message' => $message,
+                'data' => $data
+            ];
+            return $factory->make($format);
         });
 
         /*

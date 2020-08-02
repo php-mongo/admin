@@ -44,7 +44,7 @@ export const database = {
 
             DatabaseApi.getDatabases()
                 .then( ( response ) => {
-                    console.log(response.data.data.databases);
+                    console.log(response.data.data);
                     commit( 'setDatabases', response.data.data.databases );
                     commit( 'setDatabasesLoadStatus', 2 );
                 })
@@ -64,7 +64,6 @@ export const database = {
 
             DatabaseApi.getDatabase( data )
                 .then( ( response ) => {
-                    console.log(response.data.data.database);
                     commit( 'setActiveDatabase', data );
                     commit( 'setDatabase', response.data.data.database );
                     commit( 'setDatabaseLoadStatus', 2 );
@@ -95,7 +94,6 @@ export const database = {
 
             DatabaseApi.createDatabase( data )
                 .then( ( response ) => {
-                    console.log(response.data.data);
                     commit( 'setCreatedDatabase', response.data.data.database );
                     commit( 'setCreateDatabaseStatus', 2 );
                 })
@@ -114,7 +112,6 @@ export const database = {
 
             DatabaseApi.deleteDatabase( data )
                 .then( ( response ) => {
-                    console.log(response.data.data);
                     commit( 'setDeletedDatabase', data );
                     commit( 'setDeleteDatabaseStatus', 2 );
                 })
@@ -215,14 +212,17 @@ export const database = {
         *   Set (remove) the deleted database(s) from the existing array
         */
         setDeletedDatabase( state, databases ) {
-            databases.forEach(function(value, index) {
+            databases.forEach( (value, index) => {
                 let arr = [];
-                state.databases.forEach(function(db, index) {
+                state.databases = state.databases.map( db => {
+                    return db.db.name !== value;
+                });
+                /*state.databases.forEach( (db, index) => {
                     if (db.db.name !== value) {
                         arr.push(db);
                     }
-                });
-                state.databases = arr;
+                });*/
+                //state.databases = arr;
             });
         },
 

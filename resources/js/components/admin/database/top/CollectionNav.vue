@@ -34,6 +34,15 @@
                     }
                 }
 
+                span.text {
+                    color: $black;
+                    cursor: help;
+                }
+
+                span.underline {
+                    text-decoration: underline;
+                }
+
                 .active {
                     background-color: $white;
                     border-bottom: 1px solid $white;
@@ -66,8 +75,12 @@
     <nav class="collection-navigation" v-show="show">
         <div class="text-left">
             <ul class="links">
-                <li v-bind:class="{active: getActivePanel('array,json')}">
-                    <span v-bind:title="showLanguage('title', 'queryTitle')"><span v-text="showLanguage('collection', 'query')"></span>[<span v-on:click="loadPanel('array', $event)" v-text="showLanguage('collection', 'array')"></span>|<span v-on:click="loadPanel('json', $event)" v-text="showLanguage('collection', 'json')"></span>]</span>
+                <li v-bind:class="{active: getActivePanel('query')}">
+                    <span>
+                        <span class="text" v-text="showLanguage('collection', 'query')" v-bind:title="showLanguage('title', 'queryTitle')"></span>
+                        [<span :class="isFormatArray" v-on:click="setFormat( 'array')" v-text="showLanguage('collection', 'array')"></span>
+                        |<span :class="isFormatJson" v-on:click="setFormat( 'json' )" v-text="showLanguage('collection', 'json')"></span>]
+                    </span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('history')}">
                     <span v-bind:title="showLanguage('title', 'historyTitle')" v-on:click="loadPanel('history', $event)" v-text="showLanguage('collection', 'array')"></span>
@@ -128,13 +141,16 @@
     export default {
         /*
         *   Data used with this component
+        *
+        *   Set the default format to 'json' - it should be provide on the mounted event
         */
         data() {
             return {
                 activePanel: null,
+                activeFormat: 'json',
                 current: null,
                 show: false
-            };
+            }
         },
 
         /*
@@ -144,6 +160,14 @@
             // Dr Smith! It does not compute!
             checkCollection() {
                 return this.$store.getters.getActiveCollection;
+            },
+
+            isFormatJson() {
+                return (this.activeFormat === 'json') ? 'underline' : '';
+            },
+
+            isFormatArray() {
+                return (this.activeFormat === 'array') ? 'underline' : '';
             }
         },
 
@@ -171,8 +195,14 @@
             /*
             *   Get the active panel
             */
-            getActivePanel: function(panel) {
+            getActivePanel (panel ) {
                 return this.activePanel === panel;
+            },
+
+            setFormat( format ) {
+                console.log("setting format: " + format);
+                this.activeFormat = format;
+                EventBus.$emit('set-query-format', format);
             },
 
             /*
@@ -188,6 +218,23 @@
         },
 
         mounted() {
+            EventBus.$on('show-collection-nav', () => {
+                this.showNavigation();
+
+            });
+
+            EventBus.$on('show-database-nav', () => {
+                this.hideNavigation();
+
+            });
+
+            EventBus.$on('default-query-format', ( format ) => {
+                this.activeFormat = format;
+
+            });
+        }
+
+        /*mounted() {
             EventBus.$on('show-collection-nav', function(collection) {
                 this.showNavigation();
 
@@ -198,12 +245,9 @@
 
             }.bind(this));
 
-        }//,
-
-       /* watch: {
-            checkCollection() {
-                this.showNavigation();
-            }
+            EventBus.$on('default-query-format', function( format ) {
+                this.activeFormat = format;
+            }.bind(this));
         }*/
     }
 </script>

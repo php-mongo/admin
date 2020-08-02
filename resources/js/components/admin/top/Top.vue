@@ -117,12 +117,14 @@
                         <span class="pma-link" v-text="showLanguage('nav','about')"></span>
                     </router-link>
                 </li>
+                <li><span class="pma-link">|</span</li>
                 <!--display user-->
                 <li v-show="isMember" class="username">
                     <span v-show="userLoadStatus" >
                         {{usersName}}
                     </span>
                 </li>
+                <li><span class="pma-link">|</span</li>
                 <li v-show="isMember" class="member-button">
                     <span class="pma-link" v-on:click="runLogout($event)" v-bind:title="showLanguage('title', 'logoutTitle')" v-text="showLanguage('nav', 'logout')"></span>
                 </li>

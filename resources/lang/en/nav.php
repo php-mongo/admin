@@ -29,7 +29,7 @@ return [
     "processes" => "Processes",
     "register" => "Register",
     "registerWithUs" => "Register an account with us or you can optionally use a Social Network account of your choice.",
-    "server" => "Server",
+    "servers" => "Servers",
     "status" => "Status",
     "terms" => "Terms & Conditions",
     "users" => "Users"

@@ -92,7 +92,7 @@ Route::get('/logout', 'Web\AppController@getLogout')
     ->name('logout');
 
 /*
-| Initial setup for the control user
+| Initial setup for the control user - public access
 */
 Route::get('/setup', 'Web\SetupController@getSetup')
     ->name('setup');
