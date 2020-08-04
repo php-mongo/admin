@@ -18,6 +18,7 @@ use App\Http\Classes\ExportDocument;
 use App\Http\Classes\HighlightDocument;
 use App\Http\Classes\MongoConnection as Mongo;
 use App\Helpers\MongoHelper;
+use App\Http\Requests\EditCollectionRequest;
 
 /**
  * Vendors
@@ -310,7 +311,6 @@ class CollectionController extends Controller implements Unserializable
      */
     public function getCollection(Request $request, $database, $collection)
     {
-        //$database = $request->get('database');
         $this->database   = $database;
         $this->collection = $collection;
         if (isset($database, $collection)) {
@@ -330,20 +330,37 @@ class CollectionController extends Controller implements Unserializable
      * Method:      POST
      * Description: Create a new collection using the given name
      *
-     * @param Request $request
+     * @param EditCollectionRequest $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function createCollection(Request $request)
+    public function createCollection(EditCollectionRequest $request)
     {
-        $database   = $request->get('database');
-        $collection = $request->get('collection');
+        $data = $request->validated();
+
+        $name       = $data['name'];
+        $database   = $data['database'];
+        $collection = $data['name'];
+        $capped     = $data['capped'];
+        $count      = $data['count'];
+        $size       = $data['size'];
+
+        // default options
+        $options = [];
+
+        if ($capped == true && $size >= 1) {
+            $options['capped'] = true;
+            $options['size']   = $size;
+            if ($count) {
+                $options['count'] = $count;
+            }
+        }
 
         // create the collection
-        $database = $this->mongo->connectClientDb($database);
-        $database->createCollection($collection);
-        $arr      = $this->$this->getOneCollection($database, $collection);
+        $database = $this->mongo->connectClientDb( $database );
+        $database->createCollection( $collection, $options );
+        $coll     = $this->getOneCollection ($database, $collection );
 
-        return response()->success('success', array('database' => $arr ));
+        return response()->success('success', array( 'collection' => $coll ));
     }
 
     /**

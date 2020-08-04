@@ -16,7 +16,7 @@
     <div class="database-inner" v-show="show">
         <table class="bordered unstriped">
             <tr>
-                <th class="text-center bb"><span v-text="showLanguage('database', 'database', getDbName(db))"></span> </th>
+                <th class="text-center bb title"><span v-text="showLanguage('database', 'database', getDbName(db))"></span> </th>
                 <th class="bb">&nbsp;</th>
             </tr>
             <tr>
@@ -118,6 +118,8 @@
             return {
                 show: false,
                 name: null,
+                collections: [],
+                database: {},
                 stats: {}
             }
         },
@@ -130,42 +132,58 @@
             *   Collections count
             */
             getCollectionCount: function() {
-                return this.stats['collections'];
+                if (this.stats) {
+                    return this.stats['collections'];
+                }
             },
 
             /*
             *   Objects count
             */
             getObjectsCount: function() {
-                return this.stats['objects'];
+                if (this.stats) {
+                    return this.stats['objects'];
+                }
             },
 
             /*
             *   Average Objects Size
             */
             getAvgObjSize: function() {
-                return this.stats['avgObjSize'];
+                if (this.stats) {
+                    return this.stats['avgObjSize'];
+                }
             },
 
             /*
             *   Data size
             */
             getDataSize: function() {
-                return this.stats['dataSize'];
+                if (this.stats) {
+                    return this.stats['dataSize'];
+                }
             },
 
             /*
             *   Storage size
             */
             getStorageSize: function() {
-                return this.stats['storageSize'];
+                if (this.stats) {
+                    return this.stats['storageSize'];
+                }
             },
 
             /*
             *   Index size
             */
             getIndexSize: function() {
-                return this.stats['indexSize'];
+                if (this.stats) {
+                    return this.stats['indexSize'];
+                }
+            },
+
+            getDB() {
+                return (this.db);
             }
         },
 
@@ -182,6 +200,12 @@
                     return string.replace("%s", str);
                 }
                 return this.$store.getters.getLanguageString( context, key );
+            },
+
+            getChildren() {
+                this.stats       = this.db.stats;
+                this.collections = this.db.collections;
+                this.database    = this.db.db;
             },
 
             /*
@@ -240,19 +264,47 @@
                 EventBus.$emit('show-collection', collection );
                 // hide this panel
                 this.show = false;
-            }
+            },
+
+            /*
+            *   Show component
+            */
+            showComponent() {
+                this.show = true;
+            },
+
+            /*
+            *   Hide component
+            */
+            hideComponent() {
+                this.show = false;
+            },
         },
 
         /*
         *   Handle mounted method requirements
         */
         mounted() {
+            /*
+            *    Hide this component
+            */
+            EventBus.$on('hide-database-panels', function() {
+                this.hideComponent();
+
+            }.bind(this));
+
             EventBus.$on('show-database', function() {
                 // I was messing around trying to get this panel working correctly and loaded the db.child stats object - partly in use
                 this.stats = this.$store.getters.getStats;
                 this.show = true;
 
             }.bind(this));
+        },
+
+        watch: {
+            getDB() {
+                this.getChildren();
+            }
         }
     }
 </script>

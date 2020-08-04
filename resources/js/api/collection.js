@@ -16,11 +16,15 @@ export default {
     *   Create a new collection
     *   POST  /api/v1/collection/create
     */
-    createCollection: function( name) {
-        console.log("name: " + name);
+    createCollection: function( data ) {
+        console.log(data);
         return axios.post( MONGO_CONFIG.API_URL + '/collection/create',
             {
-                database: name,
+                name: data.name,
+                capped: data.capped,
+                count: data.count,
+                size: data.size,
+                database: data.db,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
             });
     },

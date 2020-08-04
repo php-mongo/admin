@@ -37,56 +37,45 @@
     <div class="error-notification-container" v-show="show">
       <div class="error-notification">
         <img src="/img/error.svg"/> {{ errorMessage }}
-          <button>Confirm deletion</button>
-          <button>Cancel</button>
       </div>
     </div>
   </transition>
 </template>
 
 <script>
-  /*
-    Imports the Event Bus to pass events on tag updates
-  */
-  import { EventBus } from '../../event-bus.js';
-
-  export default {
     /*
-      Defines the data used by the component.
-    */
-    data(){
-      return {
-        errorMessage: '',
-        show: false,
-        id: null
-      }
-    },
+     *    Imports the Event Bus to pass events on tag updates
+     */
+    import { EventBus } from '../../event-bus.js';
 
-    computer: {
-        confirmDeletion() {
-            this.$emit('confirm-deletion', this.id);
-        }
-    },
-
-    /*
-      When mounted, bind the show error event.
-    */
-    mounted(){
-      EventBus.$on('show-deletion', ( data ) => {
-        this.errorMessage = data.notification;
-        this.show = true;
-        this.id   = data;
-        // let timer = data.timer ? data.timer : 5000;
+    export default {
+        /*
+         *  Defines the data used by the component.
+         */
+        data(){
+          return {
+            errorMessage: '',
+            show: false
+          }
+        },
 
         /*
-          Default display duration is 5 seconds.
-        */
-        //setTimeout( function() {
-        //  this.show = false;
-        //
-        //}.bind(this), timer);
+         *  When mounted, bind the show error event.
+         */
+        mounted(){
+            EventBus.$on('show-error', ( data ) => {
+                this.errorMessage = data.notification;
+                this.show = true;
+                this.id   = data;
+                let timer = data.timer ? data.timer : 5000;
 
-      });
+                /*
+                 *  Default display duration is 5 seconds.
+                */
+                setTimeout(() => {
+                    this.show = false;
+                }, timer);
+            });
+        }
     }
-  }
 </script>

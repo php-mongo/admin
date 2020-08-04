@@ -4,7 +4,7 @@
 
 <template>
     <li class="coll">
-        <span class="pma-link" @click="$emit('loadCollection', collection.collection.name)">{{ collection.collection.name }}</span>
+        <span class="pma-link" @click="$emit('loadCollection', collection.collection.name)">{{ getCollectionName }}</span>
     </li>
 </template>
 
@@ -20,6 +20,11 @@
         */
         props: ['collection'],
 
+        computed: {
+            getCollectionName() {
+                return ((this.collection.collection.name) ? this.collection.collection.name : this.collection.collection.collectionName);
+            }
+        },
 
         /*
         *   Defined methods for the component

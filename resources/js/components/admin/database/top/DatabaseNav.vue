@@ -34,11 +34,17 @@
                     }
                 }
 
-                .active {
+                /*.active {
                     background-color: $white;
                     border-bottom: 1px solid $white;
                     border-right: 0;
-                }
+                }*/
+            }
+
+            li.active {
+                background-color: $tableHeaderBg;
+                border-bottom: 1px solid $tableHeaderBg;
+                color: $white;
             }
         }
     }
@@ -66,11 +72,11 @@
     <nav class="database-navigation" v-show="show">
         <div class="text-left">
             <ul class="links">
-                <li v-bind:class="{active: getActivePanel('statistics')}">
-                    <span v-on:click="loadPanel('statistics', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'statisticsTitle')" v-text="showLanguage('database', 'statistics')"></span></span>
+                <li v-bind:class="{active: getActivePanel('database')}">
+                    <span v-on:click="showDatabase(getActiveDb)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'statisticsTitle')" v-text="showLanguage('database', 'statistics')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('newCollection')}">
-                    <span v-on:click="loadPanel('newCollection', $event)"><img src="/img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'newCollectionTitle')" v-text="showLanguage('database', 'newCollection')"></span></span>
+                <li v-bind:class="{active: getActivePanel('new-collection')}">
+                    <span v-on:click="loadPanel('new-collection', $event)"><img src="/img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'newCollectionTitle')" v-text="showLanguage('database', 'newCollection')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('command')}">
                     <span v-on:click="loadPanel('command', $event)"><img src="/img/icon/server.png" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('database', 'command')"></span></span>
@@ -116,7 +122,8 @@
         */
         data() {
             return {
-                activePanel: null,
+                activePanel: 'database',
+                activeDb: null,
                 current: null,
                 show: false
             };
@@ -128,7 +135,7 @@
         computed: {
             // Dr Smith! It does not compute!
             checkDatabase() {
-                return this.$store.getters.getActiveDatabase
+                return this.$store.getters.getActiveDatabase;
             },
 
             // Dr Smith! It does not compute!
@@ -148,6 +155,16 @@
                 return this.$store.getters.getLanguageString( context, key );
             },
 
+            showDatabase(db) {
+                this.activePanel = 'database';
+                EventBus.$emit('hide-database-panels');
+                if (db) {
+                    EventBus.$emit('show-database', db);
+                } else {
+                    EventBus.$emit('show-database', this.activeDb);
+                }
+            },
+
             /*
             *   Load database panel content via event
             */
@@ -161,8 +178,12 @@
             /*
             *   Get the active panel
             */
-            getActivePanel: function(panel) {
+            getActivePanel(panel) {
                 return this.activePanel === panel;
+            },
+
+            getActiveDb() {
+                this.activeDb = this.$store.getters.getActiveDatabase
             },
 
             showNavigation() {
@@ -175,26 +196,22 @@
         },
 
         mounted() {
-             EventBus.$on('show-database-nav', function() {
+             EventBus.$on('show-database-nav', () => {
+                 this.getActiveDb();
                  this.showNavigation();
 
-             }.bind(this));
+             });
 
-            EventBus.$on('show-collection-nav', function() {
+            EventBus.$on('show-collection-nav', () => {
                 this.hideNavigation();
 
-            }.bind(this));
-        }//,
+            });
 
-        /*watch: {
-            checkDatabase() {
-                this.showNavigation();
-            },
-
-            checkCollection() {
-                this.hideNavigation();
-
-            }
-        }*/
+            EventBus.$on('load-database-panel', (data) => {
+                if (data.panel === 'database') {
+                    this.showDatabase(data.value);
+                }
+            });
+        }
     }
 </script>

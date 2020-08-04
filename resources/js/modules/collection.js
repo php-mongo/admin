@@ -83,8 +83,9 @@ export const collection = {
 
             CollectionApi.createCollection( data )
                 .then( ( response ) => {
-                    commit( 'setCreatedCollection', response.data.data.collection );
                     commit( 'setCreateCollectionStatus', 2 );
+                    commit( 'setCreatedCollection', response.data.data.collection );
+                    dispatch( 'setCollection', response.data.data.collection );
                 })
                 .catch( (error) => {
                     commit( 'setCreateCollectionStatus', 3 );

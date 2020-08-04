@@ -116,7 +116,6 @@ class ServersController extends Controller
      */
     public function destroy(Server $server, $id)
     {
-        //echo '<pre>'; var_dump($id); echo '</pre>'; die;
         $result = 'failed';
         if ($id) {
             $result = Server::where('id', $id)->delete();

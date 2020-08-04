@@ -4,7 +4,7 @@
         float: left;
         width: 96%;
 
-        .database-inner {
+        .database-inner, .new-collection-inner {
             form {
                 margin-bottom: 10px;
             }
@@ -51,6 +51,7 @@
             }
             table {
                 border: 1px solid $infoColor;
+                border-top: 1px solid $tableHeaderBg;
                 border-radius: 5px;
                 box-shadow: 2px 2px 5px $cccColor;
             }
@@ -59,6 +60,9 @@
                 color: $white;
                 font-size: 1.2rem;
                 padding: 4px;
+            }
+            table th.title {
+                padding: 10px 0;
             }
             table td {
                 background-color: $infoBgColor;
@@ -106,6 +110,7 @@
     <div id="pma-databases-view" class="pma-database-view align-left" v-show="show">
         <database-top-view></database-top-view>
         <database-card v-bind:db="getDatabase"></database-card>
+        <NewCollection></NewCollection>
     </div>
 </template>
 
@@ -120,6 +125,7 @@
     */
     import DatabaseTopView from "./top/DatabaseTopView";
     import DatabaseCard from "./DatabaseCard";
+    import NewCollection from "./collection/NewCollection";
 
     export default {
         /*
@@ -127,7 +133,8 @@
         */
         components: {
             DatabaseTopView,
-            DatabaseCard
+            DatabaseCard,
+            NewCollection
         },
 
         /*
@@ -157,10 +164,9 @@
         */
         methods: {
             /*
-           *   Calls the Translation and Language service
-           */
+            *   Calls the Translation and Language service
+            */
             showLanguage( context, key ) {
-                // return this.$trans( context, key );
                 return this.$store.getters.getLanguageString( context, key );
             },
 

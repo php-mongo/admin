@@ -62,8 +62,11 @@ export const database = {
         loadDatabase( { commit, rootState, dispatch }, data ) {
             commit( 'setDatabaseLoadStatus', 1 );
 
+            commit( 'setDatabase', {} );
+
             DatabaseApi.getDatabase( data )
                 .then( ( response ) => {
+                    console.log("fetched db: " + data);
                     commit( 'setActiveDatabase', data );
                     commit( 'setDatabase', response.data.data.database );
                     commit( 'setDatabaseLoadStatus', 2 );
@@ -120,6 +123,10 @@ export const database = {
                     commit( 'setErrorData', error);
                     console.log(error);
                 });
+        },
+
+        setCollection( { commit }, data) {
+            commit( 'setCollectionToDatabase', data);
         },
 
         /*
@@ -231,6 +238,17 @@ export const database = {
         */
         setErrorData( state, error ) {
             state.errorData = error;
+        },
+
+        /*
+         * With luck - save the new collection into the current exibited database
+         */
+        setCollectionToDatabase( state, collection ) {
+            if (state.database) {
+                if (state.database.collections) {
+                    state.database.collections.push(collection);
+                }
+            }
         },
 
         /*
