@@ -93,7 +93,7 @@
 
                 }.bind(this), 15000);
 
-            }.);
+            });
 
             /*
             *   Close the message prematurely

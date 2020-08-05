@@ -167,7 +167,7 @@
                 current: null,
                 show: false
             }
-        },s
+        },
 
         /*
         *   Defines the computed properties on the component.

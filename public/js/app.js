@@ -1954,6 +1954,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Imports the Event Bus to pass events on tag updates
@@ -1974,17 +1990,19 @@ __webpack_require__.r(__webpack_exports__);
     When mounted, bind the show error event.
   */
   mounted: function mounted() {
+    var _this = this;
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('no-results-found', function (data) {
-      this.errorMessage = data.notification;
-      this.show = true;
+      _this.errorMessage = data.notification;
+      _this.show = true;
       /*
         Hide the error notification after 3 seconds.
       */
 
       setTimeout(function () {
         this.show = false;
-      }.bind(this), 30000);
-    }.bind(this));
+      }.bind(_this), 30000);
+    });
   }
 });
 
@@ -2006,6 +2024,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _database_DatabaseView__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./database/DatabaseView */ "./resources/js/components/admin/database/DatabaseView.vue");
 /* harmony import */ var _database_collection_CollectionView__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./database/collection/CollectionView */ "./resources/js/components/admin/database/collection/CollectionView.vue");
 /* harmony import */ var _servers_ServersView__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./servers/ServersView */ "./resources/js/components/admin/servers/ServersView.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2127,6 +2161,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 * Import the Event bus
@@ -2169,6 +2219,22 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
 /* harmony import */ var _CollectionCard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./CollectionCard */ "./resources/js/components/admin/database/CollectionCard.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2426,8 +2492,7 @@ __webpack_require__.r(__webpack_exports__);
     *   Load the collection panel !! child component event !!
     */
     loadCollection: function loadCollection(collection) {
-      console.log("load collection: " + collection); // send collection for tracking
-
+      // send collection for tracking
       this.$store.dispatch('setActiveCollection', collection); // load
 
       var data = {
@@ -2462,17 +2527,20 @@ __webpack_require__.r(__webpack_exports__);
   *   Handle mounted method requirements
   */
   mounted: function mounted() {
+    var _this = this;
     /*
     *    Hide this component
     */
+
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('hide-database-panels', function () {
-      this.hideComponent();
-    }.bind(this));
+      _this.hideComponent();
+    });
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database', function () {
       // I was messing around trying to get this panel working correctly and loaded the db.child stats object - partly in use
-      this.stats = this.$store.getters.getStats;
-      this.show = true;
-    }.bind(this));
+      _this.stats = _this.$store.getters.getStats;
+      _this.show = true;
+    });
   },
   watch: {
     getDB: function getDB() {
@@ -2496,6 +2564,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _top_DatabaseTopView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./top/DatabaseTopView */ "./resources/js/components/admin/database/top/DatabaseTopView.vue");
 /* harmony import */ var _DatabaseCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DatabaseCard */ "./resources/js/components/admin/database/DatabaseCard.vue");
 /* harmony import */ var _collection_NewCollection__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./collection/NewCollection */ "./resources/js/components/admin/database/collection/NewCollection.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2765,24 +2849,22 @@ __webpack_require__.r(__webpack_exports__);
   *    get on ur bikes and ride !!
   */
   mounted: function mounted() {
+    var _this = this;
     /*
     *    Hide this component
     */
+
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('hide-panels', function () {
-      this.hideComponent();
-    }.bind(this));
+      _this.hideComponent();
+    });
     /*
     *    Show this component
     */
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database', function () {
-      this.showComponent();
-    }.bind(this));
-  },
-  watch: {
-    /*getDatabase() {
-        this.showComponent();
-    }*/
+      _this.showComponent();
+    });
   }
 });
 
@@ -2801,6 +2883,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _PageSizeOption__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PageSizeOption */ "./resources/js/components/admin/database/collection/PageSizeOption.vue");
 /* harmony import */ var _Document__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Document */ "./resources/js/components/admin/database/collection/Document.vue");
 /* harmony import */ var _Pagination__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Pagination */ "./resources/js/components/admin/database/collection/Pagination.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3265,7 +3363,6 @@ __webpack_require__.r(__webpack_exports__);
         pageSize: 10,
         command: 'findAll'
       };
-      console.log(this.form);
     },
     closeQueryFields: function closeQueryFields() {
       console.log("close query fields");
@@ -3295,8 +3392,6 @@ __webpack_require__.r(__webpack_exports__);
      */
     pageChanged: function pageChanged(page) {
       this.current = page;
-      console.log("p in: " + p);
-      console.log("p out: " + p);
       var x = 0;
       var p = page - 1;
       this.visibleObjects = [];
@@ -3498,6 +3593,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Import the Event bus
@@ -3572,19 +3683,22 @@ __webpack_require__.r(__webpack_exports__);
   *    get on ur bikes and ride !!
   */
   mounted: function mounted() {
+    var _this = this;
     /*
     *    Hide this component
     */
+
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('hide-panels', function () {
-      this.hideComponent();
-    }.bind(this));
+      _this.hideComponent();
+    });
     /*
     *    Show this component
     */
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-collection', function (collection) {
-      this.showComponent(collection);
-    }.bind(this));
+      _this.showComponent(collection);
+    });
   }
 });
 
@@ -3600,6 +3714,22 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DocumentNav__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DocumentNav */ "./resources/js/components/admin/database/collection/DocumentNav.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3772,6 +3902,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: ['document', 'collection', 'index'],
   methods: {// to come ??
@@ -3790,6 +3936,22 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../event-bus */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3952,7 +4114,6 @@ __webpack_require__.r(__webpack_exports__);
      */
     createCollection: function createCollection() {
       if (this.form.name) {
-        //   console.log(this.form);
         this.$store.dispatch('createCollection', this.form);
         this.handleCreateStatus();
       } else {
@@ -3966,14 +4127,12 @@ __webpack_require__.r(__webpack_exports__);
     handleCreateStatus: function handleCreateStatus() {
       var _this = this;
 
-      var status = this.$store.getters.getCreateCollectionStatus; //     console.log("collection status: " + status);
-
+      var status = this.$store.getters.getCreateCollectionStatus;
       this.indexes += 1;
 
       if (status === 0) {
         this.error = 'Error: collection create status = 0';
-      } //    console.log("collection indexes: " + this.indexes);
-
+      }
 
       if (status === 1 && this.indexes < 100) {
         setTimeout(function () {
@@ -4063,6 +4222,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     size: Number,
@@ -4081,6 +4256,22 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -4410,6 +4601,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Imports the event bus.
@@ -4462,7 +4669,6 @@ __webpack_require__.r(__webpack_exports__);
     */
     loadPanel: function loadPanel(item) {
       this.activePanel = item;
-      console.log("loading collection panel item: " + item);
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('hide-collection-panels');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-collection-' + item);
     },
@@ -4474,7 +4680,6 @@ __webpack_require__.r(__webpack_exports__);
       return this.activePanel === panel;
     },
     setFormat: function setFormat(format) {
-      console.log("setting format: " + format);
       this.activeFormat = format;
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('set-query-format', format);
     },
@@ -4502,18 +4707,6 @@ __webpack_require__.r(__webpack_exports__);
       _this.activeFormat = format;
     });
   }
-  /*mounted() {
-      EventBus.$on('show-collection-nav', function(collection) {
-          this.showNavigation();
-       }.bind(this));
-       EventBus.$on('show-database-nav', function() {
-          this.hideNavigation()
-       }.bind(this));
-       EventBus.$on('default-query-format', function( format ) {
-          this.activeFormat = format;
-      }.bind(this));
-  }*/
-
 });
 
 /***/ }),
@@ -4528,6 +4721,22 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -4689,7 +4898,6 @@ __webpack_require__.r(__webpack_exports__);
     * Calls the Translation and Language service
     */
     showLanguage: function showLanguage(context, key) {
-      // return this.$trans( context, key );
       return this.$store.getters.getLanguageString(context, key);
     },
 
@@ -4697,7 +4905,6 @@ __webpack_require__.r(__webpack_exports__);
     *   Load the database from crumbs
     */
     loadDatabase: function loadDatabase() {
-      // console.log("re-loading database view");
       this.$store.dispatch('setActiveCollection', null); // clear the crumbs
 
       this.crumbs[0].name = null;
@@ -4717,21 +4924,18 @@ __webpack_require__.r(__webpack_exports__);
     *   Set the collection crumb
     */
     setCollectionCrumb: function setCollectionCrumb() {
-      this.crumbs[0].name = this.activeCollection; // this.$store.getters.getActiveCollection;
+      this.crumbs[0].name = this.activeCollection;
     },
     checkDb: function checkDb() {
       if (!this.activeDb || this.activeDb === 'N/A') {
-        this.activeDb = this.activeDatabase; // this.$store.getters.getActiveDatabase;
+        this.activeDb = this.activeDatabase;
 
         if (!this.activeDb) {
           // try pulling name from collection data
-          console.log("cant find activeDb - looking in collection!!!");
-
           if (this.activeCollection) {
             var collection = this.$store.getters.getCollection;
 
             if (collection) {
-              console.log("crumbs coll: " + collection);
               this.activeDb = collection.collection.databaseName;
             }
           }
@@ -4747,16 +4951,17 @@ __webpack_require__.r(__webpack_exports__);
   * Methods to run when component is mounted
   */
   mounted: function mounted() {
+    var _this = this;
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database', function (db) {
-      // console.log("db to crumbs: " + db);
-      this.activeDb = db;
-    }.bind(this));
+      _this.activeDb = db;
+    });
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-collection-nav', function (collectionName) {
-      this.activeColl = this.activeCollection = collectionName;
-    }.bind(this));
+      _this.activeColl = _this.activeCollection = collectionName;
+    });
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-databases', function (db) {
-      this.clearData();
-    }.bind(this));
+      _this.clearData();
+    });
     this.checkDb();
   },
   destroyed: function destroyed() {
@@ -4784,6 +4989,22 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -4954,7 +5175,6 @@ __webpack_require__.r(__webpack_exports__);
     */
     loadPanel: function loadPanel(item) {
       this.activePanel = item;
-      console.log("loading database panel item: " + item);
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('hide-database-panels');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-database-' + item);
     },
@@ -5052,6 +5272,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Import components for the Gallery View
@@ -5082,6 +5318,22 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -5225,15 +5477,17 @@ __webpack_require__.r(__webpack_exports__);
   *   Handle mounted method requirements
   */
   mounted: function mounted() {
+    var _this = this;
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('check-all-databases', function () {
       // exclude admin & local from deletion
-      if (this.name !== 'admin' && this.name !== 'local') {
-        this.checkDatabase(true);
+      if (_this.name !== 'admin' && _this.name !== 'local') {
+        _this.checkDatabase(true);
       }
-    }.bind(this));
+    });
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('uncheck-all-databases', function () {
-      this.checkDatabase(false);
-    }.bind(this));
+      _this.checkDatabase(false);
+    });
   },
 
   /*
@@ -5271,6 +5525,22 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
 /* harmony import */ var _DatabaseCard__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DatabaseCard */ "./resources/js/components/admin/databases/DatabaseCard.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -5544,10 +5814,8 @@ __webpack_require__.r(__webpack_exports__);
     */
     checkAllDbs: function checkAllDbs() {
       if (this.deleteAll === true) {
-        console.log("checking all available databases...");
         _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('check-all-databases');
       } else {
-        console.log("un checking all available databases...");
         _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('uncheck-all-databases');
       }
     },
@@ -5581,36 +5849,38 @@ __webpack_require__.r(__webpack_exports__);
   *    get on ur bikes and ride !!
   */
   mounted: function mounted() {
-    // load al the default view server data
+    var _this = this; // load al the default view server data
     //    this.$store.dispatch( 'loadDatabases' );
 
     /*
     *    Hide this component
     */
+
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('hide-panels', function () {
-      this.hideComponent();
-    }.bind(this));
+      _this.hideComponent();
+    });
     /*
     *    Show this component
     */
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-databases', function () {
-      this.showComponent();
-    }.bind(this));
+      _this.showComponent();
+    });
     /*
     *   Listen for child check box selected and add to array
     */
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('track-checked-db', function (db) {
-      this.checked.push(db);
-    }.bind(this));
+      _this.checked.push(db);
+    });
     /*
     *   Listen for child check box un-selected and remove from array
     */
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('untrack-checked-db', function (db) {
-      this.removeDbFromArray(db);
-    }.bind(this));
+      _this.removeDbFromArray(db);
+    });
   },
   watch: {
     deleteAllDatabases: function deleteAllDatabases() {
@@ -5631,6 +5901,22 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -5787,6 +6073,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Imports the mixins used by the component.
@@ -5830,19 +6132,22 @@ __webpack_require__.r(__webpack_exports__);
   *   Listen to the mounted lifecycle hook.
   */
   mounted: function mounted() {
+    var _this = this;
     /*
         Hide any displayed collections lists
     */
+
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$on('hide-collection-lists', function () {
-      this.hideCollections();
-    }.bind(this));
+      _this.hideCollections();
+    });
     /*
       When the filters are updated, we process the filters.
     */
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$on('filters-updated', function (filters) {
-      this.processFilters(filters);
-    }.bind(this));
+      _this.processFilters(filters);
+    });
     /*
       Apply filters
     */
@@ -6010,6 +6315,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
  *  Imports the config.
@@ -6098,6 +6419,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
 /* harmony import */ var _DbsTop__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DbsTop */ "./resources/js/components/admin/dbs/DbsTop.vue");
 /* harmony import */ var _DbsCard__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DbsCard */ "./resources/js/components/admin/dbs/DbsCard.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -6292,6 +6629,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
   *   Prop for this card
@@ -6325,6 +6678,22 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
 /* harmony import */ var _PhpMongoAdmin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PhpMongoAdmin */ "./resources/js/components/admin/phpmongo/PhpMongoAdmin.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -6447,22 +6816,22 @@ __webpack_require__.r(__webpack_exports__);
   *    get on ur bikes and ride !!
   */
   mounted: function mounted() {
-    // load al the default view server data
-    //this.$store.dispatch( 'loadServer' );
-
+    var _this = this;
     /*
     *    Hide this component
     */
+
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('hide-panels', function () {
-      this.hideComponent();
-    }.bind(this));
+      _this.hideComponent();
+    });
     /*
     *    Show this component
     */
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-mongo', function () {
-      this.showComponent();
-    }.bind(this));
+      _this.showComponent();
+    });
   }
 });
 
@@ -6478,6 +6847,22 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Author__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Author */ "./resources/js/components/admin/phpmongo/Author.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -6587,6 +6972,22 @@ function _typeof(obj) {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -6685,6 +7086,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Only one import here
@@ -6733,6 +7150,22 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -6815,6 +7248,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
   *   The component accepts one db as a property
@@ -6853,6 +7302,22 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -6935,6 +7400,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -6982,6 +7463,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _WebServer__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./WebServer */ "./resources/js/components/admin/server/WebServer.vue");
 /* harmony import */ var _Directives__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Directives */ "./resources/js/components/admin/server/Directives.vue");
 /* harmony import */ var _BuildInfo__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./BuildInfo */ "./resources/js/components/admin/server/BuildInfo.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -7185,6 +7682,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
  * Import the Event bus
@@ -7220,6 +7733,22 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -7323,6 +7852,22 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
 /* harmony import */ var _ServerConfig__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ServerConfig */ "./resources/js/components/admin/servers/ServerConfig.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -7577,8 +8122,6 @@ __webpack_require__.r(__webpack_exports__);
      *  Submit server configuration
      */
     createServer: function createServer() {
-      console.log(this.form);
-
       if (this.validataServer()) {
         this.$store.dispatch('saveServer', this.form);
       }
@@ -7623,9 +8166,7 @@ __webpack_require__.r(__webpack_exports__);
      *  Edit the server configuration
      */
     edit: function edit(id) {
-      console.log("edit: " + id);
-      var server = this.$store.getters.getServerConfiguration(id);
-      this.form = server;
+      this.form = this.$store.getters.getServerConfiguration(id);
       this.editing = !this.editing;
     },
 
@@ -7645,9 +8186,6 @@ __webpack_require__.r(__webpack_exports__);
      *  Confirm the deletion
      */
     deleteConfirmed: function deleteConfirmed(id) {
-      console.log("deleteConfirmed id", id);
-      console.log("deleteConfirmed deleteId", this.deleteId);
-
       if (id === this.deleteId) {
         this.$store.dispatch('deleteServer', id);
         this.handleDeletion();
@@ -7681,7 +8219,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /*
-     *  Calcel the deletion
+     *  Cancel the deletion
      */
     deleteCancelled: function deleteCancelled(id) {
       this.deleteId = null;
@@ -7713,8 +8251,6 @@ __webpack_require__.r(__webpack_exports__);
     */
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('confirm-delete-server', function (id) {
-      console.log("confirm-delete-server", id);
-
       _this.deleteConfirmed(id);
     });
     /*
@@ -7741,6 +8277,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../config.js */ "./resources/js/config.js");
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
 /* harmony import */ var _global_TextFilter_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../global/TextFilter.vue */ "./resources/js/components/global/TextFilter.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -8165,6 +8717,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Imports the event bus.
@@ -8254,41 +8822,19 @@ __webpack_require__.r(__webpack_exports__);
     *   Load main panel content via event
     */
     loadPanel: function loadPanel(item) {
-      this.$store.dispatch('setActiveNav', item); //    this.activePanel = item;
-
+      this.$store.dispatch('setActiveNav', item);
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('hide-panels');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-' + item);
-      console.log("loaded panel item: " + item);
     }
-    /* handleCollapse() {
-         console.log("handling the collapse of the economy!");
-         if (this.collapsed === true) {
-             this.$jqf(this.$refs.navPanel).css('height', 0);
-         }
-         if (this.collapsed === false) {
-             this.$jqf(this.$refs.navPanel).css('height', 'auto');
-         }
-     },
-      watchCollapse() {
-         return this.collapsed;
-     }*/
-
   },
   mounted: function mounted() {
     this.userLoggedIn();
     this.getUser();
-    /*EventBus.$on('clear-active-nav', function() {
-        this.activePanel = null;
-    }.bind(this));*/
   },
   watch: {
     activeNav: function activeNav() {
       this.setActivePanel();
     }
-    /* watchCollapse() {
-          this.handleCollapse();
-     }*/
-
   }
 });
 
@@ -8306,6 +8852,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Top__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Top */ "./resources/js/components/admin/top/Top.vue");
 /* harmony import */ var _TopNav__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TopNav */ "./resources/js/components/admin/top/TopNav.vue");
 /* harmony import */ var _event_bus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../event-bus */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -8476,6 +9038,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
   Imports the Event Bus to pass events on tag updates
@@ -8539,6 +9117,22 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -8830,6 +9424,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Imports the event bus.
@@ -8859,13 +9469,15 @@ __webpack_require__.r(__webpack_exports__);
   *   I like getting mounted !!
   */
   mounted: function mounted() {
+    var _this = this;
+
     this.currentLanguage = this.$store.getters.getLanguage;
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-language-selector', function () {
       // this seems to be the best option for loading the location data for this modal
-      this.location = this.$store.getters.getLocation;
-      this.currentLocation = this.$store.getters.getCurrentLocation;
-      this.show = true;
-    }.bind(this));
+      _this.location = _this.$store.getters.getLocation;
+      _this.currentLocation = _this.$store.getters.getCurrentLocation;
+      _this.show = true;
+    });
   },
 
   /*
@@ -8912,7 +9524,6 @@ __webpack_require__.r(__webpack_exports__);
     * Calls the Translation and Language service
     */
     showLanguage: function showLanguage(context, key) {
-      //return this.$trans(context, key);
       return this.$store.getters.getLanguageString(context, key);
     },
     getCurrentClass: function getCurrentClass(lang) {
@@ -9343,6 +9954,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 Imports the event bus.
@@ -9369,17 +9996,20 @@ Imports the event bus.
   Sets up the component on the mounted lifecycle hook.
   */
   mounted: function mounted() {
+    var _this = this;
     /*
     When prompted for login, show the component.
     */
+
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('prompt-login', function () {
-      this.show = true;
-    }.bind(this));
+      _this.show = true;
+    });
   },
 
   /*
-  *   This modules computed actions
-  */
+   *   This modules computed actions
+   */
   computed: {
     submitButtonClass: function submitButtonClass() {
       return this.formStatus === 0 ? 'secondary' : 'success';
@@ -9393,14 +10023,13 @@ Imports the event bus.
   },
 
   /*
-  * This modules methods
-  */
+   * This modules methods
+   */
   methods: {
     /*
     * Calls the Translation and Language service
     */
     showLanguage: function showLanguage(context, key) {
-      //return this.$trans(context, key);
       return this.$store.getters.getLanguageString(context, key);
     },
     closeThisDialog: function closeThisDialog() {
@@ -9465,8 +10094,8 @@ Imports the event bus.
     },
 
     /*
-    * Check host placeholder
-    */
+     * Check host placeholder
+     */
     checkDb: function checkDb() {
       this.verifiedDb = true;
     },
@@ -9486,8 +10115,8 @@ Imports the event bus.
     },
 
     /*
-    *   Verify the email address
-    */
+     *   Verify the email address
+     */
     checkEmail: function checkEmail() {
       var e = this.credentials.email || false,
           self = this;
@@ -9604,6 +10233,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 Imports the Event Bus to pass events on tag updates
@@ -9624,27 +10269,30 @@ Imports the Event Bus to pass events on tag updates
   *   Sets up the component when mounted.
   */
   mounted: function mounted() {
+    var _this = this;
     /*
     *   On show success, show the notification.
     */
+
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-message', function (data) {
-      this.successMessage = data.notification;
-      this.show = true;
+      _this.successMessage = data.notification;
+      _this.show = true;
       /*
       After 15 seconds hide the notification.
       */
 
       setTimeout(function () {
         this.show = false;
-      }.bind(this), 15000);
-    }.bind(this));
+      }.bind(_this), 15000);
+    });
     /*
     *   Close the message prematurely
     */
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('hide-message', function () {
-      this.show = false;
-    }.bind(this));
+      _this.show = false;
+    });
   }
 });
 
@@ -9661,6 +10309,22 @@ Imports the Event Bus to pass events on tag updates
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../config.js */ "./resources/js/config.js");
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -10257,6 +10921,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 Imports the event bus.
@@ -10281,12 +10961,15 @@ Imports the event bus.
     Sets up the component on the mounted lifecycle hook.
   */
   mounted: function mounted() {
+    var _this = this;
     /*
     When prompted for login, show the component.
     */
+
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('prompt-registration', function () {
-      this.show = true;
-    }.bind(this));
+      _this.show = true;
+    });
   },
 
   /*
@@ -10312,7 +10995,6 @@ Imports the event bus.
     * Calls the Translation and Language service
     */
     showLanguage: function showLanguage(context, key) {
-      //return this.$trans(context, key);
       return this.$store.getters.getLanguageString(context, key);
     },
 
@@ -10837,6 +11519,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 Imports the event bus.
@@ -10861,17 +11559,20 @@ Imports the event bus.
     Sets up the component on the mounted lifecycle hook.
   */
   mounted: function mounted() {
+    var _this = this;
     /*
-    When prompted for login, show the component.
-    */
+     * When prompted for login, show the component.
+     */
+
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('prompt-registration', function () {
-      this.show = true;
-    }.bind(this));
+      _this.show = true;
+    });
   },
 
   /*
-  *   This modules computed methods
-  */
+   *   This modules computed methods
+   */
   computed: {
     submitButtonClass: function submitButtonClass() {
       return this.formStatus === 0 ? 'secondary' : 'success';
@@ -10885,28 +11586,27 @@ Imports the event bus.
   },
 
   /*
-  *   This components active methods
-  */
+   *   This components active methods
+   */
   methods: {
     /*
-    * Calls the Translation and Language service
-    */
+     * Calls the Translation and Language service
+     */
     showLanguage: function showLanguage(context, key) {
-      //return this.$trans(context, key);
       return this.$store.getters.getLanguageString(context, key);
     },
 
     /*
-    * Load login modal
-    */
+     * Load login modal
+     */
     loadLogin: function loadLogin() {
       this.show = false;
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('prompt-login');
     },
 
     /*
-    *   Validate the name field
-    */
+     *   Validate the name field
+     */
     countName: function countName() {
       var n = this.credentials.name || false,
           l = n.length || 0;
@@ -10923,8 +11623,8 @@ Imports the event bus.
     },
 
     /*
-    *   Verify the name element
-    */
+     *   Verify the name element
+     */
     verifyName: function verifyName() {
       var n = this.credentials.name || false;
 
@@ -10941,8 +11641,8 @@ Imports the event bus.
     },
 
     /*
-    *   Verify the email address
-    */
+     *   Verify the email address
+     */
     checkEmail: function checkEmail() {
       var e = this.credentials.email || false,
           self = this;
@@ -10952,13 +11652,7 @@ Imports the event bus.
           this.$jqf(this.$refs.emailInfo).replace(['has-success', 'has-error']).text('Your email address appears invalid!');
           this.$jqf(this.$refs.email).replace(['has-success', 'has-error']).focus();
         } else {
-          // if (this.$jqf(this.$refs.email).hasClass('has-success') && this.$jqf(this.$refs.emailInfo).hasClass('has-success')) {
-          //     this.$refs.password.focus();
-          //     console.log('they have the class: has-success');
-          //     return true;
-          // }
           if (this.verifiedEmail === e) {
-            console.log('email already verified!');
             this.$refs.password.focus();
           } else {
             this.$store.dispatch('checkEmail', {
@@ -10972,13 +11666,11 @@ Imports the event bus.
       }
     },
     checkEmailResult: function checkEmailResult(e) {
-      console.log("checkEmailResult: " + e);
       var status = this.$store.getters.getEmailCheckStatus;
       var result = false,
           self = this;
 
       if (status === 1) {
-        console.log("getEmailCheckStatus return: " + status);
         self.checkEmailResult();
       }
 
@@ -11091,6 +11783,22 @@ Imports the event bus.
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -11390,6 +12098,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
   Imports the Event Bus to pass events on tag updates
@@ -11410,12 +12134,15 @@ __webpack_require__.r(__webpack_exports__);
     Sets up the component when mounted.
   */
   mounted: function mounted() {
+    var _this = this;
     /*
       On show success, show the notification.
     */
+
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-success', function (data) {
-      this.successMessage = data.notification;
-      this.show = true;
+      _this.successMessage = data.notification;
+      _this.show = true;
       var timer = data.timer ? data.timer : 7000;
       /*
       *  Default display duration is 7 seconds
@@ -11423,8 +12150,8 @@ __webpack_require__.r(__webpack_exports__);
 
       setTimeout(function () {
         this.show = false;
-      }.bind(this), timer);
-    }.bind(this));
+      }.bind(_this), timer);
+    });
   }
 });
 
@@ -11468,6 +12195,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 * Import the Event bus
@@ -11478,20 +12221,23 @@ __webpack_require__.r(__webpack_exports__);
   *   Defines the mounted lifecycle hook.
   */
   mounted: function mounted() {
+    var _this = this;
     /*
       When the user wants to show the filters, we show the filter
       sidebar.
     */
+
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-filters', function () {
-      this.show = true;
-    }.bind(this));
+      _this.show = true;
+    });
     /*
       When the user clears the filters, we clear all set filters.
     */
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('clear-filters', function () {
-      this.clearFilters();
-    }.bind(this));
+      _this.clearFilters();
+    });
   },
 
   /*
@@ -11698,6 +12444,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Import components
@@ -11791,6 +12553,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_global_LoginModal_vue__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/global/LoginModal.vue */ "./resources/js/components/global/LoginModal.vue");
 /* harmony import */ var _components_global_LanguageModal__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../components/global/LanguageModal */ "./resources/js/components/global/LanguageModal.vue");
 /* harmony import */ var _components_global_SetupModal_vue__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../components/global/SetupModal.vue */ "./resources/js/components/global/SetupModal.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -11961,6 +12739,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   methods: {
     /*
@@ -11988,6 +12782,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_admin_dbs_DbsView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/admin/dbs/DbsView */ "./resources/js/components/admin/dbs/DbsView.vue");
 /* harmony import */ var _components_admin_top_TopView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../components/admin/top/TopView */ "./resources/js/components/admin/top/TopView.vue");
 /* harmony import */ var _components_admin_PanelView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/admin/PanelView */ "./resources/js/components/admin/PanelView.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -12067,6 +12877,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({});
 
 /***/ }),
@@ -12081,6 +12907,22 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../event-bus */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -12192,6 +13034,22 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   methods: {
     /*
@@ -12215,6 +13073,22 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -12271,7 +13145,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "div.no-results-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 0;\n  text-align: center;\n}\ndiv.no-results-notification-container div.noresult-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #e3342f;\n  height: 50px;\n  line-height: 50px;\n  margin: auto;\n  min-width: 400px;\n  max-width: 640px;\n  margin-top: 150px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.no-results-notification-container div.noresult-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n  height: 20px;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv.no-results-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 0;\n  text-align: center;\n}\ndiv.no-results-notification-container div.noresult-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #e3342f;\n  height: 50px;\n  line-height: 50px;\n  margin: auto;\n  min-width: 400px;\n  max-width: 640px;\n  margin-top: 150px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.no-results-notification-container div.noresult-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n  height: 20px;\n}", ""]);
 
 // exports
 
@@ -12290,7 +13164,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, ".pma-main-panel {\n  height: 95vh;\n  margin-left: 245px;\n  overflow-x: auto;\n  padding: 20px 0 20px 20px;\n  width: auto;\n}\n.pma-main-panel .pma-main-inner {\n  margin: 0;\n  width: 88vw;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-main-panel {\n  height: 95vh;\n  margin-left: 245px;\n  overflow-x: auto;\n  padding: 20px 0 20px 20px;\n  width: auto;\n}\n.pma-main-panel .pma-main-inner {\n  margin: 0;\n  width: 88vw;\n}", ""]);
 
 // exports
 
@@ -12309,7 +13183,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "ul.collections {\n  list-style: none;\n  display: block;\n  margin-left: 20px;\n}\n.hide-list {\n  display: none !important;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\nul.collections {\n  list-style: none;\n  display: block;\n  margin-left: 20px;\n}\n.hide-list {\n  display: none !important;\n}", ""]);
 
 // exports
 
@@ -12328,7 +13202,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-database-view {\n  float: left;\n  width: 96%;\n}\n.pma-database-view .database-inner form, .pma-database-view .new-collection-inner form {\n  margin-bottom: 10px;\n}\n.pma-database-view .database-inner p, .pma-database-view .new-collection-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-database-view .database-inner p input, .pma-database-view .new-collection-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-database-view .database-inner p .button, .pma-database-view .new-collection-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-database-view .database-inner p.drop, .pma-database-view .new-collection-inner p.drop {\n  padding-left: 5px;\n}\n.pma-database-view .database-inner p.drop label, .pma-database-view .new-collection-inner p.drop label {\n  display: inline-block;\n}\n.pma-database-view .database-inner p.drop span, .pma-database-view .new-collection-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-database-view .database-inner p.drop input, .pma-database-view .new-collection-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop .pma-link, .pma-database-view .new-collection-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop button, .pma-database-view .new-collection-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-database-view .database-inner table, .pma-database-view .new-collection-inner table {\n  border: 1px solid #a6a6a6;\n  border-top: 1px solid #bbbbbb;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-database-view .database-inner table th, .pma-database-view .new-collection-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-database-view .database-inner table th.title, .pma-database-view .new-collection-inner table th.title {\n  padding: 10px 0;\n}\n.pma-database-view .database-inner table td, .pma-database-view .new-collection-inner table td {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n}\n.pma-database-view .database-inner table td input, .pma-database-view .new-collection-inner table td input {\n  margin: 3px 0 0 0;\n}\n.pma-database-view .database-inner table.bordered td.tr, .pma-database-view .database-inner table.collection td.tr, .pma-database-view .new-collection-inner table.bordered td.tr, .pma-database-view .new-collection-inner table.collection td.tr {\n  text-align: right;\n  width: 50%;\n}\n.pma-database-view .database-inner table.collection td li.coll, .pma-database-view .new-collection-inner table.collection td li.coll {\n  margin-left: 20%;\n}\n.pma-database-view .database-inner table.bordered th.bb, .pma-database-view .new-collection-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered th.rb, .pma-database-view .new-collection-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered td, .pma-database-view .new-collection-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-database-view .database-inner table.bordered td.rb, .pma-database-view .database-inner table.bordered table.collection td.rb, .pma-database-view .new-collection-inner table.bordered td.rb, .pma-database-view .new-collection-inner table.bordered table.collection td.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered td.text-center, .pma-database-view .new-collection-inner table.bordered td.text-center {\n  text-align: center !important;\n}\n.pma-database-view .database-inner table.bordered td.vat, .pma-database-view .new-collection-inner table.bordered td.vat {\n  vertical-align: top;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-database-view {\n  float: left;\n  width: 96%;\n}\n.pma-database-view .database-inner form, .pma-database-view .new-collection-inner form {\n  margin-bottom: 10px;\n}\n.pma-database-view .database-inner p, .pma-database-view .new-collection-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-database-view .database-inner p input, .pma-database-view .new-collection-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-database-view .database-inner p .button, .pma-database-view .new-collection-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-database-view .database-inner p.drop, .pma-database-view .new-collection-inner p.drop {\n  padding-left: 5px;\n}\n.pma-database-view .database-inner p.drop label, .pma-database-view .new-collection-inner p.drop label {\n  display: inline-block;\n}\n.pma-database-view .database-inner p.drop span, .pma-database-view .new-collection-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-database-view .database-inner p.drop input, .pma-database-view .new-collection-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop .pma-link, .pma-database-view .new-collection-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop button, .pma-database-view .new-collection-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-database-view .database-inner table, .pma-database-view .new-collection-inner table {\n  border: 1px solid #a6a6a6;\n  border-top: 1px solid #bbbbbb;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-database-view .database-inner table th, .pma-database-view .new-collection-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-database-view .database-inner table th.title, .pma-database-view .new-collection-inner table th.title {\n  padding: 10px 0;\n}\n.pma-database-view .database-inner table td, .pma-database-view .new-collection-inner table td {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n}\n.pma-database-view .database-inner table td input, .pma-database-view .new-collection-inner table td input {\n  margin: 3px 0 0 0;\n}\n.pma-database-view .database-inner table.bordered td.tr, .pma-database-view .database-inner table.collection td.tr, .pma-database-view .new-collection-inner table.bordered td.tr, .pma-database-view .new-collection-inner table.collection td.tr {\n  text-align: right;\n  width: 50%;\n}\n.pma-database-view .database-inner table.collection td li.coll, .pma-database-view .new-collection-inner table.collection td li.coll {\n  margin-left: 20%;\n}\n.pma-database-view .database-inner table.bordered th.bb, .pma-database-view .new-collection-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered th.rb, .pma-database-view .new-collection-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered td, .pma-database-view .new-collection-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-database-view .database-inner table.bordered td.rb, .pma-database-view .database-inner table.bordered table.collection td.rb, .pma-database-view .new-collection-inner table.bordered td.rb, .pma-database-view .new-collection-inner table.bordered table.collection td.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-database-view .database-inner table.bordered td.text-center, .pma-database-view .new-collection-inner table.bordered td.text-center {\n  text-align: center !important;\n}\n.pma-database-view .database-inner table.bordered td.vat, .pma-database-view .new-collection-inner table.bordered td.vat {\n  vertical-align: top;\n}", ""]);
 
 // exports
 
@@ -12347,7 +13221,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, ".collection-inner .criteria {\n  height: 160px;\n  margin-bottom: 0;\n  max-width: 99%;\n}\n.collection-inner .v-top {\n  vertical-align: top;\n  width: 50%;\n}\n.collection-inner .field-orders p {\n  height: 40px;\n  margin-top: 0;\n}\n.collection-inner .field-orders p input, .collection-inner .field-orders p select {\n  display: inline-block;\n}\n.collection-inner .field-orders p input {\n  width: 200px;\n}\n.collection-inner .field-orders p select {\n  width: 120px;\n}\n.collection-inner .f11 {\n  font-size: 11px;\n}\n.collection-inner .page-message {\n  font-weight: 600;\n}\n.collection-inner .buttons span, .collection-inner .buttons label, .collection-inner .buttons input, .collection-inner .buttons select {\n  display: inline-block;\n  width: auto;\n}\n.collection-inner .buttons input[type=submit], .collection-inner .buttons input[type=button] {\n  cursor: pointer;\n  padding: 5px;\n}\n.collection-inner .fields-control {\n  display: none;\n}\n.collection-inner .collection-document {\n  border: 2px #ccc solid;\n  margin-bottom: 10px;\n  min-height: 100px;\n  position: relative;\n}\n.collection-inner .collection-document:hover {\n  background-color: #f9f9f9;\n}\n.collection-inner .collection-document .doc-nav {\n  border-bottom: 1px #999 solid;\n  display: inline-block;\n  margin: 0 0 5px 50px;\n  padding: 5px 0 0 0;\n}\n.collection-inner .collection-document .doc-data {\n  display: block;\n  max-height: 150px;\n  overflow-y: hidden;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-text {\n  max-height: 150px;\n  overflow-y: auto;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-right-to-top {\n  bottom: 5px;\n  position: absolute;\n  right: 10px;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.collection-inner .criteria {\n  height: 160px;\n  margin-bottom: 0;\n  max-width: 99%;\n}\n.collection-inner .v-top {\n  vertical-align: top;\n  width: 50%;\n}\n.collection-inner .field-orders p {\n  height: 40px;\n  margin-top: 0;\n}\n.collection-inner .field-orders p input, .collection-inner .field-orders p select {\n  display: inline-block;\n}\n.collection-inner .field-orders p input {\n  width: 200px;\n}\n.collection-inner .field-orders p select {\n  width: 120px;\n}\n.collection-inner .f11 {\n  font-size: 11px;\n}\n.collection-inner .page-message {\n  font-weight: 600;\n}\n.collection-inner .buttons span, .collection-inner .buttons label, .collection-inner .buttons input, .collection-inner .buttons select {\n  display: inline-block;\n  width: auto;\n}\n.collection-inner .buttons input[type=submit], .collection-inner .buttons input[type=button] {\n  cursor: pointer;\n  padding: 5px;\n}\n.collection-inner .fields-control {\n  display: none;\n}\n.collection-inner .collection-document {\n  border: 2px #ccc solid;\n  margin-bottom: 10px;\n  min-height: 100px;\n  position: relative;\n}\n.collection-inner .collection-document:hover {\n  background-color: #f9f9f9;\n}\n.collection-inner .collection-document .doc-nav {\n  border-bottom: 1px #999 solid;\n  display: inline-block;\n  margin: 0 0 5px 50px;\n  padding: 5px 0 0 0;\n}\n.collection-inner .collection-document .doc-data {\n  display: block;\n  max-height: 150px;\n  overflow-y: hidden;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-text {\n  max-height: 150px;\n  overflow-y: auto;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-right-to-top {\n  bottom: 5px;\n  position: absolute;\n  right: 10px;\n}", ""]);
 
 // exports
 
@@ -12366,7 +13240,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, ".pma-collection-view {\n  float: left;\n  width: 96%;\n}\n.pma-collection-view .collection-inner {\n  /*table.bordered td.tr, table.collection td.tr {\n      text-align: right;\n      width: 50%;\n  }\n  table.collection td {\n      li.coll {\n          margin-left: 20%;\n      }\n  }\n  table.bordered {\n      th.bb {\n          border-bottom: 1px solid $infoColor;\n      }\n      th.rb {\n          border-right: 1px solid $infoColor;\n      }\n      td {\n          border-bottom: 1px solid $infoColor;\n          text-align: left;\n      }\n      td.rb, table.collection td.rb {\n          border-right: 1px solid $infoColor;\n      }\n      td.text-center {\n          text-align: center !important;\n      }\n      td.vat {\n          vertical-align: top;\n      }\n  }*/\n}\n.pma-collection-view .collection-inner form {\n  margin-bottom: 10px;\n}\n.pma-collection-view .collection-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-collection-view .collection-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-collection-view .collection-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-collection-view .collection-inner p.drop {\n  padding-left: 5px;\n}\n.pma-collection-view .collection-inner p.drop label {\n  display: inline-block;\n}\n.pma-collection-view .collection-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-collection-view .collection-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-collection-view .collection-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-collection-view .collection-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-collection-view .collection-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-collection-view .collection-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-collection-view .collection-inner table td {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-collection-view {\n  float: left;\n  width: 96%;\n}\n.pma-collection-view .collection-inner {\n  /*table.bordered td.tr, table.collection td.tr {\n      text-align: right;\n      width: 50%;\n  }\n  table.collection td {\n      li.coll {\n          margin-left: 20%;\n      }\n  }\n  table.bordered {\n      th.bb {\n          border-bottom: 1px solid $infoColor;\n      }\n      th.rb {\n          border-right: 1px solid $infoColor;\n      }\n      td {\n          border-bottom: 1px solid $infoColor;\n          text-align: left;\n      }\n      td.rb, table.collection td.rb {\n          border-right: 1px solid $infoColor;\n      }\n      td.text-center {\n          text-align: center !important;\n      }\n      td.vat {\n          vertical-align: top;\n      }\n  }*/\n}\n.pma-collection-view .collection-inner form {\n  margin-bottom: 10px;\n}\n.pma-collection-view .collection-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-collection-view .collection-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-collection-view .collection-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-collection-view .collection-inner p.drop {\n  padding-left: 5px;\n}\n.pma-collection-view .collection-inner p.drop label {\n  display: inline-block;\n}\n.pma-collection-view .collection-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-collection-view .collection-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-collection-view .collection-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-collection-view .collection-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-collection-view .collection-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-collection-view .collection-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-collection-view .collection-inner table td {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n}", ""]);
 
 // exports
 
@@ -12423,7 +13297,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, ".pma-new-collection {\n  float: left;\n  width: 84.5vw;\n}\n.pma-new-collection .new-collection-inner table {\n  border: none;\n}\n.pma-new-collection .new-collection-inner table th {\n  height: 60px;\n  padding-right: 12px !important;\n  text-align: right;\n}\n.pma-new-collection .new-collection-inner table th.title {\n  height: auto;\n  padding: 10px 0;\n  text-align: center;\n}\n.pma-new-collection .new-collection-inner table td {\n  padding-left: 12px !important;\n}\n.pma-new-collection .new-collection-inner table .row {\n  padding-left: 18vw !important;\n}\n.pma-new-collection .new-collection-inner .coll-help-link {\n  margin-right: 10rem;\n}\n.pma-new-collection .new-collection-inner .coll-capped-help {\n  margin-left: 5rem;\n}\n.pma-new-collection .new-collection-inner button {\n  margin: 0 10px 0 0;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-new-collection {\n  float: left;\n  width: 84.5vw;\n}\n.pma-new-collection .new-collection-inner table {\n  border: none;\n}\n.pma-new-collection .new-collection-inner table th {\n  height: 60px;\n  padding-right: 12px !important;\n  text-align: right;\n}\n.pma-new-collection .new-collection-inner table th.title {\n  height: auto;\n  padding: 10px 0;\n  text-align: center;\n}\n.pma-new-collection .new-collection-inner table td {\n  padding-left: 12px !important;\n}\n.pma-new-collection .new-collection-inner table .row {\n  padding-left: 18vw !important;\n}\n.pma-new-collection .new-collection-inner .coll-help-link {\n  margin-right: 10rem;\n}\n.pma-new-collection .new-collection-inner .coll-capped-help {\n  margin-left: 5rem;\n}\n.pma-new-collection .new-collection-inner button {\n  margin: 0 10px 0 0;\n}", ""]);
 
 // exports
 
@@ -12461,7 +13335,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, ".pagination-wrapper {\n  display: inline-block;\n  font-weight: 600;\n  width: 99%;\n}\n.pagination-wrapper .page {\n  display: inline-block;\n  float: left;\n}\n.pagination-wrapper .pagination {\n  list-style-type: none;\n  float: right;\n}\n.pagination-wrapper .pagination .active {\n  background-color: #4dc0b5;\n}\n.pagination-wrapper .pagination .pagination-item {\n  display: inline-block;\n}\n.pagination-wrapper .pagination .pagination-item button {\n  cursor: pointer;\n}\n.pagination-wrapper .pagination .pagination-item button[disabled=disabled]:hover {\n  background-color: transparent;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pagination-wrapper {\n  display: inline-block;\n  font-weight: 600;\n  width: 99%;\n}\n.pagination-wrapper .page {\n  display: inline-block;\n  float: left;\n}\n.pagination-wrapper .pagination {\n  list-style-type: none;\n  float: right;\n}\n.pagination-wrapper .pagination .active {\n  background-color: #4dc0b5;\n}\n.pagination-wrapper .pagination .pagination-item {\n  display: inline-block;\n}\n.pagination-wrapper .pagination .pagination-item button {\n  cursor: pointer;\n}\n.pagination-wrapper .pagination .pagination-item button[disabled=disabled]:hover {\n  background-color: transparent;\n}", ""]);
 
 // exports
 
@@ -12480,7 +13354,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "nav.collection-navigation {\n  min-height: 40px;\n  border-top: 1px solid #aaa;\n}\nnav.collection-navigation ul.links {\n  display: block;\n  float: left;\n  list-style: none;\n  margin: 0;\n}\nnav.collection-navigation ul.links li {\n  background-color: #F5F5F5;\n  border-right: 2px solid #ffffff;\n  border-left: 1px solid #cccccc;\n  border-bottom: 1px solid #cccccc;\n  display: inline-block;\n  float: left;\n  list-style-type: none;\n  padding: 0 10px;\n}\nnav.collection-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 40px;\n  padding: 8px;\n  color: #235a81;\n  cursor: pointer;\n}\nnav.collection-navigation ul.links li span:hover {\n  color: #333;\n}\nnav.collection-navigation ul.links li span.text {\n  color: #000000;\n  cursor: help;\n}\nnav.collection-navigation ul.links li span.underline {\n  text-decoration: underline;\n}\nnav.collection-navigation ul.links li .active {\n  background-color: #ffffff;\n  border-bottom: 1px solid #ffffff;\n  border-right: 0;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\nnav.collection-navigation {\n  min-height: 40px;\n  border-top: 1px solid #aaa;\n}\nnav.collection-navigation ul.links {\n  display: block;\n  float: left;\n  list-style: none;\n  margin: 0;\n}\nnav.collection-navigation ul.links li {\n  background-color: #F5F5F5;\n  border-right: 2px solid #ffffff;\n  border-left: 1px solid #cccccc;\n  border-bottom: 1px solid #cccccc;\n  display: inline-block;\n  float: left;\n  list-style-type: none;\n  padding: 0 10px;\n}\nnav.collection-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 40px;\n  padding: 8px;\n  color: #235a81;\n  cursor: pointer;\n}\nnav.collection-navigation ul.links li span:hover {\n  color: #333;\n}\nnav.collection-navigation ul.links li span.text {\n  color: #000000;\n  cursor: help;\n}\nnav.collection-navigation ul.links li span.underline {\n  text-decoration: underline;\n}\nnav.collection-navigation ul.links li .active {\n  background-color: #ffffff;\n  border-bottom: 1px solid #ffffff;\n  border-right: 0;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
 
 // exports
 
@@ -12499,7 +13373,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, ".crumb-nav-wrapper {\n  background-color: #999999;\n  padding-left: 50px;\n}\nnav.crumb-navigation {\n  background-color: #999999;\n  min-height: 33px;\n  max-width: 100%;\n  padding-left: 14px;\n}\nnav.crumb-navigation ul.links {\n  display: inline-block;\n  margin: 0;\n}\nnav.crumb-navigation ul.links li {\n  display: inline-block;\n  list-style-type: none;\n  margin-left: 7px;\n}\nnav.crumb-navigation ul.links li span.crumb {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 33px;\n  color: #ffffff;\n}\nnav.crumb-navigation ul.links li span.crumb:hover {\n  color: #00B7FF;\n  text-decoration: underline;\n}\nnav.crumb-navigation ul.links li span.dbl-arr {\n  color: #ffffff;\n  margin-right: 5px;\n}\n\n/* Small only - (max-width: 39.9375em) */\n@media screen and (max-width: 769px) {\nnav.crumb-navigation {\n    /* nothing yet */\n}\n}\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 769px) and (max-width: 992px) {\nnav.crumb-navigation {\n    /* nothing yet */\n}\n}\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */\n@media (min-width: 993px) and (max-width: 2048px) {\nnav.crumb-navigation {\n    /* nothing yet */\n}\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.crumb-nav-wrapper {\n  background-color: #999999;\n  padding-left: 50px;\n}\nnav.crumb-navigation {\n  background-color: #999999;\n  min-height: 33px;\n  max-width: 100%;\n  padding-left: 14px;\n}\nnav.crumb-navigation ul.links {\n  display: inline-block;\n  margin: 0;\n}\nnav.crumb-navigation ul.links li {\n  display: inline-block;\n  list-style-type: none;\n  margin-left: 7px;\n}\nnav.crumb-navigation ul.links li span.crumb {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 33px;\n  color: #ffffff;\n}\nnav.crumb-navigation ul.links li span.crumb:hover {\n  color: #00B7FF;\n  text-decoration: underline;\n}\nnav.crumb-navigation ul.links li span.dbl-arr {\n  color: #ffffff;\n  margin-right: 5px;\n}\n\n/* Small only - (max-width: 39.9375em) */\n@media screen and (max-width: 769px) {\nnav.crumb-navigation {\n    /* nothing yet */\n}\n}\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 769px) and (max-width: 992px) {\nnav.crumb-navigation {\n    /* nothing yet */\n}\n}\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */\n@media (min-width: 993px) and (max-width: 2048px) {\nnav.crumb-navigation {\n    /* nothing yet */\n}\n}", ""]);
 
 // exports
 
@@ -12518,7 +13392,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "nav.database-navigation {\n  min-height: 40px;\n  border-top: 1px solid #aaa;\n}\nnav.database-navigation ul.links {\n  display: block;\n  float: left;\n  list-style: none;\n  margin: 0;\n}\nnav.database-navigation ul.links li {\n  background-color: #F5F5F5;\n  border-right: 2px solid #ffffff;\n  border-left: 1px solid #cccccc;\n  border-bottom: 1px solid #cccccc;\n  display: inline-block;\n  float: left;\n  list-style-type: none;\n  padding: 0 10px;\n  /*.active {\n      background-color: $white;\n      border-bottom: 1px solid $white;\n      border-right: 0;\n  }*/\n}\nnav.database-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 40px;\n  padding: 8px;\n  color: #235a81;\n  cursor: pointer;\n}\nnav.database-navigation ul.links li span:hover {\n  color: #333;\n}\nnav.database-navigation ul.links li.active {\n  background-color: #bbbbbb;\n  border-bottom: 1px solid #bbbbbb;\n  color: #ffffff;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\nnav.database-navigation {\n  min-height: 40px;\n  border-top: 1px solid #aaa;\n}\nnav.database-navigation ul.links {\n  display: block;\n  float: left;\n  list-style: none;\n  margin: 0;\n}\nnav.database-navigation ul.links li {\n  background-color: #F5F5F5;\n  border-right: 2px solid #ffffff;\n  border-left: 1px solid #cccccc;\n  border-bottom: 1px solid #cccccc;\n  display: inline-block;\n  float: left;\n  list-style-type: none;\n  padding: 0 10px;\n  /*.active {\n      background-color: $white;\n      border-bottom: 1px solid $white;\n      border-right: 0;\n  }*/\n}\nnav.database-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 40px;\n  padding: 8px;\n  color: #235a81;\n  cursor: pointer;\n}\nnav.database-navigation ul.links li span:hover {\n  color: #333;\n}\nnav.database-navigation ul.links li.active {\n  background-color: #bbbbbb;\n  border-bottom: 1px solid #bbbbbb;\n  color: #ffffff;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
 
 // exports
 
@@ -12537,7 +13411,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, ".pma-database-top-panel {\n  background-color: #eeeeee;\n  padding-bottom: 2px;\n  position: relative;\n  top: 0;\n  z-index: 88;\n}\n.pma-database-top-panel .pma-link {\n  color: #00B7FF;\n  cursor: pointer;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-database-top-panel {\n  background-color: #eeeeee;\n  padding-bottom: 2px;\n  position: relative;\n  top: 0;\n  z-index: 88;\n}\n.pma-database-top-panel .pma-link {\n  color: #00B7FF;\n  cursor: pointer;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
 
 // exports
 
@@ -12556,7 +13430,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "ul.collections {\n  list-style: none;\n  display: block;\n  margin-left: 20px;\n}\n.hide-list {\n  display: none !important;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\nul.collections {\n  list-style: none;\n  display: block;\n  margin-left: 20px;\n}\n.hide-list {\n  display: none !important;\n}", ""]);
 
 // exports
 
@@ -12575,7 +13449,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-databases-view {\n  float: left;\n  width: 48%;\n}\n.pma-databases-view .database-inner form {\n  margin-bottom: 10px;\n}\n.pma-databases-view .database-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-databases-view .database-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-databases-view .database-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-databases-view .database-inner p.drop {\n  padding-left: 5px;\n}\n.pma-databases-view .database-inner p.drop label {\n  display: inline-block;\n}\n.pma-databases-view .database-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-databases-view .database-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-databases-view .database-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-databases-view .database-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-databases-view .database-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-databases-view .database-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-databases-view .database-inner table .info {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n}\n.pma-databases-view .database-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-databases-view .database-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-databases-view .database-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-databases-view .database-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-databases-view .database-inner table.bordered td.text-center {\n  text-align: center !important;\n}\n.pma-databases-view .database-inner table td input {\n  margin: 3px 0 0 0;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-databases-view {\n  float: left;\n  width: 48%;\n}\n.pma-databases-view .database-inner form {\n  margin-bottom: 10px;\n}\n.pma-databases-view .database-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-databases-view .database-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-databases-view .database-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-databases-view .database-inner p.drop {\n  padding-left: 5px;\n}\n.pma-databases-view .database-inner p.drop label {\n  display: inline-block;\n}\n.pma-databases-view .database-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-databases-view .database-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-databases-view .database-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-databases-view .database-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-databases-view .database-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-databases-view .database-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-databases-view .database-inner table .info {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n}\n.pma-databases-view .database-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-databases-view .database-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-databases-view .database-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-databases-view .database-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-databases-view .database-inner table.bordered td.text-center {\n  text-align: center !important;\n}\n.pma-databases-view .database-inner table td input {\n  margin: 3px 0 0 0;\n}", ""]);
 
 // exports
 
@@ -12594,7 +13468,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".collection-list-item {\n  margin-top: 10px;\n  position: relative;\n}\n.collection-list-item li:last-child {\n  display: block;\n  margin-bottom: 5px;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.collection-list-item {\n  margin-top: 10px;\n  position: relative;\n}\n.collection-list-item li:last-child {\n  display: block;\n  margin-bottom: 5px;\n}", ""]);
 
 // exports
 
@@ -12613,7 +13487,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".db-inner {\n  background-color: #fdfdfd;\n  display: block;\n  padding: 4px 5px 4px 10px;\n  margin-bottom: 10px;\n  width: 100%;\n  border-radius: 10px;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n}\n.db-inner ul.collections {\n  list-style: none;\n  display: block;\n  margin-left: 20px;\n}\n.db-inner .hide-list {\n  display: none !important;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.db-inner {\n  background-color: #fdfdfd;\n  display: block;\n  padding: 4px 5px 4px 10px;\n  margin-bottom: 10px;\n  width: 100%;\n  border-radius: 10px;\n  -webkit-border-radius: 10px;\n  -moz-border-radius: 10px;\n}\n.db-inner ul.collections {\n  list-style: none;\n  display: block;\n  margin-left: 20px;\n}\n.db-inner .hide-list {\n  display: none !important;\n}", ""]);
 
 // exports
 
@@ -12632,7 +13506,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-logo {\n  padding: 5px 10px;\n}\n.pma-icons span {\n  margin: 0 5px;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-logo {\n  padding: 5px 10px;\n}\n.pma-icons span {\n  margin: 0 5px;\n}", ""]);
 
 // exports
 
@@ -12651,7 +13525,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-dbs-view {\n  background: url(/img/left-nav-bg.png) repeat-y right 0% #f3f3f3;\n  height: 100%;\n  left: 0;\n  position: fixed;\n  top: 0;\n  width: 240px;\n  z-index: 800;\n}\n.pma-dbs-view .dbs-nav-resizer {\n  background-color: #aaaaaa;\n  cursor: w-resize;\n  height: 100%;\n  left: 240px;\n  margin: 0;\n  overflow: hidden;\n  padding: 0;\n  position: absolute;\n  top: 0;\n  width: 5px;\n  z-index: 2;\n}\n.pma-dbs-view .dbs-nav-resizer:hover {\n  background-color: #c4e1a4;\n}\n.pma-dbs-view .dbs-nav-collapse {\n  width: 25px;\n  height: 30px;\n  line-height: 22px;\n  background-color: #dddddd;\n  color: #555;\n  font-weight: bold;\n  position: fixed;\n  top: 0;\n  left: 245px;\n  text-align: center;\n  cursor: pointer;\n  z-index: 800;\n  text-shadow: 0 1px 0 #fff;\n  -webkit-filter: dropshadow(color=#fff, offx=0, offy=1);\n          filter: dropshadow(color=#fff, offx=0, offy=1);\n  border: 1px solid #888888;\n}\n.pma-dbs-view .dbs-list-block-outer {\n  margin-top: 10px;\n  padding: 0 1rem;\n  display: block;\n}\n.pma-dbs-view .dbs-list-block-outer .dbs-list-block {\n  margin-bottom: 10px;\n  position: relative;\n  padding-bottom: 5px;\n}\n.pma-dbs-view .dbs-list-block-outer .dbs-list-block .dbs-list {\n  list-style: none;\n  margin: 0;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-dbs-view {\n  background: url(/img/left-nav-bg.png) repeat-y right 0% #f3f3f3;\n  height: 100%;\n  left: 0;\n  position: fixed;\n  top: 0;\n  width: 240px;\n  z-index: 800;\n}\n.pma-dbs-view .dbs-nav-resizer {\n  background-color: #aaaaaa;\n  cursor: w-resize;\n  height: 100%;\n  left: 240px;\n  margin: 0;\n  overflow: hidden;\n  padding: 0;\n  position: absolute;\n  top: 0;\n  width: 5px;\n  z-index: 2;\n}\n.pma-dbs-view .dbs-nav-resizer:hover {\n  background-color: #c4e1a4;\n}\n.pma-dbs-view .dbs-nav-collapse {\n  width: 25px;\n  height: 30px;\n  line-height: 22px;\n  background-color: #dddddd;\n  color: #555;\n  font-weight: bold;\n  position: fixed;\n  top: 0;\n  left: 245px;\n  text-align: center;\n  cursor: pointer;\n  z-index: 800;\n  text-shadow: 0 1px 0 #fff;\n  -webkit-filter: dropshadow(color=#fff, offx=0, offy=1);\n          filter: dropshadow(color=#fff, offx=0, offy=1);\n  border: 1px solid #888888;\n}\n.pma-dbs-view .dbs-list-block-outer {\n  margin-top: 10px;\n  padding: 0 1rem;\n  display: block;\n}\n.pma-dbs-view .dbs-list-block-outer .dbs-list-block {\n  margin-bottom: 10px;\n  position: relative;\n  padding-bottom: 5px;\n}\n.pma-dbs-view .dbs-list-block-outer .dbs-list-block .dbs-list {\n  list-style: none;\n  margin: 0;\n}", ""]);
 
 // exports
 
@@ -12689,7 +13563,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-mongo-view {\n  float: left;\n  height: auto;\n  margin-left: 20px;\n  width: 48%;\n}\n.pma-mongo-view .mongo-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-mongo-view .mongo-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-mongo-view .mongo-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n}\n.pma-mongo-view .mongo-inner table td p {\n  text-align: left;\n  margin-bottom: 7px;\n}\n.pma-mongo-view .mongo-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-mongo-view .mongo-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-mongo-view .mongo-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-mongo-view .mongo-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n  min-width: 25%;\n  text-align: right !important;\n}\n.pma-mongo-view .mongo-inner .server-info .title {\n  display: inline-block;\n  min-width: 90px;\n  text-align: right;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-mongo-view {\n  float: left;\n  height: auto;\n  margin-left: 20px;\n  width: 48%;\n}\n.pma-mongo-view .mongo-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-mongo-view .mongo-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-mongo-view .mongo-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n}\n.pma-mongo-view .mongo-inner table td p {\n  text-align: left;\n  margin-bottom: 7px;\n}\n.pma-mongo-view .mongo-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-mongo-view .mongo-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-mongo-view .mongo-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-mongo-view .mongo-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n  min-width: 25%;\n  text-align: right !important;\n}\n.pma-mongo-view .mongo-inner .server-info .title {\n  display: inline-block;\n  min-width: 90px;\n  text-align: right;\n}", ""]);
 
 // exports
 
@@ -12841,7 +13715,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-server-view {\n  float: left;\n  height: 105vh;\n  width: 48%;\n}\n.pma-server-view .server-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-server-view .server-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-server-view .server-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n  text-align: center;\n}\n.pma-server-view .server-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-server-view .server-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-server-view .server-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  min-width: 100px;\n  text-align: left;\n}\n.pma-server-view .server-inner table.bordered td.w50 {\n  min-width: 49.9%;\n  text-align: right;\n}\n.pma-server-view .server-inner table.bordered td.title {\n  width: 15rem;\n}\n.pma-server-view .server-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-server-view {\n  float: left;\n  height: 105vh;\n  width: 48%;\n}\n.pma-server-view .server-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-server-view .server-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-server-view .server-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n  text-align: center;\n}\n.pma-server-view .server-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-server-view .server-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-server-view .server-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  min-width: 100px;\n  text-align: left;\n}\n.pma-server-view .server-inner table.bordered td.w50 {\n  min-width: 49.9%;\n  text-align: right;\n}\n.pma-server-view .server-inner table.bordered td.title {\n  width: 15rem;\n}\n.pma-server-view .server-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n}", ""]);
 
 // exports
 
@@ -12898,7 +13772,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-servers-view {\n  float: left;\n  height: 100vh;\n  width: auto;\n}\n.pma-servers-view .servers-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-servers-view .servers-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-servers-view .servers-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n  text-align: center;\n}\n.pma-servers-view .servers-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-servers-view .servers-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-servers-view .servers-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  min-width: 100px;\n  padding-left: 20px;\n  text-align: left;\n}\n.pma-servers-view .servers-inner table.bordered td.w50 {\n  min-width: 49.9%;\n  text-align: right;\n}\n.pma-servers-view .servers-inner table.bordered td.title {\n  width: 15rem;\n}\n.pma-servers-view .servers-inner table.bordered td.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-servers-view .servers-inner .activate-checkbox {\n  padding-left: 2rem;\n}\n.pma-servers-view .servers-inner .activate-checkbox input {\n  margin: 0;\n}\n.pma-servers-view .servers-inner p.field {\n  text-align: right;\n  width: 350px;\n}\n.pma-servers-view .servers-inner p.field .input {\n  border-radius: 5px;\n  padding: 5px;\n  width: 100%;\n}\n.pma-servers-view .servers-inner p.field .input input {\n  margin: 0 0 0 auto;\n  max-width: 266px !important;\n}\n.pma-servers-view .servers-inner .checkbox {\n  margin: 0 0 0 30px !important;\n  width: 1rem;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-servers-view {\n  float: left;\n  height: 100vh;\n  width: auto;\n}\n.pma-servers-view .servers-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-servers-view .servers-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-servers-view .servers-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n  text-align: center;\n}\n.pma-servers-view .servers-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-servers-view .servers-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-servers-view .servers-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  min-width: 100px;\n  padding-left: 20px;\n  text-align: left;\n}\n.pma-servers-view .servers-inner table.bordered td.w50 {\n  min-width: 49.9%;\n  text-align: right;\n}\n.pma-servers-view .servers-inner table.bordered td.title {\n  width: 15rem;\n}\n.pma-servers-view .servers-inner table.bordered td.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-servers-view .servers-inner .activate-checkbox {\n  padding-left: 2rem;\n}\n.pma-servers-view .servers-inner .activate-checkbox input {\n  margin: 0;\n}\n.pma-servers-view .servers-inner p.field {\n  text-align: right;\n  width: 350px;\n}\n.pma-servers-view .servers-inner p.field .input {\n  border-radius: 5px;\n  padding: 5px;\n  width: 100%;\n}\n.pma-servers-view .servers-inner p.field .input input {\n  margin: 0 0 0 auto;\n  max-width: 266px !important;\n}\n.pma-servers-view .servers-inner .checkbox {\n  margin: 0 0 0 30px !important;\n  width: 1rem;\n}", ""]);
 
 // exports
 
@@ -12917,7 +13791,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".top-nav-wrapper {\n  background-color: #444444;\n  padding-left: 50px;\n}\nnav.top-navigation {\n  min-height: 33px;\n  max-width: 99%;\n}\nnav.top-navigation ul.links {\n  display: inline-block;\n  margin: 0;\n}\nnav.top-navigation ul.links li {\n  display: inline-block;\n  list-style-type: none;\n  margin-left: 7px;\n}\nnav.top-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 33px;\n  color: #ffffff;\n}\nnav.top-navigation ul.links li span:hover {\n  color: #00B7FF;\n  text-decoration: underline;\n}\nnav.top-navigation ul.links li.member-button a {\n  background-color: transparent;\n  border: 0;\n  padding: 0;\n}\nnav.top-navigation ul.links li.member-button a button {\n  color: #00B7FF;\n  padding: 9px;\n  cursor: pointer;\n}\nnav.top-navigation ul.links li.member-button a button:hover {\n  color: #333;\n  border: 1px solid #242424;\n  background-color: #af99ff;\n}\nnav.top-navigation ul.right {\n  position: absolute;\n  right: 20px;\n  top: 0;\n}\nnav.top-navigation ul.right .country-flag {\n  height: 33px;\n  width: 33px;\n  cursor: pointer;\n}\nnav.top-navigation ul.right .country-flag img {\n  margin-top: -5px;\n}\nnav.top-navigation ul.right .nav-collapse {\n  cursor: pointer;\n}\nnav.top-navigation ul.right .nav-collapse img {\n  width: 1.2rem;\n}\n\n/* Small only - (max-width: 39.9375em) */\n@media screen and (max-width: 769px) {\nnav.top-navigation div.text-center a span.logo {\n    font-size: 20px;\n    padding-top: 8px;\n}\n}\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 769px) and (max-width: 992px) {\nnav.top-navigation div.text-center a span.logo {\n    font-size: 25px;\n    padding-top: 4px;\n}\n}\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.top-nav-wrapper {\n  background-color: #444444;\n  padding-left: 50px;\n}\nnav.top-navigation {\n  min-height: 33px;\n  max-width: 99%;\n}\nnav.top-navigation ul.links {\n  display: inline-block;\n  margin: 0;\n}\nnav.top-navigation ul.links li {\n  display: inline-block;\n  list-style-type: none;\n  margin-left: 7px;\n}\nnav.top-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 33px;\n  color: #ffffff;\n}\nnav.top-navigation ul.links li span:hover {\n  color: #00B7FF;\n  text-decoration: underline;\n}\nnav.top-navigation ul.links li.member-button a {\n  background-color: transparent;\n  border: 0;\n  padding: 0;\n}\nnav.top-navigation ul.links li.member-button a button {\n  color: #00B7FF;\n  padding: 9px;\n  cursor: pointer;\n}\nnav.top-navigation ul.links li.member-button a button:hover {\n  color: #333;\n  border: 1px solid #242424;\n  background-color: #af99ff;\n}\nnav.top-navigation ul.right {\n  position: absolute;\n  right: 20px;\n  top: 0;\n}\nnav.top-navigation ul.right .country-flag {\n  height: 33px;\n  width: 33px;\n  cursor: pointer;\n}\nnav.top-navigation ul.right .country-flag img {\n  margin-top: -5px;\n}\nnav.top-navigation ul.right .nav-collapse {\n  cursor: pointer;\n}\nnav.top-navigation ul.right .nav-collapse img {\n  width: 1.2rem;\n}\n\n/* Small only - (max-width: 39.9375em) */\n@media screen and (max-width: 769px) {\nnav.top-navigation div.text-center a span.logo {\n    font-size: 20px;\n    padding-top: 8px;\n}\n}\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 769px) and (max-width: 992px) {\nnav.top-navigation div.text-center a span.logo {\n    font-size: 25px;\n    padding-top: 4px;\n}\n}\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
 
 // exports
 
@@ -12936,7 +13810,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "nav.panel-navigation {\n  min-height: 40px;\n  border-top: 1px solid #aaa;\n}\nnav.panel-navigation ul.links {\n  display: block;\n  float: left;\n  list-style: none;\n  margin: 0;\n}\nnav.panel-navigation ul.links li {\n  background-color: #F5F5F5;\n  border-right: 2px solid #ffffff;\n  border-left: 1px solid #cccccc;\n  border-bottom: 1px solid #cccccc;\n  display: inline-block;\n  float: left;\n  list-style-type: none;\n  padding: 0 10px;\n}\nnav.panel-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 40px;\n  padding: 8px;\n  color: #235a81;\n  cursor: pointer;\n}\nnav.panel-navigation ul.links li span:hover {\n  color: #333;\n}\nnav.panel-navigation ul.links li.active {\n  background-color: #ffffff;\n  border-bottom: 1px solid #ffffff;\n  border-right: 0;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\nnav.panel-navigation {\n  min-height: 40px;\n  border-top: 1px solid #aaa;\n}\nnav.panel-navigation ul.links {\n  display: block;\n  float: left;\n  list-style: none;\n  margin: 0;\n}\nnav.panel-navigation ul.links li {\n  background-color: #F5F5F5;\n  border-right: 2px solid #ffffff;\n  border-left: 1px solid #cccccc;\n  border-bottom: 1px solid #cccccc;\n  display: inline-block;\n  float: left;\n  list-style-type: none;\n  padding: 0 10px;\n}\nnav.panel-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 40px;\n  padding: 8px;\n  color: #235a81;\n  cursor: pointer;\n}\nnav.panel-navigation ul.links li span:hover {\n  color: #333;\n}\nnav.panel-navigation ul.links li.active {\n  background-color: #ffffff;\n  border-bottom: 1px solid #ffffff;\n  border-right: 0;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
 
 // exports
 
@@ -12955,7 +13829,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-top-panel {\n  background-color: #eeeeee;\n  margin-left: 245px;\n  padding-bottom: 2px;\n  position: relative;\n  top: 0;\n  z-index: 88;\n}\n.pma-top-panel .pma-link {\n  color: #00B7FF;\n  cursor: pointer;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-top-panel {\n  background-color: #eeeeee;\n  margin-left: 245px;\n  padding-bottom: 2px;\n  position: relative;\n  top: 0;\n  z-index: 88;\n}\n.pma-top-panel .pma-link {\n  color: #00B7FF;\n  cursor: pointer;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
 
 // exports
 
@@ -12974,7 +13848,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "div.delete-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 26vh;\n}\ndiv.delete-notification-container div.delete-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #FF0000;\n  border-right: 5px solid #FF0000;\n  min-height: 60px;\n  line-height: 50px;\n  margin: 0 auto 0 auto;\n  min-width: 400px;\n  max-width: 800px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.delete-notification-container div.delete-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n  height: 20px;\n}\ndiv.delete-notification-container div.delete-notification button {\n  margin: 0 0 0 1rem;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv.delete-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 26vh;\n}\ndiv.delete-notification-container div.delete-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #FF0000;\n  border-right: 5px solid #FF0000;\n  min-height: 60px;\n  line-height: 50px;\n  margin: 0 auto 0 auto;\n  min-width: 400px;\n  max-width: 800px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.delete-notification-container div.delete-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n  height: 20px;\n}\ndiv.delete-notification-container div.delete-notification button {\n  margin: 0 0 0 1rem;\n}", ""]);
 
 // exports
 
@@ -12993,7 +13867,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "div.error-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 25vh;\n}\ndiv.error-notification-container div.error-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #FF0000;\n  border-right: 5px solid #FF0000;\n  min-height: 50px;\n  line-height: 60px;\n  margin: 85px auto auto auto;\n  min-width: 400px;\n  max-width: 800px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.error-notification-container div.error-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n  height: 20px;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv.error-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 25vh;\n}\ndiv.error-notification-container div.error-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #FF0000;\n  border-right: 5px solid #FF0000;\n  min-height: 50px;\n  line-height: 60px;\n  margin: 85px auto auto auto;\n  min-width: 400px;\n  max-width: 800px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.error-notification-container div.error-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n  height: 20px;\n}", ""]);
 
 // exports
 
@@ -13012,7 +13886,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "#language-modal {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.8);\n  z-index: 100;\n}\n#language-modal div.language-box {\n  width: 100%;\n  max-width: 720px;\n  min-width: 480px;\n  background-color: transparent;\n  box-shadow: 0 1px 3px rgba(50, 50, 50, 0.08);\n  font-size: 16px;\n  position: absolute;\n  margin-top: 15px;\n  top: 50%;\n  left: 50%;\n  height: 100%;\n  transform: translate(-50%, -50%);\n  z-index: 101;\n  overflow: auto;\n  scroll-behavior: smooth;\n}\n#language-modal div.language-box div.language-label {\n  color: #fff;\n  font-family: \"Lato\", sans-serif;\n  font-weight: bold;\n  text-transform: uppercase;\n  text-align: center;\n  width: 100%;\n  border-radius: 10px 10px 0 0;\n  padding-top: 8px;\n  height: 35px;\n}\n#language-modal div.language-box div.language-label h3 {\n  font-size: 1rem;\n}\n#language-modal div.language-box div.language-label h3 img {\n  float: right;\n  margin: 2px 15px 0 0;\n  border-radius: 3px;\n  cursor: pointer;\n}\n#language-modal div.language-box img.close-menu-icon {\n  float: right;\n  cursor: pointer;\n}\n#language-modal div.language-box div.language-content {\n  width: 100%;\n  padding: 2rem;\n  position: relative;\n  text-align: center;\n  background-color: #e2e2e2;\n}\n#language-modal div.language-box div.language-content .languageSelector {\n  border-radius: 4px;\n}\n#language-modal div.language-box div.language-content p.location {\n  padding-left: 25rem;\n  text-align: left;\n}\n#language-modal div.language-box div.language-content p.location .title {\n  display: inline-block;\n  min-width: 170px;\n  text-align: right;\n}\n#language-modal div.language-box div.language-content p.location .data {\n  display: inline-block;\n  max-width: 90%;\n  min-width: 100px;\n  text-align: left;\n  vertical-align: top;\n}\n#language-modal div.language-box div.language-content #languageSelection {\n  margin: 5px auto;\n  padding: 10px;\n  background-color: #ffffff;\n  list-style: none;\n  width: auto;\n  max-width: 200px;\n  border-radius: 10px;\n  -moz-border-radius: 10px;\n}\n#language-modal div.language-box div.language-content #languageSelection li {\n  line-height: 1.4rem;\n  padding: 5px;\n  margin-bottom: 5px;\n  text-align: right;\n  cursor: pointer;\n}\n#language-modal div.language-box div.language-content #languageSelection li.active {\n  background-color: #242424;\n  color: #fff;\n}\n#language-modal div.language-box div.language-content #languageSelection li:hover {\n  background-color: #5525ff;\n  color: #fff;\n}\n#language-modal div.language-box div.language-content #languageSelection.hidden {\n  display: none;\n}\n#language-modal div.language-box .language-buttons {\n  background-color: #e2e2e2;\n  border-bottom-left-radius: 10px;\n  border-bottom-right-radius: 10px;\n  padding: 0 10px 50px 0;\n}\n#language-modal div.language-box .language-buttons button {\n  border-radius: 7px;\n}\n\n/* Small only */\n@media screen and (max-width: 768px) {\ndiv#language-modal div.language-box {\n    width: 95%;\n}\n}\n/* Medium only */\n@media (min-width: 769px) and (max-width: 992px) {\ndiv#language-modal div.language-box {\n    max-width: 840px;\n    min-width: 640px;\n}\n}\n/* Large only */\n@media (min-width: 993px) and (max-width: 2048px) {\ndiv#language-modal div.language-box {\n    max-width: 1240px;\n    min-width: 840px;\n}\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n#language-modal {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.8);\n  z-index: 100;\n}\n#language-modal div.language-box {\n  width: 100%;\n  max-width: 720px;\n  min-width: 480px;\n  background-color: transparent;\n  box-shadow: 0 1px 3px rgba(50, 50, 50, 0.08);\n  font-size: 16px;\n  position: absolute;\n  margin-top: 15px;\n  top: 50%;\n  left: 50%;\n  height: 100%;\n  transform: translate(-50%, -50%);\n  z-index: 101;\n  overflow: auto;\n  scroll-behavior: smooth;\n}\n#language-modal div.language-box div.language-label {\n  color: #fff;\n  font-family: \"Lato\", sans-serif;\n  font-weight: bold;\n  text-transform: uppercase;\n  text-align: center;\n  width: 100%;\n  border-radius: 10px 10px 0 0;\n  padding-top: 8px;\n  height: 35px;\n}\n#language-modal div.language-box div.language-label h3 {\n  font-size: 1rem;\n}\n#language-modal div.language-box div.language-label h3 img {\n  float: right;\n  margin: 2px 15px 0 0;\n  border-radius: 3px;\n  cursor: pointer;\n}\n#language-modal div.language-box img.close-menu-icon {\n  float: right;\n  cursor: pointer;\n}\n#language-modal div.language-box div.language-content {\n  width: 100%;\n  padding: 2rem;\n  position: relative;\n  text-align: center;\n  background-color: #e2e2e2;\n}\n#language-modal div.language-box div.language-content .languageSelector {\n  border-radius: 4px;\n}\n#language-modal div.language-box div.language-content p.location {\n  padding-left: 25rem;\n  text-align: left;\n}\n#language-modal div.language-box div.language-content p.location .title {\n  display: inline-block;\n  min-width: 170px;\n  text-align: right;\n}\n#language-modal div.language-box div.language-content p.location .data {\n  display: inline-block;\n  max-width: 90%;\n  min-width: 100px;\n  text-align: left;\n  vertical-align: top;\n}\n#language-modal div.language-box div.language-content #languageSelection {\n  margin: 5px auto;\n  padding: 10px;\n  background-color: #ffffff;\n  list-style: none;\n  width: auto;\n  max-width: 200px;\n  border-radius: 10px;\n  -moz-border-radius: 10px;\n}\n#language-modal div.language-box div.language-content #languageSelection li {\n  line-height: 1.4rem;\n  padding: 5px;\n  margin-bottom: 5px;\n  text-align: right;\n  cursor: pointer;\n}\n#language-modal div.language-box div.language-content #languageSelection li.active {\n  background-color: #242424;\n  color: #fff;\n}\n#language-modal div.language-box div.language-content #languageSelection li:hover {\n  background-color: #5525ff;\n  color: #fff;\n}\n#language-modal div.language-box div.language-content #languageSelection.hidden {\n  display: none;\n}\n#language-modal div.language-box .language-buttons {\n  background-color: #e2e2e2;\n  border-bottom-left-radius: 10px;\n  border-bottom-right-radius: 10px;\n  padding: 0 10px 50px 0;\n}\n#language-modal div.language-box .language-buttons button {\n  border-radius: 7px;\n}\n\n/* Small only */\n@media screen and (max-width: 768px) {\ndiv#language-modal div.language-box {\n    width: 95%;\n}\n}\n/* Medium only */\n@media (min-width: 769px) and (max-width: 992px) {\ndiv#language-modal div.language-box {\n    max-width: 840px;\n    min-width: 640px;\n}\n}\n/* Large only */\n@media (min-width: 993px) and (max-width: 2048px) {\ndiv#language-modal div.language-box {\n    max-width: 1240px;\n    min-width: 840px;\n}\n}", ""]);
 
 // exports
 
@@ -13031,7 +13905,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "div#login-modal {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.8);\n  z-index: 9;\n}\ndiv#login-modal div.login-box {\n  width: 100%;\n  max-width: 640px;\n  min-width: 320px;\n  background-color: transparent;\n  box-shadow: 0 1px 3px rgba(50, 50, 50, 0.08);\n  font-size: 16px;\n  position: absolute;\n  margin-top: 15px;\n  top: 50%;\n  left: 50%;\n  height: 100%;\n  transform: translate(-50%, -50%);\n  z-index: 10;\n  overflow: auto;\n  scroll-behavior: smooth;\n}\ndiv#login-modal div.login-box div.login-label {\n  background-color: #555555;\n  border-radius: 10px 10px 0 0;\n  color: #fff;\n  font-family: \"Lato\", sans-serif;\n  font-weight: bold;\n  text-transform: uppercase;\n  text-align: center;\n  width: 100%;\n  padding-top: 8px;\n  height: 35px;\n}\ndiv#login-modal div.login-box div.login-label h3 {\n  font-size: 1rem;\n}\ndiv#login-modal div.login-box div.login-label h3 img {\n  float: right;\n  margin: 1px 15px 0 0;\n  border-radius: 3px;\n  cursor: pointer;\n  border: #e3342f dotted 1px;\n}\ndiv#login-modal div.login-box .login-content {\n  width: 100%;\n  position: relative;\n  text-align: center;\n}\ndiv#login-modal div.login-box .login-content p.into-message {\n  margin-top: 10px;\n}\ndiv#login-modal div.login-box .login-content p.has-info {\n  padding-top: 10px;\n}\ndiv#login-modal div.login-box .login-content a.learn-more-button {\n  border: 2px solid #5525ff;\n  border-radius: 3px;\n  text-transform: uppercase;\n  font-family: \"Lato\", sans-serif;\n  color: #817ee3;\n  width: 360px;\n  font-size: 16px;\n  text-align: center;\n  padding: 10px;\n  margin: 20px 0 0 0;\n  display: block;\n}\ndiv#login-modal div.login-box .login-content a.learn-more-button:hover {\n  color: #fff;\n  background-color: #204d74;\n}\ndiv#login-modal div.login-box .login-content .logins {\n  text-align: center;\n  background-color: #e2e2e2;\n}\ndiv#login-modal div.login-box .login-content .logins a.social-link {\n  display: block;\n  width: 230px;\n  margin: 10px auto;\n}\ndiv#login-modal div.login-box .login-content .logins p.learn-more-description {\n  color: #666666;\n  text-align: center;\n}\ndiv#login-modal div.login-box .login-content .logins p:last-child {\n  margin-bottom: 0;\n}\ndiv#login-modal div.login-box .login-content form#loginForm {\n  padding-top: 0;\n}\ndiv#login-modal div.login-box .login-content form#loginForm .hidden-content {\n  display: none;\n}\ndiv#login-modal div.login-box .login-content form#loginForm .login-error {\n  border: 1px solid #a12121;\n  font-weight: 600;\n  font-style: italic;\n  max-width: 500px;\n  margin: 0 auto 10px auto;\n}\ndiv#login-modal div.login-box .login-content .has-error {\n  color: #e10a0a;\n}\ndiv#login-modal div.login-box .login-content .form-group {\n  background-color: #e2e2e2;\n  padding: 15px 10px;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock {\n  display: inline-block;\n  margin-right: 25px;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock label {\n  min-width: 65px;\n  text-align: right;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock label, div#login-modal div.login-box .login-content .form-group .fieldBlock input, div#login-modal div.login-box .login-content .form-group .fieldBlock select {\n  display: inline-block;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock .form-control {\n  width: auto;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock input, div#login-modal div.login-box .login-content .form-group .fieldBlock select {\n  margin: 6px 0;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock select {\n  min-width: 185px;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock .is-invalid {\n  color: #e3342f;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock .button-box {\n  margin: 12px 0;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock .has-success {\n  border: 1px solid #21a121;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock .has-error {\n  border: 1px solid #a12121;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock .db-select-label {\n  display: block;\n  font-weight: 600;\n}\ndiv#login-modal div.login-box .login-content .form-group span.help-block {\n  width: auto;\n  display: block;\n  position: relative;\n  padding: 5px;\n  margin: 0 auto;\n  max-width: 375px;\n}\ndiv#login-modal div.login-box .login-content .form-group span.has-success {\n  font-style: italic;\n  color: #00a000;\n}\ndiv#login-modal div.login-box .login-content .form-group button.button {\n  border-radius: 7px;\n}\ndiv#login-modal div.login-box .login-content .rego-button {\n  border: 2px solid #5525ff;\n  border-radius: 3px;\n  text-transform: uppercase;\n  font-family: \"Lato\", sans-serif;\n  color: #5525ff;\n  width: 400px;\n  font-size: 16px;\n  text-align: center;\n  padding: 10px;\n  cursor: pointer;\n}\ndiv#login-modal div.login-box .login-content .rego-button:hover {\n  color: #fff;\n  background-color: #204d74;\n}\ndiv#login-modal div.login-box .login-content .login-footer {\n  background-color: #e2e2e2;\n  padding-bottom: 20px;\n  text-align: center;\n}\ndiv#login-modal div.login-box .login-content .login-footer p.learn-more-description {\n  color: #666666;\n  text-align: center;\n}\ndiv#login-modal div.login-box .login-content .login-footer a.learn-more-button {\n  display: block;\n  margin: 0 auto;\n}\n\n/* Small only */\n@media screen and (max-width: 768px) {\ndiv#login-modal div.login-box {\n    width: 95%;\n}\ndiv#login-modal div.login-box a.learn-more-button {\n    width: 300px;\n}\n}\n/* Medium only */\n@media (min-width: 769px) and (max-width: 992px) {\ndiv#login-modal div.login-box {\n    max-width: 840px;\n    min-width: 640px;\n}\ndiv#login-modal div.login-box a.learn-more-button {\n    width: 300px;\n}\n}\n/* Large only */\n@media (min-width: 993px) and (max-width: 2048px) {\ndiv#login-modal div.login-box {\n    max-width: 1240px;\n    min-width: 840px;\n}\ndiv#login-modal div.login-box a.learn-more-button {\n    width: 300px;\n}\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv#login-modal {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.8);\n  z-index: 9;\n}\ndiv#login-modal div.login-box {\n  width: 100%;\n  max-width: 640px;\n  min-width: 320px;\n  background-color: transparent;\n  box-shadow: 0 1px 3px rgba(50, 50, 50, 0.08);\n  font-size: 16px;\n  position: absolute;\n  margin-top: 15px;\n  top: 50%;\n  left: 50%;\n  height: 100%;\n  transform: translate(-50%, -50%);\n  z-index: 10;\n  overflow: auto;\n  scroll-behavior: smooth;\n}\ndiv#login-modal div.login-box div.login-label {\n  background-color: #555555;\n  border-radius: 10px 10px 0 0;\n  color: #fff;\n  font-family: \"Lato\", sans-serif;\n  font-weight: bold;\n  text-transform: uppercase;\n  text-align: center;\n  width: 100%;\n  padding-top: 8px;\n  height: 35px;\n}\ndiv#login-modal div.login-box div.login-label h3 {\n  font-size: 1rem;\n}\ndiv#login-modal div.login-box div.login-label h3 img {\n  float: right;\n  margin: 1px 15px 0 0;\n  border-radius: 3px;\n  cursor: pointer;\n  border: #e3342f dotted 1px;\n}\ndiv#login-modal div.login-box .login-content {\n  width: 100%;\n  position: relative;\n  text-align: center;\n}\ndiv#login-modal div.login-box .login-content p.into-message {\n  margin-top: 10px;\n}\ndiv#login-modal div.login-box .login-content p.has-info {\n  padding-top: 10px;\n}\ndiv#login-modal div.login-box .login-content a.learn-more-button {\n  border: 2px solid #5525ff;\n  border-radius: 3px;\n  text-transform: uppercase;\n  font-family: \"Lato\", sans-serif;\n  color: #817ee3;\n  width: 360px;\n  font-size: 16px;\n  text-align: center;\n  padding: 10px;\n  margin: 20px 0 0 0;\n  display: block;\n}\ndiv#login-modal div.login-box .login-content a.learn-more-button:hover {\n  color: #fff;\n  background-color: #204d74;\n}\ndiv#login-modal div.login-box .login-content .logins {\n  text-align: center;\n  background-color: #e2e2e2;\n}\ndiv#login-modal div.login-box .login-content .logins a.social-link {\n  display: block;\n  width: 230px;\n  margin: 10px auto;\n}\ndiv#login-modal div.login-box .login-content .logins p.learn-more-description {\n  color: #666666;\n  text-align: center;\n}\ndiv#login-modal div.login-box .login-content .logins p:last-child {\n  margin-bottom: 0;\n}\ndiv#login-modal div.login-box .login-content form#loginForm {\n  padding-top: 0;\n}\ndiv#login-modal div.login-box .login-content form#loginForm .hidden-content {\n  display: none;\n}\ndiv#login-modal div.login-box .login-content form#loginForm .login-error {\n  border: 1px solid #a12121;\n  font-weight: 600;\n  font-style: italic;\n  max-width: 500px;\n  margin: 0 auto 10px auto;\n}\ndiv#login-modal div.login-box .login-content .has-error {\n  color: #e10a0a;\n}\ndiv#login-modal div.login-box .login-content .form-group {\n  background-color: #e2e2e2;\n  padding: 15px 10px;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock {\n  display: inline-block;\n  margin-right: 25px;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock label {\n  min-width: 65px;\n  text-align: right;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock label, div#login-modal div.login-box .login-content .form-group .fieldBlock input, div#login-modal div.login-box .login-content .form-group .fieldBlock select {\n  display: inline-block;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock .form-control {\n  width: auto;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock input, div#login-modal div.login-box .login-content .form-group .fieldBlock select {\n  margin: 6px 0;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock select {\n  min-width: 185px;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock .is-invalid {\n  color: #e3342f;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock .button-box {\n  margin: 12px 0;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock .has-success {\n  border: 1px solid #21a121;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock .has-error {\n  border: 1px solid #a12121;\n}\ndiv#login-modal div.login-box .login-content .form-group .fieldBlock .db-select-label {\n  display: block;\n  font-weight: 600;\n}\ndiv#login-modal div.login-box .login-content .form-group span.help-block {\n  width: auto;\n  display: block;\n  position: relative;\n  padding: 5px;\n  margin: 0 auto;\n  max-width: 375px;\n}\ndiv#login-modal div.login-box .login-content .form-group span.has-success {\n  font-style: italic;\n  color: #00a000;\n}\ndiv#login-modal div.login-box .login-content .form-group button.button {\n  border-radius: 7px;\n}\ndiv#login-modal div.login-box .login-content .rego-button {\n  border: 2px solid #5525ff;\n  border-radius: 3px;\n  text-transform: uppercase;\n  font-family: \"Lato\", sans-serif;\n  color: #5525ff;\n  width: 400px;\n  font-size: 16px;\n  text-align: center;\n  padding: 10px;\n  cursor: pointer;\n}\ndiv#login-modal div.login-box .login-content .rego-button:hover {\n  color: #fff;\n  background-color: #204d74;\n}\ndiv#login-modal div.login-box .login-content .login-footer {\n  background-color: #e2e2e2;\n  padding-bottom: 20px;\n  text-align: center;\n}\ndiv#login-modal div.login-box .login-content .login-footer p.learn-more-description {\n  color: #666666;\n  text-align: center;\n}\ndiv#login-modal div.login-box .login-content .login-footer a.learn-more-button {\n  display: block;\n  margin: 0 auto;\n}\n\n/* Small only */\n@media screen and (max-width: 768px) {\ndiv#login-modal div.login-box {\n    width: 95%;\n}\ndiv#login-modal div.login-box a.learn-more-button {\n    width: 300px;\n}\n}\n/* Medium only */\n@media (min-width: 769px) and (max-width: 992px) {\ndiv#login-modal div.login-box {\n    max-width: 840px;\n    min-width: 640px;\n}\ndiv#login-modal div.login-box a.learn-more-button {\n    width: 300px;\n}\n}\n/* Large only */\n@media (min-width: 993px) and (max-width: 2048px) {\ndiv#login-modal div.login-box {\n    max-width: 1240px;\n    min-width: 840px;\n}\ndiv#login-modal div.login-box a.learn-more-button {\n    width: 300px;\n}\n}", ""]);
 
 // exports
 
@@ -13050,7 +13924,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "div.success-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 0;\n}\ndiv.success-notification-container div.success-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #00c3ff;\n  border-right: 5px solid #00c3ff;\n  min-height: 50px;\n  line-height: 50px;\n  margin: 85px auto auto auto;\n  min-width: 400px;\n  max-width: 800px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.success-notification-container div.success-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv.success-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 0;\n}\ndiv.success-notification-container div.success-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #00c3ff;\n  border-right: 5px solid #00c3ff;\n  min-height: 50px;\n  line-height: 50px;\n  margin: 85px auto auto auto;\n  min-width: 400px;\n  max-width: 800px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.success-notification-container div.success-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n}", ""]);
 
 // exports
 
@@ -13069,7 +13943,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "nav.public-navigation {\n  min-height: 40px;\n}\nnav.public-navigation div.text-center a {\n  margin: 0 auto;\n  display: inline-block;\n  width: 100%;\n}\nnav.public-navigation div.text-center a span.logo {\n  display: block;\n  font-size: 30px;\n  height: 40px;\n  padding: 3px 0 0 0;\n  font-weight: 400;\n  color: #ffffff;\n  background-color: #286090;\n  border-radius: 7px;\n}\nnav.public-navigation div.text-center a span.logo:hover {\n  color: white;\n  background-color: #1d4568;\n}\nnav.public-navigation ul.links {\n  display: block;\n  float: left;\n  margin: 0;\n}\nnav.public-navigation ul.links li {\n  display: inline-block;\n  list-style-type: none;\n  margin-left: 7px;\n}\nnav.public-navigation ul.links li a {\n  font-weight: bold;\n  color: #ffffff;\n  font-size: 12px;\n  line-height: 40px;\n  padding: 8px;\n  background-color: #337ab7;\n  border-color: #2e6da4;\n  border-radius: 7px;\n}\nnav.public-navigation ul.links li a:hover {\n  background-color: #204d74;\n  border-color: #122b40;\n}\nnav.public-navigation ul.links li.member-button a {\n  background-color: transparent;\n  border: 0;\n  padding: 0;\n}\nnav.public-navigation ul.links li.member-button a button {\n  background-color: #eeeeee;\n  color: #00B7FF;\n  border-radius: 7px;\n  padding: 9px;\n  cursor: pointer;\n}\nnav.public-navigation ul.links li.member-button a button:hover {\n  color: #333;\n  border: 1px solid #242424;\n  background-color: #af99ff;\n}\nnav.public-navigation div.right {\n  float: right;\n  color: #ffffff;\n}\nnav.public-navigation div.right .country-flag {\n  height: 48px;\n  width: 48px;\n  cursor: pointer;\n}\nnav.public-navigation div.right .country-flag img {\n  margin-top: -10px;\n}\n\n/* Small only - (max-width: 39.9375em) */\n@media screen and (max-width: 769px) {\nnav.public-navigation div.text-center a span.logo {\n    font-size: 20px;\n    padding-top: 8px;\n}\n}\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 769px) and (max-width: 992px) {\nnav.public-navigation div.text-center a span.logo {\n    font-size: 25px;\n    padding-top: 4px;\n}\n}\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\nnav.public-navigation {\n  min-height: 40px;\n}\nnav.public-navigation div.text-center a {\n  margin: 0 auto;\n  display: inline-block;\n  width: 100%;\n}\nnav.public-navigation div.text-center a span.logo {\n  display: block;\n  font-size: 30px;\n  height: 40px;\n  padding: 3px 0 0 0;\n  font-weight: 400;\n  color: #ffffff;\n  background-color: #286090;\n  border-radius: 7px;\n}\nnav.public-navigation div.text-center a span.logo:hover {\n  color: white;\n  background-color: #1d4568;\n}\nnav.public-navigation ul.links {\n  display: block;\n  float: left;\n  margin: 0;\n}\nnav.public-navigation ul.links li {\n  display: inline-block;\n  list-style-type: none;\n  margin-left: 7px;\n}\nnav.public-navigation ul.links li a {\n  font-weight: bold;\n  color: #ffffff;\n  font-size: 12px;\n  line-height: 40px;\n  padding: 8px;\n  background-color: #337ab7;\n  border-color: #2e6da4;\n  border-radius: 7px;\n}\nnav.public-navigation ul.links li a:hover {\n  background-color: #204d74;\n  border-color: #122b40;\n}\nnav.public-navigation ul.links li.member-button a {\n  background-color: transparent;\n  border: 0;\n  padding: 0;\n}\nnav.public-navigation ul.links li.member-button a button {\n  background-color: #eeeeee;\n  color: #00B7FF;\n  border-radius: 7px;\n  padding: 9px;\n  cursor: pointer;\n}\nnav.public-navigation ul.links li.member-button a button:hover {\n  color: #333;\n  border: 1px solid #242424;\n  background-color: #af99ff;\n}\nnav.public-navigation div.right {\n  float: right;\n  color: #ffffff;\n}\nnav.public-navigation div.right .country-flag {\n  height: 48px;\n  width: 48px;\n  cursor: pointer;\n}\nnav.public-navigation div.right .country-flag img {\n  margin-top: -10px;\n}\n\n/* Small only - (max-width: 39.9375em) */\n@media screen and (max-width: 769px) {\nnav.public-navigation div.text-center a span.logo {\n    font-size: 20px;\n    padding-top: 8px;\n}\n}\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 769px) and (max-width: 992px) {\nnav.public-navigation div.text-center a span.logo {\n    font-size: 25px;\n    padding-top: 4px;\n}\n}\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
 
 // exports
 
@@ -13088,7 +13962,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "div#register-modal {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.8);\n  z-index: 7;\n}\ndiv#register-modal div.register-box {\n  width: 100%;\n  max-width: 530px;\n  min-width: 320px;\n  background-color: transparent;\n  box-shadow: 0 1px 3px rgba(50, 50, 50, 0.08);\n  font-size: 16px;\n  position: absolute;\n  margin-top: 15px;\n  top: 50%;\n  left: 50%;\n  height: 100%;\n  transform: translate(-50%, -50%);\n  z-index: 8;\n  overflow: auto;\n  scroll-behavior: smooth;\n}\ndiv#register-modal div.register-box div.register-label {\n  color: #fff;\n  font-family: \"Lato\", sans-serif;\n  font-weight: bold;\n  text-transform: uppercase;\n  text-align: center;\n  width: 100%;\n  border-radius: 10px 10px 0 0;\n  padding-top: 8px;\n  height: 35px;\n}\ndiv#register-modal div.register-box div.register-label h3 {\n  font-size: 1rem;\n}\ndiv#register-modal div.register-box div.register-label h3 img {\n  float: right;\n  margin: 1px 15px 0 0;\n  border-radius: 3px;\n  cursor: pointer;\n  border: #e3342f dotted 1px;\n}\ndiv#register-modal div.register-box .rego-content {\n  width: 100%;\n  position: relative;\n  text-align: center;\n}\ndiv#register-modal div.register-box .rego-content a.learn-more-button {\n  border: 2px solid #5525ff;\n  border-radius: 3px;\n  text-transform: uppercase;\n  font-family: \"Lato\", sans-serif;\n  color: #817ee3;\n  width: 360px;\n  font-size: 16px;\n  text-align: center;\n  padding: 10px;\n  margin: 20px 0 0 0;\n  display: block;\n}\ndiv#register-modal div.register-box .rego-content a.learn-more-button:hover {\n  color: #fff;\n  background-color: #204d74;\n}\ndiv#register-modal div.register-box .rego-content p {\n  position: relative;\n  margin: 0 0 10px;\n}\ndiv#register-modal div.register-box .rego-content label {\n  width: 170px;\n  text-align: right;\n}\ndiv#register-modal div.register-box .rego-content span.help-block {\n  width: auto;\n  display: inline-block;\n  position: absolute;\n  padding: 5px;\n  margin-left: 20px;\n  margin-top: 7px;\n}\ndiv#register-modal div.register-box .rego-content span.has-success {\n  font-style: italic;\n  color: #00a000;\n}\ndiv#register-modal div.register-box .rego-content button {\n  border-radius: 7px;\n}\ndiv#register-modal div.register-box .rego-content button.success {\n  font-weight: 600;\n}\ndiv#register-modal div.register-box .rego-content .has-error {\n  border: 1px solid #a12121;\n  color: #242E38;\n}\ndiv#register-modal div.register-box .rego-content .form-group {\n  background-color: #e2e2e2;\n  padding: 15px 10px;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock {\n  display: inline-block;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock label, div#register-modal div.register-box .rego-content .form-group .fieldBlock input {\n  display: inline-block;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .form-control {\n  width: auto;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock input, div#register-modal div.register-box .rego-content .form-group .fieldBlock select {\n  margin: 6px 0;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .is-invalid {\n  color: #e3342f;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .button-box {\n  margin: 12px 0;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .has-success {\n  border: 1px solid #21a121;\n}\ndiv#register-modal div.register-box .rego-content .login-button {\n  border: 2px solid #5525ff;\n  border-radius: 3px;\n  text-transform: uppercase;\n  font-family: \"Lato\", sans-serif;\n  color: #5525ff;\n  width: 360px;\n  font-size: 16px;\n  text-align: center;\n  padding: 10px;\n  cursor: pointer;\n}\ndiv#register-modal div.register-box .rego-content .login-button:hover {\n  color: #fff;\n  background-color: #204d74;\n}\ndiv#register-modal div.register-box .rego-content ul.requirements {\n  list-style-type: none;\n}\ndiv#register-modal div.register-box .rego-content ul.requirements li {\n  margin-bottom: 15px;\n  line-height: 1.5em;\n}\ndiv#register-modal div.register-box .rego-content .rego-footer {\n  background-color: #e2e2e2;\n  padding-bottom: 20px;\n}\ndiv#register-modal div.register-box .rego-content .rego-footer p.learn-more-description {\n  color: #666666;\n  text-align: center;\n}\ndiv#register-modal div.register-box .rego-content .rego-footer a.learn-more-button {\n  display: inline-block;\n  margin: 0;\n}\ndiv#register-modal div.register-box .rego-confirmation {\n  padding: auto 20px;\n}\n\n/* Small only */\n@media screen and (max-width: 768px) {\ndiv#register-modal div.register-box {\n    width: 95%;\n}\ndiv#register-modal div.register-box a.learn-more-button {\n    width: 300px;\n}\n}\n/* Medium only */\n@media (min-width: 769px) and (max-width: 992px) {\ndiv#register-modal div.register-box {\n    max-width: 840px;\n    min-width: 640px;\n}\ndiv#register-modal div.register-box a.learn-more-button {\n    width: 300px;\n}\n}\n/* Large only */\n@media (min-width: 993px) and (max-width: 2048px) {\ndiv#register-modal div.register-box {\n    max-width: 1240px;\n    min-width: 1080px;\n}\ndiv#register-modal div.register-box a.learn-more-button {\n    width: 300px;\n}\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv#register-modal {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.8);\n  z-index: 7;\n}\ndiv#register-modal div.register-box {\n  width: 100%;\n  max-width: 530px;\n  min-width: 320px;\n  background-color: transparent;\n  box-shadow: 0 1px 3px rgba(50, 50, 50, 0.08);\n  font-size: 16px;\n  position: absolute;\n  margin-top: 15px;\n  top: 50%;\n  left: 50%;\n  height: 100%;\n  transform: translate(-50%, -50%);\n  z-index: 8;\n  overflow: auto;\n  scroll-behavior: smooth;\n}\ndiv#register-modal div.register-box div.register-label {\n  color: #fff;\n  font-family: \"Lato\", sans-serif;\n  font-weight: bold;\n  text-transform: uppercase;\n  text-align: center;\n  width: 100%;\n  border-radius: 10px 10px 0 0;\n  padding-top: 8px;\n  height: 35px;\n}\ndiv#register-modal div.register-box div.register-label h3 {\n  font-size: 1rem;\n}\ndiv#register-modal div.register-box div.register-label h3 img {\n  float: right;\n  margin: 1px 15px 0 0;\n  border-radius: 3px;\n  cursor: pointer;\n  border: #e3342f dotted 1px;\n}\ndiv#register-modal div.register-box .rego-content {\n  width: 100%;\n  position: relative;\n  text-align: center;\n}\ndiv#register-modal div.register-box .rego-content a.learn-more-button {\n  border: 2px solid #5525ff;\n  border-radius: 3px;\n  text-transform: uppercase;\n  font-family: \"Lato\", sans-serif;\n  color: #817ee3;\n  width: 360px;\n  font-size: 16px;\n  text-align: center;\n  padding: 10px;\n  margin: 20px 0 0 0;\n  display: block;\n}\ndiv#register-modal div.register-box .rego-content a.learn-more-button:hover {\n  color: #fff;\n  background-color: #204d74;\n}\ndiv#register-modal div.register-box .rego-content p {\n  position: relative;\n  margin: 0 0 10px;\n}\ndiv#register-modal div.register-box .rego-content label {\n  width: 170px;\n  text-align: right;\n}\ndiv#register-modal div.register-box .rego-content span.help-block {\n  width: auto;\n  display: inline-block;\n  position: absolute;\n  padding: 5px;\n  margin-left: 20px;\n  margin-top: 7px;\n}\ndiv#register-modal div.register-box .rego-content span.has-success {\n  font-style: italic;\n  color: #00a000;\n}\ndiv#register-modal div.register-box .rego-content button {\n  border-radius: 7px;\n}\ndiv#register-modal div.register-box .rego-content button.success {\n  font-weight: 600;\n}\ndiv#register-modal div.register-box .rego-content .has-error {\n  border: 1px solid #a12121;\n  color: #242E38;\n}\ndiv#register-modal div.register-box .rego-content .form-group {\n  background-color: #e2e2e2;\n  padding: 15px 10px;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock {\n  display: inline-block;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock label, div#register-modal div.register-box .rego-content .form-group .fieldBlock input {\n  display: inline-block;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .form-control {\n  width: auto;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock input, div#register-modal div.register-box .rego-content .form-group .fieldBlock select {\n  margin: 6px 0;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .is-invalid {\n  color: #e3342f;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .button-box {\n  margin: 12px 0;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .has-success {\n  border: 1px solid #21a121;\n}\ndiv#register-modal div.register-box .rego-content .login-button {\n  border: 2px solid #5525ff;\n  border-radius: 3px;\n  text-transform: uppercase;\n  font-family: \"Lato\", sans-serif;\n  color: #5525ff;\n  width: 360px;\n  font-size: 16px;\n  text-align: center;\n  padding: 10px;\n  cursor: pointer;\n}\ndiv#register-modal div.register-box .rego-content .login-button:hover {\n  color: #fff;\n  background-color: #204d74;\n}\ndiv#register-modal div.register-box .rego-content ul.requirements {\n  list-style-type: none;\n}\ndiv#register-modal div.register-box .rego-content ul.requirements li {\n  margin-bottom: 15px;\n  line-height: 1.5em;\n}\ndiv#register-modal div.register-box .rego-content .rego-footer {\n  background-color: #e2e2e2;\n  padding-bottom: 20px;\n}\ndiv#register-modal div.register-box .rego-content .rego-footer p.learn-more-description {\n  color: #666666;\n  text-align: center;\n}\ndiv#register-modal div.register-box .rego-content .rego-footer a.learn-more-button {\n  display: inline-block;\n  margin: 0;\n}\ndiv#register-modal div.register-box .rego-confirmation {\n  padding: auto 20px;\n}\n\n/* Small only */\n@media screen and (max-width: 768px) {\ndiv#register-modal div.register-box {\n    width: 95%;\n}\ndiv#register-modal div.register-box a.learn-more-button {\n    width: 300px;\n}\n}\n/* Medium only */\n@media (min-width: 769px) and (max-width: 992px) {\ndiv#register-modal div.register-box {\n    max-width: 840px;\n    min-width: 640px;\n}\ndiv#register-modal div.register-box a.learn-more-button {\n    width: 300px;\n}\n}\n/* Large only */\n@media (min-width: 993px) and (max-width: 2048px) {\ndiv#register-modal div.register-box {\n    max-width: 1240px;\n    min-width: 1080px;\n}\ndiv#register-modal div.register-box a.learn-more-button {\n    width: 300px;\n}\n}", ""]);
 
 // exports
 
@@ -13107,7 +13981,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "div#register-modal {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.8);\n  z-index: 7;\n}\ndiv#register-modal div.register-box {\n  width: 100%;\n  max-width: 530px;\n  min-width: 320px;\n  background-color: transparent;\n  box-shadow: 0 1px 3px rgba(50, 50, 50, 0.08);\n  font-size: 16px;\n  position: absolute;\n  margin-top: 15px;\n  top: 50%;\n  left: 50%;\n  height: 100%;\n  transform: translate(-50%, -50%);\n  z-index: 8;\n  overflow: auto;\n  scroll-behavior: smooth;\n}\ndiv#register-modal div.register-box div.register-label {\n  color: #fff;\n  font-family: \"Lato\", sans-serif;\n  font-weight: bold;\n  text-transform: uppercase;\n  text-align: center;\n  width: 100%;\n  border-radius: 10px 10px 0 0;\n  padding-top: 8px;\n  height: 35px;\n}\ndiv#register-modal div.register-box div.register-label h3 {\n  font-size: 1rem;\n}\ndiv#register-modal div.register-box div.register-label h3 img {\n  float: right;\n  margin: 1px 15px 0 0;\n  border-radius: 3px;\n  cursor: pointer;\n  border: #e3342f dotted 1px;\n}\ndiv#register-modal div.register-box .rego-content {\n  width: 100%;\n  position: relative;\n  text-align: center;\n}\ndiv#register-modal div.register-box .rego-content a.learn-more-button {\n  border: 2px solid #5525ff;\n  border-radius: 3px;\n  text-transform: uppercase;\n  font-family: \"Lato\", sans-serif;\n  color: #817ee3;\n  width: 360px;\n  font-size: 16px;\n  text-align: center;\n  padding: 10px;\n  margin: 20px 0 0 0;\n  display: block;\n}\ndiv#register-modal div.register-box .rego-content a.learn-more-button:hover {\n  color: #fff;\n  background-color: #204d74;\n}\ndiv#register-modal div.register-box .rego-content p {\n  position: relative;\n  margin: 0 0 10px;\n}\ndiv#register-modal div.register-box .rego-content label {\n  width: 170px;\n  text-align: right;\n}\ndiv#register-modal div.register-box .rego-content span.help-block {\n  width: auto;\n  display: inline-block;\n  position: absolute;\n  padding: 5px;\n  margin-left: 20px;\n  margin-top: 7px;\n}\ndiv#register-modal div.register-box .rego-content span.has-success {\n  font-style: italic;\n  color: #00a000;\n}\ndiv#register-modal div.register-box .rego-content button {\n  border-radius: 7px;\n}\ndiv#register-modal div.register-box .rego-content button.success {\n  font-weight: 600;\n}\ndiv#register-modal div.register-box .rego-content .has-error {\n  border: 1px solid #a12121;\n  color: #242E38;\n}\ndiv#register-modal div.register-box .rego-content .form-group {\n  background-color: #e2e2e2;\n  padding: 15px 10px;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock {\n  display: inline-block;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock label, div#register-modal div.register-box .rego-content .form-group .fieldBlock input {\n  display: inline-block;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .form-control {\n  width: auto;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock input, div#register-modal div.register-box .rego-content .form-group .fieldBlock select {\n  margin: 6px 0;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .is-invalid {\n  color: #e3342f;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .button-box {\n  margin: 12px 0;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .has-success {\n  border: 1px solid #21a121;\n}\ndiv#register-modal div.register-box .rego-content .login-button {\n  border: 2px solid #5525ff;\n  border-radius: 3px;\n  text-transform: uppercase;\n  font-family: \"Lato\", sans-serif;\n  color: #5525ff;\n  width: 360px;\n  font-size: 16px;\n  text-align: center;\n  padding: 10px;\n  cursor: pointer;\n}\ndiv#register-modal div.register-box .rego-content .login-button:hover {\n  color: #fff;\n  background-color: #204d74;\n}\ndiv#register-modal div.register-box .rego-content ul.requirements {\n  list-style-type: none;\n}\ndiv#register-modal div.register-box .rego-content ul.requirements li {\n  margin-bottom: 15px;\n  line-height: 1.5em;\n}\ndiv#register-modal div.register-box .rego-content .rego-footer {\n  background-color: #e2e2e2;\n  padding-bottom: 20px;\n}\ndiv#register-modal div.register-box .rego-content .rego-footer p.learn-more-description {\n  color: #666666;\n  text-align: center;\n}\ndiv#register-modal div.register-box .rego-content .rego-footer a.learn-more-button {\n  display: inline-block;\n  margin: 0;\n}\ndiv#register-modal div.register-box .rego-confirmation {\n  padding: auto 20px;\n}\n\n/* Small only */\n@media screen and (max-width: 768px) {\ndiv#register-modal div.register-box {\n    width: 95%;\n}\ndiv#register-modal div.register-box a.learn-more-button {\n    width: 300px;\n}\n}\n/* Medium only */\n@media (min-width: 769px) and (max-width: 992px) {\ndiv#register-modal div.register-box {\n    max-width: 840px;\n    min-width: 640px;\n}\ndiv#register-modal div.register-box a.learn-more-button {\n    width: 300px;\n}\n}\n/* Large only */\n@media (min-width: 993px) and (max-width: 2048px) {\ndiv#register-modal div.register-box {\n    max-width: 1240px;\n    min-width: 1080px;\n}\ndiv#register-modal div.register-box a.learn-more-button {\n    width: 300px;\n}\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv#register-modal {\n  position: fixed;\n  top: 0;\n  bottom: 0;\n  left: 0;\n  right: 0;\n  background-color: rgba(0, 0, 0, 0.8);\n  z-index: 7;\n}\ndiv#register-modal div.register-box {\n  width: 100%;\n  max-width: 530px;\n  min-width: 320px;\n  background-color: transparent;\n  box-shadow: 0 1px 3px rgba(50, 50, 50, 0.08);\n  font-size: 16px;\n  position: absolute;\n  margin-top: 15px;\n  top: 50%;\n  left: 50%;\n  height: 100%;\n  transform: translate(-50%, -50%);\n  z-index: 8;\n  overflow: auto;\n  scroll-behavior: smooth;\n}\ndiv#register-modal div.register-box div.register-label {\n  color: #fff;\n  font-family: \"Lato\", sans-serif;\n  font-weight: bold;\n  text-transform: uppercase;\n  text-align: center;\n  width: 100%;\n  border-radius: 10px 10px 0 0;\n  padding-top: 8px;\n  height: 35px;\n}\ndiv#register-modal div.register-box div.register-label h3 {\n  font-size: 1rem;\n}\ndiv#register-modal div.register-box div.register-label h3 img {\n  float: right;\n  margin: 1px 15px 0 0;\n  border-radius: 3px;\n  cursor: pointer;\n  border: #e3342f dotted 1px;\n}\ndiv#register-modal div.register-box .rego-content {\n  width: 100%;\n  position: relative;\n  text-align: center;\n}\ndiv#register-modal div.register-box .rego-content a.learn-more-button {\n  border: 2px solid #5525ff;\n  border-radius: 3px;\n  text-transform: uppercase;\n  font-family: \"Lato\", sans-serif;\n  color: #817ee3;\n  width: 360px;\n  font-size: 16px;\n  text-align: center;\n  padding: 10px;\n  margin: 20px 0 0 0;\n  display: block;\n}\ndiv#register-modal div.register-box .rego-content a.learn-more-button:hover {\n  color: #fff;\n  background-color: #204d74;\n}\ndiv#register-modal div.register-box .rego-content p {\n  position: relative;\n  margin: 0 0 10px;\n}\ndiv#register-modal div.register-box .rego-content label {\n  width: 170px;\n  text-align: right;\n}\ndiv#register-modal div.register-box .rego-content span.help-block {\n  width: auto;\n  display: inline-block;\n  position: absolute;\n  padding: 5px;\n  margin-left: 20px;\n  margin-top: 7px;\n}\ndiv#register-modal div.register-box .rego-content span.has-success {\n  font-style: italic;\n  color: #00a000;\n}\ndiv#register-modal div.register-box .rego-content button {\n  border-radius: 7px;\n}\ndiv#register-modal div.register-box .rego-content button.success {\n  font-weight: 600;\n}\ndiv#register-modal div.register-box .rego-content .has-error {\n  border: 1px solid #a12121;\n  color: #242E38;\n}\ndiv#register-modal div.register-box .rego-content .form-group {\n  background-color: #e2e2e2;\n  padding: 15px 10px;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock {\n  display: inline-block;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock label, div#register-modal div.register-box .rego-content .form-group .fieldBlock input {\n  display: inline-block;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .form-control {\n  width: auto;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock input, div#register-modal div.register-box .rego-content .form-group .fieldBlock select {\n  margin: 6px 0;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .is-invalid {\n  color: #e3342f;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .button-box {\n  margin: 12px 0;\n}\ndiv#register-modal div.register-box .rego-content .form-group .fieldBlock .has-success {\n  border: 1px solid #21a121;\n}\ndiv#register-modal div.register-box .rego-content .login-button {\n  border: 2px solid #5525ff;\n  border-radius: 3px;\n  text-transform: uppercase;\n  font-family: \"Lato\", sans-serif;\n  color: #5525ff;\n  width: 360px;\n  font-size: 16px;\n  text-align: center;\n  padding: 10px;\n  cursor: pointer;\n}\ndiv#register-modal div.register-box .rego-content .login-button:hover {\n  color: #fff;\n  background-color: #204d74;\n}\ndiv#register-modal div.register-box .rego-content ul.requirements {\n  list-style-type: none;\n}\ndiv#register-modal div.register-box .rego-content ul.requirements li {\n  margin-bottom: 15px;\n  line-height: 1.5em;\n}\ndiv#register-modal div.register-box .rego-content .rego-footer {\n  background-color: #e2e2e2;\n  padding-bottom: 20px;\n}\ndiv#register-modal div.register-box .rego-content .rego-footer p.learn-more-description {\n  color: #666666;\n  text-align: center;\n}\ndiv#register-modal div.register-box .rego-content .rego-footer a.learn-more-button {\n  display: inline-block;\n  margin: 0;\n}\ndiv#register-modal div.register-box .rego-confirmation {\n  padding: auto 20px;\n}\n\n/* Small only */\n@media screen and (max-width: 768px) {\ndiv#register-modal div.register-box {\n    width: 95%;\n}\ndiv#register-modal div.register-box a.learn-more-button {\n    width: 300px;\n}\n}\n/* Medium only */\n@media (min-width: 769px) and (max-width: 992px) {\ndiv#register-modal div.register-box {\n    max-width: 840px;\n    min-width: 640px;\n}\ndiv#register-modal div.register-box a.learn-more-button {\n    width: 300px;\n}\n}\n/* Large only */\n@media (min-width: 993px) and (max-width: 2048px) {\ndiv#register-modal div.register-box {\n    max-width: 1240px;\n    min-width: 1080px;\n}\ndiv#register-modal div.register-box a.learn-more-button {\n    width: 300px;\n}\n}", ""]);
 
 // exports
 
@@ -13145,7 +14019,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "div.success-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 25vh;\n}\ndiv.success-notification-container div.success-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #00C853;\n  border-right: 5px solid #00C853;\n  min-height: 50px;\n  line-height: 60px;\n  margin: 85px auto auto auto;\n  min-width: 400px;\n  max-width: 800px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.success-notification-container div.success-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv.success-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 25vh;\n}\ndiv.success-notification-container div.success-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #00C853;\n  border-right: 5px solid #00C853;\n  min-height: 50px;\n  line-height: 60px;\n  margin: 85px auto auto auto;\n  min-width: 400px;\n  max-width: 800px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.success-notification-container div.success-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n}", ""]);
 
 // exports
 
@@ -13164,7 +14038,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "#text-filter input {\n  margin-right: 10px;\n  font-size: 14px;\n  height: 36px;\n  padding: 10px 16px;\n  line-height: 1.3333333;\n  border-radius: 6px;\n  color: #555;\n  background-color: #ffffff;\n  background-image: none;\n  border: 1px solid #cccccc;\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n#text-filter input {\n  margin-right: 10px;\n  font-size: 14px;\n  height: 36px;\n  padding: 10px 16px;\n  line-height: 1.3333333;\n  border-radius: 6px;\n  color: #555;\n  background-color: #ffffff;\n  background-image: none;\n  border: 1px solid #cccccc;\n  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);\n  transition: border-color ease-in-out 0.15s, box-shadow ease-in-out 0.15s;\n}", ""]);
 
 // exports
 
@@ -13183,7 +14057,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "div#app-layout {\n  background-color: inherit;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv#app-layout {\n  background-color: inherit;\n}", ""]);
 
 // exports
 
@@ -13202,7 +14076,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "div.public-view {\n  background-color: #eeeeee;\n}\ndiv.public-view header.header-content {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 80px;\n  background: url(/img/header-background-dark-blue.png) repeat-x 0 -22px;\n  padding-top: 16px;\n  z-index: 2;\n}\ndiv.public-view header.header-content .grid-container {\n  max-width: 99%;\n}\ndiv.public-view .main-content {\n  padding: 30px 0 10px 0;\n  margin-top: 0;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv.public-view {\n  background-color: #eeeeee;\n}\ndiv.public-view header.header-content {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 80px;\n  background: url(/img/header-background-dark-blue.png) repeat-x 0 -22px;\n  padding-top: 16px;\n  z-index: 2;\n}\ndiv.public-view header.header-content .grid-container {\n  max-width: 99%;\n}\ndiv.public-view .main-content {\n  padding: 30px 0 10px 0;\n  margin-top: 0;\n}", ""]);
 
 // exports
 
@@ -13240,7 +14114,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, ".main-content {\n  height: 100vh;\n  margin: 0;\n  overflow: hidden;\n  padding: 0;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $\n * @package      _variables.scss\n * @subpackage   Id\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.main-content {\n  height: 100vh;\n  margin: 0;\n  overflow: hidden;\n  padding: 0;\n}", ""]);
 
 // exports
 
@@ -85140,6 +86014,22 @@ module.exports = function(module) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../config */ "./resources/js/config.js");
 /*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      collection.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      collection.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
+/*
 *  Imports the PHP Mongo Admin URL from the config.
 */
 
@@ -85157,7 +86047,6 @@ __webpack_require__.r(__webpack_exports__);
   *   POST  /api/v1/collection/create
   */
   createCollection: function createCollection(data) {
-    console.log(data);
     return axios.post(_config__WEBPACK_IMPORTED_MODULE_0__["MONGO_CONFIG"].API_URL + '/collection/create', {
       name: data.name,
       capped: data.capped,
@@ -85173,7 +86062,6 @@ __webpack_require__.r(__webpack_exports__);
   *   POST  /api/v1/collection/delete
   */
   deleteCollection: function deleteCollection(names) {
-    console.log("name: " + names);
     return axios.post(_config__WEBPACK_IMPORTED_MODULE_0__["MONGO_CONFIG"].API_URL + '/collection/delete', {
       names: names,
       _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
@@ -85194,6 +86082,22 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../config */ "./resources/js/config.js");
 /*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      database.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      database.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
+/*
 *  Imports the PHP Mongo Admin URL from the config.
 */
 
@@ -85203,7 +86107,6 @@ __webpack_require__.r(__webpack_exports__);
   *   GET /api/v1/databases
   */
   getDatabases: function getDatabases() {
-    // console.log("fetching databases: " + MONGO_CONFIG.API_URL + '/databases');
     return axios.get(_config__WEBPACK_IMPORTED_MODULE_0__["MONGO_CONFIG"].API_URL + '/databases');
   },
 
@@ -85252,6 +86155,22 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../config */ "./resources/js/config.js");
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      server.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      server.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
 /*
 *  Imports the PHP Mongo Admin URL from the config.
 */
@@ -85324,6 +86243,22 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _config_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../config.js */ "./resources/js/config.js");
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../event-bus.js */ "./resources/js/event-bus.js");
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      user.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      user.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
 /*
 *   Imports the PHP Mongo Admin URL from the config.
 */
@@ -85432,6 +86367,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_translate_js__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./services/translate.js */ "./resources/js/services/translate.js");
 /* harmony import */ var _services_countries_js__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./services/countries.js */ "./resources/js/services/countries.js");
 /* harmony import */ var _services_jqf_js__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./services/jqf.js */ "./resources/js/services/jqf.js");
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      app.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      app.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
 
 /**
 *   First we will load all of this project's JavaScript dependencies which
@@ -89812,6 +90762,22 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "MONGO_CONFIG", function() { return MONGO_CONFIG; });
 /*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      config.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      config.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
+/*
 *   Define the API route we will be using
 */
 var api_url = '',
@@ -89866,6 +90832,21 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "EventBus", function() { return EventBus; });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      event-bus.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      event-bus.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
 
 var EventBus = new vue__WEBPACK_IMPORTED_MODULE_0___default.a();
 
@@ -90055,6 +91036,21 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DbsTextFilter", function() { return DbsTextFilter; });
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      DbsTextFilter.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      DbsTextFilter.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
 var DbsTextFilter = {
   methods: {
     processDbsTextFilter: function processDbsTextFilter(db, text) {
@@ -90093,6 +91089,22 @@ var DbsTextFilter = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "application", function() { return application; });
 /* harmony import */ var _api_user_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../api/user.js */ "./resources/js/api/user.js");
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      application.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      application.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
 /*
 * ----------------------------------------------------
 * VUEX modules/application.js
@@ -90431,6 +91443,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "collection", function() { return collection; });
 /* harmony import */ var _api_collection_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../api/collection.js */ "./resources/js/api/collection.js");
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../event-bus.js */ "./resources/js/event-bus.js");
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      collection.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      collection.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
 /*
 * ----------------------------------------------------
 * VUEX modules/collection.js
@@ -90799,6 +91827,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "database", function() { return database; });
 /* harmony import */ var _api_database_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../api/database.js */ "./resources/js/api/database.js");
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../event-bus.js */ "./resources/js/event-bus.js");
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      database.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      database.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
 /*
 * ----------------------------------------------------
 * VUEX modules/server.js
@@ -91181,6 +92225,22 @@ var database = {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "display", function() { return display; });
 /*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      display.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      display.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
+/*
 |-------------------------------------------------------------------------------
 | VUEX modules/display.js
 |-------------------------------------------------------------------------------
@@ -91336,6 +92396,22 @@ var display = {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "filters", function() { return filters; });
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      filters.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      filters.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
 /*
 |-------------------------------------------------------------------------------
 | VUEX modules/filters.js
@@ -91501,6 +92577,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "server", function() { return server; });
 /* harmony import */ var _api_server_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../api/server.js */ "./resources/js/api/server.js");
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../event-bus.js */ "./resources/js/event-bus.js");
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      server.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      server.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
 /*
 * ----------------------------------------------------
 * VUEX modules/server.js
@@ -91778,6 +92870,9 @@ var server = {
         return server;
       };
     },
+    getServerDeleteStatus: function getServerDeleteStatus(state) {
+      return state.serverDeleteStatus;
+    },
 
     /*
      *  Return the build info for the loaded server
@@ -91871,6 +92966,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "users", function() { return users; });
 /* harmony import */ var _api_user_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../api/user.js */ "./resources/js/api/user.js");
 /*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      users.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      users.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
+/*
 |-------------------------------------------------------------------------------
 | VUEX modules/users.js
 |-------------------------------------------------------------------------------
@@ -91883,8 +92994,8 @@ __webpack_require__.r(__webpack_exports__);
 
 var users = {
   /*
-  *   Defines the state being monitored for the module.
-  */
+   *   Defines the state being monitored for the module.
+   */
   state: {
     user: {},
     userLoadStatus: 0,
@@ -91899,12 +93010,12 @@ var users = {
   },
 
   /*
-  Defines the actions used to retrieve the data.
-  */
+   *Defines the actions used to retrieve the data.
+   */
   actions: {
     /*
-    *  Register a user
-    */
+     *  Register a user
+     */
     registerUser: function registerUser(_ref, data) {
       var commit = _ref.commit,
           state = _ref.state,
@@ -91926,18 +93037,15 @@ var users = {
     },
 
     /*
-    *   Login a user via the API
-    */
+     *   Login a user via the API
+     */
     loginUser: function loginUser(_ref2, data) {
       var commit = _ref2.commit,
           state = _ref2.state,
           dispatch = _ref2.dispatch;
       commit('setUserLoginStatus', 1);
       _api_user_js__WEBPACK_IMPORTED_MODULE_0__["default"].loginUser(data.data.user, data.data.password).then(function (response) {
-        console.log(response.data);
-
         if (response.data.success === true && response.data.uid >= 1) {
-          console.log("you are gtg!!");
           var token = 'Bearer ' + response.data.token;
           axios.defaults.headers.common['Authorization'] = token;
           localStorage.setItem('token', JSON.stringify(token));
@@ -91963,8 +93071,8 @@ var users = {
     },
 
     /*
-    * Load the current user
-    */
+     * Load the current user
+     */
     loadUser: function loadUser(_ref3) {
       var commit = _ref3.commit;
       commit('setUserLoadStatus', 1);
@@ -91989,8 +93097,8 @@ var users = {
     },
 
     /*
-    * Adds or Edits a user
-    */
+     * Adds or Edits a user
+     */
     editUser: function editUser(_ref4, data) {
       var commit = _ref4.commit,
           state = _ref4.state,
@@ -92005,12 +93113,11 @@ var users = {
     },
 
     /*
-    *   Logs out a user and clears the status and user pieces of state.
-    */
+     *   Logs out a user and clears the status and user pieces of state.
+     */
     logoutUser: function logoutUser(_ref5, data) {
       var commit = _ref5.commit;
       commit('setUserLogoutStatus', 1);
-      console.log("logging out: " + data.uid);
       _api_user_js__WEBPACK_IMPORTED_MODULE_0__["default"].logoutUser(data.uid).then(function (response) {
         if (response.data.success === true && response.data.message === 'success') {
           localStorage.removeItem('token');
@@ -92027,8 +93134,8 @@ var users = {
     },
 
     /*
-    *   Check an email address for uniqueness and validity
-    */
+     *   Check an email address for uniqueness and validity
+     */
     checkEmail: function checkEmail(_ref6, data) {
       var commit = _ref6.commit,
           state = _ref6.state;
@@ -92044,159 +93151,159 @@ var users = {
   },
 
   /*
-  *  Defines the mutations used
-  */
+   *  Defines the mutations used
+   */
   mutations: {
     /*
-    * Sets the user load status
-    */
+     * Sets the user load status
+     */
     setUserLoadStatus: function setUserLoadStatus(state, status) {
       state.userLoadStatus = status;
     },
 
     /*
-    * Sets the user
-    */
+     * Sets the user
+     */
     setUser: function setUser(state, _ref7) {
       var user = _ref7.user;
       state.user = user;
     },
 
     /*
-    * Sets the user token
-    */
+     * Sets the user token
+     */
     setUserToken: function setUserToken(state, _ref8) {
       var token = _ref8.token;
       state.token = token;
     },
 
     /*
-    * Sets the user update status
-    */
+     * Sets the user update status
+     */
     setUserUpdateStatus: function setUserUpdateStatus(state, status) {
       state.userUpdateStatus = status;
     },
 
     /*
-    * Sets the user POST status
-    */
+     * Sets the user POST status
+     */
     setUserRegisterStatus: function setUserRegisterStatus(state, status) {
       state.userRegisterStatus = status;
     },
 
     /*
-    * Set the user logging in process status
-    */
+     * Set the user logging in process status
+     */
     setUserLoginStatus: function setUserLoginStatus(state, status) {
       state.userLoginStatus = status;
     },
 
     /*
-    * Set the user log out in process status
-    */
+     * Set the user log out in process status
+     */
     setUserLogoutStatus: function setUserLogoutStatus(state, status) {
       state.userLogoutStatus = status;
     },
 
     /*
-    *   Set and track the logged in user bu UID
-    */
+     *   Set and track the logged in user bu UID
+     */
     setUserAuthStatus: function setUserAuthStatus(state, uid) {
       state.userAuthStatus = uid;
     },
 
     /*
-    *   Set the email check status
-    */
+     *   Set the email check status
+     */
     setEmailCheckStatus: function setEmailCheckStatus(state, status) {
       state.emailCheckStatus = status;
     },
 
     /*
-    *   Set the email check result
-    */
+     *   Set the email check result
+     */
     setEmailCheck: function setEmailCheck(state, result) {
       state.emailCheck = result;
     }
   },
 
   /*
-  Defines the getters used by the module.
-  */
+   * Defines the getters used by the module.
+   */
   getters: {
     /*
-    *   Returns the user load status.
-    */
+     *   Returns the user load status.
+     */
     getUserLoadStatus: function getUserLoadStatus(state) {
       return state.userLoadStatus;
     },
 
     /*
-    *   Returns the user.
-    */
+     *   Returns the user.
+     */
     getUser: function getUser(state) {
       return state.user;
     },
 
     /*
-    * Gets the user auth status - returns the users ID
-    */
+     * Gets the user auth status - returns the users ID
+     */
     getUserAuthStatus: function getUserAuthStatus(state) {
       return state.userAuthStatus;
     },
 
     /*
-    *   Gets the user update status
-    */
+     *   Gets the user update status
+     */
     getUserUpdateStatus: function getUserUpdateStatus(state) {
       return state.userUpdateStatus;
     },
 
     /*
-    *   Gets the user Register status
-    */
+     *   Gets the user Register status
+     */
     getUserRegisterStatus: function getUserRegisterStatus(state) {
       return state.userRegisterStatus;
     },
 
     /*
-    * Get the email check status
-    */
+     * Get the email check status
+     */
     getEmailCheckStatus: function getEmailCheckStatus(state) {
       return state.emailCheckStatus;
     },
 
     /*
-    *   Get the email check result
-    */
+     *   Get the email check result
+     */
     getEmailCheck: function getEmailCheck(state) {
       return state.emailCheck;
     },
 
     /*
-    *   Returns the login process status
-    */
+     *   Returns the login process status
+     */
     getUserLoginStatus: function getUserLoginStatus(state) {
       return state.userLoginStatus;
     },
 
     /*
-    *   Returns the logout process status
-    */
+     *   Returns the logout process status
+     */
     getUserLogoutStatus: function getUserLogoutStatus(state) {
       return state.userLogoutStatus;
     },
 
     /*
-    *   Checks if the token is set - toke indicate that the user has an API token
-    */
+     *   Checks if the token is set - toke indicate that the user has an API token
+     */
     isLoggedIn: function isLoggedIn(state) {
       return !!state.token;
     },
 
     /*
-    *   Return the logged in users name
-    */
+     *   Return the logged in users name
+     */
     getUsersName: function getUsersName(state) {
       return state.user.name;
     }
@@ -92705,6 +93812,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue-router */ "./node_modules/vue-router/dist/vue-router.esm.js");
 /* harmony import */ var _store_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./store.js */ "./resources/js/store.js");
 /*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      routes.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      routes.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
+/*
 *   routes.js
 *
 *   Contains all routes for this application
@@ -92824,6 +93947,22 @@ router.beforeEach(function (to, from, next) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return makeCountries; });
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../store */ "./resources/js/store.js");
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      countries.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      countries.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
 /*
 *   Import the store
 */
@@ -93605,6 +94744,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
 /*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      jqf.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      jqf.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
+/*
 *   Import Vue
 */
 
@@ -93693,6 +94848,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _store__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../store */ "./resources/js/store.js");
 /*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      translate.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      translate.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
+/*
 *   Import Vue
 */
 
@@ -93750,6 +94921,22 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _modules_collection__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./modules/collection */ "./resources/js/modules/collection.js");
 /* harmony import */ var _modules_server__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./modules/server */ "./resources/js/modules/server.js");
 /* harmony import */ var _modules_users__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./modules/users */ "./resources/js/modules/users.js");
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      store.js 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      store.js
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
 /*
 * --------------------------------------------
 * VUEX store.js
