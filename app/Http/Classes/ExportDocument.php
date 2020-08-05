@@ -1,5 +1,19 @@
 <?php
-
+/**
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      ExportDocument.php 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      ExportDocument.php
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
 
 namespace App\Http\Classes;
 
@@ -77,8 +91,6 @@ class ExportDocument
      */
     private function _exportArray() {
         $var = $this->_formatVar($this->_var);
-
-      //  echo '<pre>'; var_dump($var); echo '</pre>'; die;
 
         $string = var_export($var, true);
 
@@ -311,6 +323,9 @@ class ExportDocument
         $this->params = $param;
     }
 
+    /**
+     * ExportDocument constructor.
+     */
     public function __construct()
     {
         // clear the properties
@@ -318,6 +333,13 @@ class ExportDocument
         $this->setParams([]);
     }
 
+    /**
+     * Handle the export process
+     *
+     * @param string $type
+     * @param bool $fieldLabel
+     * @return string
+     */
     public function export( $type = 'array', $fieldLabel = false)
     {
         if ($fieldLabel) {

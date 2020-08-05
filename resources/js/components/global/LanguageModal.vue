@@ -1,3 +1,19 @@
+<!--
+  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      LanguageModal.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
+  - @package      LanguageModal.vue
+  - @subpackage   Id
+  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  php-mongo-admin - License conditions:
+  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See COPYRIGHT.php for copyright notices and further details.
+  -->
+
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
 
@@ -226,13 +242,13 @@
         mounted() {
             this.currentLanguage = this.$store.getters.getLanguage;
 
-            EventBus.$on('show-language-selector', function() {
+            EventBus.$on('show-language-selector', () => {
                 // this seems to be the best option for loading the location data for this modal
                 this.location = this.$store.getters.getLocation;
                 this.currentLocation = this.$store.getters.getCurrentLocation;
                 this.show = true;
 
-            }.bind(this));
+            });
         },
 
         /*
@@ -280,7 +296,6 @@
             * Calls the Translation and Language service
             */
             showLanguage( context, key ) {
-                //return this.$trans(context, key);
                 return this.$store.getters.getLanguageString( context, key );
             },
 

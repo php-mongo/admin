@@ -1,3 +1,19 @@
+<!--
+  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      ServerView.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
+  - @package      ServerView.vue
+  - @subpackage   Id
+  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  php-mongo-admin - License conditions:
+  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See COPYRIGHT.php for copyright notices and further details.
+  -->
+
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
     .pma-server-view {
@@ -74,8 +90,8 @@
 
     export default {
         /*
-        *   Register the components to be used by the home page.
-        */
+         *   Register the components to be used by the home page.
+         */
         components: {
             CommandLine,
             ConnectionCard,
@@ -85,8 +101,8 @@
         },
 
         /*
-        *   Data required for this component
-        */
+         *   Data required for this component
+         */
         data() {
             return {
                 show: true
@@ -94,12 +110,12 @@
         },
 
         /*
-        *   Defines the computed properties on the component.
-        */
+         *   Defines the computed properties on the component.
+         */
         computed: {
             /*
-            *  Because of the complex variations of each child component it seemed a better idea to call each object individually
-            */
+             *  Because of the complex variations of each child component it seemed a better idea to call each object individually
+             */
             getBuildInfo() {
                 return this.$store.getters.getBuildInfo;
             },
@@ -126,44 +142,44 @@
         },
 
         /*
-        *   Define methods for the server component
-        */
+         *   Define methods for the server component
+         */
         methods: {
             /*
-            *   Show component
-            */
+             *   Show component
+             */
             showComponent() {
                 this.show = true;
             },
 
             /*
-            *   Hide component
-            */
+             *   Hide component
+             */
             hideComponent() {
                 this.show = false;
             }
         },
 
         /*
-        *    get on ur bikes and ride !!
-        */
+         *    get on ur bikes and ride !!
+         */
         mounted() {
             // load al the default view server data
             this.$store.dispatch( 'loadServer' );
 
             /*
-            *    Hide this component
-            */
-            EventBus.$on('hide-panels', function( ) {
+             *    Hide this component
+             */
+            EventBus.$on('hide-panels', ( ) => {
                 this.hideComponent();
-            }.bind(this));
+            });
 
             /*
             *    Show this component
             */
-            EventBus.$on('show-server', function() {
+            EventBus.$on('show-server', () => {
                 this.showComponent();
-            }.bind(this));
+            });
         }
     }
 </script>

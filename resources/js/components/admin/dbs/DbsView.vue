@@ -1,3 +1,19 @@
+<!--
+  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      DbsView.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
+  - @package      DbsView.vue
+  - @subpackage   Id
+  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  php-mongo-admin - License conditions:
+  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See COPYRIGHT.php for copyright notices and further details.
+  -->
+
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
     .pma-dbs-view {
@@ -9,7 +25,7 @@
         width: 240px;
         z-index: 800;
 
-        #dbs-nav-resizer {
+        .dbs-nav-resizer {
             background-color: $resizerBgColor;
             cursor: w-resize;
             height: 100%;
@@ -23,11 +39,11 @@
             z-index: 2;
         }
 
-        #dbs-nav-resizer:hover {
+        .dbs-nav-resizer:hover {
             background-color: $resizerHoverColor;
         }
 
-        #dbs-nav-collapse {
+        .dbs-nav-collapse {
             width: 25px;
             height: 30px;
             line-height: 22px;
@@ -48,6 +64,7 @@
         .dbs-list-block-outer {
             margin-top: 10px;
             padding: 0 1rem;
+            display: block;
 
             .dbs-list-block {
                 margin-bottom: 10px;
@@ -64,11 +81,11 @@
 </style>
 
 <template>
-    <div id="left-pane" class="pma-dbs-view align-left">
-        <div id="dbs-nav-resizer"></div>
-        <div id="dbs-nav-collapse">←</div>
-        <dbs-top></dbs-top>
-        <article id="dbs" class="dbs-list-block-outer">
+    <div ref="leftPane" class="pma-dbs-view align-left">
+        <div class="dbs-nav-resizer" ref="resizer"></div>
+        <div class="dbs-nav-collapse" ref="collapse" v-on:click="handleCollapse">←</div>
+        <dbs-top v-bind:collapsed="collapsed"></dbs-top>
+        <article ref="dbs" class="dbs-list-block-outer">
             <div class="dbs-list-block">
                 <ul class="dbs-list">
                     <dbs-card v-for="db in dbs" :key="(db.id + 1)" v-bind:db="db"></dbs-card>
@@ -92,47 +109,74 @@
 
     export default {
         /*
-        *   Register the components to be used by the home page.
-        */
+         *   Register the components to be used by the home page.
+         */
         components: {
             DbsTop,
             DbsCard
         },
 
         /*
-        *   Data required for this component
-        */
+         *   Data required for this component
+         */
         data() {
             return {
                 display: false,
-                index: 0
+                index: 0,
+                collapsed: false
             }
         },
 
         /*
-        * Defines the computed properties on the component.
-        */
+         * Defines the computed properties on the component.
+         */
         computed: {
             /*
-            *   Get the latest ads
-            */
+             *   Get the latest ads
+             */
             dbs() {
                 return this.$store.getters.getDatabases;
             }
         },
 
         /*
-        * get on ur bikes and ride !!
-        */
+         *   Defined methods for the component
+         */
+        methods: {
+            handleCollapse() {
+                console.log("you are collapsing...");
+                this.collapsed = !this.collapsed;
+                if (this.collapsed === true) {
+                    this.$jqf(this.$refs.leftPane).css('width', 0);
+                    this.$jqf(this.$refs.dbs).css('display', 'none');
+                    this.$jqf(this.$refs.resizer).css('left', 0);
+                    this.$jqf(this.$refs.collapse).css('left', '5px');
+                    this.$jqf(this.$refs.collapse).html('→');
+                    EventBus.$emit('collapse-left-nav');
+                }
+                if (this.collapsed === false) {
+                    this.$jqf(this.$refs.leftPane).css('width', '240px');
+                    this.$jqf(this.$refs.dbs).css('display', 'block');
+                    this.$jqf(this.$refs.resizer).css('left', '240px');
+                    this.$jqf(this.$refs.collapse).css('left', '245px');
+                    this.$jqf(this.$refs.collapse).html('←');
+                    EventBus.$emit('expand-left-nav');
+                }
+            }
+        },
+
+        /*
+         * get on ur bikes and ride !!
+         */
         mounted() {
-            EventBus.$on('change-list', function (data) {
+            EventBus.$on('change-list', (data) => {
                 if (data.show === true) {
                     this.display = true;
                 }
                 if (data.hide === true) {
                     this.display = false;
                 }
-            }.bind(this));
+            });
         }
     }
 </script>

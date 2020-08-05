@@ -1,3 +1,19 @@
+<!--
+  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      DatabaseCrumbs.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
+  - @package      DatabaseCrumbs.vue
+  - @subpackage   Id
+  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  php-mongo-admin - License conditions:
+  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See COPYRIGHT.php for copyright notices and further details.
+  -->
+
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
     .crumb-nav-wrapper {
@@ -168,7 +184,6 @@
             * Calls the Translation and Language service
             */
             showLanguage( context, key ) {
-                // return this.$trans( context, key );
                 return this.$store.getters.getLanguageString( context, key );
             },
 
@@ -176,7 +191,6 @@
             *   Load the database from crumbs
             */
             loadDatabase() {
-                // console.log("re-loading database view");
                 this.$store.dispatch('setActiveCollection', null);
                 // clear the crumbs
                 this.crumbs[0].name = null;
@@ -196,19 +210,17 @@
             *   Set the collection crumb
             */
             setCollectionCrumb() {
-                this.crumbs[0].name = this.activeCollection;// this.$store.getters.getActiveCollection;
+                this.crumbs[0].name = this.activeCollection;
             },
 
             checkDb() {
                 if (!this.activeDb || this.activeDb === 'N/A') {
-                    this.activeDb = this.activeDatabase; // this.$store.getters.getActiveDatabase;
+                    this.activeDb = this.activeDatabase;
                     if (!this.activeDb) {
                         // try pulling name from collection data
-                        console.log("cant find activeDb - looking in collection!!!");
                         if (this.activeCollection) {
                             let collection = this.$store.getters.getCollection;
                             if (collection) {
-                                console.log("crumbs coll: " + collection);
                                 this.activeDb = collection.collection.databaseName;
                             }
                         }
@@ -225,21 +237,17 @@
         * Methods to run when component is mounted
         */
         mounted() {
-            EventBus.$on('show-database', function(db) {
-                // console.log("db to crumbs: " + db);
+            EventBus.$on('show-database', (db) => {
                 this.activeDb = db;
+            });
 
-            }.bind(this));
-
-            EventBus.$on('show-collection-nav', function(collectionName) {
+            EventBus.$on('show-collection-nav', (collectionName) => {
                 this.activeColl = this.activeCollection = collectionName;
+            });
 
-            }.bind(this));
-
-            EventBus.$on('show-databases', function(db) {
+            EventBus.$on('show-databases', (db) => {
                 this.clearData();
-
-            }.bind(this));
+            });
 
             this.checkDb();
         },

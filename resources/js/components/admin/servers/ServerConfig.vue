@@ -1,3 +1,19 @@
+<!--
+  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      ServerConfig.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
+  - @package      ServerConfig.vue
+  - @subpackage   Id
+  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  php-mongo-admin - License conditions:
+  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See COPYRIGHT.php for copyright notices and further details.
+  -->
+
 <style lang="scss">
     /* nothing to see here! */
 </style>
@@ -5,44 +21,60 @@
     <div>
         <table class="bordered">
             <tr>
-                <th class="bb">Host</th><td>{{ server.host }}</td>
+                <th class="bb" v-text="showLanguage('servers', 'host')"></th><td>{{ server.host }}</td>
             </tr>
             <tr>
-                <th class="bb">Port</th><td>{{ server.port }}</td>
+                <th class="bb" v-text="showLanguage('servers', 'port')"></th><td>{{ server.port }}</td>
             </tr>
             <tr>
-                <th class="bb">Username</th><td>{{ server.username }}</td>
+                <th class="bb" v-text="showLanguage('servers', 'username')"></th><td>{{ server.username }}</td>
             </tr>
             <tr>
-                <th class="bb">Password</th><td>*****</td>
+                <th class="bb" v-text="showLanguage('servers', 'password')"></th><td>*****</td>
             </tr>
             <tr>
-                <th class="bb">Active</th><td>{{ showBool(server.active) }} <span class="activate-checkbox" v-show="server.active == 0" title="Check to activate this server"><input @change="activateServer(server.id)" v-model="activate" type="checkbox" /> Check to activate</span></td>
+                <th class="bb" v-text="showLanguage('servers', 'active')"></th>
+                <td>{{ showBool(server.active) }}
+                <span class="activate-checkbox" v-show="server.active == 0" :title="showLanguage('title' , 'activeServerTitle')">
+                    <input @change="activateServer(server.id)" v-model="activate" type="checkbox" /> <span v-text="showLanguage('servers', 'check')"></span>
+                </span>
+                </td>
             </tr>
             <tr>
-                <th class="bb">Created</th><td>{{ server.created_at}}</td>
+                <th class="bb" v-text="showLanguage('servers', 'created')"></th><td>{{ server.created_at}}</td>
             </tr>
             <tr>
-                <th class="bb">Actions</th><td><span class="pma-link" @click="$emit('edit', server.id)">Edit</span> | <span class="pma-link-danger" @click="$emit('delete', server.id)">Delete</span></td>
+                <th class="bb" v-text="showLanguage('servers', 'actions')"></th><td>
+                <span class="pma-link" @click="$emit('edit', server.id)" v-text="showLanguage('servers', 'edit')"></span> |
+                <span class="pma-link-danger" @click="$emit('delete', server.id)" v-text="showLanguage('servers', 'delete')"></span></td>
             </tr>
         </table>
     </div>
 </template>
 <script>
     /*
-     * Import the Event bus
+     * Import the Event bus - not being used...
      */
-    import { EventBus } from '../../../event-bus.js';
+    //import { EventBus } from '../../../event-bus.js';
 
     export default {
+        /*
+         *  One prop is better than none!
+         */
         props: ['server'],
 
+        /*
+         *  The lonely data element
+         */
         data() {
             return {
                 activate: null
             }
         },
 
+        /*
+         *  Are your methods changing the world?
+         */
         methods: {
             /*
              *   Calls the Translation and Language service

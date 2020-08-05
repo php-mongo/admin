@@ -1,3 +1,19 @@
+<!--
+  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      DatabaseCard.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
+  - @package      DatabaseCard.vue
+  - @subpackage   Id
+  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  php-mongo-admin - License conditions:
+  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See COPYRIGHT.php for copyright notices and further details.
+  -->
+
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
 
@@ -252,7 +268,6 @@
             *   Load the collection panel !! child component event !!
             */
             loadCollection(collection) {
-                console.log("load collection: " + collection);
                 // send collection for tracking
                 this.$store.dispatch('setActiveCollection', collection );
                 // load
@@ -288,17 +303,17 @@
             /*
             *    Hide this component
             */
-            EventBus.$on('hide-database-panels', function() {
+            EventBus.$on('hide-database-panels', () => {
                 this.hideComponent();
 
-            }.bind(this));
+            });
 
-            EventBus.$on('show-database', function() {
+            EventBus.$on('show-database', () => {
                 // I was messing around trying to get this panel working correctly and loaded the db.child stats object - partly in use
                 this.stats = this.$store.getters.getStats;
                 this.show = true;
 
-            }.bind(this));
+            });
         },
 
         watch: {

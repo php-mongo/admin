@@ -1999,13 +1999,13 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _server_ServerView__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./server/ServerView */ "./resources/js/components/admin/server/ServerView.vue");
-/* harmony import */ var _phpmongo_PhpMongo__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./phpmongo/PhpMongo */ "./resources/js/components/admin/phpmongo/PhpMongo.vue");
-/* harmony import */ var _databases_DatabasesView__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./databases/DatabasesView */ "./resources/js/components/admin/databases/DatabasesView.vue");
-/* harmony import */ var _database_DatabaseView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./database/DatabaseView */ "./resources/js/components/admin/database/DatabaseView.vue");
-/* harmony import */ var _database_collection_CollectionView__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./database/collection/CollectionView */ "./resources/js/components/admin/database/collection/CollectionView.vue");
-/* harmony import */ var _servers_ServersView__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./servers/ServersView */ "./resources/js/components/admin/servers/ServersView.vue");
-//
+/* harmony import */ var _event_bus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../event-bus */ "./resources/js/event-bus.js");
+/* harmony import */ var _server_ServerView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./server/ServerView */ "./resources/js/components/admin/server/ServerView.vue");
+/* harmony import */ var _phpmongo_PhpMongo__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./phpmongo/PhpMongo */ "./resources/js/components/admin/phpmongo/PhpMongo.vue");
+/* harmony import */ var _databases_DatabasesView__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./databases/DatabasesView */ "./resources/js/components/admin/databases/DatabasesView.vue");
+/* harmony import */ var _database_DatabaseView__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./database/DatabaseView */ "./resources/js/components/admin/database/DatabaseView.vue");
+/* harmony import */ var _database_collection_CollectionView__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./database/collection/CollectionView */ "./resources/js/components/admin/database/collection/CollectionView.vue");
+/* harmony import */ var _servers_ServersView__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./servers/ServersView */ "./resources/js/components/admin/servers/ServersView.vue");
 //
 //
 //
@@ -2036,8 +2036,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /*
-*   Import components for the Panel View
-*/
+ *  Impport the evant bus
+ */
+
+/*
+ *   Import components for the Panel View
+ */
+
 
 
 
@@ -2049,12 +2054,54 @@ __webpack_require__.r(__webpack_exports__);
   *   Register the components to be used within the main panel views.
   */
   components: {
-    ServerView: _server_ServerView__WEBPACK_IMPORTED_MODULE_0__["default"],
-    PhpMongo: _phpmongo_PhpMongo__WEBPACK_IMPORTED_MODULE_1__["default"],
-    DatabasesView: _databases_DatabasesView__WEBPACK_IMPORTED_MODULE_2__["default"],
-    DatabaseView: _database_DatabaseView__WEBPACK_IMPORTED_MODULE_3__["default"],
-    CollectionView: _database_collection_CollectionView__WEBPACK_IMPORTED_MODULE_4__["default"],
-    ServersView: _servers_ServersView__WEBPACK_IMPORTED_MODULE_5__["default"]
+    ServerView: _server_ServerView__WEBPACK_IMPORTED_MODULE_1__["default"],
+    PhpMongo: _phpmongo_PhpMongo__WEBPACK_IMPORTED_MODULE_2__["default"],
+    DatabasesView: _databases_DatabasesView__WEBPACK_IMPORTED_MODULE_3__["default"],
+    DatabaseView: _database_DatabaseView__WEBPACK_IMPORTED_MODULE_4__["default"],
+    CollectionView: _database_collection_CollectionView__WEBPACK_IMPORTED_MODULE_5__["default"],
+    ServersView: _servers_ServersView__WEBPACK_IMPORTED_MODULE_6__["default"]
+  },
+
+  /*
+   *  Define the data used by the component.
+   */
+  data: function data() {
+    return {
+      expanded: false
+    };
+  },
+
+  /*
+   *   Defined methods for the component
+   */
+  methods: {
+    watchLeftNav: function watchLeftNav() {
+      this.expanded = !this.expanded;
+
+      if (this.expanded === true) {
+        this.$jqf(this.$refs.pmaMainPanel).css('margin-left', '5px');
+        this.$jqf(this.$refs.pmaInner).css('width', '100vw');
+      }
+
+      if (this.expanded === false) {
+        this.$jqf(this.$refs.pmaMainPanel).css('margin-left', '245px');
+        this.$jqf(this.$refs.pmaInner).css('width', '88vw');
+      }
+    }
+  },
+
+  /*
+   * get on ur bikes and ride !!
+   */
+  mounted: function mounted() {
+    var _this = this;
+
+    _event_bus__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('collapse-left-nav', function () {
+      _this.watchLeftNav();
+    });
+    _event_bus__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('expand-left-nav', function () {
+      _this.watchLeftNav();
+    });
   }
 });
 
@@ -5965,18 +6012,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /*
-*  Imports the PHP Mongo Admin URL from the config.
-*/
+ *  Imports the config.
+ */
 
 /*
-* Import the Event bus
-*/
+ *   Import the Event bus
+ */
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
-    Define the data used by the component.
-  */
+   *  We need single prop for the show and tell
+   */
+  props: ['collapsed'],
+
+  /*
+   *  Define the data used by the component.
+   */
   data: function data() {
     return {
       appTitle: _config__WEBPACK_IMPORTED_MODULE_0__["MONGO_CONFIG"].SITE_FULLNAME
@@ -5984,50 +6036,46 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /*
-  * Defines the computed properties on the component.
-  */
+   * Defines the computed properties on the component.
+   */
   computed: {
     /*
-    * Retrieves the User Load Status from Vuex
-    */
+     * Retrieves the User Load Status from Vuex
+     */
     userLoadStatus: function userLoadStatus() {
       return this.$store.getters.getUserLoadStatus === 2;
     }
   },
 
   /*
-  *   Defined methods for the component
-  */
+   *   Defined methods for the component
+   */
   methods: {
     /*
-    * Calls the Translation and Language service
-    */
+     * Calls the Translation and Language service
+     */
     showLanguage: function showLanguage(context, key) {
-      //return this.$trans( context, key );
       return this.$store.getters.getLanguageString(context, key);
     },
 
     /*
-    *   Refresh all views to default | initial page load
-    */
+     *   Refresh all views to default | initial page load
+     */
     loadHome: function loadHome() {
-      //    console.log("loading home");
       _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('hide-collection-lists');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('close-collection-panels');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('hide-panels'); // force a reload of the databases
 
-      this.$store.dispatch('loadDatabases'); //EventBus.$emit('clear-active-nav');
-
+      this.$store.dispatch('loadDatabases');
       this.$store.dispatch('setActiveNav', null);
       _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-server');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-mongo');
     },
 
     /*
-    *   Load the full server overview in the main panel
-    */
+     *   Load the full server overview in the main panel
+     */
     loadOverview: function loadOverview() {
-      //    console.log('loading overview in main panel');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('close-collection-panels');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('hide-panels');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-databases');
@@ -6130,6 +6178,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /*
 * Import the Event bus
@@ -6143,48 +6192,79 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
-  *   Register the components to be used by the home page.
-  */
+   *   Register the components to be used by the home page.
+   */
   components: {
     DbsTop: _DbsTop__WEBPACK_IMPORTED_MODULE_1__["default"],
     DbsCard: _DbsCard__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
 
   /*
-  *   Data required for this component
-  */
+   *   Data required for this component
+   */
   data: function data() {
     return {
       display: false,
-      index: 0
+      index: 0,
+      collapsed: false
     };
   },
 
   /*
-  * Defines the computed properties on the component.
-  */
+   * Defines the computed properties on the component.
+   */
   computed: {
     /*
-    *   Get the latest ads
-    */
+     *   Get the latest ads
+     */
     dbs: function dbs() {
       return this.$store.getters.getDatabases;
     }
   },
 
   /*
-  * get on ur bikes and ride !!
-  */
+   *   Defined methods for the component
+   */
+  methods: {
+    handleCollapse: function handleCollapse() {
+      console.log("you are collapsing...");
+      this.collapsed = !this.collapsed;
+
+      if (this.collapsed === true) {
+        this.$jqf(this.$refs.leftPane).css('width', 0);
+        this.$jqf(this.$refs.dbs).css('display', 'none');
+        this.$jqf(this.$refs.resizer).css('left', 0);
+        this.$jqf(this.$refs.collapse).css('left', '5px');
+        this.$jqf(this.$refs.collapse).html('→');
+        _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('collapse-left-nav');
+      }
+
+      if (this.collapsed === false) {
+        this.$jqf(this.$refs.leftPane).css('width', '240px');
+        this.$jqf(this.$refs.dbs).css('display', 'block');
+        this.$jqf(this.$refs.resizer).css('left', '240px');
+        this.$jqf(this.$refs.collapse).css('left', '245px');
+        this.$jqf(this.$refs.collapse).html('←');
+        _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('expand-left-nav');
+      }
+    }
+  },
+
+  /*
+   * get on ur bikes and ride !!
+   */
   mounted: function mounted() {
+    var _this = this;
+
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('change-list', function (data) {
       if (data.show === true) {
-        this.display = true;
+        _this.display = true;
       }
 
       if (data.hide === true) {
-        this.display = false;
+        _this.display = false;
       }
-    }.bind(this));
+    });
   }
 });
 
@@ -6511,13 +6591,13 @@ function _typeof(obj) {
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
-  *   We are passing 2 props to this card - one is the key value (index)
-  */
+   *   We are passing 2 props to this card - one is the key value (index)
+   */
   props: ['index', 'value'],
 
   /*
-  *   Dr Smith! It does not compute!
-  */
+   *   Dr Smith! It does not compute!
+   */
   computed: {
     getRow: function getRow() {
       var html = '';
@@ -6547,8 +6627,8 @@ function _typeof(obj) {
   },
 
   /*
-  *   Methods for our Buildinfo card
-  */
+   *   Methods for our Buildinfo card
+   */
   methods: {
     checkUndefined: function checkUndefined(val) {
       // handle false
@@ -6570,8 +6650,8 @@ function _typeof(obj) {
     },
 
     /*
-    *   Simple object check - should match for Objects & Arrays
-    */
+     *   Simple object check - should match for Objects & Arrays
+     */
     isObject: function isObject(o) {
       return _typeof(o) === "object";
     }
@@ -6612,15 +6692,15 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
-  *   Register the components to be used by the home page. // :key="(keyIndex++)"
-  */
+   *   Register the components to be used by the home page. // :key="(keyIndex++)"
+   */
   components: {
     BuildCard: _BuildCard__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
 
   /*
-  *   The component accepts one db as a property
-  */
+   *   The component accepts one db as a property
+   */
   props: ['buildInfo'],
   data: function data() {
     return {
@@ -6629,14 +6709,13 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /*
-  *   Defined methods for this component
-  */
+   *   Defined methods for this component
+   */
   methods: {
     /*
-    *   Calls the Translation and Language service
-    */
+     *   Calls the Translation and Language service
+     */
     showLanguage: function showLanguage(context, key) {
-      // return this.$trans( context, key );
       return this.$store.getters.getLanguageString(context, key);
     }
   }
@@ -6678,19 +6757,18 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
-  *   The component accepts one db as a property
-  */
+   *   The component accepts one db as a property
+   */
   props: ['commandLine'],
 
   /*
-  *   Defined methods for the component
-  */
+   *   Defined methods for the component
+   */
   methods: {
     /*
     *   Calls the Translation and Language service
     */
     showLanguage: function showLanguage(context, key) {
-      // return this.$trans( context, key );
       return this.$store.getters.getLanguageString(context, key);
     }
   }
@@ -6751,7 +6829,6 @@ __webpack_require__.r(__webpack_exports__);
     *   Calls the Translation and Language service
     */
     showLanguage: function showLanguage(context, key) {
-      // return this.$trans( context, key );
       return this.$store.getters.getLanguageString(context, key);
     },
 
@@ -6864,26 +6941,25 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
-  *   Register the components to be used by the home page.
-  */
+   *   Register the components to be used by the home page.
+   */
   components: {
     Directive: _Directive__WEBPACK_IMPORTED_MODULE_0__["default"]
   },
 
   /*
-  *   The component accepts one db as a property
-  */
+   *   The component accepts one db as a property
+   */
   props: ['directives'],
 
   /*
-  *   Defined methods for the component
-  */
+   *   Defined methods for the component
+   */
   methods: {
     /*
-    *   Calls the Translation and Language service
-    */
+     *   Calls the Translation and Language service
+     */
     showLanguage: function showLanguage(context, key) {
-      // return this.$trans( context, key );
       return this.$store.getters.getLanguageString(context, key);
     }
   }
@@ -6981,8 +7057,8 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
-  *   Register the components to be used by the home page.
-  */
+   *   Register the components to be used by the home page.
+   */
   components: {
     CommandLine: _CommandLine__WEBPACK_IMPORTED_MODULE_1__["default"],
     ConnectionCard: _ConnectionCard__WEBPACK_IMPORTED_MODULE_2__["default"],
@@ -6992,8 +7068,8 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /*
-  *   Data required for this component
-  */
+   *   Data required for this component
+   */
   data: function data() {
     return {
       show: true
@@ -7001,12 +7077,12 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /*
-  *   Defines the computed properties on the component.
-  */
+   *   Defines the computed properties on the component.
+   */
   computed: {
     /*
-    *  Because of the complex variations of each child component it seemed a better idea to call each object individually
-    */
+     *  Because of the complex variations of each child component it seemed a better idea to call each object individually
+     */
     getBuildInfo: function getBuildInfo() {
       return this.$store.getters.getBuildInfo;
     },
@@ -7028,44 +7104,46 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /*
-  *   Define methods for the server component
-  */
+   *   Define methods for the server component
+   */
   methods: {
     /*
-    *   Show component
-    */
+     *   Show component
+     */
     showComponent: function showComponent() {
       this.show = true;
     },
 
     /*
-    *   Hide component
-    */
+     *   Hide component
+     */
     hideComponent: function hideComponent() {
       this.show = false;
     }
   },
 
   /*
-  *    get on ur bikes and ride !!
-  */
+   *    get on ur bikes and ride !!
+   */
   mounted: function mounted() {
-    // load al the default view server data
+    var _this = this; // load al the default view server data
+
+
     this.$store.dispatch('loadServer');
     /*
-    *    Hide this component
-    */
+     *    Hide this component
+     */
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('hide-panels', function () {
-      this.hideComponent();
-    }.bind(this));
+      _this.hideComponent();
+    });
     /*
     *    Show this component
     */
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-server', function () {
-      this.showComponent();
-    }.bind(this));
+      _this.showComponent();
+    });
   }
 });
 
@@ -7109,24 +7187,23 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /*
-* Import the Event bus
-*/
+ * Import the Event bus
+ */
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
-  *   The component accepts one db as a property
-  */
+   *   The component accepts one db as a property
+   */
   props: ['webServer'],
 
   /*
-  *   Defined methods for the component
-  */
+   *   Defined methods for the component
+   */
   methods: {
     /*
-    *   Calls the Translation and Language service
-    */
+     *   Calls the Translation and Language service
+     */
     showLanguage: function showLanguage(context, key) {
-      // return this.$trans( context, key );
       return this.$store.getters.getLanguageString(context, key);
     }
   }
@@ -7143,7 +7220,13 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -7176,16 +7259,27 @@ __webpack_require__.r(__webpack_exports__);
 //
 
 /*
- * Import the Event bus
+ * Import the Event bus - not being used...
  */
-
+//import { EventBus } from '../../../event-bus.js';
 /* harmony default export */ __webpack_exports__["default"] = ({
+  /*
+   *  One prop is better than none!
+   */
   props: ['server'],
+
+  /*
+   *  The lonely data element
+   */
   data: function data() {
     return {
       activate: null
     };
   },
+
+  /*
+   *  Are your methods changing the world?
+   */
   methods: {
     /*
      *   Calls the Translation and Language service
@@ -7229,6 +7323,37 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../event-bus.js */ "./resources/js/event-bus.js");
 /* harmony import */ var _ServerConfig__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ServerConfig */ "./resources/js/components/admin/servers/ServerConfig.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -7404,6 +7529,13 @@ __webpack_require__.r(__webpack_exports__);
    */
   methods: {
     /*
+    *   Calls the Translation and Language service
+    */
+    showLanguage: function showLanguage(context, key) {
+      return this.$store.getters.getLanguageString(context, key);
+    },
+
+    /*
      *   Show component
      */
     showComponent: function showComponent() {
@@ -7433,7 +7565,7 @@ __webpack_require__.r(__webpack_exports__);
     validataServer: function validataServer() {
       if (this.editing && this.form.password || this.createNew) {
         if (this.form.password !== this.form.password2) {
-          this.error = 'Passwords do not match';
+          this.error = this.showLanguage('servers', 'passwordsError');
           return false;
         }
       }
@@ -7464,7 +7596,7 @@ __webpack_require__.r(__webpack_exports__);
 
       if (status === 2) {
         _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-success', {
-          notification: 'Server configuration created successfully',
+          notification: this.showLanguage('servers', 'success'),
           timer: 5000
         });
         this.createNew = false;
@@ -7472,7 +7604,7 @@ __webpack_require__.r(__webpack_exports__);
 
       if (status === 3) {
         _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-error', {
-          notification: 'Server configuration was created - please try again',
+          notification: this.showLanguage('servers', 'error'),
           timer: 7000
         });
       }
@@ -7486,20 +7618,32 @@ __webpack_require__.r(__webpack_exports__);
         this.$store.dispatch('activateServer', id);
       }
     },
+
+    /*
+     *  Edit the server configuration
+     */
     edit: function edit(id) {
       console.log("edit: " + id);
       var server = this.$store.getters.getServerConfiguration(id);
       this.form = server;
       this.editing = !this.editing;
     },
+
+    /*
+     *  Delete the server configuration
+     */
     deleteConfig: function deleteConfig(id) {
       this.deleteId = id;
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('delete-confirmation', {
         id: id,
         element: 'server',
-        notification: 'Deleting this server configuration can not be reveresed. Continue?'
+        notification: this.showLanguage('servers', 'deleteConfirm')
       });
     },
+
+    /*
+     *  Confirm the deletion
+     */
     deleteConfirmed: function deleteConfirmed(id) {
       console.log("deleteConfirmed id", id);
       console.log("deleteConfirmed deleteId", this.deleteId);
@@ -7509,6 +7653,10 @@ __webpack_require__.r(__webpack_exports__);
         this.handleDeletion();
       }
     },
+
+    /*
+     *  Handle the delete results
+     */
     handleDeletion: function handleDeletion() {
       var status = this.$store.getters.getServerDeleteStatus;
 
@@ -7518,7 +7666,7 @@ __webpack_require__.r(__webpack_exports__);
 
       if (status == 2) {
         _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-success', {
-          notification: 'Server configuration deleted succesfully',
+          notification: this.showLanguage('servers', 'deleteSuccess'),
           timer: 5000
         });
         this.deleteId = null;
@@ -7526,12 +7674,16 @@ __webpack_require__.r(__webpack_exports__);
 
       if (status == 3) {
         _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-error', {
-          notification: 'Server configuration was not deleted - please try again',
+          notification: this.showLanguage('servers', 'deleteFailed'),
           timer: 7000
         });
       }
     },
-    deletCancelled: function deletCancelled(id) {
+
+    /*
+     *  Calcel the deletion
+     */
+    deleteCancelled: function deleteCancelled(id) {
       this.deleteId = null;
     }
   },
@@ -7723,6 +7875,18 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Import the application JS config
@@ -7748,7 +7912,8 @@ __webpack_require__.r(__webpack_exports__);
       searchActive: null,
       isLoggedIn: null,
       userName: null,
-      user: {}
+      user: {},
+      collapsed: false
     };
   },
 
@@ -7875,6 +8040,10 @@ __webpack_require__.r(__webpack_exports__);
       this.$store.dispatch('setActiveNav', null);
       _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-server');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('show-mongo');
+    },
+    collapseNav: function collapseNav() {
+      this.collapsed = !this.collapsed;
+      this.$emit('collapseNav', this.collapsed);
     }
   },
 
@@ -8003,6 +8172,11 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
+   *  Its a one prop shop
+   */
+  props: ['collapsed'],
+
+  /*
   *   Data used with this component
   */
   data: function data() {
@@ -8086,6 +8260,19 @@ __webpack_require__.r(__webpack_exports__);
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-' + item);
       console.log("loaded panel item: " + item);
     }
+    /* handleCollapse() {
+         console.log("handling the collapse of the economy!");
+         if (this.collapsed === true) {
+             this.$jqf(this.$refs.navPanel).css('height', 0);
+         }
+         if (this.collapsed === false) {
+             this.$jqf(this.$refs.navPanel).css('height', 'auto');
+         }
+     },
+      watchCollapse() {
+         return this.collapsed;
+     }*/
+
   },
   mounted: function mounted() {
     this.userLoggedIn();
@@ -8098,6 +8285,10 @@ __webpack_require__.r(__webpack_exports__);
     activeNav: function activeNav() {
       this.setActivePanel();
     }
+    /* watchCollapse() {
+          this.handleCollapse();
+     }*/
+
   }
 });
 
@@ -8114,6 +8305,7 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Top__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Top */ "./resources/js/components/admin/top/Top.vue");
 /* harmony import */ var _TopNav__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./TopNav */ "./resources/js/components/admin/top/TopNav.vue");
+/* harmony import */ var _event_bus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../event-bus */ "./resources/js/event-bus.js");
 //
 //
 //
@@ -8164,6 +8356,7 @@ __webpack_require__.r(__webpack_exports__);
 */
 
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
   *   Registers child components with the component.
@@ -8171,6 +8364,53 @@ __webpack_require__.r(__webpack_exports__);
   components: {
     Top: _Top__WEBPACK_IMPORTED_MODULE_0__["default"],
     TopNav: _TopNav__WEBPACK_IMPORTED_MODULE_1__["default"]
+  },
+
+  /*
+   *  Define the data used by the component.
+   */
+  data: function data() {
+    return {
+      expanded: false,
+      collapsed: false
+    };
+  },
+
+  /*
+   *   Defined methods for the component
+   */
+  methods: {
+    watchLeftNav: function watchLeftNav() {
+      this.expanded = !this.expanded;
+
+      if (this.expanded === true) {
+        this.$jqf(this.$refs.pmaTopPanel).css('margin-left', '5px');
+      }
+
+      if (this.expanded === false) {
+        this.$jqf(this.$refs.pmaTopPanel).css('margin-left', '245px');
+      }
+    },
+    collapseNav: function collapseNav(status) {
+      this.collapsed = status;
+    }
+  },
+
+  /*
+   * get on ur bikes and ride !!
+   */
+  mounted: function mounted() {
+    var _this = this;
+
+    _event_bus__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$on('collapse-left-nav', function () {
+      _this.watchLeftNav();
+    });
+    _event_bus__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$on('expand-left-nav', function () {
+      _this.watchLeftNav();
+    });
+    _event_bus__WEBPACK_IMPORTED_MODULE_2__["EventBus"].$on('collapse-nav', function (status) {
+      _this.collapseNav(status);
+    });
   }
 });
 
@@ -12411,7 +12651,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".pma-dbs-view {\n  background: url(/img/left-nav-bg.png) repeat-y right 0% #f3f3f3;\n  height: 100%;\n  left: 0;\n  position: fixed;\n  top: 0;\n  width: 240px;\n  z-index: 800;\n}\n.pma-dbs-view #dbs-nav-resizer {\n  background-color: #aaaaaa;\n  cursor: w-resize;\n  height: 100%;\n  left: 240px;\n  margin: 0;\n  overflow: hidden;\n  padding: 0;\n  position: absolute;\n  top: 0;\n  width: 5px;\n  z-index: 2;\n}\n.pma-dbs-view #dbs-nav-resizer:hover {\n  background-color: #c4e1a4;\n}\n.pma-dbs-view #dbs-nav-collapse {\n  width: 25px;\n  height: 30px;\n  line-height: 22px;\n  background-color: #dddddd;\n  color: #555;\n  font-weight: bold;\n  position: fixed;\n  top: 0;\n  left: 245px;\n  text-align: center;\n  cursor: pointer;\n  z-index: 800;\n  text-shadow: 0 1px 0 #fff;\n  -webkit-filter: dropshadow(color=#fff, offx=0, offy=1);\n          filter: dropshadow(color=#fff, offx=0, offy=1);\n  border: 1px solid #888888;\n}\n.pma-dbs-view .dbs-list-block-outer {\n  margin-top: 10px;\n  padding: 0 1rem;\n}\n.pma-dbs-view .dbs-list-block-outer .dbs-list-block {\n  margin-bottom: 10px;\n  position: relative;\n  padding-bottom: 5px;\n}\n.pma-dbs-view .dbs-list-block-outer .dbs-list-block .dbs-list {\n  list-style: none;\n  margin: 0;\n}", ""]);
+exports.push([module.i, ".pma-dbs-view {\n  background: url(/img/left-nav-bg.png) repeat-y right 0% #f3f3f3;\n  height: 100%;\n  left: 0;\n  position: fixed;\n  top: 0;\n  width: 240px;\n  z-index: 800;\n}\n.pma-dbs-view .dbs-nav-resizer {\n  background-color: #aaaaaa;\n  cursor: w-resize;\n  height: 100%;\n  left: 240px;\n  margin: 0;\n  overflow: hidden;\n  padding: 0;\n  position: absolute;\n  top: 0;\n  width: 5px;\n  z-index: 2;\n}\n.pma-dbs-view .dbs-nav-resizer:hover {\n  background-color: #c4e1a4;\n}\n.pma-dbs-view .dbs-nav-collapse {\n  width: 25px;\n  height: 30px;\n  line-height: 22px;\n  background-color: #dddddd;\n  color: #555;\n  font-weight: bold;\n  position: fixed;\n  top: 0;\n  left: 245px;\n  text-align: center;\n  cursor: pointer;\n  z-index: 800;\n  text-shadow: 0 1px 0 #fff;\n  -webkit-filter: dropshadow(color=#fff, offx=0, offy=1);\n          filter: dropshadow(color=#fff, offx=0, offy=1);\n  border: 1px solid #888888;\n}\n.pma-dbs-view .dbs-list-block-outer {\n  margin-top: 10px;\n  padding: 0 1rem;\n  display: block;\n}\n.pma-dbs-view .dbs-list-block-outer .dbs-list-block {\n  margin-bottom: 10px;\n  position: relative;\n  padding-bottom: 5px;\n}\n.pma-dbs-view .dbs-list-block-outer .dbs-list-block .dbs-list {\n  list-style: none;\n  margin: 0;\n}", ""]);
 
 // exports
 
@@ -12677,7 +12917,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, ".top-nav-wrapper {\n  background-color: #444444;\n  padding-left: 50px;\n}\nnav.top-navigation {\n  min-height: 33px;\n  max-width: 99%;\n}\nnav.top-navigation ul.links {\n  display: inline-block;\n  margin: 0;\n}\nnav.top-navigation ul.links li {\n  display: inline-block;\n  list-style-type: none;\n  margin-left: 7px;\n}\nnav.top-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 33px;\n  color: #ffffff;\n}\nnav.top-navigation ul.links li span:hover {\n  color: #00B7FF;\n  text-decoration: underline;\n}\nnav.top-navigation ul.links li.member-button a {\n  background-color: transparent;\n  border: 0;\n  padding: 0;\n}\nnav.top-navigation ul.links li.member-button a button {\n  color: #00B7FF;\n  padding: 9px;\n  cursor: pointer;\n}\nnav.top-navigation ul.links li.member-button a button:hover {\n  color: #333;\n  border: 1px solid #242424;\n  background-color: #af99ff;\n}\nnav.top-navigation ul.right {\n  position: absolute;\n  right: 20px;\n  top: 0;\n}\nnav.top-navigation ul.right .country-flag {\n  height: 33px;\n  width: 33px;\n  cursor: pointer;\n}\nnav.top-navigation ul.right .country-flag img {\n  margin-top: -5px;\n}\n\n/* Small only - (max-width: 39.9375em) */\n@media screen and (max-width: 769px) {\nnav.top-navigation div.text-center a span.logo {\n    font-size: 20px;\n    padding-top: 8px;\n}\n}\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 769px) and (max-width: 992px) {\nnav.top-navigation div.text-center a span.logo {\n    font-size: 25px;\n    padding-top: 4px;\n}\n}\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
+exports.push([module.i, ".top-nav-wrapper {\n  background-color: #444444;\n  padding-left: 50px;\n}\nnav.top-navigation {\n  min-height: 33px;\n  max-width: 99%;\n}\nnav.top-navigation ul.links {\n  display: inline-block;\n  margin: 0;\n}\nnav.top-navigation ul.links li {\n  display: inline-block;\n  list-style-type: none;\n  margin-left: 7px;\n}\nnav.top-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 33px;\n  color: #ffffff;\n}\nnav.top-navigation ul.links li span:hover {\n  color: #00B7FF;\n  text-decoration: underline;\n}\nnav.top-navigation ul.links li.member-button a {\n  background-color: transparent;\n  border: 0;\n  padding: 0;\n}\nnav.top-navigation ul.links li.member-button a button {\n  color: #00B7FF;\n  padding: 9px;\n  cursor: pointer;\n}\nnav.top-navigation ul.links li.member-button a button:hover {\n  color: #333;\n  border: 1px solid #242424;\n  background-color: #af99ff;\n}\nnav.top-navigation ul.right {\n  position: absolute;\n  right: 20px;\n  top: 0;\n}\nnav.top-navigation ul.right .country-flag {\n  height: 33px;\n  width: 33px;\n  cursor: pointer;\n}\nnav.top-navigation ul.right .country-flag img {\n  margin-top: -5px;\n}\nnav.top-navigation ul.right .nav-collapse {\n  cursor: pointer;\n}\nnav.top-navigation ul.right .nav-collapse img {\n  width: 1.2rem;\n}\n\n/* Small only - (max-width: 39.9375em) */\n@media screen and (max-width: 769px) {\nnav.top-navigation div.text-center a span.logo {\n    font-size: 20px;\n    padding-top: 8px;\n}\n}\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 769px) and (max-width: 992px) {\nnav.top-navigation div.text-center a span.logo {\n    font-size: 25px;\n    padding-top: 4px;\n}\n}\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
 
 // exports
 
@@ -60276,34 +60516,26 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      ref: "pmapanel",
-      staticClass: "pma-main-panel",
-      attrs: { id: "pma-main-panel" }
-    },
-    [
-      _c(
-        "div",
-        { ref: "pmainner", staticClass: "pma-main-inner" },
-        [
-          _c("server-view"),
-          _vm._v(" "),
-          _c("php-mongo"),
-          _vm._v(" "),
-          _c("databases-view"),
-          _vm._v(" "),
-          _c("database-view"),
-          _vm._v(" "),
-          _c("collection-view"),
-          _vm._v(" "),
-          _c("servers-view")
-        ],
-        1
-      )
-    ]
-  )
+  return _c("div", { ref: "pmaMainPanel", staticClass: "pma-main-panel" }, [
+    _c(
+      "div",
+      { ref: "pmaInner", staticClass: "pma-main-inner" },
+      [
+        _c("server-view"),
+        _vm._v(" "),
+        _c("php-mongo"),
+        _vm._v(" "),
+        _c("databases-view"),
+        _vm._v(" "),
+        _c("database-view"),
+        _vm._v(" "),
+        _c("collection-view"),
+        _vm._v(" "),
+        _c("servers-view")
+      ],
+      1
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -60334,7 +60566,7 @@ var render = function() {
         staticClass: "pma-link",
         on: {
           click: function($event) {
-            return _vm.$emit("loadCollection", _vm.collection.collection.name)
+            return _vm.$emit("loadCollection", _vm.getCollectionName)
           }
         }
       },
@@ -62271,7 +62503,7 @@ var render = function() {
             _c("span", {
               attrs: { title: _vm.showLanguage("title", "historyTitle") },
               domProps: {
-                textContent: _vm._s(_vm.showLanguage("collection", "array"))
+                textContent: _vm._s(_vm.showLanguage("collection", "history"))
               },
               on: {
                 click: function($event) {
@@ -63388,55 +63620,69 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "pma-dbs-top" }, [
-    _c("div", { staticClass: "pma-logo text-center" }, [
-      _c("img", {
-        attrs: { src: "/img/logo-pma.png", alt: { appTitle: _vm.appTitle } }
-      })
-    ]),
-    _vm._v(" "),
-    _c("div", { staticClass: "pma-icons text-center" }, [
-      _c(
-        "span",
+  return _c(
+    "div",
+    {
+      directives: [
         {
-          staticClass: "pma-link",
-          on: {
-            click: function($event) {
-              return _vm.loadHome()
-            }
-          }
-        },
-        [
-          _c("img", { attrs: { src: "/img/icon/pma-home.png" } }),
-          _vm._v(" "),
-          _c("span", {
-            domProps: { textContent: _vm._s(_vm.showLanguage("dbs", "host")) }
-          })
-        ]
-      ),
+          name: "show",
+          rawName: "v-show",
+          value: _vm.collapsed == false,
+          expression: "collapsed == false"
+        }
+      ],
+      staticClass: "pma-dbs-top"
+    },
+    [
+      _c("div", { staticClass: "pma-logo text-center" }, [
+        _c("img", {
+          attrs: { src: "/img/logo-pma.png", alt: { appTitle: _vm.appTitle } }
+        })
+      ]),
       _vm._v(" "),
-      _c(
-        "span",
-        {
-          staticClass: "pma-link",
-          on: {
-            click: function($event) {
-              return _vm.loadOverview()
+      _c("div", { staticClass: "pma-icons text-center" }, [
+        _c(
+          "span",
+          {
+            staticClass: "pma-link",
+            on: {
+              click: function($event) {
+                return _vm.loadHome()
+              }
             }
-          }
-        },
-        [
-          _c("img", { attrs: { src: "/img/icon/pma-world.png" } }),
-          _vm._v(" "),
-          _c("span", {
-            domProps: {
-              textContent: _vm._s(_vm.showLanguage("dbs", "overview"))
+          },
+          [
+            _c("img", { attrs: { src: "/img/icon/pma-home.png" } }),
+            _vm._v(" "),
+            _c("span", {
+              domProps: { textContent: _vm._s(_vm.showLanguage("dbs", "host")) }
+            })
+          ]
+        ),
+        _vm._v(" "),
+        _c(
+          "span",
+          {
+            staticClass: "pma-link",
+            on: {
+              click: function($event) {
+                return _vm.loadOverview()
+              }
             }
-          })
-        ]
-      )
-    ])
-  ])
+          },
+          [
+            _c("img", { attrs: { src: "/img/icon/pma-world.png" } }),
+            _vm._v(" "),
+            _c("span", {
+              domProps: {
+                textContent: _vm._s(_vm.showLanguage("dbs", "overview"))
+              }
+            })
+          ]
+        )
+      ])
+    ]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -63462,30 +63708,34 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "pma-dbs-view align-left", attrs: { id: "left-pane" } },
+    { ref: "leftPane", staticClass: "pma-dbs-view align-left" },
     [
-      _c("div", { attrs: { id: "dbs-nav-resizer" } }),
-      _vm._v(" "),
-      _c("div", { attrs: { id: "dbs-nav-collapse" } }, [_vm._v("←")]),
-      _vm._v(" "),
-      _c("dbs-top"),
+      _c("div", { ref: "resizer", staticClass: "dbs-nav-resizer" }),
       _vm._v(" "),
       _c(
-        "article",
-        { staticClass: "dbs-list-block-outer", attrs: { id: "dbs" } },
-        [
-          _c("div", { staticClass: "dbs-list-block" }, [
-            _c(
-              "ul",
-              { staticClass: "dbs-list" },
-              _vm._l(_vm.dbs, function(db) {
-                return _c("dbs-card", { key: db.id + 1, attrs: { db: db } })
-              }),
-              1
-            )
-          ])
-        ]
-      )
+        "div",
+        {
+          ref: "collapse",
+          staticClass: "dbs-nav-collapse",
+          on: { click: _vm.handleCollapse }
+        },
+        [_vm._v("←")]
+      ),
+      _vm._v(" "),
+      _c("dbs-top", { attrs: { collapsed: _vm.collapsed } }),
+      _vm._v(" "),
+      _c("article", { ref: "dbs", staticClass: "dbs-list-block-outer" }, [
+        _c("div", { staticClass: "dbs-list-block" }, [
+          _c(
+            "ul",
+            { staticClass: "dbs-list" },
+            _vm._l(_vm.dbs, function(db) {
+              return _c("dbs-card", { key: db.id + 1, attrs: { db: db } })
+            }),
+            1
+          )
+        ])
+      ])
     ],
     1
   )
@@ -64293,26 +64543,51 @@ var render = function() {
   return _c("div", [
     _c("table", { staticClass: "bordered" }, [
       _c("tr", [
-        _c("th", { staticClass: "bb" }, [_vm._v("Host")]),
+        _c("th", {
+          staticClass: "bb",
+          domProps: { textContent: _vm._s(_vm.showLanguage("servers", "host")) }
+        }),
         _c("td", [_vm._v(_vm._s(_vm.server.host))])
       ]),
       _vm._v(" "),
       _c("tr", [
-        _c("th", { staticClass: "bb" }, [_vm._v("Port")]),
+        _c("th", {
+          staticClass: "bb",
+          domProps: { textContent: _vm._s(_vm.showLanguage("servers", "port")) }
+        }),
         _c("td", [_vm._v(_vm._s(_vm.server.port))])
       ]),
       _vm._v(" "),
       _c("tr", [
-        _c("th", { staticClass: "bb" }, [_vm._v("Username")]),
+        _c("th", {
+          staticClass: "bb",
+          domProps: {
+            textContent: _vm._s(_vm.showLanguage("servers", "username"))
+          }
+        }),
         _c("td", [_vm._v(_vm._s(_vm.server.username))])
       ]),
       _vm._v(" "),
-      _vm._m(0),
+      _c("tr", [
+        _c("th", {
+          staticClass: "bb",
+          domProps: {
+            textContent: _vm._s(_vm.showLanguage("servers", "password"))
+          }
+        }),
+        _c("td", [_vm._v("*****")])
+      ]),
       _vm._v(" "),
       _c("tr", [
-        _c("th", { staticClass: "bb" }, [_vm._v("Active")]),
+        _c("th", {
+          staticClass: "bb",
+          domProps: {
+            textContent: _vm._s(_vm.showLanguage("servers", "active"))
+          }
+        }),
+        _vm._v(" "),
         _c("td", [
-          _vm._v(_vm._s(_vm.showBool(_vm.server.active)) + " "),
+          _vm._v(_vm._s(_vm.showBool(_vm.server.active)) + "\n            "),
           _c(
             "span",
             {
@@ -64325,7 +64600,7 @@ var render = function() {
                 }
               ],
               staticClass: "activate-checkbox",
-              attrs: { title: "Check to activate this server" }
+              attrs: { title: _vm.showLanguage("title", "activeServerTitle") }
             },
             [
               _c("input", {
@@ -64370,61 +64645,64 @@ var render = function() {
                   ]
                 }
               }),
-              _vm._v(" Check to activate")
+              _vm._v(" "),
+              _c("span", {
+                domProps: {
+                  textContent: _vm._s(_vm.showLanguage("servers", "check"))
+                }
+              })
             ]
           )
         ])
       ]),
       _vm._v(" "),
       _c("tr", [
-        _c("th", { staticClass: "bb" }, [_vm._v("Created")]),
+        _c("th", {
+          staticClass: "bb",
+          domProps: {
+            textContent: _vm._s(_vm.showLanguage("servers", "created"))
+          }
+        }),
         _c("td", [_vm._v(_vm._s(_vm.server.created_at))])
       ]),
       _vm._v(" "),
       _c("tr", [
-        _c("th", { staticClass: "bb" }, [_vm._v("Actions")]),
+        _c("th", {
+          staticClass: "bb",
+          domProps: {
+            textContent: _vm._s(_vm.showLanguage("servers", "actions"))
+          }
+        }),
         _c("td", [
-          _c(
-            "span",
-            {
-              staticClass: "pma-link",
-              on: {
-                click: function($event) {
-                  return _vm.$emit("edit", _vm.server.id)
-                }
-              }
+          _c("span", {
+            staticClass: "pma-link",
+            domProps: {
+              textContent: _vm._s(_vm.showLanguage("servers", "edit"))
             },
-            [_vm._v("Edit")]
-          ),
-          _vm._v(" | "),
-          _c(
-            "span",
-            {
-              staticClass: "pma-link-danger",
-              on: {
-                click: function($event) {
-                  return _vm.$emit("delete", _vm.server.id)
-                }
+            on: {
+              click: function($event) {
+                return _vm.$emit("edit", _vm.server.id)
               }
+            }
+          }),
+          _vm._v(" |\n            "),
+          _c("span", {
+            staticClass: "pma-link-danger",
+            domProps: {
+              textContent: _vm._s(_vm.showLanguage("servers", "delete"))
             },
-            [_vm._v("Delete")]
-          )
+            on: {
+              click: function($event) {
+                return _vm.$emit("delete", _vm.server.id)
+              }
+            }
+          })
         ])
       ])
     ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("tr", [
-      _c("th", { staticClass: "bb" }, [_vm._v("Password")]),
-      _c("td", [_vm._v("*****")])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -64476,12 +64754,21 @@ var render = function() {
                 ]
               },
               [
-                _vm._v("No server have been created yet. "),
-                _c(
-                  "span",
-                  { staticClass: "pma-link", on: { click: _vm.setupServer } },
-                  [_vm._v("Setup Here")]
-                )
+                _c("span", {
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("servers", "none"))
+                  }
+                }),
+                _vm._v(" "),
+                _c("span", {
+                  staticClass: "pma-link",
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("servers", "createFirst")
+                    )
+                  },
+                  on: { click: _vm.setupServer }
+                })
               ]
             ),
             _vm._v(" "),
@@ -64498,12 +64785,19 @@ var render = function() {
                 ]
               },
               [
-                _vm._v("Add another server configuration. "),
-                _c(
-                  "span",
-                  { staticClass: "pma-link", on: { click: _vm.setupServer } },
-                  [_vm._v("Add New")]
-                )
+                _c("span", {
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("servers", "add"))
+                  }
+                }),
+                _vm._v(" "),
+                _c("span", {
+                  staticClass: "pma-link",
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("servers", "addNew"))
+                  },
+                  on: { click: _vm.setupServer }
+                })
               ]
             ),
             _vm._v(" "),
@@ -64554,7 +64848,12 @@ var render = function() {
               _vm._v(" "),
               _c("p", { staticClass: "field" }, [
                 _c("label", { staticClass: "input-group-label input" }, [
-                  _vm._v("Host: "),
+                  _c("span", {
+                    domProps: {
+                      textContent: _vm._s(_vm.showLanguage("servers", "host"))
+                    }
+                  }),
+                  _vm._v(": "),
                   _c("input", {
                     directives: [
                       {
@@ -64580,7 +64879,12 @@ var render = function() {
               _vm._v(" "),
               _c("p", { staticClass: "field" }, [
                 _c("label", { staticClass: "input-group-label input" }, [
-                  _vm._v("Port: "),
+                  _c("span", {
+                    domProps: {
+                      textContent: _vm._s(_vm.showLanguage("servers", "port"))
+                    }
+                  }),
+                  _vm._v(": "),
                   _c("input", {
                     directives: [
                       {
@@ -64606,7 +64910,14 @@ var render = function() {
               _vm._v(" "),
               _c("p", { staticClass: "field" }, [
                 _c("label", { staticClass: "input-group-label input" }, [
-                  _vm._v("Username: "),
+                  _c("span", {
+                    domProps: {
+                      textContent: _vm._s(
+                        _vm.showLanguage("servers", "username")
+                      )
+                    }
+                  }),
+                  _vm._v(": "),
                   _c("input", {
                     directives: [
                       {
@@ -64632,7 +64943,14 @@ var render = function() {
               _vm._v(" "),
               _c("p", { staticClass: "field" }, [
                 _c("label", { staticClass: "input-group-label input" }, [
-                  _vm._v("Password: "),
+                  _c("span", {
+                    domProps: {
+                      textContent: _vm._s(
+                        _vm.showLanguage("servers", "password")
+                      )
+                    }
+                  }),
+                  _vm._v(": "),
                   _c("input", {
                     directives: [
                       {
@@ -64658,7 +64976,14 @@ var render = function() {
               _vm._v(" "),
               _c("p", { staticClass: "field" }, [
                 _c("label", { staticClass: "input-group-label input" }, [
-                  _vm._v("Confirm: "),
+                  _c("span", {
+                    domProps: {
+                      textContent: _vm._s(
+                        _vm.showLanguage("servers", "confirm")
+                      )
+                    }
+                  }),
+                  _vm._v(": "),
                   _c("input", {
                     directives: [
                       {
@@ -64684,7 +65009,12 @@ var render = function() {
               _vm._v(" "),
               _c("p", { staticClass: "field" }, [
                 _c("label", { staticClass: "input-group-label input" }, [
-                  _vm._v("Active: "),
+                  _c("span", {
+                    domProps: {
+                      textContent: _vm._s(_vm.showLanguage("servers", "active"))
+                    }
+                  }),
+                  _vm._v(": "),
                   _c("input", {
                     directives: [
                       {
@@ -64743,15 +65073,16 @@ var render = function() {
                   staticClass: "field"
                 },
                 [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "button",
-                      attrs: { type: "submit" },
-                      on: { click: _vm.createServer }
+                  _c("button", {
+                    staticClass: "button",
+                    attrs: { type: "submit" },
+                    domProps: {
+                      textContent: _vm._s(
+                        _vm.showLanguage("servers", "createButton")
+                      )
                     },
-                    [_vm._v("Create")]
-                  )
+                    on: { click: _vm.createServer }
+                  })
                 ]
               ),
               _vm._v(" "),
@@ -64769,15 +65100,16 @@ var render = function() {
                   staticClass: "field"
                 },
                 [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "button",
-                      attrs: { type: "submit" },
-                      on: { click: _vm.createServer }
+                  _c("button", {
+                    staticClass: "button",
+                    attrs: { type: "submit" },
+                    domProps: {
+                      textContent: _vm._s(
+                        _vm.showLanguage("servers", "updateButton")
+                      )
                     },
-                    [_vm._v("Update")]
-                  )
+                    on: { click: _vm.createServer }
+                  })
                 ]
               )
             ]
@@ -64931,7 +65263,51 @@ var render = function() {
               }
             })
           ]
-        )
+        ),
+        _vm._v(" "),
+        _c("li", { on: { click: _vm.collapseNav } }, [
+          _c(
+            "span",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: _vm.collapsed,
+                  expression: "collapsed"
+                }
+              ],
+              staticClass: "nav-collapse",
+              attrs: { title: _vm.showLanguage("nav", "collapse") }
+            },
+            [
+              _c("img", {
+                attrs: { src: "/img/sort-asc.svg", alt: "Collapse nav" }
+              })
+            ]
+          ),
+          _vm._v(" "),
+          _c(
+            "span",
+            {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: !_vm.collapsed,
+                  expression: "!collapsed"
+                }
+              ],
+              staticClass: "nav-collapse",
+              attrs: { title: _vm.showLanguage("nav", "expand") }
+            },
+            [
+              _c("img", {
+                attrs: { src: "/img/sort-desc.svg", alt: "Expand nav" }
+              })
+            ]
+          )
+        ])
       ])
     ])
   ])
@@ -64971,195 +65347,210 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("nav", { staticClass: "panel-navigation" }, [
-    _c("div", { staticClass: "text-left" }, [
-      _c("ul", { staticClass: "links" }, [
-        _c("li", { class: { active: _vm.getActivePanel("databases") } }, [
-          _c(
-            "span",
-            {
-              on: {
-                click: function($event) {
-                  return _vm.loadPanel("databases", $event)
+  return _c(
+    "nav",
+    {
+      directives: [
+        {
+          name: "show",
+          rawName: "v-show",
+          value: !_vm.collapsed,
+          expression: "!collapsed"
+        }
+      ],
+      ref: "navPanel",
+      staticClass: "panel-navigation"
+    },
+    [
+      _c("div", { staticClass: "text-left" }, [
+        _c("ul", { staticClass: "links" }, [
+          _c("li", { class: { active: _vm.getActivePanel("databases") } }, [
+            _c(
+              "span",
+              {
+                on: {
+                  click: function($event) {
+                    return _vm.loadPanel("databases", $event)
+                  }
                 }
-              }
-            },
-            [
-              _c("img", { attrs: { src: "/img/icon/databases.png" } }),
-              _vm._v(" "),
-              _c("span", {
-                attrs: { title: _vm.showLanguage("title", "databasesTitle") },
-                domProps: {
-                  textContent: _vm._s(_vm.showLanguage("nav", "databases"))
+              },
+              [
+                _c("img", { attrs: { src: "/img/icon/databases.png" } }),
+                _vm._v(" "),
+                _c("span", {
+                  attrs: { title: _vm.showLanguage("title", "databasesTitle") },
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("nav", "databases"))
+                  }
+                })
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { class: { active: _vm.getActivePanel("execute") } }, [
+            _c(
+              "span",
+              {
+                on: {
+                  click: function($event) {
+                    return _vm.loadPanel("execute", $event)
+                  }
                 }
-              })
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", { class: { active: _vm.getActivePanel("execute") } }, [
-          _c(
-            "span",
-            {
-              on: {
-                click: function($event) {
-                  return _vm.loadPanel("execute", $event)
+              },
+              [
+                _c("img", { attrs: { src: "/img/icon/json.gif" } }),
+                _vm._v(" "),
+                _c("span", {
+                  attrs: { title: _vm.showLanguage("title", "executeTitle") },
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("nav", "execute"))
+                  }
+                })
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { class: { active: _vm.getActivePanel("status") } }, [
+            _c(
+              "span",
+              {
+                on: {
+                  click: function($event) {
+                    return _vm.loadPanel("status", $event)
+                  }
                 }
-              }
-            },
-            [
-              _c("img", { attrs: { src: "/img/icon/json.gif" } }),
-              _vm._v(" "),
-              _c("span", {
-                attrs: { title: _vm.showLanguage("title", "executeTitle") },
-                domProps: {
-                  textContent: _vm._s(_vm.showLanguage("nav", "execute"))
+              },
+              [
+                _c("img", { attrs: { src: "/img/icon/detail.png" } }),
+                _vm._v(" "),
+                _c("span", {
+                  attrs: { title: _vm.showLanguage("title", "statusTitle") },
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("nav", "status"))
+                  }
+                })
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { class: { active: _vm.getActivePanel("processes") } }, [
+            _c(
+              "span",
+              {
+                on: {
+                  click: function($event) {
+                    return _vm.loadPanel("processes", $event)
+                  }
                 }
-              })
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", { class: { active: _vm.getActivePanel("status") } }, [
-          _c(
-            "span",
-            {
-              on: {
-                click: function($event) {
-                  return _vm.loadPanel("status", $event)
+              },
+              [
+                _c("img", { attrs: { src: "/img/icon/report.png" } }),
+                _vm._v(" "),
+                _c("span", {
+                  attrs: { title: _vm.showLanguage("title", "processesTitle") },
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("nav", "processes"))
+                  }
+                })
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { class: { active: _vm.getActivePanel("command") } }, [
+            _c(
+              "span",
+              {
+                on: {
+                  click: function($event) {
+                    return _vm.loadPanel("command", $event)
+                  }
                 }
-              }
-            },
-            [
-              _c("img", { attrs: { src: "/img/icon/detail.png" } }),
-              _vm._v(" "),
-              _c("span", {
-                attrs: { title: _vm.showLanguage("title", "statusTitle") },
-                domProps: {
-                  textContent: _vm._s(_vm.showLanguage("nav", "status"))
+              },
+              [
+                _c("img", { attrs: { src: "/img/icon/s-icon.gif" } }),
+                _vm._v(" "),
+                _c("span", {
+                  attrs: { title: _vm.showLanguage("title", "commandTitle") },
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("nav", "command"))
+                  }
+                })
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { class: { active: _vm.getActivePanel("users") } }, [
+            _c(
+              "span",
+              {
+                on: {
+                  click: function($event) {
+                    return _vm.loadPanel("users", $event)
+                  }
                 }
-              })
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", { class: { active: _vm.getActivePanel("processes") } }, [
-          _c(
-            "span",
-            {
-              on: {
-                click: function($event) {
-                  return _vm.loadPanel("processes", $event)
+              },
+              [
+                _c("img", { attrs: { src: "/img/icon/databases.png" } }),
+                _vm._v(" "),
+                _c("span", {
+                  attrs: { title: _vm.showLanguage("title", "usersTitle") },
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("nav", "users"))
+                  }
+                })
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { class: { active: _vm.getActivePanel("servers") } }, [
+            _c(
+              "span",
+              {
+                on: {
+                  click: function($event) {
+                    return _vm.loadPanel("servers", $event)
+                  }
                 }
-              }
-            },
-            [
-              _c("img", { attrs: { src: "/img/icon/report.png" } }),
-              _vm._v(" "),
-              _c("span", {
-                attrs: { title: _vm.showLanguage("title", "processesTitle") },
-                domProps: {
-                  textContent: _vm._s(_vm.showLanguage("nav", "processes"))
+              },
+              [
+                _c("img", { attrs: { src: "/img/icon/servers2.png" } }),
+                _vm._v(" "),
+                _c("span", {
+                  attrs: { title: _vm.showLanguage("title", "serversTitle") },
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("nav", "servers"))
+                  }
+                })
+              ]
+            )
+          ]),
+          _vm._v(" "),
+          _c("li", { class: { active: _vm.getActivePanel("master") } }, [
+            _c(
+              "span",
+              {
+                on: {
+                  click: function($event) {
+                    return _vm.loadPanel("master", $event)
+                  }
                 }
-              })
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", { class: { active: _vm.getActivePanel("command") } }, [
-          _c(
-            "span",
-            {
-              on: {
-                click: function($event) {
-                  return _vm.loadPanel("command", $event)
-                }
-              }
-            },
-            [
-              _c("img", { attrs: { src: "/img/icon/s-icon.gif" } }),
-              _vm._v(" "),
-              _c("span", {
-                attrs: { title: _vm.showLanguage("title", "commandTitle") },
-                domProps: {
-                  textContent: _vm._s(_vm.showLanguage("nav", "command"))
-                }
-              })
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", { class: { active: _vm.getActivePanel("users") } }, [
-          _c(
-            "span",
-            {
-              on: {
-                click: function($event) {
-                  return _vm.loadPanel("users", $event)
-                }
-              }
-            },
-            [
-              _c("img", { attrs: { src: "/img/icon/databases.png" } }),
-              _vm._v(" "),
-              _c("span", {
-                attrs: { title: _vm.showLanguage("title", "usersTitle") },
-                domProps: {
-                  textContent: _vm._s(_vm.showLanguage("nav", "users"))
-                }
-              })
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", { class: { active: _vm.getActivePanel("servers") } }, [
-          _c(
-            "span",
-            {
-              on: {
-                click: function($event) {
-                  return _vm.loadPanel("servers", $event)
-                }
-              }
-            },
-            [
-              _c("img", { attrs: { src: "/img/icon/servers2.png" } }),
-              _vm._v(" "),
-              _c("span", {
-                attrs: { title: _vm.showLanguage("title", "serversTitle") },
-                domProps: {
-                  textContent: _vm._s(_vm.showLanguage("nav", "servers"))
-                }
-              })
-            ]
-          )
-        ]),
-        _vm._v(" "),
-        _c("li", { class: { active: _vm.getActivePanel("master") } }, [
-          _c(
-            "span",
-            {
-              on: {
-                click: function($event) {
-                  return _vm.loadPanel("master", $event)
-                }
-              }
-            },
-            [
-              _c("img", { attrs: { src: "/img/icon/key.png" } }),
-              _vm._v(" "),
-              _c("span", {
-                attrs: { title: _vm.showLanguage("title", "masterTitle") },
-                domProps: {
-                  textContent: _vm._s(_vm.showLanguage("nav", "master"))
-                }
-              })
-            ]
-          )
+              },
+              [
+                _c("img", { attrs: { src: "/img/icon/key.png" } }),
+                _vm._v(" "),
+                _c("span", {
+                  attrs: { title: _vm.showLanguage("title", "masterTitle") },
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("nav", "master"))
+                  }
+                })
+              ]
+            )
+          ])
         ])
       ])
-    ])
-  ])
+    ]
+  )
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -65185,8 +65576,18 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c(
     "div",
-    { staticClass: "pma-top-panel", attrs: { id: "pma-top-panel" } },
-    [_c("top"), _vm._v(" "), _c("top-nav")],
+    { ref: "pmaTopPanel", staticClass: "pma-top-panel" },
+    [
+      _c("top", {
+        on: {
+          collapseNav: function($event) {
+            return _vm.collapseNav($event)
+          }
+        }
+      }),
+      _vm._v(" "),
+      _c("top-nav", { attrs: { collapsed: _vm.collapsed } })
+    ],
     1
   )
 }
@@ -84760,8 +85161,8 @@ __webpack_require__.r(__webpack_exports__);
     return axios.post(_config__WEBPACK_IMPORTED_MODULE_0__["MONGO_CONFIG"].API_URL + '/collection/create', {
       name: data.name,
       capped: data.capped,
-      count: data.count,
-      size: data.size,
+      count: parseInt(data.count, 10),
+      size: parseInt(data.size, 10),
       database: data.db,
       _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
     });

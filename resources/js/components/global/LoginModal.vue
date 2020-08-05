@@ -1,3 +1,19 @@
+<!--
+  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      LoginModal.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
+  - @package      LoginModal.vue
+  - @subpackage   Id
+  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  php-mongo-admin - License conditions:
+  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See COPYRIGHT.php for copyright notices and further details.
+  -->
+
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
 
@@ -380,15 +396,15 @@
             /*
             When prompted for login, show the component.
             */
-            EventBus.$on('prompt-login', function() {
+            EventBus.$on('prompt-login', () => {
                 this.show = true;
 
-            }.bind(this));
+            });
         },
 
         /*
-        *   This modules computed actions
-        */
+         *   This modules computed actions
+         */
         computed: {
             submitButtonClass() {
                 return this.formStatus === 0 ? 'secondary' : 'success';
@@ -404,14 +420,13 @@
         },
 
         /*
-        * This modules methods
-        */
+         * This modules methods
+         */
         methods: {
             /*
             * Calls the Translation and Language service
             */
             showLanguage(context, key) {
-                //return this.$trans(context, key);
                 return this.$store.getters.getLanguageString( context, key );
             },
 
@@ -473,8 +488,8 @@
             },
 
             /*
-            * Check host placeholder
-            */
+             * Check host placeholder
+             */
             checkDb() {
                 this.verifiedDb = true;
             },
@@ -494,8 +509,8 @@
             },
 
             /*
-            *   Verify the email address
-            */
+             *   Verify the email address
+             */
             checkEmail() {
                 let e = this.credentials.email || false, self = this;
                 if (e.length >= 5) {
@@ -540,7 +555,6 @@
 
                 }
             },
-
 
             countPassword() {
                 let p = this.credentials.password || undefined;

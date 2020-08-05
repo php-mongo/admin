@@ -1,3 +1,19 @@
+<!--
+  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      TopView.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
+  - @package      TopView.vue
+  - @subpackage   Id
+  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  php-mongo-admin - License conditions:
+  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See COPYRIGHT.php for copyright notices and further details.
+  -->
+
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
     .pma-top-panel {
@@ -37,9 +53,9 @@
 </style>
 
 <template>
-    <div id="pma-top-panel" class="pma-top-panel">
-        <top></top>
-        <top-nav></top-nav>
+    <div ref="pmaTopPanel" class="pma-top-panel">
+        <top @collapseNav="collapseNav($event)"></top>
+        <top-nav v-bind:collapsed="collapsed"></top-nav>
     </div>
 </template>
 <script>
@@ -48,14 +64,61 @@
     */
     import Top  from "./Top";
     import TopNav from "./TopNav";
+    import {EventBus} from "../../../event-bus";
 
     export default {
         /*
-       *   Registers child components with the component.
-       */
+        *   Registers child components with the component.
+        */
         components: {
             Top,
             TopNav
+        },
+
+        /*
+         *  Define the data used by the component.
+         */
+        data() {
+            return {
+                expanded: false,
+                collapsed: false
+            }
+        },
+
+        /*
+         *   Defined methods for the component
+         */
+        methods: {
+            watchLeftNav() {
+                this.expanded = !this.expanded;
+                if (this.expanded === true) {
+                    this.$jqf(this.$refs.pmaTopPanel).css('margin-left', '5px');
+                }
+                if (this.expanded === false) {
+                    this.$jqf(this.$refs.pmaTopPanel).css('margin-left', '245px');
+                }
+            },
+
+            collapseNav( status ) {
+                this.collapsed = status;
+            }
+        },
+
+        /*
+         * get on ur bikes and ride !!
+         */
+        mounted() {
+            EventBus.$on('collapse-left-nav', () => {
+                this.watchLeftNav();
+            });
+
+            EventBus.$on('expand-left-nav', () => {
+                this.watchLeftNav();
+            });
+
+            EventBus.$on('collapse-nav', (status) => {
+                this.collapseNav(status);
+            });
         }
     }
 </script>

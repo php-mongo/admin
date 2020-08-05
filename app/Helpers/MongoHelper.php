@@ -1,5 +1,19 @@
 <?php
-
+/**
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      MongoHelper.php 1001 6/8/20, 1:00 am  Gilbert Rehling $
+ * @package      MongoHelper.php
+ * @subpackage   Id
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
 
 namespace App\Helpers;
 
@@ -314,19 +328,13 @@ class MongoHelper
             } else {
                 if ($value instanceof MongoDB\Model\BSONDocument) {
                     /** @var MongoDB\Model\BSONDocument  $value */
-                    //   echo '<pre>'; var_dump($arr); echo '</pre>'; die;
-                    //    echo '<pre>'; var_dump($key); echo '</pre>'; die;
-                    //   echo '<pre>'; var_dump($value); echo '</pre>'; die;
                     $array = $value->getArrayCopy();
                     $level++;
                     $arr['key.' . $key . '.key'] = self::iterateObject($array, $level, $key, $fields);
 
                 } elseif ($value instanceof MongoDB\BSON\Binary) {
                     /** @var MongoDB\BSON\Binary $value */
-                    //    echo '<pre>'; var_dump($value->__toString()); echo '</pre>';
-                    //    echo '<pre>'; var_dump($value->getType()); echo '</pre>';
                     $data = bin2hex($value-> getData());
-                    //    echo '<pre>'; var_dump(unserialize($data)); echo '</pre>'; die;
                     $arr['key.' . $key . '.key'] = 'value.' . $data . '.value';
                     if (is_string($key)) {
                         if (!in_array($key, $fields)) {
@@ -337,15 +345,10 @@ class MongoHelper
                 } elseif ($value instanceof MongoDB\Model\BSONArray) {
                     /** @var MongoDB\Model\BSONArray $value */
                     $array = $value->getArrayCopy();
-                //    echo '<pre>'; var_dump($array); echo '</pre>'; die;
                     $level++;
                     $arr['key.' . $key . '.key'] = self::iterateObject($array, $level, $key, $fields);
 
-                //    echo '<pre>'; var_dump($arr); echo '</pre>'; die;
-
                 } else {
-                ///    echo '<pre>'; var_dump($value); echo '</pre>';
-                //    echo '<pre>'; var_dump($key); echo '</pre>'; die;
                     $arr['key.' . $key . '.key'] = 'value.' . $value . '.value';
                     if (is_string($key)) {
                         if (!in_array($key, $fields)) {
@@ -381,8 +384,6 @@ class MongoHelper
                 if (count($v) == 0) {
                     $arr['key.' . $k . '.key'] = [];
                 } else {
-                 //   echo '<pre>'; var_dump($k); echo '</pre>';
-                 //   echo '<pre>'; var_dump($arr); echo '</pre>'; die;
                     $arr['key.' . $k . '.key'] = $v; //self::iterateObject($v, $level, $k, $fields);
                 }
 
@@ -395,7 +396,6 @@ class MongoHelper
                 $arr['key.' . $k . '.key'] = 'value.' . $v . '.value';
             }
         }
-        //return array("arr" => $arr, ;
         return $arr;
     }
 

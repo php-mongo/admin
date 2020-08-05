@@ -1,3 +1,19 @@
+<!--
+  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      TopNav.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
+  - @package      TopNav.vue
+  - @subpackage   Id
+  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  php-mongo-admin - License conditions:
+  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See COPYRIGHT.php for copyright notices and further details.
+  -->
+
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
 
@@ -63,7 +79,7 @@
 </style>
 
 <template>
-    <nav class="panel-navigation">
+    <nav ref="navPanel" class="panel-navigation" v-show="!collapsed">
         <div class="text-left">
             <ul class="links">
                 <li v-bind:class="{active: getActivePanel('databases')}">
@@ -102,6 +118,11 @@
     import { EventBus } from '../../../event-bus.js';
 
     export default {
+        /*
+         *  Its a one prop shop
+         */
+        props: ['collapsed'],
+
         /*
         *   Data used with this component
         */
@@ -182,20 +203,14 @@
             */
             loadPanel( item ) {
                 this.$store.dispatch('setActiveNav', item);
-            //    this.activePanel = item;
                 EventBus.$emit('hide-panels');
                 EventBus.$emit('show-' + item);
-                console.log("loaded panel item: " + item);
             }
         },
 
         mounted() {
             this.userLoggedIn();
             this.getUser();
-
-            /*EventBus.$on('clear-active-nav', function() {
-                this.activePanel = null;
-            }.bind(this));*/
         },
 
        watch: {

@@ -1,3 +1,19 @@
+<!--
+  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      ServersView.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
+  - @package      ServersView.vue
+  - @subpackage   Id
+  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  php-mongo-admin - License conditions:
+  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See COPYRIGHT.php for copyright notices and further details.
+  -->
+
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
     .pma-servers-view {
@@ -79,20 +95,51 @@
         <div class="servers-inner">
             <div class="servers-head">
                 <h3>Servers Configuration Panel</h3>
-                <p v-show="getServersCount">No server have been created yet. <span class="pma-link" v-on:click="setupServer">Setup Here</span></p>
-                <p v-show="!getServersCount">Add another server configuration. <span class="pma-link" v-on:click="setupServer">Add New</span></p>
+                <p v-show="getServersCount">
+                    <span v-text="showLanguage('servers', 'none')"></span>
+                    <span class="pma-link" v-on:click="setupServer" v-text="showLanguage('servers', 'createFirst')"></span>
+                </p>
+                <p v-show="!getServersCount">
+                    <span v-text="showLanguage('servers', 'add')"></span>
+                    <span class="pma-link" v-on:click="setupServer" v-text="showLanguage('servers', 'addNew')"></span>
+                </p>
                 <p v-show="message">{{ message }}</p>
             </div>
             <div v-show="createNew || editing" class="server-create">
                 <p v-show="error">{{ error }}</p>
-                <p class="field"><label class="input-group-label input">Host: <input v-model="form.host" type="text" ></label></p>
-                <p class="field"><label class="input-group-label input">Port: <input v-model="form.port" type="text" ></label></p>
-                <p class="field"><label class="input-group-label input">Username: <input v-model="form.username" type="text" ></label></p>
-                <p class="field"><label class="input-group-label input">Password: <input v-model="form.password" type="password" ></label></p>
-                <p class="field"><label class="input-group-label input">Confirm: <input v-model="form.password2" type="password" ></label></p>
-                <p class="field"><label class="input-group-label input">Active: <input class="checkbox u-pull-left" v-model="form.active" type="checkbox" ></label></p>
-                <p class="field" v-show="createNew"><button class="button" type="submit" v-on:click="createServer">Create</button></p>
-                <p class="field" v-show="editing"><button class="button" type="submit" v-on:click="createServer">Update</button></p>
+                <p class="field">
+                    <label class="input-group-label input">
+                        <span v-text="showLanguage('servers', 'host')"></span>: <input v-model="form.host" type="text" >
+                    </label>
+                </p>
+                <p class="field">
+                    <label class="input-group-label input">
+                        <span v-text="showLanguage('servers', 'port')"></span>: <input v-model="form.port" type="text" >
+                    </label>
+                </p>
+                <p class="field">
+                    <label class="input-group-label input">
+                        <span v-text="showLanguage('servers', 'username')"></span>: <input v-model="form.username" type="text" ></label>
+                </p>
+                <p class="field">
+                    <label class="input-group-label input">
+                        <span v-text="showLanguage('servers', 'password')"></span>: <input v-model="form.password" type="password" ></label>
+                </p>
+                <p class="field">
+                    <label class="input-group-label input">
+                        <span v-text="showLanguage('servers', 'confirm')"></span>: <input v-model="form.password2" type="password" ></label>
+                </p>
+                <p class="field">
+                    <label class="input-group-label input">
+                        <span v-text="showLanguage('servers', 'active')"></span>: <input class="checkbox u-pull-left" v-model="form.active" type="checkbox" >
+                    </label>
+                </p>
+                <p class="field" v-show="createNew">
+                    <button class="button" type="submit" v-on:click="createServer" v-text="showLanguage('servers', 'createButton')"></button>
+                </p>
+                <p class="field" v-show="editing">
+                    <button class="button" type="submit" v-on:click="createServer" v-text="showLanguage('servers', 'updateButton')"></button>
+                </p>
             </div>
             <server-config @activateServer="activateServer($event)" @edit="edit($event)" @delete="deleteConfig($event)" v-for="(server, index) in getServers" :key="index" v-bind:server="server"></server-config>
         </div>
@@ -174,6 +221,13 @@
          */
         methods: {
             /*
+            *   Calls the Translation and Language service
+            */
+            showLanguage( context, key ) {
+                return this.$store.getters.getLanguageString( context, key );
+            },
+
+            /*
              *   Show component
              */
             showComponent() {
@@ -203,7 +257,7 @@
             validataServer() {
                 if ((this.editing && this.form.password) || this.createNew) {
                     if (this.form.password !== this.form.password2) {
-                        this.error = 'Passwords do not match';
+                        this.error = this.showLanguage('servers', 'passwordsError');
                         return false;
                     }
                 }
@@ -214,7 +268,6 @@
              *  Submit server configuration
              */
             createServer() {
-                console.log(this.form);
                 if (this.validataServer()) {
                     this.$store.dispatch('saveServer', this.form);
                 }
@@ -229,11 +282,11 @@
                     this.completeCreateServer();
                 }
                 if (status === 2) {
-                    EventBus.$emit('show-success', { notification: 'Server configuration created successfully', timer: 5000 });
+                    EventBus.$emit('show-success', { notification: this.showLanguage('servers', 'success'), timer: 5000 });
                     this.createNew = false;
                 }
                 if (status === 3) {
-                    EventBus.$emit('show-error', { notification: 'Server configuration was created - please try again', timer: 7000 })
+                    EventBus.$emit('show-error', { notification: this.showLanguage('servers', 'error'), timer: 7000 })
                 }
             },
 
@@ -246,42 +299,53 @@
                 }
             },
 
+            /*
+             *  Edit the server configuration
+             */
             edit(id) {
-                console.log("edit: " + id);
-                let server = this.$store.getters.getServerConfiguration(id);
-                this.form = server;
+                this.form = this.$store.getters.getServerConfiguration(id);
                 this.editing = !this.editing;
             },
 
+            /*
+             *  Delete the server configuration
+             */
             deleteConfig(id) {
                 this.deleteId = id;
-                EventBus.$emit('delete-confirmation', {id: id, element: 'server', notification: 'Deleting this server configuration can not be reveresed. Continue?'});
+                EventBus.$emit('delete-confirmation', {id: id, element: 'server', notification: this.showLanguage('servers', 'deleteConfirm') });
             },
 
+            /*
+             *  Confirm the deletion
+             */
             deleteConfirmed(id) {
-                console.log("deleteConfirmed id", id);
-                console.log("deleteConfirmed deleteId", this.deleteId);
                 if (id === this.deleteId) {
                     this.$store.dispatch('deleteServer', id);
                     this.handleDeletion();
                 }
             },
 
+            /*
+             *  Handle the delete results
+             */
             handleDeletion() {
                 let status = this.$store.getters.getServerDeleteStatus;
                 if (status === 1) {
                     this.handleDeletion();
                 }
                 if (status == 2) {
-                    EventBus.$emit('show-success', { notification: 'Server configuration deleted succesfully', timer: 5000 });
+                    EventBus.$emit('show-success', { notification: this.showLanguage('servers', 'deleteSuccess'), timer: 5000 });
                     this.deleteId = null;
                 }
                 if (status == 3) {
-                    EventBus.$emit('show-error', { notification: 'Server configuration was not deleted - please try again', timer: 7000 });
+                    EventBus.$emit('show-error', { notification: this.showLanguage('servers', 'deleteFailed'), timer: 7000 });
                 }
             },
 
-            deletCancelled(id) {
+            /*
+             *  Cancel the deletion
+             */
+            deleteCancelled(id) {
                 this.deleteId = null;
             }
         },
@@ -308,7 +372,6 @@
             *    Confirmed deletion
             */
             EventBus.$on('confirm-delete-server', (id) => {
-                console.log("confirm-delete-server", id);
                 this.deleteConfirmed(id);
             });
 

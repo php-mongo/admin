@@ -1,3 +1,19 @@
+<!--
+  - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  - @version      SetupModal.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
+  - @package      SetupModal.vue
+  - @subpackage   Id
+  - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+  - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  -  php-mongo-admin - License conditions:
+  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  -  See licence.txt for the complete licensing outline.
+  -  See COPYRIGHT.php for copyright notices and further details.
+  -->
+
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
 
@@ -350,17 +366,17 @@
         */
         mounted() {
             /*
-            When prompted for login, show the component.
-          */
-            EventBus.$on('prompt-registration', function () {
+             * When prompted for login, show the component.
+             */
+            EventBus.$on('prompt-registration', () => {
                 this.show = true;
 
-            }.bind(this));
+            });
         },
 
         /*
-        *   This modules computed methods
-        */
+         *   This modules computed methods
+         */
         computed: {
             submitButtonClass() {
                 return this.formStatus === 0 ? 'secondary' : 'success';
@@ -376,28 +392,27 @@
         },
 
         /*
-        *   This components active methods
-        */
+         *   This components active methods
+         */
         methods: {
             /*
-            * Calls the Translation and Language service
-            */
+             * Calls the Translation and Language service
+             */
             showLanguage(context, key) {
-                //return this.$trans(context, key);
                 return this.$store.getters.getLanguageString( context, key );
             },
 
             /*
-            * Load login modal
-            */
+             * Load login modal
+             */
             loadLogin() {
                 this.show = false;
                 EventBus.$emit('prompt-login');
             },
 
             /*
-            *   Validate the name field
-            */
+             *   Validate the name field
+             */
             countName() {
                 let n = this.credentials.name || false, l = n.length || 0;
                 if (!n || l < 5) {
@@ -411,8 +426,8 @@
             },
 
             /*
-            *   Verify the name element
-            */
+             *   Verify the name element
+             */
             verifyName() {
                 let n = this.credentials.name || false;
                 if (!n || n.length < 5) {
@@ -429,8 +444,8 @@
             },
 
             /*
-            *   Verify the email address
-            */
+             *   Verify the email address
+             */
             checkEmail() {
                 let e = this.credentials.email || false, self = this;
                 if (e.length >= 7) {
@@ -439,13 +454,7 @@
                         this.$jqf(this.$refs.email).replace(['has-success', 'has-error']).focus();
 
                     } else {
-                        // if (this.$jqf(this.$refs.email).hasClass('has-success') && this.$jqf(this.$refs.emailInfo).hasClass('has-success')) {
-                        //     this.$refs.password.focus();
-                        //     console.log('they have the class: has-success');
-                        //     return true;
-                        // }
                         if (this.verifiedEmail === e) {
-                            console.log('email already verified!');
                             this.$refs.password.focus();
 
                         } else {
@@ -457,11 +466,9 @@
             },
 
             checkEmailResult(e) {
-                console.log("checkEmailResult: " + e);
                 let  status = this.$store.getters.getEmailCheckStatus;
                 let result = false, self = this;
                 if (status === 1) {
-                    console.log("getEmailCheckStatus return: " + status);
                     self.checkEmailResult();
                 }
                 result = this.$store.getters.getEmailCheck;
