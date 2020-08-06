@@ -20,7 +20,7 @@
         }
     ],
     "support": {
-        "docs": "http://docs.phpmongoadmin.com/",
+        "docs": "http://phpmongoadmin.com/support/documentation",
         "email": "support@phpmongoadmin.com",
         "issues": "https://github.com/phpmongodb/admin/issues",
         "source": "https://github.com/phpmongodb/admin",
@@ -28,7 +28,7 @@
         "users": "https://docs.mongodb.com/manual/tutorial/manage-users-and-roles",
         "configuration": "https://docs.mongodb.com/manual/reference/configuration-options"
     },
-    "license": "MIT",
+    "license": "GNU GPLv3",
     "require": {
         "php": "^7.2.5",
         "ext-json": "*",
