@@ -16,7 +16,7 @@ PhpMongoAdmin is accessible, easy to setup, easy to learn and provides plenty of
 
 ## Learning MongoDB
 
-PhpMongoAdmin provides full [documentation](https://phpmongoadmin.com/docs) along with some video tutorials, making it a breeze to get started with the management interface.
+PhpMongoAdmin provides full [documentation](https://phpmongoadmin.com/support/documentation) along with some video tutorials, making it a breeze to get started with the management interface.
 
 If you've used other tools like PhpMyAdmin or the old RockMongo application then you'll find PhpMongoAdmin to be very familiar.
 
@@ -35,11 +35,11 @@ We are very new, and have big plans for our up and coming range of MongoDB tools
 
 ## Contributing
 
-Thank you for considering contributing to the PHP MongoDB Admin! The contribution guide can be found in the [PhpMongoAdmin documentation](https://phpmongoadmin.com/docs/contributions).
+Thank you for considering contributing to the PHP MongoDB Admin! The contribution guide can be found in the [PhpMongoAdmin documentation](https://phpmongoadmin.com/support/documentation/contributions).
 
 ## Code of Conduct
 
-In order to ensure that our PHP MongoDB Tools community is welcoming to all, please review and abide by the [Code of Conduct](https://phpmongoadmin.com/docs/contributions#code-of-conduct).
+In order to ensure that our PHP MongoDB Tools community is welcoming to all, please review and abide by the [Code of Conduct](https://phpmongoadmin.com/support/documentation/contributions#code-of-conduct).
 
 ## Security Vulnerabilities
 
