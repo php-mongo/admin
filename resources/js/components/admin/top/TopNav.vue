@@ -1,16 +1,17 @@
 <!--
   - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      TopNav.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
-  - @package      TopNav.vue
-  - @subpackage   Id
+  - @version      TopNav.vue 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+  - @package      PhpMongoAdmin\resources
+  - @subpackage   TopNav.vue
   - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
   - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
-  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
   - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
   -  php-mongo-admin - License conditions:
-  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
   -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
   -  See licence.txt for the complete licensing outline.
+  -  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
   -  See COPYRIGHT.php for copyright notices and further details.
   -->
 
@@ -49,6 +50,10 @@
                         color: $bodyFontColor;
                     }
                 }
+
+                .hide {
+                    display: none;
+                }
             }
 
             li.active {
@@ -85,26 +90,26 @@
                 <li v-bind:class="{active: getActivePanel('databases')}">
                     <span v-on:click="loadPanel('databases', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'databasesTitle')" v-text="showLanguage('nav', 'databases')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('execute')}">
-                    <span v-on:click="loadPanel('execute', $event)"><img src="/img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('nav', 'execute')"></span></span>
-                </li>
-                <li v-bind:class="{active: getActivePanel('status')}">
-                    <span v-on:click="loadPanel('status', $event)"><img src="/img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'statusTitle')" v-text="showLanguage('nav', 'status')"></span></span>
-                </li>
-                <li v-bind:class="{active: getActivePanel('processes')}">
-                    <span v-on:click="loadPanel('processes', $event)"><img src="/img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'processesTitle')" v-text="showLanguage('nav', 'processes')"></span></span>
-                </li>
-                <li v-bind:class="{active: getActivePanel('command')}">
-                    <span v-on:click="loadPanel('command', $event)"><img src="/img/icon/s-icon.gif" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('nav', 'command')"></span></span>
-                </li>
-                <li v-bind:class="{active: getActivePanel('users')}">
-                    <span v-on:click="loadPanel('users', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'usersTitle')" v-text="showLanguage('nav', 'users')"></span></span>
-                </li>
                 <li v-bind:class="{active: getActivePanel('servers')}">
                     <span v-on:click="loadPanel('servers', $event)"><img src="/img/icon/servers2.png" /> <span v-bind:title="showLanguage('title', 'serversTitle')" v-text="showLanguage('nav', 'servers')"></span></span>
                 </li>
+                <li v-bind:class="{active: getActivePanel('execute')}">
+                    <span class="hide" v-on:click="loadPanel('execute', $event)"><img src="/img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('nav', 'execute')"></span></span>
+                </li>
+                <li v-bind:class="{active: getActivePanel('status')}">
+                    <span class="hide" v-on:click="loadPanel('status', $event)"><img src="/img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'statusTitle')" v-text="showLanguage('nav', 'status')"></span></span>
+                </li>
+                <li v-bind:class="{active: getActivePanel('processes')}">
+                    <span class="hide" v-on:click="loadPanel('processes', $event)"><img src="/img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'processesTitle')" v-text="showLanguage('nav', 'processes')"></span></span>
+                </li>
+                <li v-bind:class="{active: getActivePanel('command')}">
+                    <span class="hide" v-on:click="loadPanel('command', $event)"><img src="/img/icon/s-icon.gif" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('nav', 'command')"></span></span>
+                </li>
+                <li v-bind:class="{active: getActivePanel('users')}">
+                    <span class="hide" v-on:click="loadPanel('users', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'usersTitle')" v-text="showLanguage('nav', 'users')"></span></span>
+                </li>
                 <li v-bind:class="{active: getActivePanel('master')}">
-                    <span v-on:click="loadPanel('master', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'masterTitle')" v-text="showLanguage('nav', 'master')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('master', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'masterTitle')" v-text="showLanguage('nav', 'master')"></span></span>
                 </li>
             </ul>
         </div>

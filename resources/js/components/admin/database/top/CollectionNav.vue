@@ -1,16 +1,17 @@
 <!--
   - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      CollectionNav.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
-  - @package      CollectionNav.vue
-  - @subpackage   Id
+  - @version      CollectionNav.vue 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+  - @package      PhpMongoAdmin\resources
+  - @subpackage   CollectionNav.vue
   - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
   - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
-  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
   - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
   -  php-mongo-admin - License conditions:
-  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
   -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
   -  See licence.txt for the complete licensing outline.
+  -  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
   -  See COPYRIGHT.php for copyright notices and further details.
   -->
 
@@ -64,6 +65,10 @@
                     border-bottom: 1px solid $white;
                     border-right: 0;
                 }
+
+                .hide {
+                    display: none;
+                }
             }
         }
     }
@@ -88,7 +93,7 @@
 </style>
 
 <template>
-    <nav class="collection-navigation" v-show="show">
+    <nav class="collection-navigation" v-show="showHide">
         <div class="text-left">
             <ul class="links">
                 <li v-bind:class="{active: getActivePanel('query')}">
@@ -99,49 +104,49 @@
                     </span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('history')}">
-                    <span v-bind:title="showLanguage('title', 'historyTitle')" v-on:click="loadPanel('history', $event)" v-text="showLanguage('collection', 'history')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'historyTitle')" v-on:click="loadPanel('history', $event)" v-text="showLanguage('collection', 'history')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('refresh')}">
-                    <span v-bind:title="showLanguage('title', 'refreshTitle')" v-on:click="loadPanel('refresh', $event)" v-text="showLanguage('collection', 'refresh')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'refreshTitle')" v-on:click="loadPanel('refresh', $event)" v-text="showLanguage('collection', 'refresh')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('insert')}">
-                    <span v-bind:title="showLanguage('title', 'insertTitle')" v-on:click="loadPanel('insert', $event)" v-text="showLanguage('collection', 'insert')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'insertTitle')" v-on:click="loadPanel('insert', $event)" v-text="showLanguage('collection', 'insert')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('clear')}">
-                    <span v-bind:title="showLanguage('title', 'clearTitle')" v-on:click="loadPanel('clear', $event)" v-text="showLanguage('collection', 'clear')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'clearTitle')" v-on:click="loadPanel('clear', $event)" v-text="showLanguage('collection', 'clear')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('newField')}">
-                    <span v-bind:title="showLanguage('title', 'newFieldTitle')" v-on:click="loadPanel('newField', $event)" v-text="showLanguage('collection', 'newField')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'newFieldTitle')" v-on:click="loadPanel('newField', $event)" v-text="showLanguage('collection', 'newField')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('statistics')}">
-                    <span v-bind:title="showLanguage('title', 'statisticsTitle')" v-on:click="loadPanel('statistics', $event)" v-text="showLanguage('collection', 'statistics')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'statisticsTitle')" v-on:click="loadPanel('statistics', $event)" v-text="showLanguage('collection', 'statistics')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('export')}">
-                    <span v-bind:title="showLanguage('title', 'exportTitle')" v-on:click="loadPanel('export', $event)" v-text="showLanguage('collection', 'export')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'exportTitle')" v-on:click="loadPanel('export', $event)" v-text="showLanguage('collection', 'export')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('import')}">
-                    <span v-bind:title="showLanguage('title', 'importTitle')" v-on:click="loadPanel('import', $event)" v-text="showLanguage('collection', 'import')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'importTitle')" v-on:click="loadPanel('import', $event)" v-text="showLanguage('collection', 'import')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('properties')}">
-                    <span v-bind:title="showLanguage('title', 'propertiesTitle')" v-on:click="loadPanel('properties', $event)" v-text="showLanguage('collection', 'properties')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'propertiesTitle')" v-on:click="loadPanel('properties', $event)" v-text="showLanguage('collection', 'properties')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('indexes')}">
-                    <span v-bind:title="showLanguage('title', 'indexesTitle')" v-on:click="loadPanel('indexes', $event)" v-text="showLanguage('collection', 'indexes')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'indexesTitle')" v-on:click="loadPanel('indexes', $event)" v-text="showLanguage('collection', 'indexes')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('rename')}">
-                    <span v-bind:title="showLanguage('title', 'renameTitle')" v-on:click="loadPanel('rename', $event)" v-text="showLanguage('collection', 'rename')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'renameTitle')" v-on:click="loadPanel('rename', $event)" v-text="showLanguage('collection', 'rename')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('duplicate')}">
-                    <span v-bind:title="showLanguage('title', 'duplicateTitle')" v-on:click="loadPanel('duplicate', $event)" v-text="showLanguage('collection', 'duplicate')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'duplicateTitle')" v-on:click="loadPanel('duplicate', $event)" v-text="showLanguage('collection', 'duplicate')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('transfer')}">
-                    <span v-bind:title="showLanguage('title', 'transferTitle')" v-on:click="loadPanel('transfer', $event)" v-text="showLanguage('collection', 'transfer')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'transferTitle')" v-on:click="loadPanel('transfer', $event)" v-text="showLanguage('collection', 'transfer')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('validate')}">
-                    <span v-bind:title="showLanguage('title', 'validateTitle')" v-on:click="loadPanel('validate', $event)" v-text="showLanguage('collection', 'validate')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'validateTitle')" v-on:click="loadPanel('validate', $event)" v-text="showLanguage('collection', 'validate')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('drop')}">
-                    <span v-bind:title="showLanguage('title', 'dropCollectionTitle')" v-on:click="loadPanel('drop', $event)" v-text="showLanguage('collection', 'drop')"></span>
+                    <span class="hide" v-bind:title="showLanguage('title', 'dropCollectionTitle')" v-on:click="loadPanel('drop', $event)" v-text="showLanguage('collection', 'drop')"></span>
                 </li>
             </ul>
         </div>
@@ -156,6 +161,11 @@
 
     export default {
         /*
+         *  Prop to handle the collapse expand
+         */
+        prop: ['collapsed'],
+
+        /*
         *   Data used with this component
         *
         *   Set the default format to 'json' - it should be provide on the mounted event
@@ -165,7 +175,8 @@
                 activePanel: null,
                 activeFormat: 'json',
                 current: null,
-                show: false
+                show: false,
+                collapsed: false
             }
         },
 
@@ -184,6 +195,13 @@
 
             isFormatArray() {
                 return (this.activeFormat === 'array') ? 'underline' : '';
+            },
+
+            /*
+             *  Seconfary collapse handler
+             */
+            showHide() {
+                return (this.show && !this.collapsed);
             }
         },
 
@@ -214,18 +232,24 @@
                 return this.activePanel === panel;
             },
 
+            /*
+             *  Send the collection documents a message to change their perspective
+             */
             setFormat( format ) {
                 this.activeFormat = format;
                 EventBus.$emit('set-query-format', format);
             },
 
             /*
-            *   We only show this navigation when we have an active collection
+            *   We only show this navigation when we have an active collection and blah blah
             */
             showNavigation() {
                 this.show = true;
             },
 
+            /*
+             * Hide and seek
+             */
             hideNavigation() {
                 this.show = false;
             }
@@ -239,6 +263,11 @@
 
             EventBus.$on('show-database-nav', () => {
                 this.hideNavigation();
+
+            });
+
+            EventBus.$on('collapse-db', (collapse) => {
+                this.collapsed = collapse;
 
             });
 

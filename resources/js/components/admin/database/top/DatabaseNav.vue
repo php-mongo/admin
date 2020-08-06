@@ -1,16 +1,17 @@
 <!--
   - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      DatabaseNav.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
-  - @package      DatabaseNav.vue
-  - @subpackage   Id
+  - @version      DatabaseNav.vue 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+  - @package      PhpMongoAdmin\resources
+  - @subpackage   DatabaseNav.vue
   - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
   - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
-  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
   - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
   -  php-mongo-admin - License conditions:
-  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
   -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
   -  See licence.txt for the complete licensing outline.
+  -  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
   -  See COPYRIGHT.php for copyright notices and further details.
   -->
 
@@ -50,11 +51,9 @@
                     }
                 }
 
-                /*.active {
-                    background-color: $white;
-                    border-bottom: 1px solid $white;
-                    border-right: 0;
-                }*/
+                .hide {
+                    display: none;
+                }
             }
 
             li.active {
@@ -85,7 +84,7 @@
 </style>
 
 <template>
-    <nav class="database-navigation" v-show="show">
+    <nav class="database-navigation" v-show="showHide">
         <div class="text-left">
             <ul class="links">
                 <li v-bind:class="{active: getActivePanel('database')}">
@@ -95,31 +94,31 @@
                     <span v-on:click="loadPanel('new-collection', $event)"><img src="/img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'newCollectionTitle')" v-text="showLanguage('database', 'newCollection')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('command')}">
-                    <span v-on:click="loadPanel('command', $event)"><img src="/img/icon/server.png" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('database', 'command')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('command', $event)"><img src="/img/icon/server.png" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('database', 'command')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('execute')}">
-                    <span v-on:click="loadPanel('execute', $event)"><img src="/img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('database', 'execute')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('execute', $event)"><img src="/img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('database', 'execute')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('transfer')}">
-                    <span v-on:click="loadPanel('transfer', $event)"><img src="/img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'transferTitle')" v-text="showLanguage('database', 'transfer')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('transfer', $event)"><img src="/img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'transferTitle')" v-text="showLanguage('database', 'transfer')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('export')}">
-                    <span v-on:click="loadPanel('export', $event)"><img src="/img/icon/s-icon.gif" /> <span v-bind:title="showLanguage('title', 'exportTitle')" v-text="showLanguage('database', 'export')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('export', $event)"><img src="/img/icon/s-icon.gif" /> <span v-bind:title="showLanguage('title', 'exportTitle')" v-text="showLanguage('database', 'export')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('import')}">
-                    <span v-on:click="loadPanel('import', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'importTitle')" v-text="showLanguage('database', 'import')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('import', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'importTitle')" v-text="showLanguage('database', 'import')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('profile')}">
-                    <span v-on:click="loadPanel('profile', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'profileTitle')" v-text="showLanguage('database', 'profile')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('profile', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'profileTitle')" v-text="showLanguage('database', 'profile')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('repair')}">
-                    <span v-on:click="loadPanel('repair', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'repairTitle')" v-text="showLanguage('database', 'repair')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('repair', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'repairTitle')" v-text="showLanguage('database', 'repair')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('authentication')}">
-                    <span v-on:click="loadPanel('authentication', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'authenticationTitle')" v-text="showLanguage('database', 'authentication')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('authentication', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'authenticationTitle')" v-text="showLanguage('database', 'authentication')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('drop')}">
-                    <span v-on:click="loadPanel('drop', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'dropTitle')" v-text="showLanguage('database', 'drop')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('drop', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'dropTitle')" v-text="showLanguage('database', 'drop')"></span></span>
                 </li>
             </ul>
         </div>
@@ -134,6 +133,11 @@
 
     export default {
         /*
+         *  Prop to handle the collapse expand
+         */
+        prop: ['collapsed'],
+
+        /*
         *   Data used with this component
         */
         data() {
@@ -141,7 +145,8 @@
                 activePanel: 'database',
                 activeDb: null,
                 current: null,
-                show: false
+                show: false,
+                collapsed: false
             };
         },
 
@@ -157,6 +162,13 @@
             // Dr Smith! It does not compute!
             checkCollection() {
                 return !this.$store.getters.getActiveCollection;
+            },
+
+            /*
+             *  Secondary collapse handler
+             */
+            showHide() {
+                return (this.show && !this.collapsed);
             }
         },
 
@@ -201,6 +213,9 @@
                 this.activeDb = this.$store.getters.getActiveDatabase
             },
 
+            /*
+             *  Show or hide this nav -  we have the same for the collections nav
+             */
             showNavigation() {
                 this.show = true;
             },
@@ -219,6 +234,11 @@
 
             EventBus.$on('show-collection-nav', () => {
                 this.hideNavigation();
+
+            });
+
+            EventBus.$on('collapse-db', (collapse) => {
+                this.collapsed = collapse;
 
             });
 

@@ -1,16 +1,17 @@
 <!--
   - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      DbsView.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
-  - @package      DbsView.vue
-  - @subpackage   Id
+  - @version      DbsView.vue 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+  - @package      PhpMongoAdmin\resources
+  - @subpackage   DbsView.vue
   - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
   - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
-  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
   - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
   -  php-mongo-admin - License conditions:
-  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
   -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
   -  See licence.txt for the complete licensing outline.
+  -  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
   -  See COPYRIGHT.php for copyright notices and further details.
   -->
 
@@ -144,9 +145,10 @@
          */
         methods: {
             handleCollapse() {
-                console.log("you are collapsing...");
+                /* there are a few $refs involved in handling this process */
                 this.collapsed = !this.collapsed;
                 if (this.collapsed === true) {
+                    // minimise
                     this.$jqf(this.$refs.leftPane).css('width', 0);
                     this.$jqf(this.$refs.dbs).css('display', 'none');
                     this.$jqf(this.$refs.resizer).css('left', 0);
@@ -155,6 +157,7 @@
                     EventBus.$emit('collapse-left-nav');
                 }
                 if (this.collapsed === false) {
+                    // maximise
                     this.$jqf(this.$refs.leftPane).css('width', '240px');
                     this.$jqf(this.$refs.dbs).css('display', 'block');
                     this.$jqf(this.$refs.resizer).css('left', '240px');

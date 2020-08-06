@@ -1,16 +1,17 @@
 <!--
   - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      CollectionCard.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
-  - @package      CollectionCard.vue
-  - @subpackage   Id
+  - @version      CollectionCard.vue 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+  - @package      PhpMongoAdmin\resources
+  - @subpackage   CollectionCard.vue
   - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
   - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
-  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
   - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
   -  php-mongo-admin - License conditions:
-  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
   -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
   -  See licence.txt for the complete licensing outline.
+  -  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
   -  See COPYRIGHT.php for copyright notices and further details.
   -->
 
@@ -101,7 +102,7 @@
 
 <template>
     <div class="collection-inner" v-show="show && collection">
-        <table>
+        <table v-show="!collapsed">
             <tr>
                 <td class="v-top">
                     <textarea class="criteria" rows="7" cols="70" v-model="form.criteria[currentFormat]"></textarea><br/>
@@ -186,13 +187,13 @@
                 </td>
             </tr>
         </table>
-        <div id="query-fields-list" ref="query-fields-list" class="fields-menu">
+        <div ref="query-fields-list" class="fields-menu">
             <span class="fields-control"><span class="pma-link" title="Click to close" v-on:click="closeQueryFields()"><img alt="Select" src="/img/icon/accept.png" /></span></span>
             <ul>
                 <!-- to do fields list -->
             </ul>
         </div>
-        <div id="query-hints-list" ref="query-hints-list" class="fields-menu">
+        <div ref="query-hints-list" class="fields-menu">
             <span class="fields-control"><span class="pma-link" title="Click to close" v-on:click="closeQueryHints()"><img alt="Select" src="/img/icon/accept.png" /></span></span>
             <ul>
                 <!-- to do hints list -->
@@ -249,6 +250,7 @@
         data() {
             return {
                 show: false,
+                collapsed: false,
                 name: null,
                 start: 0,
                 showing: 0,
@@ -595,6 +597,11 @@
 
             EventBus.$on('set-query-format', ( format ) => {
                 this.setQueryFormat( format );
+            });
+
+            EventBus.$on('collapse-db', (collapse) => {
+                this.collapsed = collapse;
+
             });
         },
 

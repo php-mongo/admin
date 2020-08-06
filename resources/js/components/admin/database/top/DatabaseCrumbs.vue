@@ -1,16 +1,17 @@
 <!--
   - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      DatabaseCrumbs.vue 1001 6/8/20, 1:00 am  Gilbert Rehling $
-  - @package      DatabaseCrumbs.vue
-  - @subpackage   Id
+  - @version      DatabaseCrumbs.vue 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+  - @package      PhpMongoAdmin\resources
+  - @subpackage   DatabaseCrumbs.vue
   - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
   - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
-  - @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+  - @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
   - @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
   -  php-mongo-admin - License conditions:
-  -  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+  -  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
   -  This web application is available as Free Software and has no implied warranty or guarantee of usability.
   -  See licence.txt for the complete licensing outline.
+  -  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
   -  See COPYRIGHT.php for copyright notices and further details.
   -->
 
@@ -45,6 +46,29 @@
                 span.dbl-arr {
                     color: $white;
                     margin-right: 5px;
+                }
+            }
+        }
+        ul.right {
+            position: absolute;
+            right: 20px;
+            top: 0;
+
+            .country-flag {
+                height: 33px;
+                width: 33px;
+                cursor: pointer;
+
+                img {
+                    margin-top: -5px;
+                }
+            }
+
+            .nav-collapse {
+                cursor: pointer;
+
+                img {
+                    width: 1.2rem;
                 }
             }
         }
@@ -83,6 +107,12 @@
                 <li class="crumb-link text-left" v-if="crumbs[1].name !== null">
                     <span class="dbl-arr">>></span> <img src="/img/icon/function.png" />
                     <span class="pma-text">{{ getFunctionCrumbName }}</span>
+                </li>
+            </ul>
+            <ul class="links right">
+                <li v-on:click="collapseDb">
+                    <span class="nav-collapse" v-show="collapsed" :title="showLanguage('nav', 'collapse')"><img src="/img/sort-asc.svg" alt="Collapse nav" /> </span>
+                    <span class="nav-collapse" v-show="!collapsed" :title="showLanguage('nav', 'expand')"><img src="/img/sort-desc.svg" alt="Expand nav" /> </span>
                 </li>
             </ul>
         </nav>
@@ -130,7 +160,8 @@
                 activeDb: null,
                 activeDatabase: null,
                 activeColl: null,
-                activeCollection: null
+                activeCollection: null,
+                collapsed: false
             };
         },
 
@@ -213,6 +244,9 @@
                 this.crumbs[0].name = this.activeCollection;
             },
 
+            /*
+             *  This monitors for the active database
+             */
             checkDb() {
                 if (!this.activeDb || this.activeDb === 'N/A') {
                     this.activeDb = this.activeDatabase;
@@ -228,8 +262,19 @@
                 }
             },
 
+            /*
+             *  Clear data so that we dont see previuos elements
+             */
             clearData() {
                 this.activeColl = this.activeCollection = this.activeDb = this.activeDatabase = null;
+            },
+
+            /*
+             *  We want to be able to collapse the Collection control panel
+             */
+            collapseDb() {
+                this.collapsed = !this.collapsed;
+                EventBus.$emit('collapse-db', this.collapsed);
             }
         },
 
@@ -249,18 +294,31 @@
                 this.clearData();
             });
 
+            /* run on mount */
             this.checkDb();
         },
 
+        /*
+         *  Wes having issues with data hanfing around after this was closed
+         */
         destroyed() {
             this.clearData();
         },
 
+        /*
+        *   Watchers
+        */
         watch: {
+            /*
+             *  When we detect an active collection
+             */
             watchActiveCollection() {
                 this.setCollectionCrumb();
             },
 
+            /*
+             *  There seems to be inconsistencies with the visible data in the store
+             */
             checkActiveDatabase() {
                 this.checkDb();
             }

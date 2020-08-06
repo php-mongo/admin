@@ -2,17 +2,18 @@
 
 /*!
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
- * @version      app.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $
- * @package      app.scss
- * @subpackage   Id
+ * @version      app.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+ * @package      PhpMongoAdmin\resources
+ * @subpackage   app.scss
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
  * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
- * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
  * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
  *  php-mongo-admin - License conditions:
- *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
  *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
  *  See licence.txt for the complete licensing outline.
+ *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
@@ -29,17 +30,18 @@
 
 /*!
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
- * @version      _variables.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $
- * @package      _variables.scss
- * @subpackage   Id
+ * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+ * @package      PhpMongoAdmin\resources
+ * @subpackage   _variables.scss
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
  * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
- * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
  * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
  *  php-mongo-admin - License conditions:
- *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
  *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
  *  See licence.txt for the complete licensing outline.
+ *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
@@ -8005,17 +8007,18 @@ html.is-reveal-open body {
 
 /*!
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
- * @version      colors.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $
- * @package      colors.scss
- * @subpackage   Id
+ * @version      colors.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+ * @package      PhpMongoAdmin\resources
+ * @subpackage   colors.scss
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
  * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
- * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
  * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
  *  php-mongo-admin - License conditions:
- *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
  *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
  *  See licence.txt for the complete licensing outline.
+ *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
@@ -8077,17 +8080,18 @@ html.is-reveal-open body {
 
 /*!
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
- * @version      _body.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $
- * @package      _body.scss
- * @subpackage   Id
+ * @version      _body.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+ * @package      PhpMongoAdmin\resources
+ * @subpackage   _body.scss
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
  * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
- * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
  * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
  *  php-mongo-admin - License conditions:
- *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
  *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
  *  See licence.txt for the complete licensing outline.
+ *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
@@ -8146,17 +8150,18 @@ body .pma-link-danger {
 
 /*!
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
- * @version      _page.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $
- * @package      _page.scss
- * @subpackage   Id
+ * @version      _page.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+ * @package      PhpMongoAdmin\resources
+ * @subpackage   _page.scss
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
  * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
- * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
  * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
  *  php-mongo-admin - License conditions:
- *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
  *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
  *  See licence.txt for the complete licensing outline.
+ *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
@@ -8180,17 +8185,18 @@ div.page .text-info {
 
 /*!
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
- * @version      admin.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $
- * @package      admin.scss
- * @subpackage   Id
+ * @version      admin.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+ * @package      PhpMongoAdmin\resources
+ * @subpackage   admin.scss
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
  * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
- * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
  * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
  *  php-mongo-admin - License conditions:
- *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
  *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
  *  See licence.txt for the complete licensing outline.
+ *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
@@ -8200,17 +8206,18 @@ div.page .text-info {
 
 /*!
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
- * @version      utils.scss 1001 6/8/20, 1:00 am  Gilbert Rehling $
- * @package      utils.scss
- * @subpackage   Id
+ * @version      utils.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+ * @package      PhpMongoAdmin\resources
+ * @subpackage   utils.scss
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
  * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
- * @licence      PhpMongoAdmin is Open Source and is released under the MIT licence model.
+ * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
  * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
  *  php-mongo-admin - License conditions:
- *  Contributions via our suggestion box are welcome. https://phpmongotools.com/suggestions
+ *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
  *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
  *  See licence.txt for the complete licensing outline.
+ *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
