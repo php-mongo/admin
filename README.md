@@ -47,4 +47,4 @@ If you discover a security vulnerability in any PHP MongoDB Tools, please send a
 
 ## License
 
-The PhpMongoAdmin application is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The PhpMongoAdmin application is open-sourced software licensed under the [GNU GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.html).
