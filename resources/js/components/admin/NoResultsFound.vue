@@ -72,7 +72,7 @@
         */
         data(){
             return {
-                errorMessage: 'No ads were found - please try again later',
+                errorMessage: 'No data found - please try again later',
                 show: false
             }
         },

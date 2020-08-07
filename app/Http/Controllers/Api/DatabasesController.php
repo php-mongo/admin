@@ -80,6 +80,27 @@ class DatabasesController extends Controller implements Unserializable
     private $unserialised;
 
     /**
+     * @var string|null $errorMessage
+     */
+    private $errorMessage = null;
+
+    /**
+     * @return string|null
+     */
+    public function getErrorMessage(): string
+    {
+        return $this->errorMessage;
+    }
+
+    /**
+     * @param string $errorMessage
+     */
+    public function setErrorMessage(string $errorMessage): void
+    {
+        $this->errorMessage = $errorMessage;
+    }
+
+    /**
      * Get one or All databases
      *
      * @param   $name
@@ -101,26 +122,33 @@ class DatabasesController extends Controller implements Unserializable
             $arr         = array("db" => $database->__debugInfo(), "stats" => $statistics, "collections" => $collections);
 
         } else {
+
             $arr   = [];
             $index = 0;
-            foreach ($this->client->listDatabases() as $db) {
-                $dbn        = $db->getName();
-                //$database   = (new MongoDB\Client)->$dbn;
-                // Todo: need to verify which method is the best path
-                // 1) $this->mongo->connectClientDb($dbn)  =  (new MongpDB\Client())->database
-                // 2) $this->client->selectDatabase($dbn)  = (new MongpDB\Client())->selectDatabase('database')
-                $database   = $this->mongo->connectClientDb($dbn);
-                $stats      = $database->command(array('dbstats' => 1))->toArray()[0];
-                $statistics = [];
-                // break out the stats into an array
-                foreach ($stats as $key => $value) {
-                    $statistics[ $key ] = $value;
+            try {
+                foreach ($this->client->listDatabases() as $db) {
+                    $dbn        = $db->getName();
+                    //$database   = (new MongoDB\Client)->$dbn;
+                    // Todo: need to verify which method is the best path
+                    // 1) $this->mongo->connectClientDb($dbn)  =  (new MongpDB\Client())->database
+                    // 2) $this->client->selectDatabase($dbn)  = (new MongpDB\Client())->selectDatabase('database')
+                    $database   = $this->mongo->connectClientDb($dbn);
+                    $stats      = $database->command(array('dbstats' => 1))->toArray()[0];
+                    $statistics = [];
+                    // break out the stats into an array
+                    foreach ($stats as $key => $value) {
+                        $statistics[ $key ] = $value;
+                    }
+                    // this set of collections wont need the objects
+                    $collections = $this->getCollections($db->getName());
+                    $arr[]       = array("id" => $index, "db" => $db->__debugInfo(), "stats" => $statistics, "collections" => $collections);
+                    $index++;
                 }
-                // this set of collections wont need the objects
-                $collections = $this->getCollections($db->getName());
-                $arr[]       = array("id" => $index, "db" => $db->__debugInfo(), "stats" => $statistics, "collections" => $collections);
-                $index++;
+
+            } catch (\Exception $e) {
+                $this->setErrorMessage($e->getMessage());
             }
+
         }
         // !! one result fits all
         return $arr;
@@ -211,7 +239,13 @@ class DatabasesController extends Controller implements Unserializable
         // get the databases
         $databases = $this->getAllDatabases();
 
-        return response()->success('success', array('databases' => $databases));
+        if ($error = $this->getErrorMessage()) {
+            // this can occur if there is no Server config
+            return response()->error('failed', array('error' => $error));
+
+        } else {
+            return response()->success('success', array('databases' => $databases));
+        }
     }
 
     /**

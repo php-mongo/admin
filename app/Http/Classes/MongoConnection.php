@@ -108,12 +108,15 @@ class MongoConnection
 
     /**
      * MongoConnection constructor.
+     *
      * @param User $user
      */
     public function __construct(User $user)
     {
-        $server = $user->servers()->where('active', 1)->get()[0];
-        $this->setServer( $server->getAttributes() );
+        $server = $user->servers()->where('active', 1)->get();
+        // this ensures we still connect with basic settings if there is NO server configuration
+        $server = isset($server[0]) ? $server[0]->getAttributes() : array('host' => 'localhost', 'port' => 27017, 'username' => false, 'password' => false);
+        $this->setServer( $server );
     }
 
     /**

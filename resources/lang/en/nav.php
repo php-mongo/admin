@@ -31,6 +31,7 @@ return [
     "about" => "About",
     "about_footer" => "About PHP Mongo Admin",
     "categories" => "View Categories",
+    "close" => "Click to close...",
     "collapse" => "Click to collapse navigation",
     "command" => "Command",
     "contact" => "Contact Us",
