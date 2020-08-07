@@ -46,9 +46,18 @@
                         text-decoration: underline;
                     }
                 }
+
+                .top-error {
+                    background-color: $offWhite;
+                    border-radius: 2px;
+                    color: $red;
+                    cursor: pointer;
+                    padding: 4px;
+                }
             }
 
             li.member-button {
+
                 a {
                     background-color: transparent;
                     border: 0;
@@ -135,6 +144,9 @@
                 <li class="host-link text-left">
                     <img src="/img/icon/servers.png" /> <span class="pma-link" v-on:click="loadHome($event)">Localhost</span>
                 </li>
+                <li v-if="error !== null">
+                    <span class="top-error" v-on:click="closeError">{{ getError }}</span> <span class="text-info" v-text="showLanguage('nav', 'close')"></span>
+                </li>
             </ul>
             <ul class="links right">
                 <li>
@@ -178,6 +190,11 @@
     import TextFilter from '../../global/TextFilter.vue';
 
     export default {
+        /*
+         *  handle error display
+         */
+        props: ['error'],
+
         /*
         *   Data used with this component
         */
@@ -244,6 +261,12 @@
             */
             usersName() {
                 return this.$store.getters.getUsersName;
+            },
+
+            getError() {
+                if (this.error.error) {
+                    return "Error: " + this.error.error;
+                }
             }
         },
 
@@ -319,6 +342,10 @@
             collapseNav() {
                 this.collapsed = !this.collapsed;
                 this.$emit('collapseNav', this.collapsed);
+            },
+
+            closeError() {
+                this.error = null;
             }
         },
 

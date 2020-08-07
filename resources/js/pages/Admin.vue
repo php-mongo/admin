@@ -59,6 +59,7 @@
 
         data() {
             return {
+                errorMessage: null,
                 show: true
             }
         },
@@ -68,12 +69,6 @@
         */
         mounted() {
             this.$store.dispatch( 'loadDatabases' );
-
-            EventBus.$on('no-results-found', function( data ){
-                this.errorMessage = data.notification;
-                this.show = false;
-
-            }.bind(this));
         }
     }
 </script>

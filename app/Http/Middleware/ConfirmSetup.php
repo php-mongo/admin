@@ -24,6 +24,8 @@ namespace App\Http\Middleware;
 use Closure;
 use App\Models\User;
 
+use Illuminate\Support\Facades\Hash;
+
 /**
  * Class ConfirmSetup
  * @package App\Http\Middleware

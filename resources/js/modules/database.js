@@ -61,14 +61,20 @@ export const database = {
 
             DatabaseApi.getDatabases()
                 .then( ( response ) => {
-                    console.log(response.data.data);
-                    commit( 'setDatabases', response.data.data.databases );
-                    commit( 'setDatabasesLoadStatus', 2 );
+                    if (response.data.success == true) {
+                        commit( 'setDatabases', response.data.data.databases );
+                        commit( 'setDatabasesLoadStatus', 2 );
+                    } else {
+                        console.log(response.data.errors);
+                        commit( 'setErrorData', response.data.errors );
+                        commit( 'setDatabasesLoadStatus', 3 );
+                    }
                 })
                 .catch( (error) => {
+                    console.log(error);
                     commit( 'setDatabases', [] );
                     commit( 'setDatabasesLoadStatus', 3 );
-                    console.log(error);
+                    commit( 'setErrorData', error.errors );
                     EventBus.$emit('no-results-found', { notification: 'No databases were returned from the api - please try again later' });
                 });
         },
@@ -94,6 +100,7 @@ export const database = {
                 .catch( (error) => {
                     commit( 'setDatabase', {} );
                     commit( 'setDatabaseLoadStatus', 3 );
+                    commit( 'setErrorData', error.errors );
                     console.log(error);
                     EventBus.$emit('no-results-found', { notification: 'No database was returned from the api - please try again later' });
                 });

@@ -55,7 +55,7 @@
 
 <template>
     <div ref="pmaTopPanel" class="pma-top-panel">
-        <top @collapseNav="collapseNav($event)"></top>
+        <top @collapseNav="collapseNav($event)" v-bind:error="error"></top>
         <top-nav v-bind:collapsed="collapsed"></top-nav>
     </div>
 </template>
@@ -81,8 +81,18 @@
          */
         data() {
             return {
+                error: null,
                 expanded: false,
                 collapsed: false
+            }
+        },
+
+        computed: {
+            /*
+             *  Simple error monitor
+             */
+            watchError() {
+                return this.$store.getters.getErrorData;
             }
         },
 
@@ -102,6 +112,13 @@
 
             collapseNav( status ) {
                 this.collapsed = status;
+            },
+
+            /*
+             *  Simple implementation - expect error to be:  error.error
+             */
+            setError() {
+                this.error = this.$store.getters.getErrorData;
             }
         },
 
@@ -120,6 +137,12 @@
             EventBus.$on('collapse-nav', (status) => {
                 this.collapseNav(status);
             });
+        },
+
+        watch: {
+            watchError() {
+                this.setError();
+            }
         }
     }
 </script>

@@ -31,8 +31,8 @@ switch ( process.env.NODE_ENV )  {
     case 'development':
     case 'dev':
     case 'local':
-        api_url = '//pma.mongo.local/api/v1';
-        web_url = '//pma.mongo.local';
+        api_url = '/api/v1';
+        web_url = '/';
         break;
 
     case 'staging':
