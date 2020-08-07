@@ -40,16 +40,21 @@ switch ( process.env.NODE_ENV )  {
         web_url = '//staging.phpmongoadmin.com';
         break;
 
+    case 'demo':
+        api_url = '//demo.phpmongoadmin.com/api/v1';
+        web_url = '//demo.phpmongoadmin.com';
+        break;
+
     case 'production':
-        api_url = '//www.phpmongoadmin.com/api/v1';
-        web_url = '//www.phpmongoadmin.com';
+        api_url = '/api/v1';
+        web_url = '/';
         break;
 }
 
 export const MONGO_CONFIG = {
     API_URL: api_url,
     WEB_URL: web_url,
-    SITE_NAME: 'phpMongoAdmin',
+    SITE_NAME: 'PhpMongoAdmin',
     SITE_FULLNAME: 'PHP Mongo Admin',
     LANGUAGES: { en: 'English', zh: 'Chinese' }
 };
