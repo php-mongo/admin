@@ -2,7 +2,7 @@
     "name": "php-mongo/admin",
     "type": "project",
     "description": "PHP Mongo Admin. Built for PHP 7.2.+",
-    "version": "1.0.0-dev",
+    "version": "1.0.0-alpha-0.1",
     "keywords": [
         "framework",
         "laravel",
