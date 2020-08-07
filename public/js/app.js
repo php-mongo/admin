@@ -71247,17 +71247,7 @@ function createRouteMap (
     }
   }
 
-  if (true) {
-    // warn if routes do not include leading slashes
-    var found = pathList
-    // check for missing leading slash
-      .filter(function (path) { return path && path.charAt(0) !== '*' && path.charAt(0) !== '/'; });
-
-    if (found.length > 0) {
-      var pathNames = found.map(function (path) { return ("- " + path); }).join('\n');
-      warn(false, ("Non-nested routes must include a leading slash character. Fix the following routes: \n" + pathNames));
-    }
-  }
+  if (false) { var pathNames, found; }
 
   return {
     pathList: pathList,
@@ -85680,7 +85670,7 @@ function installModule (store, rootState, path, module, hot) {
 
   // register in namespace map
   if (module.namespaced) {
-    if (store._modulesNamespaceMap[namespace] && ("development" !== 'production')) {
+    if (store._modulesNamespaceMap[namespace] && ("demo" !== 'production')) {
       console.error(("[vuex] duplicate namespace " + namespace + " for the namespaced module " + (path.join('/'))));
     }
     store._modulesNamespaceMap[namespace] = module;
@@ -91070,9 +91060,9 @@ var api_url = '',
 *   Set the API route during the build process
 */
 
-console.log("development");
+console.log("demo");
 
-switch ("development") {
+switch ("demo") {
   case 'development':
   case 'dev':
   case 'local':
@@ -91085,16 +91075,21 @@ switch ("development") {
     web_url = '//staging.phpmongoadmin.com';
     break;
 
+  case 'demo':
+    api_url = '//demo.phpmongoadmin.com/api/v1';
+    web_url = '//demo.phpmongoadmin.com';
+    break;
+
   case 'production':
-    api_url = '//www.phpmongoadmin.com/api/v1';
-    web_url = '//www.phpmongoadmin.com';
+    api_url = '/api/v1';
+    web_url = '/';
     break;
 }
 
 var MONGO_CONFIG = {
   API_URL: api_url,
   WEB_URL: web_url,
-  SITE_NAME: 'phpMongoAdmin',
+  SITE_NAME: 'PhpMongoAdmin',
   SITE_FULLNAME: 'PHP Mongo Admin',
   LANGUAGES: {
     en: 'English',
