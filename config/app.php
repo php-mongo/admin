@@ -153,6 +153,13 @@ return [
     'display' => env('DISPLAY', 'array'),
 
     /*
+     * Custom for the demo website
+     */
+    'dbUser' => env('DB_USER'),
+
+    'dbPasswd' => env('DB_PASSWD'),
+
+    /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------

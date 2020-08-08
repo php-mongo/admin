@@ -42,6 +42,7 @@ return [
     "deleteFailed" => "Server configuration was not deleted - please try again",
     "deleteSuccess" => "Server configuration deleted succesfully",
     "deleteConfirm" => "Deleting this server configuration can not be reveresed. Continue?",
+    "demo" => "These server settings have no effect on this demo site",
     "edit" => "Edit Server",
     "error" => "Server configuration was created - please try again",
     "host" => "Host",
@@ -56,6 +57,7 @@ return [
     "share" => "Share Server",
     "statistics" => "Server Statistics",
     "success" => "Server configuration created successfully",
+    "title" => "Servers Configuration Panel",
     "updateButton" => "Update",
     "username" => "Username",
     "view" => "View Server"

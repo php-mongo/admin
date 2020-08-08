@@ -95,7 +95,8 @@
     <div id="pma-servers-view" class="pma-servers-view align-left" v-show="show">
         <div class="servers-inner">
             <div class="servers-head">
-                <h3>Servers Configuration Panel</h3>
+                <h3 v-text="showLanguage('servers', 'title')"></h3>
+                <h5 v-text="showLanguage('servers', 'demo')"></h5>
                 <p v-show="getServersCount">
                     <span v-text="showLanguage('servers', 'none')"></span>
                     <span class="pma-link" v-on:click="setupServer" v-text="showLanguage('servers', 'createFirst')"></span>

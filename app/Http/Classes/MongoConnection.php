@@ -115,7 +115,12 @@ class MongoConnection
     {
         $server = $user->servers()->where('active', 1)->get();
         // this ensures we still connect with basic settings if there is NO server configuration
-        $server = isset($server[0]) ? $server[0]->getAttributes() : array('host' => 'localhost', 'port' => 27017, 'username' => false, 'password' => false);
+        // $server = isset($server[0]) ? $server[0]->getAttributes() : array('host' => 'localhost', 'port' => 27017, 'username' => false, 'password' => false);
+        // ToDo: these are for the demo.phpmongoadmin.com site only
+        $dbUser   = config('app.dbUser', false);
+        $dbPasswd = config('app.dbPasswd', false);
+        // ToDo: this is for the demo.phpmongoadmin.com site only
+        $server   = array( 'host' => 'localhost', 'port' => 27017, 'username' => $dbUser, 'password' => $dbPasswd );
         $this->setServer( $server );
     }
 
