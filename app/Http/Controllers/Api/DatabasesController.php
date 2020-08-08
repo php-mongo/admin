@@ -133,7 +133,12 @@ class DatabasesController extends Controller implements Unserializable
                     // 1) $this->mongo->connectClientDb($dbn)  =  (new MongpDB\Client())->database
                     // 2) $this->client->selectDatabase($dbn)  = (new MongpDB\Client())->selectDatabase('database')
                     $database   = $this->mongo->connectClientDb($dbn);
-                    $stats      = $database->command(array('dbstats' => 1))->toArray()[0];
+                    // $stats      = $database->comm$stats = [];
+                    // ToDo: !! for the demo site only - we dont habe permisions to read these db stats !!
+                    if ($dbn != 'admin' && $dbn != 'config' && $dbn != 'local')  {
+                        $stats = $database->command(array('dbstats' => 1))->toArray()[0];
+                    }   and(array('dbstats' => 1))->toArray()[0];
+
                     $statistics = [];
                     // break out the stats into an array
                     foreach ($stats as $key => $value) {
@@ -164,6 +169,8 @@ class DatabasesController extends Controller implements Unserializable
     private function getCollections($db, $getObjects = false)
     {
         $arr      = [];
+        // ToDo: !! this os for the demo site only !!  prevent attempts to read collections from these tables
+        if ($db == 'admin' || $db == 'config' || $db == 'local') { return $arr; }
         $index    = 0;
         $database = $this->client->selectDatabase( $db ); // (new MongoDB\Client)->$db;
         /** @var MongoDB\Model\CollectionInfo $collection */
