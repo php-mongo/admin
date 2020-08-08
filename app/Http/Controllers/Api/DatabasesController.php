@@ -87,15 +87,15 @@ class DatabasesController extends Controller implements Unserializable
     /**
      * @return string|null
      */
-    public function getErrorMessage(): string
+    public function getErrorMessage(): ?string
     {
         return $this->errorMessage;
     }
 
     /**
-     * @param string $errorMessage
+     * @param string|null $errorMessage
      */
-    public function setErrorMessage(string $errorMessage): void
+    public function setErrorMessage(?string $errorMessage): void
     {
         $this->errorMessage = $errorMessage;
     }

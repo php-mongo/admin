@@ -42,12 +42,12 @@ use App\Http\Classes\MongoConnection as Mongo;
 use MongoDB;
 
 /**
- * Used ti reard the compooser file
+ * Used to read the composer file
  */
 use Eloquent\Composer\Configuration\ConfigurationReader;
 
 /**
- * All good things coie to an end !!
+ * All good things come to an end !!
  */
 use Exception;
 
@@ -68,7 +68,7 @@ class ServerController extends Controller
     private $limit = 30;
 
     /**
-     * @var MongoConnection
+     * @var Mongo
      */
     private $mongo;
 
@@ -235,7 +235,8 @@ class ServerController extends Controller
     private function getComposerData()
     {
         $reader                  = new ConfigurationReader;
-        $data                    = $reader->read('/var/hosting/sites/php-mongo-admin/composer.json');
+        $composer                = base_path('composer.json');
+        $data                    = $reader->read( $composer );
         $obj                     = $data->rawData();
         $composer                = [];
         $composer['name']        = $data->name();

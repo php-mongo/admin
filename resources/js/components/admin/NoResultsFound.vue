@@ -30,7 +30,7 @@
             background: $white;
             box-shadow: 0 0 4px 0 rgba(0,0,0,0.12), 0 4px 4px 0 rgba(0,0,0,0.24);
             border-left: 5px solid $red;
-            height: 50px;
+            height: 60px;
             line-height: 50px;
             margin: auto;
             min-width: 400px;
@@ -73,26 +73,29 @@
         data(){
             return {
                 errorMessage: 'No data found - please try again later',
-                show: false
+                show: false,
+                timer: 10000
             }
         },
 
         /*
-          When mounted, bind the show error event.
-        */
+         * When mounted, bind the show error event.
+         */
         mounted(){
             EventBus.$on('no-results-found', ( data ) => {
                 this.errorMessage = data.notification;
-
                 this.show = true;
+                if (data.timer) {
+                    this.timer = data.timer;
+                }
 
                 /*
-                  Hide the error notification after 3 seconds.
-                */
+                 * Hide the error notification after 3 seconds.
+                 */
                 setTimeout( function(){
                     this.show = false;
 
-                }.bind(this), 30000);
+                }.bind(this), this.timer);
 
             });
         }
