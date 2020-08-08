@@ -127,13 +127,12 @@ class DatabasesController extends Controller implements Unserializable
             $index = 0;
             try {
                 foreach ($this->client->listDatabases() as $db) {
-                    $dbn        = $db->getName();
+                    $dbn          = $db->getName();
                     //$database   = (new MongoDB\Client)->$dbn;
                     // Todo: need to verify which method is the best path
                     // 1) $this->mongo->connectClientDb($dbn)  =  (new MongpDB\Client())->database
                     // 2) $this->client->selectDatabase($dbn)  = (new MongpDB\Client())->selectDatabase('database')
-                    $database   = $this->mongo->connectClientDb($dbn);
-                    $stats      = $database->command(array('dbstats' => 1))->toArray()[0];
+                    $stats      = $this->getStats( $dbn );
                     $statistics = [];
                     // break out the stats into an array
                     foreach ($stats as $key => $value) {
@@ -148,10 +147,22 @@ class DatabasesController extends Controller implements Unserializable
             } catch (\Exception $e) {
                 $this->setErrorMessage($e->getMessage());
             }
-
         }
         // !! one result fits all
         return $arr;
+    }
+
+    private function getStats( $dbn )
+    {
+        try {
+            /** @var MongoDB\Database $database */
+            $database   = $this->mongo->connectClientDb($dbn);
+            $stats      = $database->command(array('dbstats' => 1))->toArray()[0];
+            return $stats;
+
+        } catch( \Exception $e) {
+            return [];
+        }
     }
 
     /**
@@ -163,20 +174,25 @@ class DatabasesController extends Controller implements Unserializable
      */
     private function getCollections($db, $getObjects = false)
     {
-        $arr      = [];
-        $index    = 0;
-        $database = $this->client->selectDatabase( $db ); // (new MongoDB\Client)->$db;
-        /** @var MongoDB\Model\CollectionInfo $collection */
-        foreach ($database->listCollections() as $collection) {
-            // we only need to get objects when its database view
-            if ($getObjects) {
-                $arr[] = array("id" => $index, "collection" => $collection->__debugInfo(), "objects" => $this->getObjects($db, $collection->getName()));
-            } else {
-                $arr[] = array("id" => $index, "collection" => $collection->__debugInfo());
+        try {
+            $arr      = [];
+            $index    = 0;
+            $database = $this->client->selectDatabase( $db ); // (new MongoDB\Client)->$db;
+            /** @var MongoDB\Model\CollectionInfo $collection */
+            foreach ($database->listCollections() as $collection) {
+                // we only need to get objects when its database view
+                if ($getObjects) {
+                    $arr[] = array("id" => $index, "collection" => $collection->__debugInfo(), "objects" => $this->getObjects($db, $collection->getName()));
+                } else {
+                    $arr[] = array("id" => $index, "collection" => $collection->__debugInfo());
+                }
+                $index++;
             }
-            $index++;
+            return $arr;
+
+        } catch(\Exception $e) {
+            return [];
         }
-        return $arr;
     }
 
     /**
