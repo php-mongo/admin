@@ -8154,6 +8154,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /*
  * Import the Event bus
@@ -10198,7 +10199,12 @@ Imports the event bus.
       verifiedEmail: null,
       verifiedPassword: null,
       verifiedDb: null,
-      credentials: {},
+      credentials: {
+        host: 'localhost',
+        user: 'admin',
+        password: 'good-guess',
+        db: null
+      },
       formStatus: 0
     };
   },
@@ -65928,7 +65934,17 @@ var render = function() {
         { staticClass: "servers-inner" },
         [
           _c("div", { staticClass: "servers-head" }, [
-            _c("h3", [_vm._v("Servers Configuration Panel")]),
+            _c("h3", {
+              domProps: {
+                textContent: _vm._s(_vm.showLanguage("servers", "title"))
+              }
+            }),
+            _vm._v(" "),
+            _c("h5", {
+              domProps: {
+                textContent: _vm._s(_vm.showLanguage("servers", "demo"))
+              }
+            }),
             _vm._v(" "),
             _c(
               "p",
@@ -67396,6 +67412,7 @@ var render = function() {
                       ref: "user",
                       staticClass: "form-control",
                       attrs: {
+                        readonly: "readonly",
                         id: "user",
                         type: "text",
                         name: "user",
@@ -67448,6 +67465,7 @@ var render = function() {
                       ref: "password",
                       staticClass: "form-control",
                       attrs: {
+                        readonly: "readonly",
                         id: "password",
                         type: "password",
                         name: "password",
@@ -67508,6 +67526,7 @@ var render = function() {
                       ref: "db",
                       staticClass: "form-control",
                       attrs: {
+                        readonly: "readonly",
                         id: "db",
                         type: "text",
                         name: "db",

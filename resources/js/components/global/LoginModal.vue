@@ -319,7 +319,7 @@
                 <p>
                     <span class="fieldBlock">
                         <label for="user" class="col-md-4 col-form-label text-md-right" v-text="showLanguage('login', 'username')"></label>
-                        <input id="user" type="text" class="form-control" ref="user" name="user" v-model="credentials.user" required autocomplete="user" v-on:blur="checkUser()">
+                        <input readonly="readonly" id="user" type="text" class="form-control" ref="user" name="user" v-model="credentials.user" required autocomplete="user" v-on:blur="checkUser()">
                     </span>
                     <span class="help-block" id="userInfo" ref="userInfo"></span>
                 </p>
@@ -327,7 +327,7 @@
                 <p>
                     <span class="fieldBlock">
                         <label for="password" class="col-md-4 col-form-label text-md-right" v-text="showLanguage('login', 'password')"></label>
-                        <input id="password" type="password" class="form-control" ref="password" name="password" v-model="credentials.password" required autocomplete="current-password" v-on:focus="verifyUser()" v-on:keyup="countPassword()">
+                        <input readonly="readonly" id="password" type="password" class="form-control" ref="password" name="password" v-model="credentials.password" required autocomplete="current-password" v-on:focus="verifyUser()" v-on:keyup="countPassword()">
                     </span>
                     <span class="help-block" id="passwordInfo" ref="passwordInfo"></span>
                 </p>
@@ -335,7 +335,7 @@
                 <p>
                     <span class="fieldBlock">
                         <label for="db" class="db-select-label col-md-4 col-form-label text-md-right" v-text="showLanguage('login', 'selectDatabase')"></label>
-                        <input id="db" type="text" class="form-control" ref="db" name="db" v-model="credentials.db" autocomplete="db" v-on:blur="checkDb()">
+                        <input readonly="readonly" id="db" type="text" class="form-control" ref="db" name="db" v-model="credentials.db" autocomplete="db" v-on:blur="checkDb()">
                     </span>
                     <span class="help-block" id="dbInfo" ref="dbInfo"></span>
                 </p>
@@ -385,7 +385,12 @@
                 verifiedEmail: null,
                 verifiedPassword: null,
                 verifiedDb: null,
-                credentials: {},
+                credentials: {
+                    host: 'localhost',
+                    user: 'admin',
+                    password: 'good-guess',
+                    db: null
+                },
                 formStatus: 0
             }
         },
