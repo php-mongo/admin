@@ -133,7 +133,7 @@ class DatabasesController extends Controller implements Unserializable
                     // 1) $this->mongo->connectClientDb($dbn)  =  (new MongpDB\Client())->database
                     // 2) $this->client->selectDatabase($dbn)  = (new MongpDB\Client())->selectDatabase('database')
                     $database   = $this->mongo->connectClientDb($dbn);
-                    // $stats      = $database->comm$stats = [];
+                    $stats = [];
                     // ToDo: !! for the demo site only - we dont habe permisions to read these db stats !!
                     if ($dbn != 'admin' && $dbn != 'config' && $dbn != 'local')  {
                         $stats = $database->command(array('dbstats' => 1))->toArray()[0];
