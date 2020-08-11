@@ -228,6 +228,11 @@ class CollectionController extends Controller implements Unserializable
             // set the text key value -> default as php
             $docExport->setVar($obj);
             $docExport->setParams([]);
+
+            // we need a raw version - easier to updated and manipulates with JS
+            // dd($obj->getArrayCopy()); die;
+            $obj['raw'] = MongoHelper::extractDocument($obj);
+
             // always set 'array' as the default for this
             $text = $docExport->export($this->format);
 

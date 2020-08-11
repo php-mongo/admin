@@ -25,7 +25,7 @@ export default {
     *   Get a single collection
     *   GET /api/vi/collection/{name}
     */
-    getCollection: function( data ) {
+    getCollection: ( data ) => {
         return axios.get( MONGO_CONFIG.API_URL + '/collection/' + data.database + '/' + data.collection );
     },
 
@@ -33,7 +33,7 @@ export default {
     *   Create a new collection
     *   POST  /api/v1/collection/create
     */
-    createCollection: function( data ) {
+    createCollection: ( data ) => {
         return axios.post( MONGO_CONFIG.API_URL + '/collection/create',
             {
                 name: data.name,
@@ -49,11 +49,50 @@ export default {
     *   Delete one or more collection(s)
     *   POST  /api/v1/collection/delete
     */
-    deleteCollection: function( names) {
+    deleteCollection: ( names ) => {
         return axios.post( MONGO_CONFIG.API_URL + '/collection/delete',
             {
                 names: names,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
             });
+    },
+
+    /*
+    *   Create one document
+    *   POST /api/v1/document/create
+    */
+    createDocument: ( data ) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/document/create',
+            {
+                document: data.document,
+                collection: data.collection,
+                database: data.database,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Update one document
+    *   POST /api/v1/document/update
+    */
+    updateDocument: ( data ) => {
+        console.log("updating: " + data);
+        return axios.put( MONGO_CONFIG.API_URL + '/document/update/' + data._id,
+            {
+                _id: data._id,
+                index: parseInt(data.index, 10),
+                document: data.document,
+                collection: data.collection,
+                database: data.database,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Delete one document
+    *   POST /api/v1/document/update
+    */
+    deleteDocument: ( data ) => {
+        return axios.delete( MONGO_CONFIG.API_URL + '/document/' + data.db + '/' + data.collection + '/' + data._id );
     }
 }

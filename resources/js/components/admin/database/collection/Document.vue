@@ -26,7 +26,7 @@
         <div :id="'field_' + index" class="doc-text hidden-element" ref="text-document">
             <textarea ref="textbox" rows="7" cols="60" v-on:dblclick="selectAll($event)">{{ getTextByFormat }}</textarea>
         </div>
-        <div class="doc-right-to-top"><span class="pma-link">Top</span></div>
+        <div class="doc-right-to-top"><span class="pma-link" v-text="showLanguage('document', 'top')"></span></div>
     </div>
 </template>
 

@@ -69,8 +69,8 @@ export default {
     },
 
     /*
-    *   Delete the server configuration
-    *   GET /api/v1/servers/activate
+    *   Delete the server configurations
+    *   GET /api/v1/servers/{id}
     */
     deleteServer: (data) => {
         return axios.delete( MONGO_CONFIG.API_URL + '/servers/' + data );

@@ -21,24 +21,50 @@
 
 <template>
     <div :id="'document-nav-' + index" ref="doc-nav" class="doc-nav">
-        <span v-if="document.can_modify"><span class="pma-link" @click="$emit('update', document._id)">Update</span> |</span>
-        <span v-if="document.can_delete"><span class="pma-link" @click="$emit('delete', document._id)">Delete</span></span>
-        <span v-if="!document.can_delete"><span class="disabled-link" >Delete</span></span> |
-        <span v-if="document.can_add_field"><span class="pma-link" @click="$emit('delete', document._id)">New Field</span></span>
-        <span v-if="!document.can_add_field"><span class="disabled-link">New Field</span></span> |
-        <span v-if="document.can_duplicate"><span class="pma-link" @click="$emit('duplicate', document._id)">Duplicate</span> |</span>
-        <span v-if="document.can_refresh"><span class="pma-link" @click="$emit('refresh', document._id)">Refresh</span> |</span>
-        <span class="pma-link" @click="$emit('text', $event.target)">Text</span> |
-        <span class="pma-link" @click="$emit('expand', $event.target)">Expand</span>
+        <span v-if="document.can_modify"><span class="pma-link" @click="update" v-text="showLanguage('document', 'update')"></span> |</span>
+        <span v-if="document.can_delete"><span class="pma-link" @click="deleteDocument" v-text="showLanguage('document', 'delete')"></span></span>
+        <span v-if="!document.can_delete"><span class="disabled-link"  v-text="showLanguage('document', 'delete')"></span></span> |
+        <span v-if="document.can_add_field"><span class="pma-link" @click="$emit('delete', document._id)" v-text="showLanguage('document', 'new')"></span></span>
+        <span v-if="!document.can_add_field"><span class="disabled-link" v-text="showLanguage('document', 'new')"></span></span> |
+        <span v-if="document.can_duplicate"><span class="pma-link" @click="$emit('duplicate', document._id)" v-text="showLanguage('document', 'duplicate')"></span> |</span>
+        <span v-if="document.can_refresh"><span class="pma-link" @click="$emit('refresh', document._id)" v-text="showLanguage('document', 'refresh')"></span> |</span>
+        <span class="pma-link" @click="$emit('text', $event.target)" v-text="showLanguage('document', 'text')"></span> |
+        <span class="pma-link" @click="$emit('expand', $event.target)" v-text="showLanguage('document', 'expand')"></span>
     </div>
 </template>
 
 <script>
-    export default {
-        props: ['document','collection', 'index'],
+    import { EventBus } from '../../../../event-bus.js';
 
+    export default {
+        /*
+         *  Document nav props
+         */
+        props: ['document', 'collection', 'index'],
+
+        /*
+         * Document navigation methods
+         */
         methods: {
-            // to come ??
+            /*
+             *   Calls the Translation and Language service
+             */
+            showLanguage( context, key, str ) {
+                if (str) {
+                    let string = this.$store.getters.getLanguageString( context, key );
+                    return string.replace("%s", str);
+                }
+                return this.$store.getters.getLanguageString( context, key );
+            },
+
+            update() {
+                let data = { document: this.document.raw, db: this.collection.databaseName, coll: this.collection.collectionName, index: this.index };
+                EventBus.$emit('show-document-update', data );
+            },
+
+            deleteDocument() {
+                console.log("deleting: " + this.document._id);
+            }
         }
     }
 </script>

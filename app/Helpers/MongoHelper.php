@@ -401,6 +401,90 @@ class MongoHelper
     }
 
     /**
+     * @param $document
+     * @param $documentArr
+     * @param $fields
+     */
+    public static function extractDocument( $document )
+    {
+        $arr    = [];
+        $level  = 0;
+        // a function to handle recursive document levels
+        // iterate the document
+        foreach ($document as $key => $value) {
+            if ($key == '_id') {
+                if (is_object($value)) {
+                    $oid = $value->__toString();
+                } else {
+                    $oid = $value;
+                }
+                $arr[ $key ] =  $oid;
+
+            } else {
+                if ($value instanceof MongoDB\Model\BSONDocument) {
+                    /** @var MongoDB\Model\BSONDocument  $value */
+                    $array = $value->getArrayCopy();
+                    $level++;
+                    $arr[ $key ] = self::iterateDocument($array, $level, $key);
+
+                } elseif ($value instanceof MongoDB\BSON\Binary) {
+                    /** @var MongoDB\BSON\Binary $value */
+                    $data = bin2hex($value-> getData());
+                    $arr[ $key ] =  $data;
+                    if (is_string($key)) {
+                        if (!in_array($key, $fields)) {
+                            $fields[] = $key;
+                        }
+                    }
+
+                } elseif ($value instanceof MongoDB\Model\BSONArray) {
+                    /** @var MongoDB\Model\BSONArray $value */
+                    $array = $value->getArrayCopy();
+                    $level++;
+                    $arr[ $key ] = self::iterateDocument($array, $level, $key);
+
+                } else {
+                    $arr[ $key ] = $value ;
+                }
+            }
+        }
+        // return array
+        return $arr;
+    }
+
+    /**
+     * @param $array
+     * @param $level
+     * @param $key
+     * @param $fields
+     *
+     * @return array
+     */
+    public static function iterateDocument( $array, $level, $key ) {
+        $arr = [];
+        foreach ($array as $k => $v) {
+            if ($v instanceof MongoDb\Model\BSONDocument) {
+                $level++;
+                $arr[ $k ] = self::iterateDocument($v, $level, $k);
+
+            } elseif ($v instanceof MongoDb\Model\BSONArray) {
+                /** @var MongoDb\Model\BSONArray $v */
+                $arr = $v->getArrayCopy();
+                //  $level++;
+                if (count($v) == 0) {
+                    $arr[ $k ] = [];
+                } else {
+                    $arr[ $k ] = $v;
+                }
+
+            } else {
+                $arr[ $k ] = $v;
+            }
+        }
+        return $arr;
+    }
+
+    /**
      * Format bytes to human size
      *
      * @param integer $bytes Size in byte

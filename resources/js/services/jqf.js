@@ -88,6 +88,12 @@ export default function makeJqf() {
             },
             css: function(e, v) {
                 element.style[e] = v;
+            },
+            value: function() {
+                if (element.value) {
+                    return element.value;
+                }
+                return element.options[element.selectedIndex].value;
             }
         };
     }

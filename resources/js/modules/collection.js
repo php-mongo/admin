@@ -37,16 +37,17 @@ export const collection = {
     *   Defines the 'state' being monitored for the module
     */
     state: {
+        activeCollection: null,
+        collection: {},
+        collectionLoadStatus: 0,
         collections: [],
         collectionsLoadStatus: 0,
-        collection: {},
-        activeCollection: null,
-        collectionLoadStatus: 0,
+        currentFormat: 'json',
         displayCollection: {},
         displayCollectionStatus: 0,
         createCollectionStatus: 0,
         deleteCollectionStatus: 0,
-        currentFormat: 'json',
+        documentUpdateStatus: 0,
         errorData: {}
     },
 
@@ -146,6 +147,29 @@ export const collection = {
         */
         setCurrentFormat( { commit }, data ) {
             commit( 'setCurrentFormat', data );
+        },
+
+        /*
+        *  Update a document within the collection
+        */
+        updateDocument( { commit, rootStore, dispatch }, data ) {
+            commit( 'setUpdateDocumentStatus', 1);
+
+            CollectionApi.updateDocument( data )
+                .then( (response) => {
+                    commit( 'setUpdatedDocument', data );
+                    commit( 'setUpdateDocumentStatus', 2);
+                })
+                .catch( (error) => {
+                    commit( 'setUpdateDocumentStatus', 3);
+                    commit( 'setErrorData', error);
+                    console.log(error);
+                });
+        },
+
+        setDocument( { commit }, data ) {
+            console.log("set document: " + data);
+            commit( 'setUpdatedDocument', data);
         }
     },
 
@@ -208,6 +232,29 @@ export const collection = {
         */
         setCreatedCollection( state, collection ) {
             state.collections.push( collection );
+        },
+
+        /*
+         *  Set the document update status
+         */
+        setUpdateDocumentStatus( state, status ) {
+            state.documentUpdateStatus = status;
+        },
+
+        /*
+         * Replace document with updated version
+         */
+        setUpdatedDocument( state, data ) {
+            console.log("mute data index: " + data.index);
+            if (data.text) {
+                console.log("mute data text: " + data.text);
+                console.log("mute data data: " + data.data);
+                state.collection.objects.objects[data.index].text = data.text;
+                state.collection.objects.objects[data.index].data = data.data;
+            } else {
+                console.log("mute data document raw: " + state.collection.objects.objects[data.index].raw);
+                state.collection.objects.objects[data.index].raw = JSON.parse(data.document);
+            }
         },
 
         /*
@@ -328,6 +375,13 @@ export const collection = {
         },
 
         /*
+         *  Get the document update status
+         */
+        getUpdateDocumentStatus (state ) {
+            return state.documentUpdateStatus;
+        },
+
+        /*
         *   Get the stats array (object) from the collection object
         */
         getCollectionStats( state ) {
@@ -355,6 +409,18 @@ export const collection = {
         */
         getCurrentFormat( state ) {
             return state.currentFormat;
+        },
+
+        /*
+         *  Get a document from the current collection
+         */
+        getDocument: ( state ) => ( id ) => {
+            let documents = state.collection.objects.objects;
+            if (documents) {
+                return documents.map( document => {
+                    return document._id = id;
+                });
+            }
         }
     }
 };

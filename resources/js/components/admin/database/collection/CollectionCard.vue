@@ -213,6 +213,7 @@
             </div>
             <document v-for="(document, index) in getDocuments" :key="index" v-bind:index="index" v-bind:document="document" v-bind:collection="getCollection" v-bind:format="currentFormat"></document>
         </div>
+        <document-update></document-update>
     </div>
 </template>
 
@@ -228,6 +229,7 @@
     import PageSizeOption from "./PageSizeOption";
     import Document from "./Document";
     import Pagination from "./Pagination";
+    import DocumentUpdate from "./DocumentUpdate";
 
     export default {
         /*
@@ -236,7 +238,8 @@
         components: {
             PageSizeOption,
             Document,
-            Pagination
+            Pagination,
+            DocumentUpdate
         },
 
         /*
@@ -349,7 +352,7 @@
                 if (this.collection) {
                     if (this.collection.objects) {
                         if (this.collection.objects.count == 0) {
-                            this.page.find.message = 'The collection >> ' + this.collection.collection.collectionName + ' << has no documents';
+                            this.page.find.message = this.showLanguage('collection', 'empty', this.collection.collection.collectionName);
                             this.clearValues();
                         } else {
                             this.page.find.message = null;
@@ -583,6 +586,26 @@
                 this.end            = 0;
                 this.current        = 1;
                 this.count          = 0;
+            },
+
+            updateDocument( data ) {
+               // console.log("data: " + data);
+          //      console.log("index: " + this.visibleObjects[data.index]);
+                if (data) {
+                    let obj = JSON.parse(data.document);
+
+                    console.log("updateDocument obj: " + obj );
+                  //  console.log("updateDocument index: " + data.index);
+                  //  console.log("updateDocument doc: " + data.document);
+
+                    this.visibleObjects[ data.index ].raw = obj;
+                    let t = this.$convObj( obj ).arrayV(data.document);
+                    console.log("updateDocument t: " + t);
+                    let d = this.$convObj( obj ).jsonV(data.document);
+                    console.log("updateDocument d: " + d);
+
+                    this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
+                }
             }
         },
 
@@ -592,7 +615,6 @@
         mounted() {
             EventBus.$on('show-collection', () => {
                 this.show = true;
-
             });
 
             EventBus.$on('set-query-format', ( format ) => {
@@ -601,19 +623,22 @@
 
             EventBus.$on('collapse-db', (collapse) => {
                 this.collapsed = collapse;
-
             });
+
+            EventBus.$on('document-updated', function(data) {
+                 this.updateDocument( data );
+            }.bind(this));
         },
 
         /*
-         *  In case of imenent destruction
+         *  In case of immenent destruction
          */
         destroyed() {
             this.clearValues();
         },
 
         /*
-         *  Who watches the wathers?
+         *  Who watches the watchers?
          */
         watch: {
             getCurrentFormat() {
