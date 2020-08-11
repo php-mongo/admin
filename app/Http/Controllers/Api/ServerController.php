@@ -235,7 +235,8 @@ class ServerController extends Controller
     private function getComposerData()
     {
         $reader                  = new ConfigurationReader;
-        $data                    = $reader->read('/var/hosting/sites/php-mongo-admin/composer.json');
+        $composer                = app_path('composer.json');
+        $data                    = $reader->read( $composer );
         $obj                     = $data->rawData();
         $composer                = [];
         $composer['name']        = $data->name();
