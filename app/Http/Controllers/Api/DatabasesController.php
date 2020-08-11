@@ -87,7 +87,7 @@ class DatabasesController extends Controller implements Unserializable
     /**
      * @return string|null
      */
-    public function getErrorMessage(): string
+    public function getErrorMessage(): ?mixed
     {
         return $this->errorMessage;
     }
@@ -137,7 +137,7 @@ class DatabasesController extends Controller implements Unserializable
                     // ToDo: !! for the demo site only - we dont habe permisions to read these db stats !!
                     if ($dbn != 'admin' && $dbn != 'config' && $dbn != 'local')  {
                         $stats = $database->command(array('dbstats' => 1))->toArray()[0];
-                    }   and(array('dbstats' => 1))->toArray()[0];
+                    }
 
                     $statistics = [];
                     // break out the stats into an array
@@ -196,6 +196,7 @@ class DatabasesController extends Controller implements Unserializable
     private function getObjects(string $db, string $collection)
     {
         $arr     = [];
+        if ($db == 'admin' || $db == 'config' || $db == 'local') { return $arr; }
         $cursor  = $this->mongo->connectClientDb($db)->selectCollection($collection); // (new MongoDB\Client)->$db->selectCollection($collection);
         $objects = $cursor->find();
         $arr['objects'] = $objects->toArray();

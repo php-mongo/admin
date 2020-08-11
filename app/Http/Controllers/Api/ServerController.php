@@ -118,6 +118,27 @@ class ServerController extends Controller
     private $composer;
 
     /**
+     * @var string|null $errorMessage
+     */
+    private $errorMessage = null;
+
+    /**
+     * @return string|null
+     */
+    public function getErrorMessage()
+    {
+        return $this->errorMessage;
+    }
+
+    /**
+     * @param string $errorMessage
+     */
+    public function setErrorMessage(string $errorMessage): void
+    {
+        $this->errorMessage = $errorMessage;
+    }
+
+    /**
      * Runs the command function on MongoDB
      */
     private function getCommandline()
@@ -137,7 +158,8 @@ class ServerController extends Controller
             $this->commandLine = implode(" ", $arr);
 
         } catch (Exception $e) {
-            $this->commandLine = "";
+            $this->setErrorMessage( $e->getMessage() );
+            $this->commandLine = "error";
         }
     }
 
@@ -235,7 +257,7 @@ class ServerController extends Controller
     private function getComposerData()
     {
         $reader                  = new ConfigurationReader;
-        $composer                = app_path('composer.json');
+        $composer                = base_path('composer.json');
         $data                    = $reader->read( $composer );
         $obj                     = $data->rawData();
         $composer                = [];
