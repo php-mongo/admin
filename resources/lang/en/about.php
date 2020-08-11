@@ -38,8 +38,8 @@ return [
     "intro2" => "Were building PhpMongoAdmin so that it has a familiar look and feel and hopefully practical ease of use.",
     "p1" => "Visit our website at www.phpmongoadmin.com/ for support and documentation.",
     "p2" => "Visit our primariy portal at www.phpmongotools.com/ to visit our forum and special package deals.",
-    "p3" => "Check out our Githum account at www.github.com/php-mongo/admin",
-    "p4" => "Look us up on Twitter at www.twitter.com/phpmongoadmon",
+    "p3" => "Check out our Github account at www.github.com/php-mongo/admin",
+    "p4" => "Look us up on Twitter at www.twitter.com/toolsmongodb",
     "p5" => ""
 
 ];

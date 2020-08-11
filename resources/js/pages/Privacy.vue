@@ -64,7 +64,7 @@
 
                 </div>
                 <div class="col-sm-4 text-right">
-                    <p><img class="img-responsive" alt="Privacy Policy Image" src="img/php-mongo-admin.jpg" /></p>
+                    <p><img class="img-responsive" alt="Privacy Policy Image" src="/img/php-mongo-admin.jpg" /></p>
                 </div>
             </div>
         </div>

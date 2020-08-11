@@ -43,7 +43,7 @@
                     <p class="paragraph" v-text="showLanguage('about', '2')"></p>
                 </div>
                 <div class="large-4 medium-4 hide-for-small-only right">
-                    <p><img class="img-responsive" alt="About PHP Mongo Admin Image" src="img/dashboard.jpg" /></p>
+                    <p><img class="img-responsive" alt="About PHP Mongo Admin" src="/img/dashboard.jpg" /></p>
                 </div>
             </div>
         </div>
