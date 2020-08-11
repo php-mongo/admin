@@ -10194,10 +10194,10 @@ Imports the event bus.
   data: function data() {
     return {
       show: false,
-      verifiedHost: null,
-      verifiedUser: null,
-      verifiedEmail: null,
-      verifiedPassword: null,
+      verifiedHost: true,
+      verifiedUser: true,
+      verifiedEmail: true,
+      verifiedPassword: true,
       verifiedDb: null,
       credentials: {
         host: 'localhost',
@@ -10205,7 +10205,7 @@ Imports the event bus.
         password: 'good-guess',
         db: null
       },
-      formStatus: 0
+      formStatus: 1
     };
   },
 
@@ -12004,9 +12004,6 @@ Imports the event bus.
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../event-bus.js */ "./resources/js/event-bus.js");
-//
-//
-//
 //
 //
 //
@@ -67641,32 +67638,6 @@ var render = function() {
                     return _vm.closeThisDialog()
                   }
                 }
-              }),
-              _vm._v(" "),
-              _c("a", {
-                staticClass: "learn-more-button",
-                attrs: { href: "/#/terms" },
-                domProps: {
-                  textContent: _vm._s(_vm.showLanguage("nav", "terms"))
-                },
-                on: {
-                  click: function($event) {
-                    return _vm.closeThisDialog()
-                  }
-                }
-              }),
-              _vm._v(" "),
-              _c("a", {
-                staticClass: "learn-more-button",
-                attrs: { href: "/#/privacy" },
-                domProps: {
-                  textContent: _vm._s(_vm.showLanguage("nav", "privacy"))
-                },
-                on: {
-                  click: function($event) {
-                    return _vm.closeThisDialog()
-                  }
-                }
               })
             ])
           ])
@@ -69056,36 +69027,6 @@ var render = function() {
                       {
                         name: "show",
                         rawName: "v-show",
-                        value: !_vm.isMember,
-                        expression: "!isMember"
-                      }
-                    ],
-                    staticClass: "register-button pull-right"
-                  },
-                  [
-                    _c("button", {
-                      attrs: {
-                        title: _vm.showLanguage("title", "registerTitle")
-                      },
-                      domProps: {
-                        textContent: _vm._s(_vm.showLanguage("nav", "register"))
-                      },
-                      on: {
-                        click: function($event) {
-                          return _vm.loadRegistration()
-                        }
-                      }
-                    })
-                  ]
-                ),
-                _vm._v(" "),
-                _c(
-                  "span",
-                  {
-                    directives: [
-                      {
-                        name: "show",
-                        rawName: "v-show",
                         value: !_vm.userLoadStatus,
                         expression: "!userLoadStatus"
                       }
@@ -69527,10 +69468,7 @@ var staticRenderFns = [
         _c("p", [
           _c("img", {
             staticClass: "img-responsive",
-            attrs: {
-              alt: "About PHP Mongo Admin Image",
-              src: "img/about-image.jpg"
-            }
+            attrs: { alt: "About PHP Mongo Admin", src: "/img/dashboard.jpg" }
           })
         ])
       ]
@@ -69795,7 +69733,7 @@ var staticRenderFns = [
           staticClass: "img-responsive",
           attrs: {
             alt: "Privacy Policy Image",
-            src: "img/privacy-policy-image.jpg"
+            src: "/img/php-mongo-admin.jpg"
           }
         })
       ])
@@ -69895,7 +69833,7 @@ var staticRenderFns = [
             staticClass: "img-responsive",
             attrs: {
               alt: "Terms and conditions Image",
-              src: "img/terms-and-conditions-image.jpg"
+              src: "/img/php-mongo-admin.jpg"
             }
           })
         ])
