@@ -38,7 +38,7 @@
                     <p class="paragraph" v-text="showLanguage('terms', 'p6')"></p>
                 </div>
                 <div class="large-4 medium-4 hide-for-small-only cell text-right">
-                    <p><img class="img-responsive" alt="Terms and conditions Image" src="img/terms-and-conditions-image.jpg" /></p>
+                    <p><img class="img-responsive" alt="Terms and conditions Image" src="img/php-mongo-admin.jpg" /></p>
                 </div>
             </div>
         </div>

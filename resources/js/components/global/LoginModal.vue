@@ -359,8 +359,8 @@
             </form>
             <div class="login-footer">
                 <a class="learn-more-button" href="/#/about" v-text="showLanguage('nav', 'about')" v-on:click="closeThisDialog()"></a>
-                <a class="learn-more-button" href="/#/terms" v-text="showLanguage('nav', 'terms')" v-on:click="closeThisDialog()"></a>
-                <a class="learn-more-button" href="/#/privacy" v-text="showLanguage('nav', 'privacy')" v-on:click="closeThisDialog()"></a>
+                <!--<a class="learn-more-button" href="/#/terms" v-text="showLanguage('nav', 'terms')" v-on:click="closeThisDialog()"></a>
+                <a class="learn-more-button" href="/#/privacy" v-text="showLanguage('nav', 'privacy')" v-on:click="closeThisDialog()"></a>-->
             </div>
         </div>
     </div>
@@ -380,10 +380,10 @@
         data() {
             return {
                 show: false,
-                verifiedHost: null,
-                verifiedUser: null,
-                verifiedEmail: null,
-                verifiedPassword: null,
+                verifiedHost: true,
+                verifiedUser: true,
+                verifiedEmail: true,
+                verifiedPassword: true,
                 verifiedDb: null,
                 credentials: {
                     host: 'localhost',
@@ -391,7 +391,7 @@
                     password: 'good-guess',
                     db: null
                 },
-                formStatus: 0
+                formStatus: 1
             }
         },
 

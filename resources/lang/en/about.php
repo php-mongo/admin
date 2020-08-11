@@ -27,19 +27,19 @@
 
 return [
 
-    "activeTitle" => "About PHP Mongo Admin  Website",
-    "heading1" => "Adult",
-    "definition1" => "A person who is fully grown or developed. In most western countries it is considered to be a person who is at least 18 years of age.",
-    "heading2" => "Muse",
-    "definition2" => "(verb) To reflect deeply on a subject (meditate, mull over)",
-    "definition3" => "(noun) A woman, or a force personified as a woman, who is the source of inspiration for a creative artist.<br>&quot;In ancient Greek mythology, Muses were goddesses of science and art who inspired creative endeavors.&quot;",
-    "definition4" => "(in Greek and Roman mythology) each of nine goddesses, the daughters of Zeus and Mnemosyne, who preside over the arts and sciences.",
-    "intro" => "This website offers a unique Adults Only classifieds service, along with certain 'Paid' booster tools to promote your 'Ads' and increase their visibility.",
-    "intro2" => "We also provide a 'Paid' video service where 'Members' pay to watch videos which you have uploaded. Income earned by your Uploaded Videos earns you credits which you can then use to 'Boost' your 'Ads' into the Top-Ten listing positions.",
-    "p1" => "Post your Adult Services Ads for free with unlimited 'Location' references. Our system uses Geo Location to match 'Ads' with potential customers based on location information.",
-    "p2" => "Web 2.0 technology is used to deliver the functionality of all content within this site.",
-    "p3" => "Use our 'Auto Publish' function when you place an 'Ad', enabling you to set a 'Future Date' when you wish the 'Ad' to become 'Publicly' visible. You can set a date up to 3 weeks in the future for automatic publishing of your 'Ads'.",
-    "p4" => "Add videos to your 'Ads' with an unlimited number of photos. Images and Videos can be managed independently of your 'Ad' content.",
-    "p5" => "We use PayPal for all payments for 'Ad Booster' tools. Our system will 'Never' require your Credit Card details. You can also earn credits by uploading 'Pay per View' videos."
+    "activeTitle" => "About PHP Mongo Admin Website",
+    "heading1" => "MongoDB",
+    "definition1" => "A modern database systems implementing NoSQL strategies that allow for flexible schema design without the classic column row restrictions.",
+    "heading2" => "PHP",
+    "definition2" => "Hypertext Pre Processor.",
+    "definition3" => "A scripting language used at the core of many popular PHP Frameworks and Content Management Systems.",
+    "definition4" => "Drives the heart of Laravel hwich we have used as our RESTful API.",
+    "intro" => "PhpMongoAdmin is a MongoDB management application capable of running on most internet webservers.",
+    "intro2" => "Were building PhpMongoAdmin so that it has a familiar look and feel and hopefully practical ease of use.",
+    "p1" => "Visit our website at www.phpmongoadmin.com/ for support and documentation.",
+    "p2" => "Visit our primariy portal at www.phpmongotools.com/ to visit our forum and special package deals.",
+    "p3" => "Check out our Githum account at www.github.com/php-mongo/admin",
+    "p4" => "Look us up on Twitter at www.twitter.com/phpmongoadmon",
+    "p5" => ""
 
 ];

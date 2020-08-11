@@ -131,9 +131,6 @@
                         </li>
                     </uL>
                     <div class="small-4 float-right">
-				        <span v-show="!isMember" class="register-button pull-right">
-						    <button v-on:click="loadRegistration()" :title="showLanguage('title', 'registerTitle')" v-text="showLanguage('nav', 'register')"></button>
-				        </span>
                         <span class="hide-loading pull-right login-button" v-show="!userLoadStatus">
 					        <button v-on:click="loadLogin()" :title="showLanguage('title', 'manageData')" v-text="showLanguage('nav', 'login')"></button>
 				        </span>
