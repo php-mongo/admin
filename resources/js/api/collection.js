@@ -65,6 +65,7 @@ export default {
         return axios.post( MONGO_CONFIG.API_URL + '/document/create',
             {
                 document: data.document,
+                format: data.format,
                 collection: data.collection,
                 database: data.database,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
@@ -76,12 +77,31 @@ export default {
     *   POST /api/v1/document/update
     */
     updateDocument: ( data ) => {
-        console.log("updating: " + data);
+        console.log("updating for: " + data._id);
         return axios.put( MONGO_CONFIG.API_URL + '/document/update/' + data._id,
             {
                 _id: data._id,
                 index: parseInt(data.index, 10),
                 document: data.document,
+                field: data.field,
+                value: data.value,
+                type: data.type,
+                collection: data.collection,
+                database: data.database,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Duplicate one document
+    *   POST /api/v1/document/duplicate
+    */
+    duplicateDocument: ( data ) => {
+        console.log("duplicating doco");
+        return axios.post( MONGO_CONFIG.API_URL + '/document/duplicate',
+            {
+                document: data.document,
+                format: data.format,
                 collection: data.collection,
                 database: data.database,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']

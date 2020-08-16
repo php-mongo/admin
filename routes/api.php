@@ -297,6 +297,17 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
 
     /*
     * -------------------------------------------------------
+    * Duplicate a Document (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/document/duplicate
+    * Controller:  API/DocumentController@duplicateDocument
+    * Method:      POST
+    * Description: Duplicate a document and returns the document data
+    */
+    Route::post('/document/duplicate', 'Api\DocumentController@duplicateDocument');
+
+    /*
+    * -------------------------------------------------------
     * Update a Document (private route)
     * -------------------------------------------------------
     * URL:         /api/v1/document/update

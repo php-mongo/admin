@@ -58,64 +58,85 @@ use Exception;
 class ServerController extends Controller
 {
     /**
-     * @var null|string $slug
-     */
-    private $slug = null;
-
-    /**
      * @var int
      */
     private $limit = 30;
 
     /**
-     * @var Mongo
+     * @var     string  $db Reference to the DB we'll use to fetch data
+     */
+    private $db;
+
+    /**
+     * @var     Mongo   $mongo
      */
     private $mongo;
 
     /**
-     * @var MongoDB\Driver\Manager
+     * @var     MongoDB\Driver\Manager
      */
     private $manager;
 
     /**
-     * @var $database MongoDB\Database (new MongoDB\Client)->admin;
+     * @var     MongoDB\Database $database (new MongoDB\Client)->admin;
      */
     private $database;
 
     /**
-     * @var $commandLine string
+     * @var     string  $commandLine
      */
     private $commandLine;
 
     /**
-     * @var $webServers array
+     * @var     array   $webServers
      */
     private $webServers;
 
     /**
-     * @var $version string
+     * @var     string  $version
      */
     private $version;
 
     /**
-     * @var $directives array
+     * @var     array   $directives
      */
     private $directives;
 
     /**
-     * @var $buildInfo array
+     * @var     array   $buildInfo
      */
     private $buildInfo;
 
     /**
-     * @var $connection array
+     * @var     array   $connection
      */
     private $connection;
 
     /**
-     * @var $composer array
+     * @var     array   $composer
      */
     private $composer;
+
+    /**
+     * @var     string|null $errorMessage
+     */
+    private $errorMessage = null;
+
+    /**
+     * @return string|array|null
+     */
+    public function getErrorMessage(): ?mixed
+    {
+        return $this->errorMessage;
+    }
+
+    /**
+     * @param string|array|null $errorMessage
+     */
+    public function setErrorMessage(?mixed $errorMessage): void
+    {
+        $this->errorMessage = $errorMessage;
+    }
 
     /**
      * Runs the command function on MongoDB
@@ -137,7 +158,7 @@ class ServerController extends Controller
             $this->commandLine = implode(" ", $arr);
 
         } catch (Exception $e) {
-            $this->commandLine = "";
+            $this->commandLine = "Unable to run {getCmdLineOpts} on DB " . $this->db;
         }
     }
 
@@ -146,16 +167,21 @@ class ServerController extends Controller
      */
     private function getWebServer()
     {
-        // MONGODB_VERSION
-        // this successfully gets the extension version
-        $version = phpversion("mongodb");
-        $this->webServers = array();
-        if (isset($_SERVER["SERVER_SOFTWARE"])) {
-            list($webServer) = explode(" ", $_SERVER["SERVER_SOFTWARE"]);
-            $this->webServers["server"] = $webServer;
+        try {
+            // MONGODB_VERSION
+            // this successfully gets the extension version
+            $version = phpversion("mongodb");
+            $this->webServers = array();
+            if (isset($_SERVER["SERVER_SOFTWARE"])) {
+                list($webServer) = explode(" ", $_SERVER["SERVER_SOFTWARE"]);
+                $this->webServers["server"] = $webServer;
+            }
+            $this->webServers['phpv'] = array('version' => '<a href="http://www.php.net" target="_blank">PHP</a> ' . PHP_VERSION);
+            $this->webServers['phpe'] = array('extension' => '<a href="http://www.php.net/mongodb" target="_blank">Extension</a> - <a href="http://pecl.php.net/package/mongodb" target="_blank">mongodb</a>/' . $version);
         }
-        $this->webServers['phpv'] = array('version' => '<a href="http://www.php.net" target="_blank">PHP</a> ' . PHP_VERSION);
-        $this->webServers['phpe'] = array('extension' => '<a href="http://www.php.net/mongodb" target="_blank">Extension</a> - <a href="http://pecl.php.net/package/mongodb" target="_blank">mongodb</a>/' . $version);
+        catch (Exception $e) {
+            $this->webServers = [];
+        }
     }
 
     /**
@@ -163,22 +189,27 @@ class ServerController extends Controller
      */
     private function getDirectives()
     {
-        $directives = ini_get_all("mongodb");
-        $arr = [];
-        $index = 0;
-        /**
-         * we ned to grab the 'alpha keys' and re-index the array with a numeric index
-         */
-        foreach ($directives as $key => $array) {
-            if (empty($array['global_value'])) {
-                $array['global_value'] = 0;
+        try {
+            $directives = ini_get_all("mongodb");
+            $arr = [];
+            $index = 0;
+            /**
+             * we need to grab the 'alpha keys' and re-index the array with a numeric index
+             */
+            foreach ($directives as $key => $array) {
+                if (empty($array['global_value'])) {
+                    $array['global_value'] = 0;
+                }
+                if (empty($array['local_value'])) {
+                    $array['local_value'] = 0;
+                }
+                $arr[$index] = array($key => $array);
             }
-            if (empty($array['local_value'])) {
-                $array['local_value'] = 0;
-            }
-            $arr[$index] = array($key => $array);
+            $this->directives =  $arr;
         }
-        $this->directives =  $arr;
+        catch (Exception $e) {
+            $this->directives = [];
+        }
     }
 
     /**
@@ -218,14 +249,19 @@ class ServerController extends Controller
                 }
             }
             $this->connection = array(
-                "Host"      =>  $host,
+                "Host"      => $host,
                 "Port"      => $port,
                 "Username"  => "******",
                 "Password"  => "******"
             );
 
         } catch (Exception $e) {
-            $this->connection = [];
+            $this->connection = array(
+                "Host"      => 'localhost',
+                "Port"      => 27017,
+                "Username"  => "******",
+                "Password"  => "******"
+            );
         }
     }
 
@@ -234,38 +270,43 @@ class ServerController extends Controller
      */
     private function getComposerData()
     {
-        $reader                  = new ConfigurationReader;
-        $composer                = base_path('composer.json');
-        $data                    = $reader->read( $composer );
-        $obj                     = $data->rawData();
-        $composer                = [];
-        $composer['name']        = $data->name();
-        $composer['description'] = $data->description();
-        $composer['keywords']    = join(" , ", $data->keywords());
-        $composer['homepage']    = $data->homepage();
-        $arr                     = $obj->authors;
-        $authors                 = [];
-        foreach ($arr as $author) {
-            $authors[]      = array (
-                "name"      => $author->name,
-                "email"     => $author->email,
-                "homepage"  => $author->homepage,
-                "role"      => $author->role
+        try {
+            $reader                  = new ConfigurationReader;
+            $composer                = base_path('composer.json');
+            $data                    = $reader->read( $composer );
+            $obj                     = $data->rawData();
+            $composer                = [];
+            $composer['name']        = $data->name();
+            $composer['description'] = $data->description();
+            $composer['keywords']    = join(" , ", $data->keywords());
+            $composer['homepage']    = $data->homepage();
+            $arr                     = $obj->authors;
+            $authors                 = [];
+            foreach ($arr as $author) {
+                $authors[]      = array (
+                    "name"      => $author->name,
+                    "email"     => $author->email,
+                    "homepage"  => $author->homepage,
+                    "role"      => $author->role
+                );
+            }
+            $composer['authors']    = $authors;
+            $composer['support']    = array(
+                "docs"              => $obj->support->docs,
+                "email"             => $obj->support->email,
+                "issues"            => $obj->support->issues,
+                "source"            => $obj->support->source,
+                "authentication"    => $obj->support->authentication,
+                "users"             => $obj->support->users,
+                "configuration"     => $obj->support->configuration
             );
+            $composer['license']    = $data->license();
+            $composer['version']    = $data->version();
+            $this->composer         = $composer;
         }
-        $composer['authors']    = $authors;
-        $composer['support']    = array(
-            "docs"              => $obj->support->docs,
-            "email"             => $obj->support->email,
-            "issues"            => $obj->support->issues,
-            "source"            => $obj->support->source,
-            "authentication"    => $obj->support->authentication,
-            "users"             => $obj->support->users,
-            "configuration"     => $obj->support->configuration
-        );
-        $composer['license']    = $data->license();
-        $composer['version']    = $data->version();
-        $this->composer         = $composer;
+        catch (Exception $e) {
+            $this->composer = [];
+        }
     }
 
     /**
@@ -274,10 +315,12 @@ class ServerController extends Controller
     public function __construct()
     {
         /** @var \App\Models\User $user */
+        // Set the default DB (admin wont work for non ROOT users)
+        $this->db    = 'admin';
         $user        = auth()->guard('api')->user();
         $this->mongo = new Mongo($user);
         if ($this->mongo->checkConfig()) {
-            $this->database = $this->mongo->connectClientDb('admin');
+            $this->database = $this->mongo->connectClientDb( $this->db );
         }
 
         // ToDo: for now just use the config value = these need to be reading the 'current server' once we implement server configs
@@ -288,15 +331,12 @@ class ServerController extends Controller
     }
 
     /**
-     * Display a listing of all dbs.
+     * Fetches all available Server and diagnistic data
+     * Limitatiionn exist for user without 'admin' DB access
      *
-     * URL:         /api/v1/dbs
+     * URL:         /api/v1/server
      * Method:      GET
-     * Description: Fetches all dbs in alphanumeric order
-     *
-     * @param Request $request
-     * @param null $id
-     * @param null $slug
+     * Description: Web and DB server data
      *
      * @return \Illuminate\Http\JsonResponse
      */
@@ -329,6 +369,7 @@ class ServerController extends Controller
         $arr['directives']  = $this->directives;
         $arr['buildinfo']   = $this->buildInfo;
         $arr['composer']    = $this->composer;
+        $arr['errors']      = $this->getErrorMessage();
 
         return response()->success('success',  array('server' => $arr));
     }

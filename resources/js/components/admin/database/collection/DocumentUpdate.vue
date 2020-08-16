@@ -27,8 +27,8 @@
         div.document-update {
             background: $white;
             box-shadow: 0 0 4px 0 rgba(0,0,0,0.12), 0 4px 4px 0 rgba(0,0,0,0.24);
-            border-left: 5px solid $successBorder;
-            border-right: 5px solid $successBorder;
+            border-left: 5px solid $orange;
+            border-right: 5px solid $orange;
             color: $noticeColor;
             font-family: "Lato", sans-serif;
             font-size: 16px;
@@ -97,7 +97,7 @@
                     </label>
                     <label v-show="form.edit == 'text'">
                         <span v-text="showLanguage('document', 'data')"></span>:
-                        <textarea v-model="form.document"></textarea>
+                        <textarea rows="7" v-model="form.document"></textarea>
                     </label>
                     <div v-show="form.edit == 'fields'">
                         <p v-for="field in this.fields" v-html="field"></p>
@@ -121,6 +121,8 @@
     export default {
         /*
          *  Defines the data used by the component.
+         *  In the form (field, value, type) are added for compatibility with the DocumentField component -
+         *  - allows reuse of the same update process when adding new fields
          */
         data() {
             return {
@@ -132,6 +134,9 @@
                     database: null,
                     document: null,
                     edit: 'text',
+                    field: null,
+                    value: null,
+                    type: null,
                     format: 'json',
                     index: null,
                     _id: null,
@@ -142,6 +147,9 @@
                     database: null,
                     document: null,
                     edit: 'text',
+                    field: null,
+                    value: null,
+                    type: null,
                     format: 'json',
                     index: null,
                     _id: null,
@@ -216,11 +224,11 @@
             },
 
             makeJson() {
-                return this.$convObj( this.document ).jsonV();
+                return this.$convObj( this.document ).jsonT();
             },
 
             makeArray() {
-                return this.$convObj( this.document ).arrayV();
+                return this.$convObj( this.document ).arrayT();
             },
 
             makeFields() {
@@ -247,7 +255,7 @@
             },
 
             saveUpdate() {
-                console.log("saving: " + this.form);
+                //console.log("saving: " + this.form);
                 if (this.form.format === 'json') {
                     this.sendJson();
                 }
@@ -260,13 +268,10 @@
             },
 
             sendJson() {
-                // clenup
+                // cleanup
                 let doc = this.form.document;
-                doc = doc.replace(/\n/g, "");
-                doc = doc.replace(/\t/g, "");
-                doc = doc.replace(/\s/g, "");
-
-                console.log(doc);
+                doc     = this.$convObj().minify(doc);
+                // console.log(doc);
 
                 // restore
                 this.form.document = doc;
@@ -282,7 +287,17 @@
             sendArray() {
                 let data = this.form.document;
                 data = this.$convObj().arrayToJson(data);
-                console.log(data);
+                //console.log(data);
+                data = this.$convObj().minify(data);
+
+                // restore
+                this.form.document = data;
+
+                // send
+                this.$store.dispatch( 'updateDocument', this.form );
+
+                // result
+                this.handleUpdate();
             },
 
             sendFields() {
@@ -336,7 +351,7 @@
         */
         mounted(){
             /*
-              On show success, show the notification.
+              On event show the document update modal
             */
             EventBus.$on('show-document-update', ( data ) => {
             //    console.log(data);

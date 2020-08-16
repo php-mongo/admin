@@ -214,6 +214,8 @@
             <document v-for="(document, index) in getDocuments" :key="index" v-bind:index="index" v-bind:document="document" v-bind:collection="getCollection" v-bind:format="currentFormat"></document>
         </div>
         <document-update></document-update>
+        <document-field></document-field>
+        <document-duplicate></document-duplicate>
     </div>
 </template>
 
@@ -230,6 +232,8 @@
     import Document from "./Document";
     import Pagination from "./Pagination";
     import DocumentUpdate from "./DocumentUpdate";
+    import DocumentField from "./DocumentField";
+    import DocumentDuplicate from "./DocumentDuplicate";
 
     export default {
         /*
@@ -239,7 +243,9 @@
             PageSizeOption,
             Document,
             Pagination,
-            DocumentUpdate
+            DocumentUpdate,
+            DocumentField,
+            DocumentDuplicate
         },
 
         /*
@@ -455,6 +461,7 @@
                 let format = this.$store.getters.getCurrentFormat;
                 if (format !== this.format) {
                     this.format = format;
+                    console.log("format up[dated to: " + format);
                 }
             },
 
@@ -475,7 +482,7 @@
 
             roundCost: function() {
                 console.log('rounding: ' + this.cost);
-                return new Math.round(this.cost);
+                return Math.round(this.cost);
             },
 
             submitQuery() {
@@ -589,22 +596,40 @@
             },
 
             updateDocument( data ) {
-               // console.log("data: " + data);
-          //      console.log("index: " + this.visibleObjects[data.index]);
                 if (data) {
                     let obj = JSON.parse(data.document);
+                    if (this.visibleObjects[data.index]) {
+                        this.visibleObjects[ data.index ].raw = obj;
+                    }
 
-                    console.log("updateDocument obj: " + obj );
-                  //  console.log("updateDocument index: " + data.index);
-                  //  console.log("updateDocument doc: " + data.document);
+             //       console.log("format: " + this.format);
 
-                    this.visibleObjects[ data.index ].raw = obj;
-                    let t = this.$convObj( obj ).arrayV(data.document);
-                    console.log("updateDocument t: " + t);
-                    let d = this.$convObj( obj ).jsonV(data.document);
-                    console.log("updateDocument d: " + d);
+                    // Done!! these conversion will be based on the current FORMAT setting
+                    if (this.format === 'json') {
 
-                    this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
+                    //    console.log("format is json...");
+
+                        let t = this.$convObj( obj ).jsonT( data.document );
+                        let d = this.$convObj( obj ).jsonH( data.document );
+
+                   //     console.log("updateDocument t: " + t);
+                   //     console.log("updateDocument d: " + d);
+
+                        this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
+
+                    }
+                    if (this.format === 'array') {
+
+                   //     console.log("format is array...");
+
+                        let t = this.$convObj( obj ).arrayT( data.document );
+                        let d = this.$convObj( obj ).arrayH( data.document );
+
+                   //     console.log("updateDocument t: " + t);
+                   //     console.log("updateDocument d: " + d);
+
+                        this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
+                    }
                 }
             }
         },
@@ -617,21 +642,21 @@
                 this.show = true;
             });
 
-            EventBus.$on('set-query-format', ( format ) => {
+            /*EventBus.$on('set-query-format', ( format ) => {
                 this.setQueryFormat( format );
-            });
+            });*/
 
             EventBus.$on('collapse-db', (collapse) => {
                 this.collapsed = collapse;
             });
 
-            EventBus.$on('document-updated', function(data) {
+            EventBus.$on('document-updated', (data) => {
                  this.updateDocument( data );
-            }.bind(this));
+            });
         },
 
         /*
-         *  In case of immenent destruction
+         *  In case of imminent destruction
          */
         destroyed() {
             this.clearValues();

@@ -24,9 +24,9 @@
         <span v-if="document.can_modify"><span class="pma-link" @click="update" v-text="showLanguage('document', 'update')"></span> |</span>
         <span v-if="document.can_delete"><span class="pma-link" @click="deleteDocument" v-text="showLanguage('document', 'delete')"></span></span>
         <span v-if="!document.can_delete"><span class="disabled-link"  v-text="showLanguage('document', 'delete')"></span></span> |
-        <span v-if="document.can_add_field"><span class="pma-link" @click="$emit('delete', document._id)" v-text="showLanguage('document', 'new')"></span></span>
-        <span v-if="!document.can_add_field"><span class="disabled-link" v-text="showLanguage('document', 'new')"></span></span> |
-        <span v-if="document.can_duplicate"><span class="pma-link" @click="$emit('duplicate', document._id)" v-text="showLanguage('document', 'duplicate')"></span> |</span>
+        <span v-if="document.can_add_field"><span class="pma-link" @click="newField" v-text="showLanguage('document', 'newField')"></span></span>
+        <span v-if="!document.can_add_field"><span class="disabled-link" v-text="showLanguage('document', 'newField')"></span></span> |
+        <span v-if="document.can_duplicate"><span class="pma-link" @click="duplicate" v-text="showLanguage('document', 'duplicate')"></span> |</span>
         <span v-if="document.can_refresh"><span class="pma-link" @click="$emit('refresh', document._id)" v-text="showLanguage('document', 'refresh')"></span> |</span>
         <span class="pma-link" @click="$emit('text', $event.target)" v-text="showLanguage('document', 'text')"></span> |
         <span class="pma-link" @click="$emit('expand', $event.target)" v-text="showLanguage('document', 'expand')"></span>
@@ -64,6 +64,17 @@
 
             deleteDocument() {
                 console.log("deleting: " + this.document._id);
+                EventBus.$emit('delete-confirmation', {id: this.document._id, element: 'document', notification: this.showLanguage('document', 'deleteConfirm') });
+            },
+
+            newField() {
+                let data = { document: this.document.raw, db: this.collection.databaseName, coll: this.collection.collectionName, index: this.index };
+                EventBus.$emit('show-document-field', data );
+            },
+
+            duplicate() {
+                let data = { document: this.document.raw, db: this.collection.databaseName, coll: this.collection.collectionName };
+                EventBus.$emit('show-document-duplicate', data );
             }
         }
     }

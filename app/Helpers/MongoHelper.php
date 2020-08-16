@@ -16,11 +16,28 @@
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
+/**
+ * Every good name deserves a space
+ */
 namespace App\Helpers;
 
-use MongoId;
-
+/**
+ * We are handling MongoDB based functionality
+ */
 use MongoDB;
+
+/**
+ * Thesre are specific MongDB types we ant to implement
+ */
+use MongoId;
+use MongoInt32;
+use MongoInt64;
+
+/**
+ * Always be prepared to accept failure !!
+ */
+use Exception;
+
 
 /**
  * Class MongoHelper
@@ -55,7 +72,7 @@ class MongoHelper
     public static function json_unicode_to_utf8( $json ) {
         $json = preg_replace_callback("/\\\\u([0-9a-f]{4})/", function($match) {
                 $val = intval($match[1], 16);
-                $c = "";
+                $c   = "";
                 if ($val < 0x7F) {        // 0000-007F
                     $c .= chr($val);
 
@@ -63,7 +80,7 @@ class MongoHelper
                     $c .= chr(0xC0 | ($val / 64));
                     $c .= chr(0x80 | ($val % 64));
 
-                } else {                // 0800-FFFF
+                } else {                  // 0800-FFFF
                     $c .= chr(0xE0 | (($val / 64) / 64));
                     $c .= chr(0x80 | (($val / 64) % 64));
                     $c .= chr(0x80 | ($val % 64));
@@ -104,6 +121,7 @@ class MongoHelper
         $indent_level   = 0;
         $in_string      = false;
 
+        // we expect JSON - decode then encode
         $json_obj = json_decode($json);
         if ($json_obj === false) {
             return false;
@@ -112,7 +130,7 @@ class MongoHelper
 
         $len  = strlen($json);
 
-        for($c = 0; $c < $len; $c++)
+        for ($c = 0; $c < $len; $c++)
         {
             $char = $json[$c];
             switch($char)
@@ -401,11 +419,15 @@ class MongoHelper
     }
 
     /**
+     * Extract the document into an array
+     * Here we attempt to track the field keys that are found
+     *
      * @param $document
-     * @param $documentArr
      * @param $fields
+     *
+     * @return array
      */
-    public static function extractDocument( $document )
+    public static function extractDocument( $document, &$fields = [] )
     {
         $arr    = [];
         $level  = 0;
@@ -494,7 +516,7 @@ class MongoHelper
      *
      * @since 1.0.0
      */
-    public static function r_human_bytes($bytes, $precision = 2) {
+    public static function readHumanBytes($bytes, $precision = 2) {
         if ($bytes == 0) {
             return 0;
         }

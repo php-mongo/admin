@@ -229,11 +229,14 @@ class CollectionController extends Controller implements Unserializable
             $docExport->setVar($obj);
             $docExport->setParams([]);
 
+            /** @var MongoDB\BSON\ObjectId $id */
+            $id = $obj['_id'];
+            $obj['_id'] = $id->__toString();
+
             // we need a raw version - easier to updated and manipulates with JS
-            // dd($obj->getArrayCopy()); die;
             $obj['raw'] = MongoHelper::extractDocument($obj);
 
-            // always set 'array' as the default for this
+            // always set 'json' as the default for this
             $text = $docExport->export($this->format);
 
             // set the data key
@@ -282,9 +285,11 @@ class CollectionController extends Controller implements Unserializable
             "objects" => [],
             "count" => 0
         );
+
         $cursor    = $this->client->$db->selectCollection($collection);
         $objects   = $cursor->find();
-        $array     =  $objects->toArray();
+        $array     = $objects->toArray();
+
         foreach ($array as $object) {
             $arr['objects'][] = $object;
         }

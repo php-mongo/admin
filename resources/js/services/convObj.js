@@ -41,70 +41,325 @@ export default function makeConvObj() {
      */
     return function convObj(obj) {
          let type = typeof obj;
-         let str  = false;
-         if (type === 'object' && obj) {
+         let str  = null;
+         // we basically want to deal with 'strings' here
+         if (obj && type === 'object') {
              str = JSON.stringify( obj );
+             // ToDo !! this may be ovekill ?? !!
              str = str.replace("\"_id\":null,", "");
-
-             console.log("convObj str: " + str);
-
+             // console.log("convObj str: " + str);
+         }
+         else if (obj) {
+             // if the 'obj' is passed as a string, just pass it on
+             str = obj;
          }
 
          return {
-             json: () => {
-                return str;
+             json: (input) => {
+                return str ? str : JSON.stringify( input );
              },
 
              jsonV: (string) => {
-              //   console.log("string: " + string);
-                let input = string ? string : str;
+                 str = string ? string : str;
+                // console.log("jsonV input: " + str);
 
-                console.log("jsonv input: " + input);
+                 let openB   = 0;  // track open braces & brackets ( { & [ )
+                 let i       = 0;  // indexing
+                 let x       = null; // its the x-factor
+                 let divArea = '';
+                 let tab = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                 for (x in str) {
+                     let plus = (parseInt(x) + 1);
 
-                str            = input.replace(/{/g, "{\n\t");
-                str            = str.replace(/:{/g, " : {\n\t");
-                str            = str.replace(/,"/g, ",\n\t\"");
-                str            = str.replace(/}/g, "\n}");
-                str            = str.replace(/},/g, "\n\t},");
-                str            = str.replace(/":"/g, "\" : \"");
-                str            = str.replace(/":/g, "\" : ");
-                return         str;
-            },
+                     if (str[x] === '{' || str[x] === '[') {
+                         openB += 1;
+                         divArea += str[x] + '<br>';
+                         for (i = 0; i < openB; i += 1) {
+                             divArea += tab;
+                         }
+                     }
+                     else if (str[x] === '}' || str[x] === ']') {
+                         divArea += '<br>';
 
-            array: () => {
+                         if (openB > 0) {
+                             openB -= 1;
+                         }
+                         for (i = 0; i < openB; i += 1) {
+                             divArea += tab;
+                         }
+                         divArea += str[x];
+                     }
+                     else if (str[x] === ',') {
+                         divArea += str[x] + '<br>';
+
+                         for (i = 0; i < openB; i += 1) {
+                             divArea += tab;
+                         }
+                     }
+                     else {
+                         divArea += str[x];
+                     }
+                 }
+                 return divArea;
+             },
+
+             jsonT: (string) => {
+                 str = string ? string : str;//
+                 // console.log("jsonT input: " + str);
+
+                 let openB    = 0;  // track open braces & brackets ( { & [ )
+                 let textArea = ''; // target for textarea output
+                 let i        = 0;  // indexing
+                 let x        = null; // its the x-factor
+                 for (x in str) {
+                     if (str[x] === '{' || str[x] === '[') {
+                         openB += 1;
+                         textArea += str[x] + '\n';
+                         for (i = 0; i < openB; i += 1) {
+                             textArea += '\t';
+                         }
+                     }
+                     else if (str[x] === '}' || str[x] === ']') {
+                         textArea += '\n';
+
+                         if (openB > 0) {
+                             openB -= 1;
+                         }
+                         for (i = 0; i < openB; i += 1) {
+                             textArea += '\t';
+                         }
+                         textArea += str[x];
+                     }
+                     else if (str[x] === ',') {
+                         textArea += str[x] + '\n';
+
+                         for (i = 0; i < openB; i += 1) {
+                             textArea += '\t';
+                         }
+                     }
+                     else {
+                         textArea += str[x];
+                     }
+                 }
+                 return textArea;
+             },
+
+             jsonH: (string) => {
+                 str = string ? string : str;//
+                 // console.log("jsonT input: " + str);
+
+                 let divAreaH = ''; // target for div area output
+                 // divAreaH  = str.replace('ObjectId', )
+                 let openB    = 0;  // track open braces & brackets ( { & [ )
+                 let tab      = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                 let i        = 0;  // indexing
+                 let x        = null;
+                 for (x in str) {
+                     let plus = (parseInt(x) + 1);
+
+                     if (str[x] === '{' || str[x] === '[') {
+                         openB += 1;
+                         divAreaH += '<span style="color: green">' + str[x] + '</span>' + '<br>';
+                         for (i = 0; i < openB; i += 1) {
+                             divAreaH += tab;
+                         }
+                     }
+                     else if (str[x] === '}' || str[x] === ']') {
+                         divAreaH += '<br>';
+
+                         if (openB > 0) {
+                             openB -= 1;
+                         }
+                         for (i = 0; i < openB; i += 1) {
+                             divAreaH += tab;
+                         }
+                         divAreaH += '<span style="color: green">' + str[x] + '</span>';
+                     }
+                     else if (str[x] === '(' || str[x] === ')') {
+                         divAreaH += '<span style="color: blue">' + str[x] + '</span>';
+                     }
+                     else if (str[x] === ',') {
+                         divAreaH += '<span style="color: green">' + str[x] + '</span>' + '<br>';
+
+                         for (i = 0; i < openB; i += 1) {
+                             divAreaH += tab;
+                         }
+                     }
+                     else if (str[x] === ':') {
+                         divAreaH += '<span style="color: green">' + str[x] + '</span>';
+                     }
+                     else if (str[x] === '"') {
+                         divAreaH += '<span style="color: #800000">' + str[x] + '</span>';
+                     }
+                     else {
+                         divAreaH += '<span style="color: red">' + str[x] + '</span>';
+                     }
+                 }
+
+                 return divAreaH;
+             },
+
+             array: () => {
                 return Object.keys(obj).map( (key) => {
                     return { [key]: obj[key] };
                 });
-            },
+             },
 
-            arrayV: (string) => {
-                let input = string ? string : str;
+             arrayV: (string) => {
+                 str = string ? string : str;
+                 // console.log("arrayV input: " + str);
 
-                console.log("arrayv input: " + input);
+                 let openB    = 0;  // track open braces & brackets ( { & [ )
+                 let i        = 0;  // indexing
+                 let x        = null; // its the x-factor
+                 let divArray = '';
+                 let tab = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                 for (x in str) {
+                     if (str[x] === '{' || str[x] === '[') {
+                         openB += 1;
+                         divArray += 'array(<br>';
+                         for (i = 0; i < openB; i += 1) {
+                             divArray += tab;
+                         }
+                     }
+                     else if (str[x] === '}' || str[x] === ']') {
+                         divArray += '<br>';
 
-                str            = input.replace(/{/g, "array (\n\t");
-                str            = str.replace("\Warray\W(\n\t", " array (\n\t\t");
-                str            = str.replace(/:{/g, " => (\n\t");
-                str            = str.replace(/,"/g, ",\n\t\"");
-                str            = str.replace(/},/g, "\n\t),");
-                str            = str.replace(/}/g, "\n)");
-                str            = str.replace(/":"/g, "\" => \"");
-                str            = str.replace(/":/g, "\" => ");
-                return         str;
-            },
+                         if (openB > 0) {
+                             openB -= 1;
+                         }
+                         for (i = 0; i < openB; i += 1) {
+                             divArray += tab;
+                         }
+                         divArray += ')';
+                     }
+                     else if (str[x] === ',') {
+                         divArray += str[x] + '<br>';
+
+                         for (i = 0; i < openB; i += 1) {
+                             divArray += tab;
+                         }
+                     }
+                     else if (str[x] === ":") {
+                         divArray += ' => ';
+                     }
+                     else {
+                         divArray += str[x];
+                     }
+                 }
+                 return divArray;
+             },
+
+             arrayT: (string) => {
+                 str = string ? string : str;
+                 // console.log("arrayT input: " + str);
+
+                 let openB     = 0;  // track open braces & brackets ( { & [ )
+                 let textArray = '';
+                 let i         = 0;  // indexing
+                 let x         = null; // its the x-factor
+                 for (x in str) {
+                     if (str[x] === '{' || str[x] === '[') {
+                         openB += 1;
+                         textArray += 'array(\n';
+                         for (i = 0; i < openB; i += 1) {
+                             textArray += '\t';
+                         }
+                     } else if (str[x] === '}' || str[x] === ']') {
+                         textArray += '\n';
+
+                         if (openB > 0) {
+                             openB -= 1;
+                         }
+                         for (i = 0; i < openB; i += 1) {
+                             textArray += '\t';
+                         }
+                         textArray += ')';
+                     } else if (str[x] === ',') {
+                         textArray += str[x] + '\n';
+
+                         for (i = 0; i < openB; i += 1) {
+                             textArray += '\t';
+                         }
+                     } else if (str[x] === ":") {
+                         textArray += ' => ';
+                     } else {
+                         textArray += str[x];
+                     }
+                 }
+                 return textArray;
+             },
+
+             arrayH: (string) => {
+                 str = string ? string : str;//
+                 // console.log("jsonT input: " + str);
+
+                 let openB     = 0;  // track open braces & brackets ( { & [ )
+                 let divArrayH = '';
+                 let tab       = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                 let i         = 0;  // indexing
+                 let x         = null; // its the x-factor
+                 for (x in str) {
+                     if (str[x] === '{' || str[x] === '[') {
+                         openB += 1;
+                         divArrayH += '<span style="color: blue">array(</span><br>';
+                         for (i = 0; i < openB; i += 1) {
+                             divArrayH += tab;
+                         }
+                     }
+                     else if (str[x] === '}' || str[x] === ']') {
+                         divArrayH += '<br>';
+
+                         if (openB > 0) {
+                             openB -= 1;
+                         }
+                         for (i = 0; i < openB; i += 1) {
+                             divArrayH += tab;
+                         }
+                         divArrayH += '<span style="color: blue">)</span>';
+                     }
+                     else if (str[x] === ',') {
+                         divArrayH += '<span style="color: green">' + str[x] + '</span>' + '<br>';
+
+                         for (i = 0; i < openB; i += 1) {
+                             divArrayH += tab;
+                         }
+                     }
+                     else if (str[x] === '(' || str[x] === ')') {
+                         divArrayH += '<span style="color: green">' + str[x] + '</span>';
+                     }
+                     else if (str[x] === ":") {
+                         divArrayH += ' <span style="color: green">=></span> ';
+                     }
+                     else if (str[x] === '"') {
+                         divArrayH += '<span style="color: #800000">' + str[x] + '</span>';
+                     }
+                     else {
+                         divArrayH += '<span style="color: red">' + str[x] + '</span>';
+                     }
+                 }
+                 return divArrayH;
+             },
 
              arrayToJson: (string) => {
                  let input = string ? string : str;
-                 //   console.log(input);s
+                 //   console.log(input);
                  str            = input.replace(/array/g, "");
                  str            = str.replace(/\(/g, "{");
                  str            = str.replace(/ => \(/g, ":{");
-                // str            = str.replace(/,"/g, ",\n\t\"");
                  str            = str.replace(/\)/g, "}");
-              //   str            = str.replace(/}/g, "\n)");
-                 str            = str.replace(/" => "/g, ":");
-              //   str            = str.replace(/":/g, "\" => ");
+                 str            = str.replace(/=>/g, ":");
                  return         str;
+             },
+
+             minify: (string) => {
+                 let input = string ? string : str;
+                 //   console.log(input);
+                 let doc = input.replace(/\n/g, ""); // remove new line
+                 doc = doc.replace(/\t/g, ""); // remove tabs
+                 // doc = doc.replace(/\s/g, ""); // removing all space was a bad idea
+                 doc = doc.replace(/\s\s/g, " ");
+                 return doc;
              }
         };
     };

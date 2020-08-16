@@ -75,19 +75,24 @@ class DatabasesController extends Controller implements Unserializable
     private $mongo;
 
     /**
-     * @var $unserialised MongoDB\Model\BSONArray
+     * @var array   $excluded  DB's for exclusion when NON admin user
+     */
+    private $excluded = ['admin','config','local'];
+
+    /**
+     * @var MongoDB\Model\BSONArray $unserialised
      */
     private $unserialised;
 
     /**
-     * @var string|null $errorMessage
+     * @var string|array|null $errorMessage
      */
     private $errorMessage = null;
 
     /**
-     * @return string|null
+     * @return string|array|null
      */
-    public function getErrorMessage(): ?string
+    private function getErrorMessage(): ?mixed
     {
         return $this->errorMessage;
     }
@@ -95,9 +100,33 @@ class DatabasesController extends Controller implements Unserializable
     /**
      * @param string|null $errorMessage
      */
-    public function setErrorMessage(?string $errorMessage): void
+    private function setErrorMessage(?string $errorMessage): void
     {
+        if ($this->errorMessage) {
+            $errorMessage = is_array($this->errorMessage) ? $this->errorMessage[] = $errorMessage : array(0 => $errorMessage);
+        }
         $this->errorMessage = $errorMessage;
+    }
+
+    /**
+     * We need a global method to monitor which database can be read for stats etc
+     * For now its just fr the demo website
+     * ToDo: !! this can be extended and implementd further kater on !!
+     *
+     * @param   string  $dbn
+     * @return  bool
+     */
+    private function handleExclusions( $dbn ) {
+        $env = env('APP_ENV');
+        if  ($env != 'demo') {
+            // we  are only checking on the demo site
+            return true;
+        }
+        // still here??
+        if (!in_array( $dbn, $this->excluded)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -108,24 +137,24 @@ class DatabasesController extends Controller implements Unserializable
      */
     private function getAllDatabases($name = false)
     {
-        // only one DB by name
-        if ($name) {
-            $database   = $this->client->selectDatabase( $name );
-            $stats      = $database->command(array('dbstats' => 1))->toArray()[0];
-            $statistics = [];
-            // break out the stats into an array
-            foreach ($stats as $key => $value) {
-                $statistics[ $key ] = $value;
-            }
-            // the collections object should contain any relative objects
-            $collections = $this->getCollections($name, true);
-            $arr         = array("db" => $database->__debugInfo(), "stats" => $statistics, "collections" => $collections);
+        try {
+            // only one DB by name
+            if ($name) {
+                $database   = $this->client->selectDatabase( $name );
+                $stats      = $database->command(array('dbstats' => 1))->toArray()[0];
+                $statistics = [];
+                // break out the stats into an array
+                foreach ($stats as $key => $value) {
+                    $statistics[ $key ] = $value;
+                }
+                // the collections object should contain any relative objects
+                $collections = $this->getCollections($name, true);
+                $arr         = array("db" => $database->__debugInfo(), "stats" => $statistics, "collections" => $collections);
 
-        } else {
+            } else {
 
-            $arr   = [];
-            $index = 0;
-            try {
+                $arr   = [];
+                $index = 0;
                 foreach ($this->client->listDatabases() as $db) {
                     $dbn        = $db->getName();
                     //$database   = (new MongoDB\Client)->$dbn;
@@ -133,7 +162,11 @@ class DatabasesController extends Controller implements Unserializable
                     // 1) $this->mongo->connectClientDb($dbn)  =  (new MongpDB\Client())->database
                     // 2) $this->client->selectDatabase($dbn)  = (new MongpDB\Client())->selectDatabase('database')
                     $database   = $this->mongo->connectClientDb($dbn);
-                    $stats      = $database->command(array('dbstats' => 1))->toArray()[0];
+                    $stats      = [];
+                    if ($this->handleExclusions( $dbn)) {
+                        // only populate if DB allowed
+                        $stats = $database->command(array('dbstats' => 1))->toArray()[0];
+                    }
                     $statistics = [];
                     // break out the stats into an array
                     foreach ($stats as $key => $value) {
@@ -144,14 +177,13 @@ class DatabasesController extends Controller implements Unserializable
                     $arr[]       = array("id" => $index, "db" => $db->__debugInfo(), "stats" => $statistics, "collections" => $collections);
                     $index++;
                 }
-
-            } catch (\Exception $e) {
-                $this->setErrorMessage($e->getMessage());
             }
-
+            // !! one result fits all
+            return $arr;
         }
-        // !! one result fits all
-        return $arr;
+        catch (\Exception $e) {
+            $this->setErrorMessage($e->getMessage());
+        }
     }
 
     /**
@@ -163,20 +195,30 @@ class DatabasesController extends Controller implements Unserializable
      */
     private function getCollections($db, $getObjects = false)
     {
-        $arr      = [];
-        $index    = 0;
-        $database = $this->client->selectDatabase( $db ); // (new MongoDB\Client)->$db;
-        /** @var MongoDB\Model\CollectionInfo $collection */
-        foreach ($database->listCollections() as $collection) {
-            // we only need to get objects when its database view
-            if ($getObjects) {
-                $arr[] = array("id" => $index, "collection" => $collection->__debugInfo(), "objects" => $this->getObjects($db, $collection->getName()));
-            } else {
-                $arr[] = array("id" => $index, "collection" => $collection->__debugInfo());
+        try {
+            if (!$this->handleExclusions( $db )) {
+                // we get errors when users without correct permissions try to read collections on retricted dbs
+                return [];
             }
-            $index++;
+            $arr      = [];
+            $index    = 0;
+            $database = $this->client->selectDatabase( $db );
+            /** @var MongoDB\Model\CollectionInfo $collection */
+            foreach ($database->listCollections() as $collection) {
+                // we only need to get objects when its database view
+                if ($getObjects) {
+                    $arr[] = array("id" => $index, "collection" => $collection->__debugInfo(), "objects" => $this->getObjects($db, $collection->getName()));
+                } else {
+                    $arr[] = array("id" => $index, "collection" => $collection->__debugInfo());
+                }
+                $index++;
+            }
+            return $arr;
         }
-        return $arr;
+       catch (\Exception $e) {
+           $this->setErrorMessage($e->getMessage());
+           return [];
+       }
     }
 
     /**
@@ -188,12 +230,18 @@ class DatabasesController extends Controller implements Unserializable
      */
     private function getObjects(string $db, string $collection)
     {
-        $arr     = [];
-        $cursor  = $this->mongo->connectClientDb($db)->selectCollection($collection); // (new MongoDB\Client)->$db->selectCollection($collection);
-        $objects = $cursor->find();
-        $arr['objects'] = $objects->toArray();
-        $arr['count']   = count($arr['objects']);
-        return $arr;
+        try {
+            $arr     = [];
+            $cursor  = $this->mongo->connectClientDb($db)->selectCollection($collection); // (new MongoDB\Client)->$db->selectCollection($collection);
+            $objects = $cursor->find();
+            $arr['objects'] = $objects->toArray();
+            $arr['count']   = count($arr['objects']);
+            return $arr;
+        }
+        catch (\Exception $e) {
+            $this->setErrorMessage($e->getMessage());
+            return [];
+        }
     }
 
     /**
@@ -262,7 +310,13 @@ class DatabasesController extends Controller implements Unserializable
         // get the databases
         $database = $this->getAllDatabases($name);
 
-        return response()->success('success', array('database' => $database));
+        if ($error = $this->getErrorMessage()) {
+            // this can occur if there is no Server config
+            return response()->error('failed', array('error' => $error));
+
+        } else {
+            return response()->success('success', array('database' => $database));
+        }
     }
 
     /**
@@ -278,34 +332,39 @@ class DatabasesController extends Controller implements Unserializable
     public function createDatabase(Request $request)
     {
         $db = $request->get('database');
-        // create the database
-        $database = $this->mongo->connectClientDb($db); // (new MongoDB\Client)->$db;
+        try {
+            // create the database
+            $database = $this->mongo->connectClientDb($db); // (new MongoDB\Client)->$db;
 
-        // ToDo: we need to add a default collection to initialise the DB in MongoDB
-        $database->createCollection('foo');
+            // ToDo: we need to add a default collection to initialise the DB in MongoDB
+            $database->createCollection('foo');
 
-        $index = 0;
-        // this lets us build the $index value correctly and re-fetch the new DB so that we cab grab its stats
-        // ToDo: their might be a better way to to this - something more efficient - haven't found it yet in the docs
-        foreach ($this->client->listDatabases() as $mdb) {
-            $index++;
-            if ($mdb->getName() == $db) {
-                $dbn      = $mdb->getName();
-                $database = $this->mongo->connectClientDb( $dbn ); // (new MongoDB\Client)->$dbn;
+            $index = 0;
+            // this lets us build the $index value correctly and re-fetch the new DB so that we cab grab its stats
+            // ToDo: their might be a better way to to this - something more efficient - haven't found it yet in the docs
+            foreach ($this->client->listDatabases() as $mdb) {
+                $index++;
+                if ($mdb->getName() == $db) {
+                    $dbn      = $mdb->getName();
+                    $database = $this->mongo->connectClientDb( $dbn ); // (new MongoDB\Client)->$dbn;
+                }
             }
-        }
-        // the index  is used as a key in the front-end
-        $index++;
+            // the index  is used as a key in the front-end
+            $index++;
 
-        // get the DB stats
-        $stats = $database->command(array('dbstats' => 1))->toArray()[0];
-        $statistics = [];
-        foreach ($stats as $key => $value) {
-            $statistics[ $key ] = $value;
-        }
-        $arr = array("id" => $index, "db" => $database->__debugInfo(), "stats" => $statistics, "collections" => $this->getCollections($db));
+            // get the DB stats
+            $stats = $database->command(array('dbstats' => 1))->toArray()[0];
+            $statistics = [];
+            foreach ($stats as $key => $value) {
+                $statistics[ $key ] = $value;
+            }
+            $arr = array("id" => $index, "db" => $database->__debugInfo(), "stats" => $statistics, "collections" => $this->getCollections($db));
 
-        return response()->success('success', array('database' => $arr ));
+            return response()->success('success', array('database' => $arr ));
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('error' => 'unable to create database ' . $db));
+        }
     }
 
     /**
@@ -321,20 +380,24 @@ class DatabasesController extends Controller implements Unserializable
     public function deleteDatabase(Request $request)
     {
         $names  = $request->get('names', false);
-        $status = array();
-        if ($names && is_array($names)) {
-            foreach ($names as $name) {
-                if (!empty($name)) {
-                    $db = $this->mongo->connectClientDb( $name ); // (new MongoDB\Client)->$name;
+        try {
+            $status = array();
+            if ($names && is_array($names)) {
+                foreach ($names as $name) {
+                    if (!empty($name)) {
+                        $db = $this->mongo->connectClientDb( $name ); // (new MongoDB\Client)->$name;
 
-                    /** @var MongoDB\Model\BSONDocument $result */
-                    $result = $db->drop();
-                    $status[] = $this->setDeleteStatus( $name, $result->getArrayCopy());
+                        /** @var MongoDB\Model\BSONDocument $result */
+                        $result = $db->drop();
+                        $status[] = $this->setDeleteStatus( $name, $result->getArrayCopy());
+                    }
                 }
             }
+            return response()->success('success', array('status' => $status ));
         }
-
-        return response()->success('success', array('status' => $status ));
+        catch (\Exception $e) {
+            return response()->error('failed', array('error' => 'unable to delete database(s) ' . $names));
+        }
     }
 
     /**
