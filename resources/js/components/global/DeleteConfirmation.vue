@@ -23,7 +23,7 @@
         z-index: 999999;
         left: 0;
         right: 0;
-        top: 26vh;
+        top: 10vh;
 
         div.delete-notification  {
             background: $white;
@@ -57,7 +57,7 @@
     <transition name="slide-in-top">
         <div class="delete-notification-container" v-show="show">
             <div class="delete-notification">
-                <img src="/img/error.svg"/> {{ errorMessage }}
+                <img src="/img/error.svg"/> {{ message }}
                 <button class="button warning" v-on:click="confirmDelete()">Confirm deletion</button>
                 <button class="button" v-on:click="cancelDelete()">Cancel</button>
             </div>
@@ -77,7 +77,7 @@
         */
         data(){
             return {
-                errorMessage: 'Please confirm this delete request',
+                message: 'Please confirm this delete request',
                 show: false,
                 id: null,
                 element: null
@@ -110,10 +110,10 @@
         */
         mounted(){
             EventBus.$on('delete-confirmation', ( data ) => {
-                this.errorMessage   = data.notification;
-                this.show           = true;
-                this.id             = data.id;
-                this.element        = data.element;
+                this.message   = data.notification;
+                this.show      = true;
+                this.id        = data.id;
+                this.element   = data.element;
             });
         }
     }

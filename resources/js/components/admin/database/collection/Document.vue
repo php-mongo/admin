@@ -20,13 +20,13 @@
 </style>
 
 <template>
-    <div class="collection-document">
+    <div class="collection-document" v-show="show">
         <document-nav @expand="expand($event)" @text="text($event)" v-bind:document="document" v-bind:collection="collection" v-bind:index="index"></document-nav>
         <div :id="'text_' + index" :class="'doc-data index-' + index" ref="data-document" v-html="getDataByFormat"></div>
         <div :id="'field_' + index" class="doc-text hidden-element" ref="text-document">
             <textarea ref="textbox" rows="7" cols="60" v-on:dblclick="selectAll($event)">{{ getTextByFormat }}</textarea>
         </div>
-        <div class="doc-right-to-top"><span class="pma-link">Top</span></div>
+        <div class="doc-right-to-top"><span class="pma-link" v-text="showLanguage('document', 'top')"></span></div>
     </div>
 </template>
 
@@ -35,6 +35,7 @@
      *   Import components
      */
     import DocumentNav from "./DocumentNav";
+    import {EventBus} from "../../../../event-bus";
 
     export default {
         /*
@@ -55,7 +56,8 @@
         data() {
             return {
                 expanded: false,
-                showText: false
+                showText: false,
+                show: true
             }
         },
 
@@ -68,7 +70,8 @@
                     return this.document.data;
                 }
                 if (this.format === 'array') {
-                    return this.document.text;
+                    //return this.document.text;
+                    return this.$convObj(this.document.raw).arrayH(); // this.document.text;
                 }
             },
 
@@ -80,7 +83,8 @@
                     return this.document.text;
                 }
                 if (this.format === 'array') {
-                    return this.document.data;
+                    //return this.document.data;
+                    return this.$convObj(this.document.raw).arrayT(); //this.document.data;
                 }
             }
         },
@@ -152,7 +156,44 @@
                     this.$jqf(this.$refs['text-document']).show();
                     this.$jqf(event).text('Data');
                 }
-            }
+            },
+
+            /*
+             *  Confirm the deletion
+             */
+            deleteConfirmed(id) {
+                if (id === this.document._id) {
+                    let data = {db: this.collection.databaseName, collection: this.collection.collectionName, _id: id };
+                    this.$store.dispatch('deleteDocument', data);
+                    this.handleDeletion();
+                }
+            },
+
+            /*
+             *  Handle the delete results
+             */
+            handleDeletion() {
+                let status = this.$store.getters.getDocumentDeleteStatus;
+                if (status === 1) {
+                    this.handleDeletion();
+                }
+                if (status === 2) {
+                    EventBus.$emit('show-success', { notification: this.showLanguage('document', 'deleteSuccess'), timer: 5000 });
+                    this.show = false;
+                }
+                if (status === 3) {
+                    EventBus.$emit('show-error', { notification: this.showLanguage('document', 'deleteFailed'), timer: 7000 });
+                }
+            },
+        },
+
+        mounted() {
+            /*
+            *    Confirmed deletion
+            */
+            EventBus.$on('confirm-delete-document', (id) => {
+                this.deleteConfirmed(id);
+            });
         }
     }
 </script>

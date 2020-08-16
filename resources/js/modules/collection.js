@@ -37,16 +37,19 @@ export const collection = {
     *   Defines the 'state' being monitored for the module
     */
     state: {
+        activeCollection: null,
+        collection: {},
+        collectionLoadStatus: 0,
         collections: [],
         collectionsLoadStatus: 0,
-        collection: {},
-        activeCollection: null,
-        collectionLoadStatus: 0,
+        currentFormat: 'json',
         displayCollection: {},
         displayCollectionStatus: 0,
         createCollectionStatus: 0,
         deleteCollectionStatus: 0,
-        currentFormat: 'json',
+        documentUpdateStatus: 0,
+        documentDeleteStatus: 0,
+        documentDuplicateStatus: 0,
         errorData: {}
     },
 
@@ -146,6 +149,80 @@ export const collection = {
         */
         setCurrentFormat( { commit }, data ) {
             commit( 'setCurrentFormat', data );
+        },
+
+        /*
+        *  Update a document within the collection
+        */
+        updateDocument( { commit, rootStore, dispatch }, data ) {
+            commit( 'setUpdateDocumentStatus', 1);
+
+            CollectionApi.updateDocument( data )
+                .then( (response) => {
+                    if (response.data.message === 'success') {
+                        commit( 'setUpdatedDocument', data );
+                        commit( 'setUpdateDocumentStatus', 2);
+                    } else {
+                        commit( 'setUpdateDocumentStatus', 3);
+                        commit( 'setErrorData', 'no result');
+                    }
+                })
+                .catch( (error) => {
+                    commit( 'setUpdateDocumentStatus', 3);
+                    commit( 'setErrorData', error);
+                    console.log(error);
+                });
+        },
+
+        /*
+        *  Duplicate a document within the collection
+        */
+        duplicateDocument( { commit, rootStore, dispatch }, data ) {
+            commit( 'setDuplicateDocumentStatus', 1);
+
+            CollectionApi.duplicateDocument( data )
+                .then( (response) => {
+                    if (response.data.message === 'success') {
+                        commit( 'setCreatedDocument', response.data.data.document );
+                        commit( 'setDuplicateDocumentStatus', 2);
+                    } else {
+                        commit( 'setDuplicateDocumentStatus', 3);
+                        commit( 'setErrorData', 'no result');
+                    }
+                })
+                .catch( (error) => {
+                    commit( 'setDuplicateDocumentStatus', 3);
+                    commit( 'setErrorData', error);
+                    console.log(error);
+                });
+        },
+
+        /*
+        *   Delete one or more documents - remove document from array
+        */
+        deleteDocument( { commit, rootState, dispatch }, data ) {
+            commit( 'setDeleteDocumentStatus', 1);
+
+            CollectionApi.deleteDocument( data )
+                .then( ( response ) => {
+                    // ToDo: we are just handling single doc delete today
+                    if (response.data.message === 'success') {
+                        commit( 'setDeletedDocument', [data._id] );
+                        commit( 'setDeleteDocumentStatus', 2 );
+                    } else {
+                        commit( 'setDeleteDocumentStatus', 3 );
+                        commit( 'setErrorData', 'not deleted');
+                    }
+                })
+                .catch( (error) => {
+                    commit( 'setDeleteDocumentStatus', 3 );
+                    commit( 'setErrorData', error);
+                    console.log(error);
+                });
+        },
+
+        setDocument( { commit }, data ) {
+            commit( 'setDocumentUpdates', data);
         }
     },
 
@@ -208,6 +285,69 @@ export const collection = {
         */
         setCreatedCollection( state, collection ) {
             state.collections.push( collection );
+        },
+
+        /*
+         *  Set the document update status
+         */
+        setUpdateDocumentStatus( state, status ) {
+            state.documentUpdateStatus = status;
+        },
+
+        /*
+         * Replace document with updated version
+         */
+        setUpdatedDocument( state, data ) {
+            state.collection.objects.objects[data.index].raw = JSON.parse(data.document);
+        },
+
+        /*
+         * Replace document with updated version
+         */
+        setDocumentUpdates( state, data ) {
+            if (data.text) {
+                state.collection.objects.objects[data.index].text = data.text;
+                state.collection.objects.objects[data.index].data = data.data;
+            }
+        },
+
+        /*
+         *  Set the document duplicate status
+         */
+        setDuplicateDocumentStatus( state, status ) {
+            state.documentDuplicateStatus = status;
+        },
+
+        /*
+         * Add created document and update count
+         */
+        setCreatedDocument( state, data ) {
+            state.collection.objects.objects.push(data);
+            state.collection.objects.count += 1;
+        },
+
+        /*
+        *   Set the delete document status
+        */
+        setDeleteDocumentStatus( state, status) {
+            state.deleteDocumentStatus = status;
+        },
+
+        /*
+        *   Set (remove) the deleted document(s) from the existing array
+        */
+        setDeletedDocument( state, documents ) {
+            let objects = state.collection.objects.objects;
+            documents.forEach(function(value, index) {
+                let arr = [];
+                objects.forEach(function(doc, index) {
+                    if (doc._id !== value) {
+                        arr.push(doc);
+                    }
+                });
+                state.collection.objects.objects = arr;
+                state.collection.objects.count -= 1;
+            });
         },
 
         /*
@@ -297,15 +437,11 @@ export const collection = {
         *   Return the display collection
         */
         getDisplayCollection: (state) => (id) => {
-            console.log("getDisplayCollection: " + id);
             if (state.collection && state.collection.id !== '') {
-                console.log("collection found!!");
                 return state.collection;
-
             } else {
                 let collection = state.collection.find(collection => collection.id === id);
                 if (collection) {
-                    console.log("setting display collection state: " + id);
                     state.displayCollectionStatus = id;
                     state.displayCollection = collection;
                     return collection;
@@ -325,6 +461,27 @@ export const collection = {
         */
         getDeleteCollectionStatus( state ) {
             return state.deleteCollectionStatus;
+        },
+
+        /*
+         *  Get the document update status
+         */
+        getUpdateDocumentStatus (state ) {
+            return state.documentUpdateStatus;
+        },
+
+        /*
+         *  Get the document duplicate status
+         */
+        getDuplicateDocumentStatus (state ) {
+            return state.documentDuplicateStatus;
+        },
+
+        /*
+        *   Get the delete document status
+        */
+        getDeleteDocumentStatus( state ) {
+            return state.deleteDocumentStatus;
         },
 
         /*
@@ -355,6 +512,25 @@ export const collection = {
         */
         getCurrentFormat( state ) {
             return state.currentFormat;
+        },
+
+        /*
+         *  Get the documents from the current collection
+         */
+        getDocuments( state ) {
+            return state.collection.objects.objects;
+        },
+
+        /*
+         *  Get a document from the current collection
+         */
+        getDocument: ( state ) => ( id ) => {
+            let documents = state.collection.objects.objects;
+            if (documents) {
+                return documents.map( document => {
+                    return document._id = id;
+                });
+            }
         }
     }
 };

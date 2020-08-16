@@ -153,6 +153,16 @@ return [
     'display' => env('DISPLAY', 'array'),
 
     /*
+     * Custom configs curretly used for the demo website
+     *
+     * These may be usefull in the future for hard coding the MongoDB server user|password
+     * They'll be used in \App\Classes\MongoConnection.php
+     */
+    'dbUser' => env('DB_USER'),
+
+    'dbPasswd' => env('DB_PASSWD'),
+
+    /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers
     |--------------------------------------------------------------------------

@@ -120,7 +120,14 @@ const countries = makeCountries();
  *   Load the JQF methods to mock jQuery methods
  */
 import makeJqf from './services/jqf.js';
-const jqf = makeJqf( 'en' );
+const jqf = makeJqf( );
+
+/**
+ *   Load the Object conversion methods
+ *   These may be used in multiple places - easier to maintain and update
+ */
+import makeConvObj from './services/convObj.js';
+const convObj = makeConvObj( );
 
 /**
 *   Next, we will create a fresh Vue application instance and attach it to
@@ -131,6 +138,7 @@ new Vue({
     router,
     store,
     trans,
-    jqf
+    jqf,
+    convObj
 
 }).$mount('#app');

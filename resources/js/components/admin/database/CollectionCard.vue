@@ -21,7 +21,9 @@
 
 <template>
     <li class="coll">
+        <input type="checkbox" v-model="checked" />
         <span class="pma-link" @click="$emit('loadCollection', getCollectionName )">{{ getCollectionName }}</span>
+        <span class="obj-count u-pull-right">{{ collection.objects.count }}</span>
     </li>
 </template>
 
@@ -36,6 +38,12 @@
         *   The component accepts one db as a property
         */
         props: ['collection'],
+
+        data() {
+            return {
+                checked: false
+            }
+        },
 
         computed: {
             getCollectionName() {

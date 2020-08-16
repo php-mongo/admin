@@ -237,7 +237,8 @@
              */
             setFormat( format ) {
                 this.activeFormat = format;
-                EventBus.$emit('set-query-format', format);
+                this.$store.dispatch('setCurrentFormat', format);
+                //EventBus.$emit('set-query-format', format);
             },
 
             /*
