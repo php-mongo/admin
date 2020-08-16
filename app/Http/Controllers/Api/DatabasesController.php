@@ -197,7 +197,7 @@ class DatabasesController extends Controller implements Unserializable
     {
         try {
             if (!$this->handleExclusions( $db )) {
-                // we get errors when users without correct permissions try to read collections on retricted dbs
+                // we get errors when users without correct permissions try to read collections on restricted dbs
                 return [];
             }
             $arr      = [];
@@ -232,7 +232,7 @@ class DatabasesController extends Controller implements Unserializable
     {
         try {
             $arr     = [];
-            $cursor  = $this->mongo->connectClientDb($db)->selectCollection($collection); // (new MongoDB\Client)->$db->selectCollection($collection);
+            $cursor  = $this->mongo->connectClientDb($db)->selectCollection($collection);
             $objects = $cursor->find();
             $arr['objects'] = $objects->toArray();
             $arr['count']   = count($arr['objects']);
@@ -303,6 +303,9 @@ class DatabasesController extends Controller implements Unserializable
      * Method:      GET
      * Description: Fetches all databases with full stats
      *
+     * @param Request $request
+     * @param $name
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function getDatabase(Request $request, $name)
@@ -327,6 +330,7 @@ class DatabasesController extends Controller implements Unserializable
      * Description: Create a new database using the given name
      *
      * @param Request $request
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function createDatabase(Request $request)
@@ -334,7 +338,7 @@ class DatabasesController extends Controller implements Unserializable
         $db = $request->get('database');
         try {
             // create the database
-            $database = $this->mongo->connectClientDb($db); // (new MongoDB\Client)->$db;
+            $database = $this->mongo->connectClientDb($db);
 
             // ToDo: we need to add a default collection to initialise the DB in MongoDB
             $database->createCollection('foo');
@@ -346,7 +350,7 @@ class DatabasesController extends Controller implements Unserializable
                 $index++;
                 if ($mdb->getName() == $db) {
                     $dbn      = $mdb->getName();
-                    $database = $this->mongo->connectClientDb( $dbn ); // (new MongoDB\Client)->$dbn;
+                    $database = $this->mongo->connectClientDb( $dbn );
                 }
             }
             // the index  is used as a key in the front-end
@@ -385,7 +389,7 @@ class DatabasesController extends Controller implements Unserializable
             if ($names && is_array($names)) {
                 foreach ($names as $name) {
                     if (!empty($name)) {
-                        $db = $this->mongo->connectClientDb( $name ); // (new MongoDB\Client)->$name;
+                        $db = $this->mongo->connectClientDb( $name );
 
                         /** @var MongoDB\Model\BSONDocument $result */
                         $result = $db->drop();
