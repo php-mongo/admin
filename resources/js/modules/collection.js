@@ -207,8 +207,9 @@ export const collection = {
                 .then( ( response ) => {
                     // ToDo: we are just handling single doc delete today
                     if (response.data.message === 'success') {
-                        commit( 'setDeletedDocument', [data._id] );
+                        console.log("delete success..");
                         commit( 'setDeleteDocumentStatus', 2 );
+                        commit( 'setDeletedDocument', [data._id] );
                     } else {
                         commit( 'setDeleteDocumentStatus', 3 );
                         commit( 'setErrorData', 'not deleted');
@@ -255,7 +256,6 @@ export const collection = {
         *   Sets the collection
         */
         setCollection( state, collection ) {
-            // console.log("saving collection: " + collection);
             state.collection = collection;
         },
 
@@ -295,14 +295,14 @@ export const collection = {
         },
 
         /*
-         * Replace document with updated version
+         *  Replace document with updated version
          */
         setUpdatedDocument( state, data ) {
             state.collection.objects.objects[data.index].raw = JSON.parse(data.document);
         },
 
         /*
-         * Replace document with updated version
+         *  Replace document with updated version
          */
         setDocumentUpdates( state, data ) {
             if (data.text) {
@@ -319,7 +319,7 @@ export const collection = {
         },
 
         /*
-         * Add created document and update count
+         *  Add created document and update count
          */
         setCreatedDocument( state, data ) {
             state.collection.objects.objects.push(data);
@@ -330,24 +330,35 @@ export const collection = {
         *   Set the delete document status
         */
         setDeleteDocumentStatus( state, status) {
-            state.deleteDocumentStatus = status;
+            state.documentDeleteStatus = status;
         },
 
         /*
         *   Set (remove) the deleted document(s) from the existing array
         */
         setDeletedDocument( state, documents ) {
+            console.log(documents);
             let objects = state.collection.objects.objects;
-            documents.forEach(function(value, index) {
-                let arr = [];
+            let arr = [];
+            if (documents.length >= 1) {
+                documents.forEach(function(value, index) {
+                    console.log("deleting doc:" + value);
+                    objects.forEach(function(doc, index) {
+                        if (doc._id !== value) {
+                            arr.push(doc);
+                        }
+                    });
+                });
+            } else {
+                console.log("single doc?");
                 objects.forEach(function(doc, index) {
-                    if (doc._id !== value) {
+                    if (doc._id !== documents) {
                         arr.push(doc);
                     }
                 });
-                state.collection.objects.objects = arr;
-                state.collection.objects.count -= 1;
-            });
+            }
+            state.collection.objects.objects = arr;
+            state.collection.objects.count -= 1;
         },
 
         /*
@@ -481,7 +492,7 @@ export const collection = {
         *   Get the delete document status
         */
         getDeleteDocumentStatus( state ) {
-            return state.deleteDocumentStatus;
+            return state.documentDeleteStatus;
         },
 
         /*

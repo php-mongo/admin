@@ -288,7 +288,16 @@ export const application = {
         },
 
         getLanguageString: (state) => (context, key) => {
-            return state.languageArray[context][key];
+            if (state.languageArray[context]) {
+                if (state.languageArray[context][key]) {
+                    return state.languageArray[context][key];
+                } else {
+                    console.log("no key: " + key);
+                }
+
+            } else {
+                console.log("no context: " + context);
+            }
         },
 
         getLanguageOptions( state ) {

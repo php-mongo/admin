@@ -83,7 +83,7 @@
  *  See licence.txt for the complete licensing outline.
  *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
  *  See COPYRIGHT.php for copyright notices and further details.
- */div.page{min-height:calc(100vh - 152px);padding:20px}div.page div p img{width:auto;border-radius:20px}div.page .text-info{color:#31708f}
+ */div.page{min-height:calc(100vh - 200px);padding:20px}div.page div p img{width:auto;border-radius:20px}div.page .text-info{color:#31708f}
 
 /*!
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)

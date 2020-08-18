@@ -355,7 +355,7 @@
         },
 
         destroyed() {
-            this.clearValues();
+            this.clearData();
         }
     }
 </script>

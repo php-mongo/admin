@@ -302,7 +302,9 @@
 
             <form id="loginForm" name="loginForm" ref="loginForm" action="#" method="post" class="form-group" v-on:submit="loginUser($event)">
 
-                <p class="intro-message"><span class="has-info" id="introMessage" v-text="showLanguage('login', 'intro')">s</span></p>
+                <p>&nbsp;</p>
+
+                <p class="intro-message"><span class="has-info" id="introMessage" v-text="showLanguage('login', 'intro')"></span></p>
 
                 <p class="login-error has-error hidden-content" ref="loginError"></p>
 
@@ -327,7 +329,12 @@
                 <p>
                     <span class="fieldBlock">
                         <label for="password" class="col-md-4 col-form-label text-md-right" v-text="showLanguage('login', 'password')"></label>
-                        <input id="password" type="password" class="form-control" ref="password" name="password" v-model="credentials.password" required autocomplete="current-password" v-on:focus="verifyUser()" v-on:keyup="countPassword()">
+                        <input id="password" type="password" class="form-control" ref="password" name="password" required autocomplete="current-password"
+                               v-model="credentials.password"
+                               v-on:focus="verifyUser"
+                               v-on:keyup="countPassword"
+                               v-on:change="countPassword"
+                        >
                     </span>
                     <span class="help-block" id="passwordInfo" ref="passwordInfo"></span>
                 </p>
@@ -351,17 +358,13 @@
 
                 <div class="col-md-8 offset-md-4">
                     <button type="submit" :class="'button ' + submitButtonClass" :disabled="enableSubmit" v-bind:aria-disabled="submitButtonStatus" v-text="showLanguage('login', 'button')"></button>
+                    <button class="button warning" v-on:click="closeThisDialog()" v-text="showLanguage('global', 'close')"></button>
                     <br />
                     <a class="btn btn-link" ref="resetPassword" v-on:click="resetPassword()" href="#" v-text="showLanguage('login', 'resetPassword')"></a>
                     <a class="btn btn-link" ref="forgotUsername" v-on:click="forgotUsername()" href="#" v-text="showLanguage('login', 'forgotUsername')"></a>
                 </div>
 
             </form>
-            <div class="login-footer">
-                <a class="learn-more-button" href="/#/about" v-text="showLanguage('nav', 'about')" v-on:click="closeThisDialog()"></a>
-                <a class="learn-more-button" href="/#/terms" v-text="showLanguage('nav', 'terms')" v-on:click="closeThisDialog()"></a>
-                <a class="learn-more-button" href="/#/privacy" v-text="showLanguage('nav', 'privacy')" v-on:click="closeThisDialog()"></a>
-            </div>
         </div>
     </div>
   </div>
@@ -460,6 +463,9 @@
                 if (status === 2) {
                     this.show = false;
                     EventBus.$emit('show-success', { notification: this.showLanguage('auth', 'login-success')});
+                    setTimeout(function() {
+                        window.location="/";
+                    }, 2000);
                 }
                 if (status === 3) {
                     this.showLoginError();

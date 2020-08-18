@@ -31,5 +31,7 @@ return [
 
     'failed' => 'These credentials do not match our records.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'login-success' => 'You have successfully logged in - please wait to be redirected to PhpMongoAdmin',
+    'logout-success' => 'You have successfully logged out - please wait to be redirected'
 
 ];

@@ -27,23 +27,31 @@
     <div class="page about-us">
         <div class="grid-container">
             <div class="grid-x grid-padding-x">
+                <div class="cell">
+                    <admin-header></admin-header>
+                </div>
+                <div class="cell">
+                    <p>&nbsp;</p>
+                </div>
                 <div class="large-8 medium-8 small-12 cell text-justify">
-                    <u><h4 v-text="showLanguage('about', 'heading1')"></h4></u>
-                    <p><strong v-text="showLanguage('global', 'definition')"></strong> <span v-html="showLanguage('about', 'definition1')"></span></p>
-                    <u><h4 v-text="showLanguage('about', 'heading2')"></h4></u>
-                    <p><strong v-text="showLanguage('global', 'definition')"></strong></p>
-                    <p><strong>1</strong> <span v-html="showLanguage('about', 'definition2')"></span></p>
-                    <p><strong>2</strong> <span v-html="showLanguage('about', 'definition3')"></span></p>
-                    <p class="text-info" v-html="showLanguage('about', 'intro')"></p>
-                    <p class="text-info" v-html="showLanguage('about', 'intro2')"></p>
-                    <p class="paragraph" v-text="showLanguage('about', 'p1')"></p>
-                    <p class="paragraph" v-text="showLanguage('about', 'p3')"></p>
-                    <p class="paragraph" v-text="showLanguage('about', 'p4')"></p>
-                    <p class="paragraph" v-text="showLanguage('about', 'p5')"></p>
-                    <p class="paragraph" v-text="showLanguage('about', '2')"></p>
+                    <u><h4 v-text="showLanguage('about','heading1')"></h4></u>
+                    <p><strong v-text="showLanguage('global','definition')"></strong> <span v-html="showLanguage('about','definition1')"></span></p>
+                    <u><h4 v-text="showLanguage('about','heading2')"></h4></u>
+                    <p><strong v-text="showLanguage('global','definition')"></strong></p>
+                    <p><strong>1</strong> <span v-html="showLanguage('about','definition2')"></span></p>
+                    <p><strong>2</strong> <span v-html="showLanguage('about','definition3')"></span></p>
+                    <p><strong>2</strong> <span v-html="showLanguage('about','definition4')"></span></p>
+                    <u><h4 v-text="showLanguage('about','heading3')"></h4></u>
+                    <p class="text-info" v-html="showLanguage('about','intro')"></p>
+                    <p class="text-info" v-html="showLanguage('about','intro2')"></p>
+                    <p class="paragraph" v-text="showLanguage('about','p1')"></p>
+                    <p class="paragraph" v-text="showLanguage('about','p3')"></p>
+                    <p class="paragraph" v-text="showLanguage('about','p4')"></p>
+                    <p class="paragraph" v-text="showLanguage('about','p2')"></p>
+                    <p class="paragraph" v-text="showLanguage('about','p5')"></p>
                 </div>
                 <div class="large-4 medium-4 hide-for-small-only right">
-                    <p><img class="img-responsive" alt="About PHP Mongo Admin Image" src="img/about-image.jpg" /></p>
+                    <p><img class="img-responsive" :alt="showLanguage('about','aboutAlt')" src="/img/dashboard.jpg" /></p>
                 </div>
             </div>
         </div>
@@ -51,7 +59,12 @@
 </template>
 
 <script>
+    import AdminHeader from "../components/global/AdminHeader";
     export default {
+        components: {
+            AdminHeader
+        },
+
         methods: {
             /*
             * Calls the Translation and Language service

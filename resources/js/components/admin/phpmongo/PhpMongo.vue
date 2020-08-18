@@ -41,7 +41,7 @@
             }
             table td p {
                 text-align: left;
-                margin-bottom: 7px;
+                margin-bottom: .21rem;
             }
             table.bordered th.bb {
                 border-bottom: 1px solid $infoColor;

@@ -173,15 +173,15 @@
              *  Handle the delete results
              */
             handleDeletion() {
-                let status = this.$store.getters.getDocumentDeleteStatus;
-                if (status === 1) {
+                let status = this.$store.getters.getDeleteDocumentStatus;
+                if (status == 1) {
                     this.handleDeletion();
                 }
-                if (status === 2) {
+                if (status == 2) {
                     EventBus.$emit('show-success', { notification: this.showLanguage('document', 'deleteSuccess'), timer: 5000 });
                     this.show = false;
                 }
-                if (status === 3) {
+                if (status == 3) {
                     EventBus.$emit('show-error', { notification: this.showLanguage('document', 'deleteFailed'), timer: 7000 });
                 }
             },
