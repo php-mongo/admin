@@ -29,6 +29,7 @@
 return [
 
     "about" => "About",
+    "admin" => "Admin",
     "about_footer" => "About PHP Mongo Admin",
     "categories" => "View Categories",
     "close" => "Click to close...",

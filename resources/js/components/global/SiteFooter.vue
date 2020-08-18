@@ -62,94 +62,55 @@
         <div class="grid-container hide-for-small-only">
             <div class="grid-x grid-padding-x">
                 <div class="large-4 medium-4 cell float-left">
-                    <uL class="footer-menu">
+                    <ul class="footer-menu">
                         <li>
-                            <router-link :to="{ name: 'contact' }">
-                                <span :title="showLanguage('title', 'contactus')" v-text="showLanguage('nav','contact')"></span>
+                            <router-link :to="{ name: 'public-about' }">
+                                <span :title="showLanguage('title', 'aboutPhpMongoAdminTitle')" v-text="showLanguage('nav','about_footer')"></span>
                             </router-link>
                         </li>
                         <li>
-                            <router-link :to="{ name: 'about' }">
-                                <span :title="showLanguage('title', 'aboutPhpMongoAdmin')" v-text="showLanguage('nav','about_footer')"></span>
-                            </router-link>
+                            <a v-on:click="openLanguageSelector($event)" href="#"><span :title="showLanguage('title', 'changeLanguageTitle')" v-text="showLanguage('nav','language')"></span></a>
                         </li>
-                        <li>
-                            <router-link :to="{ name: 'privacy' }">
-                                <span :title="showLanguage('title', 'privacyPolicy')" v-text="showLanguage('nav','privacy')"></span>
-                            </router-link>
-                        </li>
-                        <li>
-                            <router-link :to="{ name: 'terms' }">
-                                <span :title="showLanguage('title', 'termsConditions')" v-text="showLanguage('nav','terms')"></span>
-                            </router-link>
-                        </li>
-                        <li>
-                            <a v-on:click="openLanguageSelector($event)" href="#"><span :title="showLanguage('title', 'changeLanguage')" v-text="showLanguage('nav','language')"></span></a>
-                        </li>
-                    </uL>
+                    </ul>
                 </div>
                 <div class="large-8 medium-8 cell text-right">
-                    <div class="social-container text-right">
-				        <p>&nbsp;</p>
+                    <div class="grid-container hide-for-small-only">
+                        <div class="grid-x grid-padding-x text-right copyright">
+                            <div class="large-12 medium-11 float-right text-right copyleft" v-html="showLanguage('global', 'copyright')"></div>
+                            <div class="large-12 medium-11 float-right text-right" v-show="userLoadStatus">{{ getUsersName() }} from {{ countryName }}</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="grid-container hide-for-small-only">
-            <div class="grid-x grid-padding-x text-right copyright">
-                <!--<p><strong>{{ isABot }} - {{ ageConfirmed }} - {{ hasConfirmed() }}</strong></p>-->
-                <div class="large-12 medium-11 float-right text-right copyleft" v-html="showLanguage('global', 'copyright')"></div>
-                <div class="large-12 medium-11 float-right text-right" v-show="userLoadStatus">{{ getUsersName() }} from {{ countryName }}</div>
-            </div>
-        </div>
+
         <div class="grid-container hide-for-large hide-for-medium">
             <div class="grid-x grid-padding-x">
                 <div class="small-12 float-left">
-                    <uL class="footer-menu float-left">
+                    <ul class="footer-menu float-left">
                         <li>
-                            <router-link :to="{ name: 'contact' }">
-                                <span :title="showLanguage('title', 'contactus')" v-text="showLanguage('nav','contact')"></span>
+                            <router-link :to="{ name: 'public-about' }">
+                                <span :title="showLanguage('title', 'aboutPhpMongoAdminTitle')" v-text="showLanguage('nav','about_footer')"></span>
                             </router-link>
                         </li>
                         <li>
-                            <router-link :to="{ name: 'about' }">
-                                <span :title="showLanguage('title', 'aboutPhpMongoAdmin')" v-text="showLanguage('nav','about_footer')"></span>
-                            </router-link>
+                            <span :title="showLanguage('title', 'changeLanguageTitle')" v-text="showLanguage('nav','language')" v-on:click="openLanguageSelector($event)"></span>
                         </li>
-                        <li>
-                            <router-link :to="{ name: 'privacy' }">
-                                <span :title="showLanguage('title', 'privacyPolicy')" v-text="showLanguage('nav','privacy')"></span>
-                            </router-link>
-                        </li>
-                        <li>
-                            <router-link :to="{ name: 'terms' }">
-                                <span :title="showLanguage('title', 'termsConditions')" v-text="showLanguage('nav','terms')"></span>
-                            </router-link>
-                        </li>
-                        <li>
-                            <span :title="showLanguage('title', 'changeLanguage')" v-text="showLanguage('nav','language')" v-on:click="openLanguageSelector($event)"></span>
-                        </li>
-                    </uL>
+                    </ul>
                     <div class="small-4 float-right">
-				        <span v-show="!isMember" class="register-button pull-right">
-						    <button v-on:click="loadRegistration()" :title="showLanguage('title', 'registerTitle')" v-text="showLanguage('nav', 'register')"></button>
-				        </span>
                         <span class="hide-loading pull-right login-button" v-show="!userLoadStatus">
-					        <button v-on:click="loadLogin()" :title="showLanguage('title', 'manageData')" v-text="showLanguage('nav', 'login')"></button>
+					        <button v-on:click="loadLogin()" :title="showLanguage('title', 'loginTitle')" v-text="showLanguage('nav', 'login')"></button>
 				        </span>
                     </div>
                 </div>
                 <div class="small-12 text-left float-left">
-                    <div class="small-12 u-padding-flush">
-                        <p>&nbsp;</p>
+                    <div class="grid-container hide-for-large hide-for-medium">
+                        <div class="grid-x grid-padding-x float-left">
+                            <div class="small-12 float-left text-left" v-html="showLanguage('global', 'copyright')"></div>
+                            <div class="small-12 float-left text-left" v-show="userLoadStatus">{{ getUsersName() }} from {{ countryName }}</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="grid-container hide-for-large hide-for-medium">
-            <div class="grid-x grid-padding-x float-left">
-                <div class="small-12 float-left text-left" v-html="showLanguage('global', 'copyright')"></div>
-                <div class="small-12 float-left text-left" v-show="userLoadStatus">{{ getUsersName() }} from {{ countryName }}</div>
             </div>
         </div>
     </div>

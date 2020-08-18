@@ -448,7 +448,7 @@
             }
         },
 
-        /*
+        /*s
           Sets up the component when mounted.
         */
         mounted() {
@@ -456,7 +456,6 @@
              * On event, show the new document field modal
              */
             EventBus.$on('show-document-field', ( data ) => {
-            //    console.log(data);
                 this.form.database   = data.db;
                 this.form.collection = data.coll;
                 this.form.index      = data.index;
@@ -466,7 +465,7 @@
         },
 
         destroyed() {
-            this.clearValues();
+            this.clearData();
         }
     }
 </script>

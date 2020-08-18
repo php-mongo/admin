@@ -26,10 +26,16 @@
 <template>
     <div class="page about-us">
         <div class="grid-container">
-            <div class="grid-x grid-padding-x">
-                <div class="large-12 medium-12 small-12 cell text-justify">
-                    <p>&nbsp;</p>
+            <div class="row grid-x grid-padding-x">
+                <div class="column small-3">&nbsp;</div>
+                <div class="column large-6 medium-6 small-12">
+                    <h3 v-text="showLanguage('login', 'heading')"></h3>
+                    <p v-text="showLanguage('login', 'text1')"></p>
+                    <p v-text="showLanguage('login', 'text2')"></p>
+                    <p v-text="showLanguage('login', 'text3')"></p>
+                    <p v-text="showLanguage('login', 'text4')"></p>
                 </div>
+                <div class="column small-3">&nbsp;</div>
             </div>
         </div>
     </div>

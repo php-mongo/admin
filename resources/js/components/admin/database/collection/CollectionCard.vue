@@ -355,11 +355,12 @@
             },
 
             getTotal() {
-                if (this.collection) {
+                if (this.collection && this.collection.objects) {
                     if (this.collection.objects) {
                         if (this.collection.objects.count == 0) {
                             this.page.find.message = this.showLanguage('collection', 'empty', this.collection.collection.collectionName);
                             this.clearValues();
+
                         } else {
                             this.page.find.message = null;
                         }
@@ -413,7 +414,9 @@
             },
 
             getObjects() {
-                return this.collection.objects;
+                if (this.collection && this.collection.objects) {
+                    return this.collection.objects;
+                }
             }
         },
 
@@ -461,7 +464,6 @@
                 let format = this.$store.getters.getCurrentFormat;
                 if (format !== this.format) {
                     this.format = format;
-                    console.log("format up[dated to: " + format);
                 }
             },
 
@@ -602,31 +604,17 @@
                         this.visibleObjects[ data.index ].raw = obj;
                     }
 
-             //       console.log("format: " + this.format);
-
                     // Done!! these conversion will be based on the current FORMAT setting
                     if (this.format === 'json') {
-
-                    //    console.log("format is json...");
-
                         let t = this.$convObj( obj ).jsonT( data.document );
                         let d = this.$convObj( obj ).jsonH( data.document );
-
-                   //     console.log("updateDocument t: " + t);
-                   //     console.log("updateDocument d: " + d);
 
                         this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
 
                     }
                     if (this.format === 'array') {
-
-                   //     console.log("format is array...");
-
                         let t = this.$convObj( obj ).arrayT( data.document );
                         let d = this.$convObj( obj ).arrayH( data.document );
-
-                   //     console.log("updateDocument t: " + t);
-                   //     console.log("updateDocument d: " + d);
 
                         this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
                     }
@@ -641,10 +629,6 @@
             EventBus.$on('show-collection', () => {
                 this.show = true;
             });
-
-            /*EventBus.$on('set-query-format', ( format ) => {
-                this.setQueryFormat( format );
-            });*/
 
             EventBus.$on('collapse-db', (collapse) => {
                 this.collapsed = collapse;
