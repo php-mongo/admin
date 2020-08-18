@@ -75,7 +75,7 @@ class LoginController extends Controller
 
         // get the creds
         //$credentials = $request->only([$this->getUser(), 'password']);
-        $creentials = array("user" => "admin", "password" => "Welcome2020");
+        $credentials = array("user" => "admin", "password" => "Welcome2020");
 
         // check the creds
         if (!$token = auth()->attempt($credentials)) {
