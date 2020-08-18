@@ -293,7 +293,7 @@
             *   Get the users country name
             */
             getCountryNameValue() {
-                this.countryName = this.$store.getters.getCountryName; // this.$cookie.get('my-country');
+                this.countryName = this.$store.getters.getCountryName;
             },
 
             /*
@@ -307,7 +307,10 @@
             },
 
             completeLogout() {
-                console.log("is the logout completed?");
+                EventBus.$emit('show-success', { notification: this.showLanguage('auth', 'logout-success')});
+                setTimeout(function() {
+                    window.location = '/';
+                }, 2500);
             },
 
             /*

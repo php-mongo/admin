@@ -18,10 +18,28 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
 
-    ul.collections {
-        list-style: none;
-        display: block;
-        margin-left: 20px;
+    .collection-list {
+        ul {
+            list-style: none;
+            display: block;
+            margin-left: 20px;
+
+            li.coll {
+                margin: 0;
+
+                input {
+                    margin-right: 20px !important;;
+                }
+
+                .obj-count {
+                    width: 10.5vw;
+                }
+
+                &:hover {
+                    backbround-color: $lighterGrey;
+                }
+            }
+        }
     }
 
     .hide-list {
@@ -50,9 +68,11 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="text-center rb">&nbsp;</td>
-                            <td class="text-center">
+                            <td class="text-center rb">
                                 <p><span class="pma-link" v-text="showLanguage('database', 'dropAll')"></span> | <span class="pma-link" v-text="showLanguage('database', 'clearAll')"></span></p>
+                            </td>
+                            <td class="text-center">
+                                <p v-text="showLanguage('database', 'objectsCount')"></p>
                             </td>
                         </tr>
                         <tr>

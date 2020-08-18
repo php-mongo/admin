@@ -27,25 +27,26 @@
 
 return [
 
-    "avgObjSize" => "Average Object Size",
+    "avgObjSize" => "Average object size",
     "authentication" => "Authentication",
-    "clearAll" => "Clear All",
+    "clearAll" => "Clear all",
     "database" => "Database (%s)",
-    "dataSize" => "Data Size",
+    "dataSize" => "Data size",
     "drop" => "Drop",
-    "dropAll" => "Drop All",
+    "dropAll" => "Drop all",
     "collections" => "Collections",
     "command" => "Command",
     "execute" => "Execute",
     "export" => "Export",
     "import" => "Import",
-    "indexSize" => "Index Size",
-    "newCollection" => "New Collection",
-    "objects" => "Objects",
+    "indexSize" => "Index size",
+    "newCollection" => "New collection",
+    "objects" => "Total objects",
+    "objectsCount" => "Object count",
     "profile" => "Profile",
     "repair" => "Repair",
     "statistics" => "Statistics ({dbStats:1})",
-    "storageSize" => "Storage Size",
+    "storageSize" => "Storage size",
     "transfer" => "Transfer"
 
 ];

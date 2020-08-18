@@ -31,8 +31,8 @@
             <img src="/img/logo-pma.png" :alt="{appTitle}"/>
         </div>
         <div class="pma-icons text-center">
-            <span class="pma-link" v-on:click="loadHome()"><img src="/img/icon/pma-home.png" /> <span v-text="showLanguage('dbs', 'host')"></span></span>
-            <span class="pma-link" v-on:click="loadOverview()"><img src="/img/icon/pma-world.png" /> <span v-text="showLanguage('dbs', 'overview')"></span></span>
+            <span class="pma-link" v-on:click="loadHome()"><img src="/img/icon/pma-home.png" /> <span v-text="showLanguage('dbs','host')"></span></span>
+            <span class="pma-link" v-on:click="loadOverview()"><img src="/img/icon/pma-world.png" /> <span v-text="showLanguage('dbs','overview')"></span></span>
         </div>
     </div>
 </template>

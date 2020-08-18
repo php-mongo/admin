@@ -264,7 +264,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
 
     /*
     * -------------------------------------------------------
-    * Update a Collection(private route)
+    * Update a Collection (private route)
     * -------------------------------------------------------
     * URL:         /api/v1/collection/update
     * Controller:  API/CollectionController@updatCollection
@@ -286,24 +286,45 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
 
     /*
     * -------------------------------------------------------
-    * Get a single Ads (public route)
+    * Create a Document (private route)
     * -------------------------------------------------------
-    * URL:         /api/v1/latest/{slug}
-    * Controller:  Api/PublicController@getAd
-    * Method:      GET
-    * Description: Gets a single ad
+    * URL:         /api/v1/document/create
+    * Controller:  API/DocumentController@createDocument
+    * Method:      POST
+    * Description: Creates a document and returns the document data
     */
-    //Route::get('/latest/{slug}', 'Api\PublicController@getAd');
+    Route::post('/document/create', 'Api\DocumentController@createDocument');
 
     /*
     * -------------------------------------------------------
-    * Get a single Ads - usually a new post (public route)
+    * Duplicate a Document (private route)
     * -------------------------------------------------------
-    * URL:         /api/v1/latest/ad/{id}
-    * Controller:  Api/PublicController@getNewAd
-    * Method:      GET
-    * Description: Gets a single ad
+    * URL:         /api/v1/document/duplicate
+    * Controller:  API/DocumentController@duplicateDocument
+    * Method:      POST
+    * Description: Duplicate a document and returns the document data
     */
-    //Route::get('/latest/ad/{id}', 'Api\PublicController@getNewAd');
+    Route::post('/document/duplicate', 'Api\DocumentController@duplicateDocument');
 
+    /*
+    * -------------------------------------------------------
+    * Update a Document (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/document/update
+    * Controller:  API/DocumentController@updateDocument
+    * Method:      PUT
+    * Description: Updates a document and returns the document data
+    */
+    Route::put('/document/update/{id}', 'Api\DocumentController@updateDocument');
+
+    /*
+    * -------------------------------------------------------
+    * Delete a Document (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/document/{database}/{collection}/{id}
+    * Controller:  API/DocumentController@destroy
+    * Method:      DELETE
+    * Description: Delete a document and returns the status
+    */
+    Route::delete('/document/{database}/{collection}/{id}', 'Api\DocumentController@destroy');
 });

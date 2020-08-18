@@ -16,11 +16,28 @@
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
+/**
+ * Every good name deserves a space
+ */
 namespace App\Helpers;
 
-use MongoId;
-
+/**
+ * We are handling MongoDB based functionality
+ */
 use MongoDB;
+
+/**
+ * Thesre are specific MongDB types we ant to implement
+ */
+use MongoId;
+use MongoInt32;
+use MongoInt64;
+
+/**
+ * Always be prepared to accept failure !!
+ */
+use Exception;
+
 
 /**
  * Class MongoHelper
@@ -55,7 +72,7 @@ class MongoHelper
     public static function json_unicode_to_utf8( $json ) {
         $json = preg_replace_callback("/\\\\u([0-9a-f]{4})/", function($match) {
                 $val = intval($match[1], 16);
-                $c = "";
+                $c   = "";
                 if ($val < 0x7F) {        // 0000-007F
                     $c .= chr($val);
 
@@ -63,7 +80,7 @@ class MongoHelper
                     $c .= chr(0xC0 | ($val / 64));
                     $c .= chr(0x80 | ($val % 64));
 
-                } else {                // 0800-FFFF
+                } else {                  // 0800-FFFF
                     $c .= chr(0xE0 | (($val / 64) / 64));
                     $c .= chr(0x80 | (($val / 64) % 64));
                     $c .= chr(0x80 | ($val % 64));
@@ -104,6 +121,7 @@ class MongoHelper
         $indent_level   = 0;
         $in_string      = false;
 
+        // we expect JSON - decode then encode
         $json_obj = json_decode($json);
         if ($json_obj === false) {
             return false;
@@ -112,7 +130,7 @@ class MongoHelper
 
         $len  = strlen($json);
 
-        for($c = 0; $c < $len; $c++)
+        for ($c = 0; $c < $len; $c++)
         {
             $char = $json[$c];
             switch($char)
@@ -401,6 +419,94 @@ class MongoHelper
     }
 
     /**
+     * Extract the document into an array
+     * Here we attempt to track the field keys that are found
+     *
+     * @param $document
+     * @param $fields
+     *
+     * @return array
+     */
+    public static function extractDocument( $document, &$fields = [] )
+    {
+        $arr    = [];
+        $level  = 0;
+        // a function to handle recursive document levels
+        // iterate the document
+        foreach ($document as $key => $value) {
+            if ($key == '_id') {
+                if (is_object($value)) {
+                    $oid = $value->__toString();
+                } else {
+                    $oid = $value;
+                }
+                $arr[ $key ] =  $oid;
+
+            } else {
+                if ($value instanceof MongoDB\Model\BSONDocument) {
+                    /** @var MongoDB\Model\BSONDocument  $value */
+                    $array = $value->getArrayCopy();
+                    $level++;
+                    $arr[ $key ] = self::iterateDocument($array, $level, $key);
+
+                } elseif ($value instanceof MongoDB\BSON\Binary) {
+                    /** @var MongoDB\BSON\Binary $value */
+                    $data = bin2hex($value-> getData());
+                    $arr[ $key ] =  $data;
+                    if (is_string($key)) {
+                        if (!in_array($key, $fields)) {
+                            $fields[] = $key;
+                        }
+                    }
+
+                } elseif ($value instanceof MongoDB\Model\BSONArray) {
+                    /** @var MongoDB\Model\BSONArray $value */
+                    $array = $value->getArrayCopy();
+                    $level++;
+                    $arr[ $key ] = self::iterateDocument($array, $level, $key);
+
+                } else {
+                    $arr[ $key ] = $value ;
+                }
+            }
+        }
+        // return array
+        return $arr;
+    }
+
+    /**
+     * @param $array
+     * @param $level
+     * @param $key
+     * @param $fields
+     *
+     * @return array
+     */
+    public static function iterateDocument( $array, $level, $key ) {
+        $arr = [];
+        foreach ($array as $k => $v) {
+            if ($v instanceof MongoDb\Model\BSONDocument) {
+                $level++;
+                $arr[ $k ] = self::iterateDocument($v, $level, $k);
+
+            } elseif ($v instanceof MongoDb\Model\BSONArray) {
+                /** @var MongoDb\Model\BSONArray $v */
+                $arr = $v->getArrayCopy();
+                //  $level++;
+                if (count($v) == 0) {
+                    $arr[ $k ] = [];
+                } else {
+                    $arr[ $k ] = $v;
+                }
+
+            } else {
+                $arr[ $k ] = $v;
+            }
+        }
+        return $arr;
+    }
+
+    /**
      * Format bytes to human size
      *
      * @param integer $bytes Size in byte
@@ -410,7 +516,7 @@ class MongoHelper
      *
      * @since 1.0.0
      */
-    public static function r_human_bytes($bytes, $precision = 2) {
+    public static function readHumanBytes($bytes, $precision = 2) {
         if ($bytes == 0) {
             return 0;
         }

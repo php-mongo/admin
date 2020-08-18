@@ -41,7 +41,7 @@ class MongoConnection
     /** @var MongoDB\Driver\Manager */
     private $manager;
 
-    /** @var App\Model\Server */
+    /** @var Server */
     private $server;
 
     /**
@@ -77,7 +77,7 @@ class MongoConnection
     }
 
     /**
-     * @return App\Model\Server
+     * @return Server
      */
     public function getServer(): array
     {
@@ -115,12 +115,11 @@ class MongoConnection
     {
         $server = $user->servers()->where('active', 1)->get();
         // this ensures we still connect with basic settings if there is NO server configuration
-        // $server = isset($server[0]) ? $server[0]->getAttributes() : array('host' => 'localhost', 'port' => 27017, 'username' => false, 'password' => false);
-        // ToDo: these are for the demo.phpmongoadmin.com site only
-        $dbUser   = config('app.dbUser', false);
-        $dbPasswd = config('app.dbPasswd', false);
-        // ToDo: this is for the demo.phpmongoadmin.com site only
-        $server   = array( 'host' => 'localhost', 'port' => 27017, 'username' => $dbUser, 'password' => $dbPasswd );
+        $server = isset($server[0]) ? $server[0]->getAttributes() : array('host' => 'localhost', 'port' => 27017, 'username' => false, 'password' => false);
+        if (env('APP_ENV') == 'demo') {
+            // demo site only
+            $server = array('host' => 'localhost', 'port' => 27017, 'username' =>  config('app.dbUser') , 'password' => config('app.dbPasswd'));
+        }
         $this->setServer( $server );
     }
 
@@ -168,5 +167,37 @@ class MongoConnection
     {
         $prep = $this->prepareConnection();
         return (new MongoDB\Client( $prep['uri'], $prep['options']))->$db->$collection;
+    }
+
+    /**
+     * Create a manager connection and save locally
+     */
+    public function connectManager()
+    {
+        $prep = $this->prepareConnection();
+        $this->manager = new MongoDB\Driver\Manager( $prep['uri'], $prep['options']);
+    }
+
+    /**
+     * Runs the MongoDB\Driver\Manager::executeComand method
+     *
+     * @param $db
+     * @param $command
+     *
+     * @return MongoDB\Driver\Cursor|string
+     *
+     * @throws MongoDB\Driver\Exception\Exception
+     */
+    public function managerCommand($db, $command)
+    {
+        if ($this->manager) {
+            try {
+                $command = new MongoDB\Driver\Command( $command );
+                return $this->manager->executeCommand( $db, $command );
+            }
+            catch (\Exception $e) {
+                return $e->getMessage();
+            }
+        }
     }
 }

@@ -33,13 +33,15 @@ return [
     "heading2" => "PHP",
     "definition2" => "Hypertext Pre Processor.",
     "definition3" => "A scripting language used at the core of many popular PHP Frameworks and Content Management Systems.",
-    "definition4" => "Drives the heart of Laravel hwich we have used as our RESTful API.",
-    "intro" => "PhpMongoAdmin is a MongoDB management application capable of running on most internet webservers.",
+    "definition4" => "Drives the heart of Laravel which we have used as our RESTful API.",
+    "heading3" => "PHP MongoDB Admin",
+    "intro" => "PhpMongoAdmin is a MongoDB management application capable of running on most internet web servers.",
     "intro2" => "Were building PhpMongoAdmin so that it has a familiar look and feel and hopefully practical ease of use.",
     "p1" => "Visit our website at www.phpmongoadmin.com/ for support and documentation.",
-    "p2" => "Visit our primariy portal at www.phpmongotools.com/ to visit our forum and special package deals.",
-    "p3" => "Check out our Github account at www.github.com/php-mongo/admin",
-    "p4" => "Look us up on Twitter at www.twitter.com/toolsmongodb",
-    "p5" => ""
+    "p2" => "Visit our primarily portal at www.phpmongotools.com/ to visit our forum and special package deals.",
+    "p3" => "Check out our GitHub account at www.github.com/php-mongo/admin.",
+    "p4" => "Look us up on Twitter at www.twitter.com/toolsmongodb.",
+    "p5" => "PHP MongoDB Admin (c) 2020 MFMAW.COM",
+    "aboutAlt" => "About PHP Mongo Admin Image"
 
 ];

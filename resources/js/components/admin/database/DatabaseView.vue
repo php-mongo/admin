@@ -94,11 +94,6 @@
                 text-align: right;
                 width: 50%;
             }
-            table.collection td {
-                li.coll {
-                    margin-left: 20%;
-                }
-            }
             table.bordered {
                 th.bb {
                     border-bottom: 1px solid $infoColor;

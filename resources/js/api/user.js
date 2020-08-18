@@ -29,14 +29,14 @@ export default {
     /*
     *  GET   /api/v1/user - get the current authenticated user
     */
-    getUser: function() {
+    getUser: () => {
         return axios.get( MONGO_CONFIG.API_URL + '/user' );
     },
 
     /*
     *  PUT  /api/v1/user - create or update a user
     */
-    putUpdateUser: function( name, email, password ) {
+    putUpdateUser: ( name, email, password ) => {
         return axios.put( MONGO_CONFIG.API_URL + '/user',
             {
                 name: name,
@@ -48,7 +48,7 @@ export default {
     /*
     *  POST  /api/v1/user - register a new user
     */
-    postUser: function( name, email, password ) {
+    postUser: ( name, email, password ) => {
         return axios.post( MONGO_CONFIG.API_URL + '/user',
             {
                 name: name,
@@ -61,7 +61,7 @@ export default {
     /*
     *  POST  /api/v1/user/login - login a user
     */
-    loginUser: function( user, password ) {
+    loginUser: ( user, password ) => {
         return axios.post( MONGO_CONFIG.API_URL + '/user/login',
             {
                 user: user,
@@ -73,35 +73,35 @@ export default {
     /*
     *   GET /api/v2/user/logout/{uid}  - logs out the user
     */
-    logoutUser: function( uid ) {
+    logoutUser: ( uid ) => {
         return axios.get( MONGO_CONFIG.API_URL + '/user/logout/' + uid);
     },
 
     /*
     *   GET  /api/v1/user/fetch/{uid} - get the current authenticated user
     */
-    fetchUser: function( uid ) {
+    fetchUser: ( uid ) => {
         return axios.get( MONGO_CONFIG.API_URL + '/user/fetch/' + uid );
     },
 
     /*
     *   GET /api/v1/user/email/{email} - Check | verify an email address
     */
-    checkEmail: function( email ) {
+    checkEmail: ( email ) => {
         return axios.get( MONGO_CONFIG.API_URL + '/user/email/' + email );
     },
 
     /*
     *   GET /api/v1/user/location - Get the users location from IpInfo
     */
-    getUserLocation: function() {
+    getUserLocation: () => {
         return axios.get( MONGO_CONFIG.API_URL + '/user/location' );
     },
 
     /*
     *   GET /api/v1/user/states/{country} - Get the users states based on country code
     */
-    getUserStates: function(country) {
+    getUserStates: (country) => {
         return axios.get( MONGO_CONFIG.API_URL + '/user/states/' + country);
     },
 }

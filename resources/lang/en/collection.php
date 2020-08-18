@@ -46,6 +46,7 @@ return [
     "documents" => "documents",
     "drop" => "Drop",
     "duplicate" => "Duplicate",
+    "empty" => "The collection >> %s << has no documents",
     "error" => "Please add a name for your collection",
     "expand" => "Expand",
     "export" => "Export",

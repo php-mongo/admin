@@ -153,7 +153,10 @@ return [
     'display' => env('DISPLAY', 'array'),
 
     /*
-     * Custom for the demo website
+     * Custom configs currently used for the demo website
+     *
+     * These may be useful in the future for hard coding the MongoDB server user|password
+     * They'll be used in \App\Classes\MongoConnection.php
      */
     'dbUser' => env('DB_USER'),
 

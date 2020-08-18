@@ -113,7 +113,7 @@ class LoginController extends Controller
     {
         $user = auth()->user();// Auth::user();
         if ($uid == $user->id) {
-            auth()->logout();
+            auth('web')->logout();
             return response()->json(['success' => true, 'message'=>'success']);
         }
         return response()->json(['success' => false, 'error' => 'failed'], 200);

@@ -8166,7 +8166,7 @@ body .pma-link-danger {
  */
 
 div.page {
-  min-height: calc(100vh - 152px);
+  min-height: calc(100vh - 200px);
   padding: 20px;
 }
 

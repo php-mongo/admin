@@ -59,33 +59,13 @@ let router = new VueRouter({
                     path: 'about',
                     name: 'about',
                     component: Vue.component( 'About', require( './pages/About.vue').default )
-                },
-                {
-                    path: 'about-us',
-                    name: 'about-us',
-                    component: Vue.component( 'About', require( './pages/About.vue').default )
-                },
-                /*{
-                    path: 'post',
-                    name: 'post',
-                    component: Vue.component( 'Post', require( './pages/Post.vue').default )
-                },*/
-                {
-                    path: 'terms',
-                    name: 'terms',
-                    component: Vue.component( 'Terms', require( './pages/Terms.vue').default )
-                },
-                {
-                    path: 'terms-and-conditions',
-                    name: 'terms-and-conditions',
-                    component: Vue.component( 'Terms', require( './pages/Terms.vue').default )
-                },
+                }
             ]
         },
         {
             path: '/public',
             name: 'public',
-            redirect: {name: 'login' },
+            redirect: { name: 'login' },
             component: Vue.component('Public', require('./layouts/Public.vue').default ),
             children: [
                 {
@@ -94,21 +74,11 @@ let router = new VueRouter({
                     component: Vue.component( 'Login', require( './pages/Login.vue').default )
                 },
                 {
-                    path: 'contact',
-                    name: 'contact',
-                    component: Vue.component( 'Contact', require( './pages/Contact.vue').default )
-                },
-                {
-                    path: 'privacy',
-                    name: 'privacy',
-                    component: Vue.component( 'Privacy', require( './pages/Privacy.vue').default )
-                },
-                {
-                    path: 'privacy-policy',
-                    name: 'privacy-policy',
-                    component: Vue.component( 'Privacy', require( './pages/Privacy.vue').default )
+                    path: 'about',
+                    name: 'public-about',
+                    component: Vue.component( 'About', require( './pages/About.vue').default )
                 }
-            ],
+            ]
         }
     ]
 });

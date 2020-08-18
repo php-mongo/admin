@@ -213,6 +213,9 @@
             </div>
             <document v-for="(document, index) in getDocuments" :key="index" v-bind:index="index" v-bind:document="document" v-bind:collection="getCollection" v-bind:format="currentFormat"></document>
         </div>
+        <document-update></document-update>
+        <document-field></document-field>
+        <document-duplicate></document-duplicate>
     </div>
 </template>
 
@@ -228,6 +231,9 @@
     import PageSizeOption from "./PageSizeOption";
     import Document from "./Document";
     import Pagination from "./Pagination";
+    import DocumentUpdate from "./DocumentUpdate";
+    import DocumentField from "./DocumentField";
+    import DocumentDuplicate from "./DocumentDuplicate";
 
     export default {
         /*
@@ -236,7 +242,10 @@
         components: {
             PageSizeOption,
             Document,
-            Pagination
+            Pagination,
+            DocumentUpdate,
+            DocumentField,
+            DocumentDuplicate
         },
 
         /*
@@ -346,11 +355,12 @@
             },
 
             getTotal() {
-                if (this.collection) {
+                if (this.collection && this.collection.objects) {
                     if (this.collection.objects) {
                         if (this.collection.objects.count == 0) {
-                            this.page.find.message = 'The collection >> ' + this.collection.collection.collectionName + ' << has no documents';
+                            this.page.find.message = this.showLanguage('collection', 'empty', this.collection.collection.collectionName);
                             this.clearValues();
+
                         } else {
                             this.page.find.message = null;
                         }
@@ -404,7 +414,9 @@
             },
 
             getObjects() {
-                return this.collection.objects;
+                if (this.collection && this.collection.objects) {
+                    return this.collection.objects;
+                }
             }
         },
 
@@ -472,7 +484,7 @@
 
             roundCost: function() {
                 console.log('rounding: ' + this.cost);
-                return new Math.round(this.cost);
+                return Math.round(this.cost);
             },
 
             submitQuery() {
@@ -583,6 +595,30 @@
                 this.end            = 0;
                 this.current        = 1;
                 this.count          = 0;
+            },
+
+            updateDocument( data ) {
+                if (data) {
+                    let obj = JSON.parse(data.document);
+                    if (this.visibleObjects[data.index]) {
+                        this.visibleObjects[ data.index ].raw = obj;
+                    }
+
+                    // Done!! these conversion will be based on the current FORMAT setting
+                    if (this.format === 'json') {
+                        let t = this.$convObj( obj ).jsonT( data.document );
+                        let d = this.$convObj( obj ).jsonH( data.document );
+
+                        this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
+
+                    }
+                    if (this.format === 'array') {
+                        let t = this.$convObj( obj ).arrayT( data.document );
+                        let d = this.$convObj( obj ).arrayH( data.document );
+
+                        this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
+                    }
+                }
             }
         },
 
@@ -592,28 +628,26 @@
         mounted() {
             EventBus.$on('show-collection', () => {
                 this.show = true;
-
-            });
-
-            EventBus.$on('set-query-format', ( format ) => {
-                this.setQueryFormat( format );
             });
 
             EventBus.$on('collapse-db', (collapse) => {
                 this.collapsed = collapse;
+            });
 
+            EventBus.$on('document-updated', (data) => {
+                 this.updateDocument( data );
             });
         },
 
         /*
-         *  In case of imenent destruction
+         *  In case of imminent destruction
          */
         destroyed() {
             this.clearValues();
         },
 
         /*
-         *  Who watches the wathers?
+         *  Who watches the watchers?
          */
         watch: {
             getCurrentFormat() {

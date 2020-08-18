@@ -46,6 +46,7 @@
             scroll-behavior: smooth;
 
             div.language-label {
+                background-color: $darkGreyColor;
                 color: $whiteFont;
                 font-family: "Lato", sans-serif;
                 font-weight: bold;
@@ -184,7 +185,12 @@
 <template>
     <div id="language-modal" v-show="show" v-on:click="closeDialogOutside($event)">
         <div class="language-box" v-on:click.stop="">
-            <div class="language-label"><h3><span v-text="showLanguage('lang', 'title')"></span><img v-on:click="closeThisDialog()" title="Close" alt="Close" src="/img/close-icon-white.svg"></h3></div>
+            <div class="language-label">
+                <h3>
+                    <span v-text="showLanguage('lang', 'title')"></span>
+                    <img v-on:click="closeThisDialog()" :title="showLanguage('global', 'close')" :alt="showLanguage('global', 'close')" src="/img/close-icon-white.svg">
+                </h3>
+            </div>
             <div class="language-content">
                 <div class="large-11 medium-11 small-12">
                     <p class="text-info" v-text="showLanguage('lang', 'intro')"></p>
@@ -205,7 +211,7 @@
                 </div>
             </div>
             <div class="language-buttons">
-                <button v-on:click="closeThisDialog()" class="button secondary float-right" type="button" v-text="showLanguage('global', 'close')"></button>
+                <button v-on:click="closeThisDialog()" class="button warning float-right" type="button" v-text="showLanguage('global', 'close')"></button>
             </div>
         </div>
     </div>

@@ -20,26 +20,51 @@
 </style>
 
 <template>
-    <li class="coll">
+    <li class="coll" v-show="checkCollection">
+        <input type="checkbox" v-model="checked" />
         <span class="pma-link" @click="$emit('loadCollection', getCollectionName )">{{ getCollectionName }}</span>
+        <span class="obj-count u-pull-right">{{ getObjectsCount }}</span>
     </li>
 </template>
 
 <script>
-    /*
-    * Import the Event bus
-    */
-    import { EventBus } from '../../../event-bus.js';
-
     export default {
         /*
         *   The component accepts one db as a property
         */
         props: ['collection'],
 
+        data() {
+            return {
+                checked: false
+            }
+        },
+
+        /*
+         *  Dr Smith! It does not compute!
+         */
         computed: {
+            /*
+             *  We ave 2 variations on collection name
+             */
             getCollectionName() {
                 return ((this.collection.collection.name) ? this.collection.collection.name : this.collection.collection.collectionName);
+            },
+
+            /*
+             *  Prevent errors when there are no objects
+             */
+            getObjectsCount() {
+              if (this.collection.objects) {
+                  return this.collection.objects.count;
+              }
+            },
+
+            /*
+             *  Only show id true
+             */
+            checkCollection() {
+                return (this.collection);
             }
         },
 
