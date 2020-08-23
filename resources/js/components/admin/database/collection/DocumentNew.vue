@@ -17,14 +17,14 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
 
-    div.document-duplicate-container {
+    div.document-new-container {
         position: fixed;
         z-index: 999999;
         left: 10vw;
         right: 0;
         top: 0;
 
-        div.document-duplicate {
+        div.document-new {
             background: $white;
             box-shadow: 0 0 4px 0 rgba(0,0,0,0.12), 0 4px 4px 0 rgba(0,0,0,0.24);
             border-left: 5px solid $orange;
@@ -104,7 +104,7 @@
         <div class="document-new-container" v-show="show">
             <div class="document-new">
                 <div class="modal-header"><span class="msg" v-show="errorMessage || actionMessage"><span class="error">{{ errorMessage }}</span> <span class="action">{{ actionMessage }}</span></span><span class="close u-pull-right" v-on:click="hideComponent"><img src="/img/icon/cross-red.png" /></span></div>
-                <h3 v-text="showLanguage('document','documentDuplicate')"></h3>
+                <h3 v-text="showLanguage('document','documentCreate')"></h3>
                 <form>
                     <label>
                         <span v-text="showLanguage('document','format')"></span>:
@@ -123,7 +123,7 @@
                     </label>
                     <p>&nbsp;</p>
                     <p>
-                        <span class="save button" v-on:click="saveDuplicate()" v-text="showLanguage('document', 'save')"></span>
+                        <span class="save button" v-on:click="insertDocument()" v-text="showLanguage('document', 'save')"></span>
                         <span class="cancel button warning" v-on:click="hideComponent" v-text="showLanguage('document', 'cancel')"></span>
                     </p>
                 </form>
@@ -145,6 +145,7 @@
         data() {
             return {
                 actionMessage: null,
+                created: 0,
                 document: {},
                 errorMessage: null,
                 errors: 0,
@@ -153,7 +154,7 @@
                     database: null,
                     format: 'json',
                     number: 1,
-                    document: null
+                    document: '{\n\n}'
                 },
                 show: false,
                 skel: {
@@ -161,9 +162,8 @@
                     database: null,
                     format: 'json',
                     number: 1,
-                    document: null
-                },
-                duplicated: 0
+                    document: '{\n\t\n}'
+                }
             }
         },
 
@@ -177,26 +177,6 @@
                     return string.replace("%s", str);
                 }
                 return this.$store.getters.getLanguageString( context, key );
-            },
-
-            /*
-             *  Set the current document for duplicating - received from the EventBus
-             */
-            setDocument( data ) {
-                // clear first
-                this.clearData();
-
-                // we need these !!
-                this.form.database   = data.db;
-                this.form.collection = data.coll;
-
-                // display doc to dupe
-                this.document      = data.document;
-                this.document._id  = null;
-
-                // clear the _id from the data and save a copy
-                let str = this.$convObj( this.document ).json();
-                this.form.document = str.replace("\"_id\":null,", "");
             },
 
             /*
@@ -229,12 +209,12 @@
             },
 
             /*
-             *  This is our method that handles the saveDuplicate click
+             *  This is our method that handles the insertDocument click
              */
-            saveDuplicate( action ) {
+            insertDocument( action ) {
                 this.errorMessage = null;
 
-                console.log( "duplicating!" );
+                console.log( "creating!" );
 
                 // check format
                 if (this.form.format === 'array') {
@@ -256,18 +236,18 @@
                     this.form.document = this.$convObj(this.form.document).minify();
 
                     // send
-                    this.$store.dispatch( 'duplicateDocument', this.form );
+                    this.$store.dispatch( 'createDocument', this.form );
 
                     // used to monitor send success/fail
                     if (this.handleAll()) {
                         // notify doc duplicate success
-                        this.duplicated += 1;
-                        this.actionMessage = this.showLanguage('document', 'duplicated', this.duplicated);
+                        this.created += 1;
+                        this.actionMessage = this.showLanguage('document', 'created', this.duplicated);
                     }
                     else {
                         // track errors
                         this.errors += 1;
-                        this.errorMessage = this.showLanguage('document', 'errorsDuplicate', this.errors);
+                        this.errorMessage = this.showLanguage('document', 'errorsCreate', this.errors);
                     }
                 }
 
@@ -279,7 +259,7 @@
              *  Handle a single document duplicates'
              */
             handleDuplicate() {
-                let status = this.$store.getters.getDuplicateDocumentStatus;
+                let status = this.$store.getters.getCreateDocumentStatus;
                 if (status === 1) {
                     let self = this;
                     setTimeout(function() {
@@ -287,12 +267,13 @@
                     }, 100);
                 }
                 if (status === 2) {
-                    EventBus.$emit('show-success', { notification: this.showLanguage('document', 'duplicateSuccess', this.duplicated) });
+                    EventBus.$emit('show-success', { notification: this.showLanguage('document', 'createSuccess', this.created) });
+                    EventBus.$emit('document-inserted');
                     this.clearData();
                     this.hideComponent();
                 }
                 if (status === 3) {
-                    EventBus.$emit('show-error', { notification: this.showLanguage('document', 'duplicateError', this.errors) });
+                    EventBus.$emit('show-error', { notification: this.showLanguage('document', 'createError', this.errors) });
                 }
             },
 
@@ -349,8 +330,10 @@
             /*
              * On event, show the new document field modal
              */
-            EventBus.$on('show-document-duplicate', ( data ) => {
-                this.setDocument( data );
+            EventBus.$on('show-document-new', ( data ) => {
+                this.form.database   = data.db;
+                this.form.collection = data.coll;
+            //    this.setDocument();
                 this.showComponent();
             });
         },

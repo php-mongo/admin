@@ -122,7 +122,7 @@
                         <span>_id</span>:
                         <input type="text" v-model="form._id" readonly>
                     </label>
-                    <label>
+                    <label ref="field">
                         <span v-text="showLanguage('document','field', false)"></span>:
                         <input type="text" v-model="form.field">
                     </label>
@@ -130,7 +130,7 @@
                         <span v-text="showLanguage('document','exists', false)"></span>
                         <input type="checkbox" v-model="form.exists">
                     </label>
-                    <label>
+                    <label ref="value">
                         <span v-text="showLanguage('document','value', false)"></span>:
                         <textarea rows="7" v-model="form.value" v-show="form.type==='string'"></textarea>
                         <textarea rows="7" v-model="form.value" v-show="form.type==='mixed'">{\n\n}</textarea>
@@ -143,7 +143,7 @@
                     </label>
                     <p>&nbsp;</p>
                     <p>
-                        <span class="save button" v-on:click="saveField('apply')" v-text="showLanguage('document', 'apply')"></span>
+                        <span v-show="apply.both" class="save button" v-on:click="saveField('apply')" v-text="showLanguage('document', 'apply')"></span>
                         <span class="save button" v-on:click="saveField('apply-all')" v-text="showLanguage('document', 'applyAll')"></span>
                         <span class="cancel button warning" v-on:click="hideComponent" v-text="showLanguage('document', 'cancel')"></span>
                     </p>
@@ -167,6 +167,9 @@
             return {
                 action: 'apply',
                 actionMessage: null,
+                apply: {
+                  both: true
+                },
                 confirmed: null,
                 document: {},
                 documents: [],
@@ -183,6 +186,7 @@
                     value: null,
                     document: null
                 },
+                invalid: [],
                 show: false,
                 skel: {
                     collection: null,
@@ -226,15 +230,22 @@
              *  This is primarily used when adding a new field to a single document
              *  When the 'Apply all' is triggered we will iterate through the full doc array
              */
-            setDocument( document ) {
-                // save requirements
-                this.form._id = document._id;
-                // document._id  = null;
-                this.document = document;
+            setDocument( data ) {
+                this.form.database   = data.db;
+                this.form.collection = data.coll;
+                this.form.index      = data.index;
+                if (data.document) {
+                    // save requirements
+                    this.form._id = data.document._id;
+                    // document._id  = null;
+                    this.document = data.document;
 
-                // clear the _id from the data and save a copy
-                //let str = this.$convObj( document ).json();
-                //this.document = str.replace("\"_id\":null,", "");
+                } else {
+                    // if no document is passed this.index is null
+                    if (this.index == null) {
+                        this.apply.both = false;
+                    }
+                }
             },
 
             /*
@@ -262,19 +273,36 @@
              *  This is our method that handles the save field click
              */
             saveField( action ) {
-                this.errorMessage = null;
                 this.action = action;
                 console.log( "saving action: " + this.action );
 
-                if (action === 'apply-all') {
-                    this.saveAllDocuments();
-                    return;
-                } else {
-                    // add field and check overwrite
-                    if ( this.addFieldToDocument( this.document) ) {
-                        this.saveDocument();
+                if (this.validate()) {
+                    if (action === 'apply-all') {
+                        this.saveAllDocuments();
+
+                    } else {
+                        // add field and check overwrite
+                        if ( this.addFieldToDocument( this.document) ) {
+                            this.saveDocument();
+                        }
                     }
                 }
+            },
+
+            validate() {
+                if (this.form.field == null)  {
+                    this.errorMessage = this.showLanguage('document', 'validate.fieldNameEmpty');
+                    this.invalid.push('field');
+                    this.$jqf(this.$refs.field).add('is-invalid');
+                    return false;
+                }
+                return true;
+            },
+
+            reset() {
+                this.errorMessage = null;
+                this.$jqf(this.$refs.field).remove('is-invalid');
+                this.$jqf(this.$refs.value).remove('is-invalid')
             },
 
             /*
@@ -288,6 +316,10 @@
                 }
                 if (this.form.type === 'mixed') {
                     this.document[this.form.field] = JSON.parse(this.$convObj(this.form.value).minify(this.form.value));
+
+                } else if (this.form.type === 'null') {
+                    this.document[this.form.field] = null;
+                    return true;
 
                 } else {
                     this.document[this.form.field] = this.$convObj(this.form.value).minify(this.form.value);
@@ -456,10 +488,7 @@
              * On event, show the new document field modal
              */
             EventBus.$on('show-document-field', ( data ) => {
-                this.form.database   = data.db;
-                this.form.collection = data.coll;
-                this.form.index      = data.index;
-                this.setDocument( data.document );
+                this.setDocument( data );
                 this.showComponent();
             });
         },

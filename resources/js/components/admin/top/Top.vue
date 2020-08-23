@@ -200,12 +200,12 @@
         */
         data() {
             return {
+                collapsed: false,
                 countryName: null,
-                searchActive: null,
                 isLoggedIn: null,
+                searchActive: null,
                 userName: null,
                 user: {},
-                collapsed: false
             };
         },
 

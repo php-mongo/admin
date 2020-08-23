@@ -253,33 +253,45 @@ class DocumentController extends Controller implements Unserializable
      * Description: Create a new document
      *
      * @param Request $request
-     * @param $database
-     * @param $collection
      *
      * @return \Illuminate\Http\JsonResponse
      *
      * @throws DocumentObjectException
      */
-    public function createDocument(Request $request, $database, $collection)
+    public function createDocument(Request $request)
     {
-        /*$data = $request->validated();
-        $name       = $data['name'];
-        $database   = $data['database'];
-        $collection = $data['name'];
-        $capped     = $data['capped'];
-        $count      = $data['count'];
-        $size       = $data['size'];*/
+        $database   = $request->get('database', null);
+        $collection = $request->get('collection', null);
+        $document   = $request->get('document', null);
 
-        $document = $request->get('document');
+        try {
+            // doc should arrive as JSON
+            $document = json_decode( $document, true);
+            if (count($document) >= 1) {
+                // get the collection
+                $cursor = $this->mongo->connectClientCollection( $database, $collection );
 
-        // get the collection
-        $collection = $this->mongo->connectClientCollection( $database, $collection );
+                // insert doc
+                $result     = $cursor->insertOne( $document );
 
-        // insert doc
-        $result     = $collection->insertOne( $document );
-        $doc        = $this->getObject( $database, $collection, $result->getInsertedId() );
+                // get the ObjectId and then the new object with extras intact
+                $insertId = $result->getInsertedId();
+                $arr = array(
+                    '_id' => new MongoDB\BSON\ObjectId( $insertId->__toString() )
+                );
+                $doc = $this->getObject( $database, $collection, $arr );
 
-        return response()->success('success', array( 'document' => $doc ));
+                return response()->success('success', array( 'document' => $doc ));
+            }
+            return response()->success('failed', array( 'message' => 'document has errors' ));
+
+        }
+        catch( DocumentObjectException $e) {
+            return response()->success('failed', array( 'message' => $e->getMessage() ));
+        }
+        catch(\Exception $e) {
+            return response()->success('failed', array( 'message' => $e->getMessage() ));
+        }
     }
 
     /**

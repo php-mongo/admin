@@ -162,6 +162,8 @@ return [
 
     'dbPasswd' => env('DB_PASSWD'),
 
+    'dbQueryLog' => env('DB_QUERY_LOGS', false),
+
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

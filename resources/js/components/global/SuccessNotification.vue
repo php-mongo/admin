@@ -34,7 +34,7 @@
             line-height: 60px;
             margin: 85px auto auto auto;
             min-width: 400px;
-            max-width: 800px;
+            max-width: 920px;
             color: $noticeColor;
             font-family: "Lato", sans-serif;
             font-size: 16px;
