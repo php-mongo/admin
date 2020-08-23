@@ -196,8 +196,6 @@ class VarEval
         $this->_mongo->connectManager();
         $ret = $this->_mongo->managerCommand($this->_database, $command);
 
-        echo '<pre>'; var_dump($ret); echo '</pre>'; die;
-
         $this->_fixEmptyObject($ret);
 
         date_default_timezone_set($timezone);

@@ -433,6 +433,7 @@ class MongoHelper
         $level  = 0;
         // a function to handle recursive document levels
         // iterate the document
+    //    dd($document);
         foreach ($document as $key => $value) {
             if ($key == '_id') {
                 if (is_object($value)) {

@@ -20,14 +20,14 @@
 </style>
 
 <template>
-    <div :id="'document-nav-' + index" ref="doc-nav" class="doc-nav">
+    <div :id="'document-nav-' + index" ref="doc-nav" class="doc-nav" v-if="document">
         <span v-if="document.can_modify"><span class="pma-link" @click="update" v-text="showLanguage('document', 'update')"></span> |</span>
         <span v-if="document.can_delete"><span class="pma-link" @click="deleteDocument" v-text="showLanguage('document', 'delete')"></span></span>
         <span v-if="!document.can_delete"><span class="disabled-link"  v-text="showLanguage('document', 'delete')"></span></span> |
         <span v-if="document.can_add_field"><span class="pma-link" @click="newField" v-text="showLanguage('document', 'newField')"></span></span>
         <span v-if="!document.can_add_field"><span class="disabled-link" v-text="showLanguage('document', 'newField')"></span></span> |
         <span v-if="document.can_duplicate"><span class="pma-link" @click="duplicate" v-text="showLanguage('document', 'duplicate')"></span> |</span>
-        <span v-if="document.can_refresh"><span class="pma-link" @click="$emit('refresh', document._id)" v-text="showLanguage('document', 'refresh')"></span> |</span>
+        <span v-if="document.can_refresh"><span class="pma-link" @click="refresh" v-text="showLanguage('document', 'refresh')"></span> |</span>
         <span class="pma-link" @click="$emit('text', $event.target)" v-text="showLanguage('document', 'text')"></span> |
         <span class="pma-link" @click="$emit('expand', $event.target)" v-text="showLanguage('document', 'expand')"></span>
     </div>
@@ -75,6 +75,14 @@
             duplicate() {
                 let data = { document: this.document.raw, db: this.collection.databaseName, coll: this.collection.collectionName };
                 EventBus.$emit('show-document-duplicate', data );
+            },
+
+            refresh() {
+                let data = { database: this.collection.databaseName, collection: this.collection.collectionName };
+                this.$store.dispatch('loadCollection', data);
+                setTimeout(function() {
+                    EventBus.$emit('document-insert' );
+                }, 500);
             }
         }
     }

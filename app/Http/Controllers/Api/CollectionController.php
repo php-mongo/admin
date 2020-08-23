@@ -35,6 +35,7 @@ use App\Http\Classes\HighlightDocument;
 use App\Http\Classes\MongoConnection as Mongo;
 use App\Helpers\MongoHelper;
 use App\Http\Requests\EditCollectionRequest;
+use App\Http\Classes\QueryLogs;
 
 /**
  * Vendors
@@ -104,15 +105,19 @@ class CollectionController extends Controller implements Unserializable
     private $collectionStatistics;
 
     /**
+     * This has no affect during the QueryCollection method result processing
+     *
      * @param   string      $search
      *
      * @return  mixed
      */
     private function findCollectionStatisticsValue( $search )
     {
-        foreach ($this->collectionStatistics as $key => $value) {
-            if ($key == $search && !is_array( $value)) {
-                return $value;
+        if (is_array($this->collectionStatistics)) {
+            foreach ($this->collectionStatistics as $key => $value) {
+                if ($key == $search && !is_array( $value)) {
+                    return $value;
+                }
             }
         }
         return '';
@@ -132,6 +137,58 @@ class CollectionController extends Controller implements Unserializable
     private function setCollectionStatistics(array $collectionStatistics): void
     {
         $this->collectionStatistics = $collectionStatistics;
+    }
+
+    private function prepareObjects( $objectsArr, $documentsArray, &$arr)
+    {
+        /** @var ExportDocument $docExport */
+        $docExport    = new ExportDocument();
+
+        /** @var HighlightDocument $docHighlight */
+        $docHighlight = new HighlightDocument();
+
+        $i = 0;
+        foreach ($objectsArr as $key => $obj) {
+            // set the text key value -> default as php
+            $docExport->setVar($obj);
+            $docExport->setParams([]);
+
+            /** @var MongoDB\BSON\ObjectId $id */
+            $id         = $obj['_id'];
+            $obj['_id'] = $id->__toString();
+
+            // we need a raw version - easier to updated and manipulates with JS
+            $raw  = MongoHelper::extractDocument($obj);
+
+            // always set 'json' as the default for this
+            $text = $docExport->export($this->format);
+
+            // set the data key
+            $data = $docHighlight->highlight( $documentsArray[$i], $this->format, true);
+
+            $obj['raw']  = $raw;
+            $obj['text'] = $text;
+            $obj['data'] = $data;
+
+            // set the 'can_delete' bool
+            $obj['can_delete']    = (isset($obj['_id']) && $this->findCollectionStatisticsValue('capped') == false);
+
+            // set the 'can_modify' bool
+            $obj['can_modify']    = (isset($obj['_id']));
+
+            // set the 'can_duplicate' bool
+            $obj['can_duplicate'] = (isset($obj['_id']));
+
+            // set the 'can_add_field' bool
+            $obj['can_add_field'] = (isset($obj['_id']) && $this->findCollectionStatisticsValue('capped') == false);
+
+            // set the 'can_refresh' bool
+            $obj['can_refresh']   = (isset($obj['_id']));
+
+            $arr[$key] = $obj;
+
+            $i++;
+        }
     }
 
     /**
@@ -211,60 +268,15 @@ class CollectionController extends Controller implements Unserializable
         $objects    = [];
         $objectsArr = $objectsObj['objects'];
         $arr        = [];
-
-        /** @var ExportDocument $docExport */
-        $docExport  = new ExportDocument();
-
-        /** @var HighlightDocument $docHighlight */
-        $docHighlight = new HighlightDocument();
         $objects['count'] = $objectsObj['count'];
 
         $documentsArray = [];
         foreach ($objectsArr as $document) {
             MongoHelper::prepareDocument( $document, $documentsArray,$this->fields );
         }
-        $i = 0;
-        foreach ($objectsArr as $key => $obj) {
-            // set the text key value -> default as php
-            $docExport->setVar($obj);
-            $docExport->setParams([]);
 
-            /** @var MongoDB\BSON\ObjectId $id */
-            $id = $obj['_id'];
-            $obj['_id'] = $id->__toString();
+        $this->prepareObjects($objectsArr, $documentsArray, $arr);
 
-            // we need a raw version - easier to updated and manipulates with JS
-            $obj['raw'] = MongoHelper::extractDocument($obj);
-
-            // always set 'json' as the default for this
-            $text = $docExport->export($this->format);
-
-            // set the data key
-            $data = $docHighlight->highlight( $documentsArray[$i], $this->format, true);
-
-            $obj['text'] = $text;
-            $obj['data'] = $data;
-
-            // set the 'can_delete' bool
-            $obj['can_delete'] = (isset($obj['_id']) && $this->findCollectionStatisticsValue('capped') == false);
-
-            // set the 'can_modify' bool
-            $obj['can_modify'] = (isset($obj['_id']));
-
-            // set the 'can_duplicate' bool
-            $obj['can_duplicate'] = (isset($obj['_id']));
-
-            // set the 'can_add_field' bool
-            $obj['can_add_field'] = (isset($obj['_id']) && $this->findCollectionStatisticsValue('capped') == false);
-
-            // set the 'can_refresh' bool
-            $obj['can_refresh'] = (isset($obj['_id']));
-
-            $arr[$key] = $obj;
-
-            $i++;
-
-        }
         $objects['objects'] = $arr;
         $arr = array("collection" => $collection->__debugInfo(), "objects" => $objects, "stats" => $statistics, "server" => $serverData);
 
@@ -337,16 +349,50 @@ class CollectionController extends Controller implements Unserializable
      */
     public function getCollection(Request $request, $database, $collection)
     {
-        $this->database   = $database;
-        $this->collection = $collection;
-        if (isset($database, $collection)) {
-            // get the collection
-            $collection = $this->getOneCollection($database, $collection);
+        try {
+            $this->database   = $database;
+            $this->collection = $collection;
+            if (isset($database, $collection)) {
+                // get the collection
+                $collection = $this->getOneCollection($database, $collection);
 
-            return response()->success('success', array('collection' => $collection));
+                return response()->success('success', array('collection' => $collection));
+            }
+            return response()->error('failed', array('message' => 'required parameters missing'));
         }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
 
-        return response()->error('failed', array('message' => 'required parameters missing'));
+    public function queryCollection(Request $request)
+    {
+        try {
+            $this->database   = $request->get('database');
+            $this->collection = $request->get('collection');
+            $params           = $request->get('params');
+            $format           = $request->get('format');
+            $criteria         = $params['criteria'];
+            $query            = $format == 'json' ? json_decode($criteria[ $format ], true) : $criteria[ $format ];
+            $collection       = $this->mongo->connectClientCollection($this->database, $this->collection);
+            $results          = $collection->find( $query );
+            $results          = $results->toArray();
+            $documentsArray   = [];
+            $documents        = [];
+            foreach ($results as $document) {
+                MongoHelper::prepareDocument( $document, $documentsArray,$this->fields );
+            }
+            $this->prepareObjects($results, $documentsArray, $documents);
+            $log = new QueryLogs();
+            if ($log->isEnabled()) {
+                // ToDo ?? do we want to limit Query Logs to successful queries only ??
+                $log->logQuery($this->database, $this->collection, $criteria[ $format ]);
+            }
+            return response()->success('success', array('documents' => $documents));
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
     }
 
     /**
@@ -361,32 +407,36 @@ class CollectionController extends Controller implements Unserializable
      */
     public function createCollection(EditCollectionRequest $request)
     {
-        $data = $request->validated();
+        try {
+            $data = $request->validated();
+            $name       = $data['name'];
+            $database   = $data['database'];
+            $collection = $data['name'];
+            $capped     = $data['capped'];
+            $count      = $data['count'];
+            $size       = $data['size'];
 
-        $name       = $data['name'];
-        $database   = $data['database'];
-        $collection = $data['name'];
-        $capped     = $data['capped'];
-        $count      = $data['count'];
-        $size       = $data['size'];
+            // default options
+            $options = [];
 
-        // default options
-        $options = [];
-
-        if ($capped == true && $size >= 1) {
-            $options['capped'] = true;
-            $options['size']   = $size;
-            if ($count) {
-                $options['count'] = $count;
+            if ($capped == true && $size >= 1) {
+                $options['capped'] = true;
+                $options['size']   = $size;
+                if ($count) {
+                    $options['count'] = $count;
+                }
             }
+
+            // create the collection
+            $database = $this->mongo->connectClientDb( $database );
+            $database->createCollection( $collection, $options );
+            $coll     = $this->getOneCollection ($database, $collection );
+
+            return response()->success('success', array( 'collection' => $coll ));
         }
-
-        // create the collection
-        $database = $this->mongo->connectClientDb( $database );
-        $database->createCollection( $collection, $options );
-        $coll     = $this->getOneCollection ($database, $collection );
-
-        return response()->success('success', array( 'collection' => $coll ));
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
     }
 
     /**
@@ -401,20 +451,75 @@ class CollectionController extends Controller implements Unserializable
      */
     public function deleteCollection(Request $request)
     {
-        $database    = $request->get('database');
-        $collections = $request->get('collection', false);
-        $status      = array();
-        if ($collections && is_array($collections)) {
-            foreach ($collections as $name) {
-                if (!empty($name)) {
-                    $collection = $this->mongo->connectClientCollection($database, $name);
-                    /** @var MongoDB\Model\BSONDocument $result */
-                    $result   = $collection->drop();
-                    $status[] = $this->setDeleteStatus( $name, $result->getArrayCopy());
+        try {
+            $database    = $request->get('database');
+            $collections = $request->get('collection', false);
+            $status      = array();
+            if ($collections && is_array($collections)) {
+                foreach ($collections as $name) {
+                    if (!empty($name)) {
+                        $collection = $this->mongo->connectClientCollection($database, $name);
+                        /** @var MongoDB\Model\BSONDocument $result */
+                        $result   = $collection->drop();
+                        $status[] = $this->setDeleteStatus( $name, $result->getArrayCopy());
+                    }
                 }
             }
+            return response()->success('success', array('status' => $status ));
         }
-        return response()->success('success', array('status' => $status ));
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Clearing all documents from a MongoDB collection
+     *
+     * URL:         /api/v1/collection/clear
+     * Method:      POST
+     * Description: Clear all documents from collection matching the given name
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function clearCollection(Request $request)
+    {
+        try {
+            $database   = $request->get('database');
+            $collection = $request->get('collection', false);
+            $status     = array();
+            if (isset($database, $collection)) {
+                /** @var MongoDB\Collection $collection */
+                $collection = $this->mongo->connectClientCollection($database, $collection);
+                $result = $collection->deleteMany([]);
+                $status = array("collection" => $collection, "deleted" => $result->getDeletedCount());
+            }
+            return response()->success('success', array('status' => $status ));
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * @param $database
+     * @param $collection
+     *
+     * @return mixed
+     */
+    public function getQueryLogs($database, $collection)
+    {
+        try {
+            $log = new QueryLogs();
+            if ($log->isEnabled()) {
+                $logs = $log->getQueryHistory($database, $collection);
+                return response()->success('success', array('logs' => $logs));
+            }
+            return response()->success('success', array('logs' => []));
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
     }
 
     /**

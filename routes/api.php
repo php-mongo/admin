@@ -253,6 +253,17 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
 
     /*
     * -------------------------------------------------------
+    * Get all query logs for a database.collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/querylogs/{database}/{collection}
+    * Controller:  API/CollectionController@getQueryLogs
+    * Method:      GET
+    * Description: Gets all query logs for given database & collection
+    */
+    Route::get('/collection/querylogs/{database}/{collection}', 'Api\CollectionController@getQueryLogs');
+
+    /*
+    * -------------------------------------------------------
     * Create new Collection (private route)
     * -------------------------------------------------------
     * URL:         /api/v1/collection/create
@@ -275,6 +286,17 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
 
     /*
     * -------------------------------------------------------
+    * Query a Collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/query
+    * Controller:  API/CollectionController@queryCollection
+    * Method:      POST
+    * Description: Queries a collection and returns matching documents
+    */
+    Route::post('/collection/query', 'Api\CollectionController@queryCollection');
+
+    /*
+    * -------------------------------------------------------
     * Delete a Collection (private route)
     * -------------------------------------------------------
     * URL:         /api/v1/collection/delete
@@ -283,6 +305,17 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * Description: Deletes a collection and returns s success status
     */
     Route::post('/collection/delete', 'Api\CollectionController@deleteCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Clear a Collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/clear
+    * Controller:  API/CollectionController@clearCollection
+    * Method:      POST
+    * Description: Clear all documents from a collection and returns s success status
+    */
+    Route::post('/collection/clear', 'Api\CollectionController@clearCollection');
 
     /*
     * -------------------------------------------------------

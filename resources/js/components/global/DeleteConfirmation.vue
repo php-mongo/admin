@@ -34,7 +34,7 @@
             line-height: 50px;
             margin: 0 auto 0 auto;
             min-width: 400px;
-            max-width: 800px;
+            max-width: 920px;
             color: $noticeColor;
             font-family: "Lato", sans-serif;
             font-size: 16px;
@@ -108,7 +108,7 @@
         /*
           When mounted, bind the delete confirmation event.
         */
-        mounted(){
+        mounted() {
             EventBus.$on('delete-confirmation', ( data ) => {
                 this.message   = data.notification;
                 this.show      = true;

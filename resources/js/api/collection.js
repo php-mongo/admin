@@ -46,6 +46,21 @@ export default {
     },
 
     /*
+    *   Query a collection
+    *   POST /api/v1/collection/query
+    */
+    queryCollection: ( data ) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/collection/query',
+            {
+                params: data.params,
+                format: data.format,
+                collection: data.collection,
+                database: data.database,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
     *   Delete one or more collection(s)
     *   POST  /api/v1/collection/delete
     */
@@ -58,11 +73,47 @@ export default {
     },
 
     /*
+    *  Clear all documents from a collection
+    *   POST  /api/v1/collection/clear
+    */
+    clearCollection: ( data ) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/collection/clear',
+            {
+                database: data.database,
+                collection: data.collection,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Fetch query logs for a database.collection
+    *   GET  /api/v1/collection/querylogs/{database}/{collection}
+    */
+    getQueryLogs: ( data ) => {
+        return axios.get( MONGO_CONFIG.API_URL + '/collection/querylogs/' + data.database + '/' + data.collection );
+    },
+
+    /*
     *   Create one document
     *   POST /api/v1/document/create
     */
     createDocument: ( data ) => {
         return axios.post( MONGO_CONFIG.API_URL + '/document/create',
+            {
+                document: data.document,
+                format: data.format,
+                collection: data.collection,
+                database: data.database,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Duplicate one document
+    *   POST /api/v1/document/duplicate
+    */
+    duplicateDocument: ( data ) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/document/duplicate',
             {
                 document: data.document,
                 format: data.format,
@@ -86,22 +137,6 @@ export default {
                 field: data.field,
                 value: data.value,
                 type: data.type,
-                collection: data.collection,
-                database: data.database,
-                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
-            });
-    },
-
-    /*
-    *   Duplicate one document
-    *   POST /api/v1/document/duplicate
-    */
-    duplicateDocument: ( data ) => {
-        console.log("duplicating doco");
-        return axios.post( MONGO_CONFIG.API_URL + '/document/duplicate',
-            {
-                document: data.document,
-                format: data.format,
                 collection: data.collection,
                 database: data.database,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']

@@ -289,10 +289,25 @@ export const application = {
 
         getLanguageString: (state) => (context, key) => {
             if (state.languageArray[context]) {
-                if (state.languageArray[context][key]) {
-                    return state.languageArray[context][key];
+                if (key.indexOf('.') !== -1) {
+                    let keys = key.split(".");
+                    if (state.languageArray[context][keys[0]]) {
+                        if (state.languageArray[context][keys[0]][keys[1]]) {
+                            return state.languageArray[context][keys[0]][keys[1]];
+                        } else {
+                            console.log("no secondary key: " + keys[1]);
+                        }
+
+                    } else {
+                        console.log("no primary key: " + keys[0]);
+                    }
+
                 } else {
-                    console.log("no key: " + key);
+                    if (state.languageArray[context][key]) {
+                        return state.languageArray[context][key];
+                    } else {
+                        console.log("no key: " + key);
+                    }
                 }
 
             } else {

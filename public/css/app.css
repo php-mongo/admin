@@ -66,7 +66,7 @@
  *  See licence.txt for the complete licensing outline.
  *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
  *  See COPYRIGHT.php for copyright notices and further details.
- */body{padding:0;position:relative;color:#333;margin:0;font:14px Lucida Grande,Helvetica,Arial,sans-serif;background-color:#fff}body .hidden-element{display:none}body .content-container{margin-top:3rem}body a{color:#00b7ff}body a.router-link-active{color:#fff;background-color:#ebebeb!important;border-radius:7px}body a.router-link-logo{background-color:transparent!important}body form .is-invalid{border-color:maroon}body form .invalid-feedback{color:maroon}body form .button{border-radius:6px}body .pma-link{color:#00b7ff;cursor:pointer}body .pma-link-danger{color:#e10a0a;cursor:pointer}
+ */body{padding:0;position:relative;color:#333;margin:0;font:14px Lucida Grande,Helvetica,Arial,sans-serif;background-color:#fff}body .hidden-element{display:none}body .content-container{margin-top:3rem}body a{color:#00b7ff}body a.router-link-active{color:#fff;background-color:#ebebeb!important;border-radius:7px}body a.router-link-logo{background-color:transparent!important}body form label{border:1px solid transparent;border-radius:10px;padding:10px}body form label.is-invalid{border-color:maroon;color:#e3342f}body form .invalid-feedback{color:maroon}body form .button{border-radius:6px}body .pma-link{color:#00b7ff;cursor:pointer}body .pma-link-danger{color:#e10a0a;cursor:pointer}
 
 /*!
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)

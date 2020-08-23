@@ -74,7 +74,7 @@
             return {
                 errorMessage: 'No data found - please try again later',
                 show: false,
-                timer: 10000
+                timer: 7500
             }
         },
 
