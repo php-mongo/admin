@@ -47,6 +47,13 @@ export const collection = {
         displayCollectionStatus: 0,
         createCollectionStatus: 0,
         deleteCollectionStatus: 0,
+        clearCollectionStatus: 0,
+        clearCollectionCount: 0,
+        queryLogs: [],
+        queryLogsLoadStatus: 0,
+        queryCollection: [],
+        queryCollectionLoadStatus: 0,
+        documentCreateStatus: 0,
         documentUpdateStatus: 0,
         documentDeleteStatus: 0,
         documentDuplicateStatus: 0,
@@ -72,7 +79,7 @@ export const collection = {
                     commit( 'setCollections', [] );
                     commit( 'setCollectionsLoadStatus', 3 );
                     console.log(error);
-                    EventBus.$emit('no-results-found', { notification: 'No collections were returned from the api - please try again later' });
+                    EventBus.$emit('no-results-found', { notification: 'No collections were returned from the api - please try again later', timer: 5000 });
                 });
         },
 
@@ -91,7 +98,7 @@ export const collection = {
                     commit( 'setCollection', {} );
                     commit( 'setCollectionLoadStatus', 3 );
                     console.log(error);
-                    EventBus.$emit('no-results-found', { notification: 'No collection was returned from the api - please try again later' });
+                    EventBus.$emit('no-results-found', { notification: 'No collection was returned from the api - please try again later', timer: 5000 });
                 });
         },
 
@@ -115,6 +122,24 @@ export const collection = {
         },
 
         /*
+        *   Query a collection - add result to queryResults array
+        */
+        queryCollection( { commit, rootState, dispatch }, data ) {
+            commit( 'setQueryCollectionLoadStatus', 1);
+
+            CollectionApi.queryCollection( data )
+                .then( ( response ) => {
+                    commit( 'setQueryCollectionLoadStatus', 2 );
+                    commit( 'setQueryCollection', response.data.data.documents );
+                })
+                .catch( (error) => {
+                    commit( 'setQueryCollectionLoadStatus', 3 );
+                    commit( 'setErrorData', error);
+                    console.log(error);
+                });
+        },
+
+        /*
         *   Delete one or more collections - remove collection from array
         */
         deleteCollection( { commit, rootState, dispatch }, data ) {
@@ -132,6 +157,24 @@ export const collection = {
                 });
         },
 
+        /*
+        *   Clear all documents from one collection -  clear all cached doc objects
+        */
+        clearCollection( { commit, rootState, dispatch }, data ) {
+            commit( 'setClearCollectionStatus', 1);
+
+            CollectionApi.clearCollection( data )
+                .then( ( response ) => {
+                    commit( 'setClearedCollection', response.data.data.status );
+                    commit( 'setClearCollectionStatus', 2 );
+                })
+                .catch( (error) => {
+                    commit( 'setClearCollectionStatus', 3 );
+                    commit( 'setErrorData', error);
+                    console.log(error);
+                });
+        },
+
         setDbCollections( { commit }, data) {
             commit( 'setCollections', data);
         },
@@ -142,6 +185,24 @@ export const collection = {
         setActiveCollection( { commit }, data ) {
             console.log("setting active collection: " + data);
             commit( 'setActiveCollection', data );
+        },
+
+        /*
+         *  Get the query logs for a database.collection - displays in a modal
+         */
+        getQueryLogs( { commit }, data) {
+            commit( 'setQueryLogsLoadStatus', 1 );
+
+            CollectionApi.getQueryLogs( data )
+                .then( ( response ) => {
+                    commit( 'setQueryLogs', response.data.data.logs );
+                    commit( 'setQueryLogsLoadStatus', 2 );
+                })
+                .catch( (error) => {
+                    commit( 'setQueryLogs', [] );
+                    commit( 'setQueryLogsLoadStatus', 3 );
+                    console.log(error);
+                });
         },
 
         /*
@@ -176,6 +237,7 @@ export const collection = {
 
         /*
         *  Duplicate a document within the collection
+        *  This method and 'createDocument' are basically synonymous
         */
         duplicateDocument( { commit, rootStore, dispatch }, data ) {
             commit( 'setDuplicateDocumentStatus', 1);
@@ -192,6 +254,30 @@ export const collection = {
                 })
                 .catch( (error) => {
                     commit( 'setDuplicateDocumentStatus', 3);
+                    commit( 'setErrorData', error);
+                    console.log(error);
+                });
+        },
+
+        /*
+        *  Create (insert) a document within the collection
+        *  This method and 'duplicateDocument' are basically synonymous
+        */
+        createDocument( { commit, rootStore, dispatch }, data ) {
+            commit( 'setCreateDocumentStatus', 1);
+
+            CollectionApi.createDocument( data )
+                .then( (response) => {
+                    if (response.data.message === 'success') {
+                        commit( 'setCreatedDocument', response.data.data.document );
+                        commit( 'setCreateDocumentStatus', 2);
+                    } else {
+                        commit( 'setCreateDocumentStatus', 3);
+                        commit( 'setErrorData', 'no result');
+                    }
+                })
+                .catch( (error) => {
+                    commit( 'setCreateDocumentStatus', 3);
                     commit( 'setErrorData', error);
                     console.log(error);
                 });
@@ -288,6 +374,79 @@ export const collection = {
         },
 
         /*
+        *   Set the delete collection status
+        */
+        setDeleteCollectionStatus( state, status) {
+            state.deleteCollectionStatus = status;
+        },
+
+        /*
+        *   Set (remove) the deleted collection(s) from the existing array
+        */
+        setDeletedCollection( state, collections ) {
+            collections.forEach(function(value, index) {
+                let arr = [];
+                state.collections.forEach(function(db, index) {
+                    if (db.db.name !== value) {
+                        arr.push(db);
+                    }
+                });
+                state.collections = arr;
+            });
+        },
+
+        /*
+        *   Set the clear collection status
+        */
+        setClearCollectionStatus( state, status) {
+            state.clearCollectionStatus = status;
+        },
+
+        /*
+        *   Set (remove) the deleted collection(s) from the existing array
+        */
+        setClearedCollection( state, status ) {
+            state.collection.objects.count = 0;
+            state.collection.objects.objects = [];
+            state.clearCollectionCount = status.deleted;
+        },
+
+        /*
+        *   Set the active collection
+        */
+        setActiveCollection(state, collection) {
+            state.activeCollection = collection;
+        },
+
+        /*
+        *   Set the query collection load status
+        */
+        setQueryCollectionLoadStatus(state, status) {
+            state.queryCollectionLoadStatus = status;
+        },
+
+        /*
+        *   Set the query collection results data
+        */
+        setQueryCollection(state, documents) {
+            state.queryCollection = documents;
+        },
+
+        /*
+        *   Set the query logs load status
+        */
+        setQueryLogsLoadStatus(state, status) {
+            state.queryLogsLoadStatus = status;
+        },
+
+        /*
+        *   Set the query log load data
+        */
+        setQueryLogs(state, logs) {
+            state.queryLogs = logs;
+        },
+
+        /*
          *  Set the document update status
          */
         setUpdateDocumentStatus( state, status ) {
@@ -316,6 +475,13 @@ export const collection = {
          */
         setDuplicateDocumentStatus( state, status ) {
             state.documentDuplicateStatus = status;
+        },
+
+        /*
+         *  Set the document create status
+         */
+        setCreateDocumentStatus( state, status ) {
+            state.documentCreateStatus = status;
         },
 
         /*
@@ -362,39 +528,10 @@ export const collection = {
         },
 
         /*
-        *   Set the delete collection status
-        */
-        setDeleteCollectionStatus( state, status) {
-            state.deleteCollectionStatus = status;
-        },
-
-        /*
-        *   Set (remove) the deleted collection(s) from the existing array
-        */
-        setDeletedCollection( state, collections ) {
-            collections.forEach(function(value, index) {
-                let arr = [];
-                state.collections.forEach(function(db, index) {
-                    if (db.db.name !== value) {
-                        arr.push(db);
-                    }
-                });
-                state.collections = arr;
-            });
-        },
-
-        /*
         *   Save the error data for reference
         */
         setErrorData( state, error ) {
             state.errorData = error;
-        },
-
-        /*
-        *   Set the active collection
-        */
-        setActiveCollection(state, collection) {
-            state.activeCollection = collection;
         },
 
         /*
@@ -475,24 +612,10 @@ export const collection = {
         },
 
         /*
-         *  Get the document update status
-         */
-        getUpdateDocumentStatus (state ) {
-            return state.documentUpdateStatus;
-        },
-
-        /*
-         *  Get the document duplicate status
-         */
-        getDuplicateDocumentStatus (state ) {
-            return state.documentDuplicateStatus;
-        },
-
-        /*
-        *   Get the delete document status
+        *   Get the clear collection status
         */
-        getDeleteDocumentStatus( state ) {
-            return state.documentDeleteStatus;
+        getClearCollectionStatus( state ) {
+            return state.clearCollectionStatus;
         },
 
         /*
@@ -519,10 +642,66 @@ export const collection = {
         },
 
         /*
+        *   Get the query collection load status
+        */
+        getQueryCollectionLoadStatus(state) {
+            return state.queryCollectionLoadStatus;
+        },
+
+        /*
+        *   Get the query collection results data
+        */
+        getQueryCollection(state) {
+            return state.queryCollection;
+        },
+
+        /*
+        *   Get the query logs load status
+        */
+        getQueryLogsLoadStatus( state) {
+            return state.queryLogsLoadStatus;
+        },
+
+        /*
+        *   Get the query logs data
+        */
+        getQueryLogs( state) {
+            return state.queryLogs;
+        },
+
+        /*
         *   Det the current format
         */
         getCurrentFormat( state ) {
             return state.currentFormat;
+        },
+
+        /*
+         *  Get the document update status
+         */
+        getUpdateDocumentStatus (state ) {
+            return state.documentUpdateStatus;
+        },
+
+        /*
+         *  Get the document duplicate status
+         */
+        getDuplicateDocumentStatus (state ) {
+            return state.documentDuplicateStatus;
+        },
+
+        /*
+         *  Get the document create status
+         */
+        getCreateDocumentStatus (state ) {
+            return state.documentCreateStatus;
+        },
+
+        /*
+        *   Get the delete document status
+        */
+        getDeleteDocumentStatus( state ) {
+            return state.documentDeleteStatus;
         },
 
         /*

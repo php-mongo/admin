@@ -36,7 +36,7 @@
                 }
 
                 &:hover {
-                    backbround-color: $lighterGrey;
+                    background-color: $lighterGrey;
                 }
             }
         }

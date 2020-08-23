@@ -32,7 +32,9 @@ return [
     "array" => "Array",
     "boolean" => "Boolean",
     "cancel" => "Cancel",
-    "createSuccess" => "Document was created successfully",
+    "created" => "Document inserted %s times",
+    "createError" => "An error occurred while inserting the document",
+    "createSuccess" => "Document was inserted successfully",
     "data" => "Data",
     "delete" => "Delete",
     "deleteConfirm" => "Deleting this document can not be reversed! Continue?",
@@ -40,6 +42,7 @@ return [
     "deleteSuccess" => "Document was deleted successfully",
     "document" => "Document",
     "documentNew" => "New Document Field",
+    "documentCreate" => "Document Insert New",
     "documentDuplicate" => "Document Duplicate",
     "documentUpdate" => "Document Update",
     "double" => "Double",
@@ -47,6 +50,7 @@ return [
     "duplicated" => "Document duplicated %s times",
     "duplicateSuccess" => "Document was successfully duplicated %s times",
     "errors" => "There were %s errors encountered updating documents",
+    "errorsCreate" => "There were %s errors encountered inserting new documents",
     "errorsDuplicate" => "There were %s errors encountered duplicating documents",
     "expand" => "Expand",
     "exists" => "Overwrite existing?",
@@ -74,6 +78,9 @@ return [
     "updateError" => "Document with id %s was not updated",
     "duplicateError" => "Document duplication failed with id %s errors",
     "updateSuccess" => "Document with id %s was updated successfully",
-    "value" => "Value"
+    "value" => "Value",
+    "validate" => [
+        "fieldNameEmpty" => "The field name cannot be NULL",
+    ]
 
 ];

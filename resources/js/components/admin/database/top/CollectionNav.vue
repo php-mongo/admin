@@ -104,19 +104,19 @@
                     </span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('history')}">
-                    <span class="hide" v-bind:title="showLanguage('title', 'historyTitle')" v-on:click="loadPanel('history', $event)" v-text="showLanguage('collection', 'history')"></span>
+                    <span v-bind:title="showLanguage('title', 'historyTitle')" v-on:click="loadModal('history')" v-text="showLanguage('collection', 'history')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('refresh')}">
-                    <span class="hide" v-bind:title="showLanguage('title', 'refreshTitle')" v-on:click="loadPanel('refresh', $event)" v-text="showLanguage('collection', 'refresh')"></span>
+                    <span v-bind:title="showLanguage('title', 'refreshTitle')" v-on:click="runCommand('refresh')" v-text="showLanguage('collection', 'refresh')"></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('insert')}">
-                    <span class="hide" v-bind:title="showLanguage('title', 'insertTitle')" v-on:click="loadPanel('insert', $event)" v-text="showLanguage('collection', 'insert')"></span>
+                <li v-bind:class="{active: getActivePanel('new')}">
+                    <span v-bind:title="showLanguage('title', 'insertTitle')" v-on:click="loadModal('new')" v-text="showLanguage('collection', 'insert')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('clear')}">
-                    <span class="hide" v-bind:title="showLanguage('title', 'clearTitle')" v-on:click="loadPanel('clear', $event)" v-text="showLanguage('collection', 'clear')"></span>
+                    <span v-bind:title="showLanguage('title', 'clearTitle')" v-on:click="runCommand('clear')" v-text="showLanguage('collection', 'clear')"></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('newField')}">
-                    <span class="hide" v-bind:title="showLanguage('title', 'newFieldTitle')" v-on:click="loadPanel('newField', $event)" v-text="showLanguage('collection', 'newField')"></span>
+                <li v-bind:class="{active: getActivePanel('field')}">
+                    <span v-bind:title="showLanguage('title', 'newFieldTitle')" v-on:click="loadModal('field')" v-text="showLanguage('collection', 'newField')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('statistics')}">
                     <span class="hide" v-bind:title="showLanguage('title', 'statisticsTitle')" v-on:click="loadPanel('statistics', $event)" v-text="showLanguage('collection', 'statistics')"></span>
@@ -174,9 +174,13 @@
             return {
                 activePanel: null,
                 activeFormat: 'json',
+                collapsed: false,
+                collection: null,
                 current: null,
+                db: null,
+                index: 0,
+                limit: 75,
                 show: false,
-                collapsed: false
             }
         },
 
@@ -189,6 +193,10 @@
                 return this.$store.getters.getActiveCollection;
             },
 
+            checkDb() {
+                return this.$store.getters.getActiveDatabase;
+            },
+
             isFormatJson() {
                 return (this.activeFormat === 'json') ? 'underline' : '';
             },
@@ -198,7 +206,7 @@
             },
 
             /*
-             *  Seconfary collapse handler
+             *  Secondary collapse handler
              */
             showHide() {
                 return (this.show && !this.collapsed);
@@ -212,7 +220,11 @@
             /*
             *   Calls the Translation and Language service
             */
-            showLanguage( context, key ) {
+            showLanguage( context, key, str ) {
+                if (str) {
+                    let string = this.$store.getters.getLanguageString( context, key );
+                    return string.replace("%s", str);
+                }
                 return this.$store.getters.getLanguageString( context, key );
             },
 
@@ -223,6 +235,31 @@
                 this.activePanel = item;
                 EventBus.$emit('hide-collection-panels');
                 EventBus.$emit('show-collection-' + item);
+            },
+
+            loadModal( panel ) {
+                let data = { document: null, db: this.db, coll: this.collection, index: null };
+                EventBus.$emit('show-document-' + panel, data );
+            },
+
+            runCommand( command ) {
+                let data = null;
+                switch(true) {
+                    case command === 'refresh':
+                        data = { database: this.db, collection: this.collection };
+                        this.$store.dispatch('loadCollection', data);
+                        setTimeout(function() {
+                            EventBus.$emit('document-insert' );
+                        }, 500);
+                        break;
+
+                    case command === 'clear':
+                        data = { notification: this.showLanguage('collection', 'clearConfirm', this.collection), element: 'clear-collection', id: this.collection };
+                        EventBus.$emit('delete-confirmation', data);
+
+                    default:
+                        console.log("commanding: " + command);
+                }
             },
 
             /*
@@ -238,7 +275,39 @@
             setFormat( format ) {
                 this.activeFormat = format;
                 this.$store.dispatch('setCurrentFormat', format);
-                //EventBus.$emit('set-query-format', format);
+            },
+
+            getCollection() {
+                this.collection = this.$store.getters.getActiveCollection;
+            },
+
+            getDb() {
+                this.db = this.$store.getters.getActiveDatabase;
+            },
+
+            clearCollection( data ) {
+                console.log("clearing collection: " + data);
+                if (data && data === this.collection) {
+                    let data = { database: this.db, collection: this.collection };
+                    this.$store.dispatch('clearCollection', data );
+                }
+            },
+
+            handleClearCollection() {
+                let status = this.$store.getters.getClearCollectionStatus;
+                if (status === 1 && this.index < this.limit) {
+                    this.index+=1;
+                    let self = this;
+                    setTimeout(function() {
+                        this.handleClearCollection();
+                    }, 100);
+                }
+                else if (status === 2) {
+                    EventBus.$emit('show-success', { notification: this.showLanguage('collection', 'clearSuccess', this.collection), timer: 5000 });
+                }
+                else if (status === 3) {
+                    EventBus.$emit('show-success', { notification: this.showLanguage('collection', 'clearError', this.collection), timer: 5000 });
+                }
             },
 
             /*
@@ -259,23 +328,37 @@
         mounted() {
             EventBus.$on('show-collection-nav', () => {
                 this.showNavigation();
-
             });
 
             EventBus.$on('show-database-nav', () => {
                 this.hideNavigation();
-
             });
 
             EventBus.$on('collapse-db', (collapse) => {
                 this.collapsed = collapse;
-
             });
 
             EventBus.$on('default-query-format', ( format ) => {
                 this.activeFormat = format;
-
             });
+
+            EventBus.$on('confirm-delete-clear-collection', (data) => {
+                this.clearCollection(data);
+            });
+
+            EventBus.$on('cancel-delete-clear-collection', () => {
+                this.clearCollection();
+            });
+        },
+
+        watch: {
+            checkCollection() {
+                this.getCollection();
+            },
+
+            checkDb() {
+                this.getDb();
+            }
         }
     }
 </script>

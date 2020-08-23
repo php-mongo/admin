@@ -8126,8 +8126,15 @@ body a.router-link-logo {
   background-color: transparent !important;
 }
 
-body form .is-invalid {
+body form label {
+  border: 1px solid transparent;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+body form label.is-invalid {
   border-color: #800000;
+  color: #e3342f;
 }
 
 body form .invalid-feedback {

@@ -1984,7 +1984,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       errorMessage: 'No data found - please try again later',
       show: false,
-      timer: 10000
+      timer: 7500
     };
   },
 
@@ -2938,6 +2938,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DocumentUpdate__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./DocumentUpdate */ "./resources/js/components/admin/database/collection/DocumentUpdate.vue");
 /* harmony import */ var _DocumentField__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./DocumentField */ "./resources/js/components/admin/database/collection/DocumentField.vue");
 /* harmony import */ var _DocumentDuplicate__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./DocumentDuplicate */ "./resources/js/components/admin/database/collection/DocumentDuplicate.vue");
+/* harmony import */ var _DocumentNew__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./DocumentNew */ "./resources/js/components/admin/database/collection/DocumentNew.vue");
+/* harmony import */ var _QueryLogs__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./QueryLogs */ "./resources/js/components/admin/database/collection/QueryLogs.vue");
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3174,6 +3182,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   /*
    *   Register the components to be used by the home page.
@@ -3184,7 +3194,9 @@ __webpack_require__.r(__webpack_exports__);
     Pagination: _Pagination__WEBPACK_IMPORTED_MODULE_3__["default"],
     DocumentUpdate: _DocumentUpdate__WEBPACK_IMPORTED_MODULE_4__["default"],
     DocumentField: _DocumentField__WEBPACK_IMPORTED_MODULE_5__["default"],
-    DocumentDuplicate: _DocumentDuplicate__WEBPACK_IMPORTED_MODULE_6__["default"]
+    DocumentDuplicate: _DocumentDuplicate__WEBPACK_IMPORTED_MODULE_6__["default"],
+    DocumentNew: _DocumentNew__WEBPACK_IMPORTED_MODULE_7__["default"],
+    QueryLogs: _QueryLogs__WEBPACK_IMPORTED_MODULE_8__["default"]
   },
 
   /*
@@ -3251,6 +3263,7 @@ __webpack_require__.r(__webpack_exports__);
       },
       pageSizes: [10, 15, 20, 30, 50, 100, 200],
       maxPageButtonDisplay: 3,
+      // query elements
       nativeFields: null,
       queryFields: [],
       queryHints: [],
@@ -3265,7 +3278,9 @@ __webpack_require__.r(__webpack_exports__);
           message: null
         }
       },
-      message: null
+      message: null,
+      index: 0,
+      limit: 75
     };
   },
 
@@ -3278,15 +3293,16 @@ __webpack_require__.r(__webpack_exports__);
     },
     getTotal: function getTotal() {
       if (this.collection && this.collection.objects) {
-        if (this.collection.objects) {
+        if (this.collection.objects || this.allObjects) {
           if (this.collection.objects.count == 0) {
             this.page.find.message = this.showLanguage('collection', 'empty', this.collection.collection.collectionName);
             this.clearValues();
           } else {
             this.page.find.message = null;
-          }
+          } //return this.collection.objects.count;
 
-          return this.collection.objects.count;
+
+          return this.allObjects.length;
         }
       }
 
@@ -3330,6 +3346,9 @@ __webpack_require__.r(__webpack_exports__);
       if (this.collection && this.collection.objects) {
         return this.collection.objects;
       }
+    },
+    roundCost: function roundCost() {
+      return Math.round(this.cost);
     }
   },
 
@@ -3386,6 +3405,84 @@ __webpack_require__.r(__webpack_exports__);
         this.format = format;
       }
     },
+    getDatabaseName: function getDatabaseName() {
+      return this.collection.collection.databaseName;
+    },
+    getCollectionName: function getCollectionName() {
+      return this.collection.collection.collectionName;
+    },
+    submitQuery: function submitQuery() {
+      this.message = null;
+
+      if (this.collection.objects.count === 0) {
+        this.message = this.showLanguage('collection', 'msgNoDocs');
+        return;
+      }
+
+      if (this.collection.objects.count <= this.pageSizeDefault) {
+        this.message = this.showLanguage('collection', 'msgTooFew');
+        return;
+      }
+
+      if (this.format === 'json') {
+        var json = this.$convObj(this.form.criteria.json).minify();
+        console.log(json);
+
+        if (json === '{}') {
+          this.message = this.showLanguage('collection', 'msgEmptyQuery');
+          return;
+        }
+      }
+
+      if (this.format === 'array') {
+        var array = this.$convObj(this.form.criteria.array).minify();
+        console.log(array);
+
+        if (array === '()') {
+          this.message = this.showLanguage('collection', 'msgEmptyQuery');
+          return;
+        }
+      } // tests completed - send query to DB
+
+
+      var data = {
+        params: this.form,
+        format: this.format,
+        database: this.getDatabaseName(),
+        collection: this.getCollectionName()
+      };
+      this.$store.dispatch('queryCollection', data);
+      this.handleQuery();
+    },
+    handleQuery: function handleQuery() {
+      var status = this.$store.getters.getQueryCollectionLoadStatus;
+      console.log("handleQuery status: " + status);
+
+      if (status === 1 && this.index < this.limit) {
+        var self = this;
+        setTimeout(function () {
+          self.handleQuery();
+        }, 100);
+      } else if (status === 2) {
+        this.allObjects = this.$store.getters.getQueryCollection;
+        this.count = this.allObjects.length;
+
+        if (this.count >= 1) {
+          this.visibleObjects = [];
+          var x = 0;
+
+          for (x = this.start; x < this.pageSizeDefault; x += 1) {
+            if (this.allObjects[x]) {
+              this.visibleObjects.push(this.allObjects[x]);
+            }
+          }
+        } else {
+          this.message = this.showLanguage('collection', 'msgEmptyResult');
+        }
+      } else if (status === 3) {
+        this.message = this.showLanguage('collection', 'msgQueryError');
+      }
+    },
     showQueryFields: function showQueryFields(event) {
       console.log("query fields...");
       console.log(event);
@@ -3398,14 +3495,6 @@ __webpack_require__.r(__webpack_exports__);
       console.log("change command...");
       console.log(event);
     },
-    roundCost: function roundCost() {
-      console.log('rounding: ' + this.cost);
-      return Math.round(this.cost);
-    },
-    submitQuery: function submitQuery() {
-      console.log("submitting query...");
-      console.log(this.form);
-    },
     explainQuery: function explainQuery() {
       console.log("explain form...");
       console.log(this.form);
@@ -3413,7 +3502,10 @@ __webpack_require__.r(__webpack_exports__);
     clearForm: function clearForm() {
       console.log("clearing form...");
       this.form = {
-        criteria: '{\n' + '\t\n' + '}',
+        criteria: {
+          json: '{\n' + '\t\n' + '}',
+          array: '(\n' + '\t\n' + ')'
+        },
         newObj: '{\n' + '\t\'$set\': {\n' + '\t\t//your attributes\n' + '\t}\n' + '}',
         field: {
           0: '_id',
@@ -3431,6 +3523,7 @@ __webpack_require__.r(__webpack_exports__);
         pageSize: 10,
         command: 'findAll'
       };
+      this.handlePageLoad();
     },
     closeQueryFields: function closeQueryFields() {
       console.log("close query fields");
@@ -3487,7 +3580,9 @@ __webpack_require__.r(__webpack_exports__);
         this.allObjects = this.collection.objects.objects;
 
         for (x = this.start; x < this.pageSizeDefault; x += 1) {
-          this.visibleObjects.push(this.allObjects[x]);
+          if (this.allObjects[x]) {
+            this.visibleObjects.push(this.allObjects[x]);
+          }
         }
       }
     },
@@ -3497,12 +3592,13 @@ __webpack_require__.r(__webpack_exports__);
      */
     clearValues: function clearValues() {
       this.allObjects = [];
-      this.visibleObjects = [];
-      this.showing = 0;
-      this.start = 0;
-      this.end = 0;
-      this.current = 1;
       this.count = 0;
+      this.current = 1;
+      this.end = 0;
+      this.message = null;
+      this.start = 0;
+      this.showing = 0;
+      this.visibleObjects = [];
     },
     updateDocument: function updateDocument(data) {
       if (data) {
@@ -3535,6 +3631,9 @@ __webpack_require__.r(__webpack_exports__);
           });
         }
       }
+    },
+    fetchData: function fetchData() {
+      this.handlePageLoad();
     }
   },
 
@@ -3552,6 +3651,9 @@ __webpack_require__.r(__webpack_exports__);
     });
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('document-updated', function (data) {
       _this.updateDocument(data);
+    });
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('document-inserted', function () {
+      _this.fetchData();
     });
   },
 
@@ -3886,7 +3988,9 @@ __webpack_require__.r(__webpack_exports__);
      */
     getDataByFormat: function getDataByFormat(document) {
       if (this.format === 'json') {
-        return this.document.data;
+        if (this.document) {
+          return this.document.data;
+        }
       }
 
       if (this.format === 'array') {
@@ -3900,13 +4004,18 @@ __webpack_require__.r(__webpack_exports__);
      */
     getTextByFormat: function getTextByFormat(document) {
       if (this.format === 'json') {
-        return this.document.text;
+        if (this.document) {
+          return this.document.text;
+        }
       }
 
       if (this.format === 'array') {
         //return this.document.data;
         return this.$convObj(this.document.raw).arrayT(); //this.document.data;
       }
+    },
+    hasDocument: function hasDocument() {
+      return this.document != null;
     }
   },
 
@@ -4230,11 +4339,14 @@ __webpack_require__.r(__webpack_exports__);
     /*
      *  Set the current document for duplicating - received from the EventBus
      */
-    setDocument: function setDocument(document) {
+    setDocument: function setDocument(data) {
       // clear first
-      this.clearData(); // display doc to dupe
+      this.clearData(); // we need these !!
 
-      this.document = document;
+      this.form.database = data.db;
+      this.form.collection = data.coll; // display doc to dupe
+
+      this.document = data.document;
       this.document._id = null; // clear the _id from the data and save a copy
 
       var str = this.$convObj(this.document).json();
@@ -4398,11 +4510,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-document-duplicate', function (data) {
-      //    console.log(data);
-      _this.form.database = data.db;
-      _this.form.collection = data.coll;
-
-      _this.setDocument(data.document);
+      _this.setDocument(data);
 
       _this.showComponent();
     });
@@ -4592,6 +4700,9 @@ __webpack_require__.r(__webpack_exports__);
     return {
       action: 'apply',
       actionMessage: null,
+      apply: {
+        both: true
+      },
       confirmed: null,
       document: {},
       documents: [],
@@ -4608,6 +4719,7 @@ __webpack_require__.r(__webpack_exports__);
         value: null,
         document: null
       },
+      invalid: [],
       show: false,
       skel: {
         collection: null,
@@ -4643,13 +4755,22 @@ __webpack_require__.r(__webpack_exports__);
      *  This is primarily used when adding a new field to a single document
      *  When the 'Apply all' is triggered we will iterate through the full doc array
      */
-    setDocument: function setDocument(document) {
-      // save requirements
-      this.form._id = document._id; // document._id  = null;
+    setDocument: function setDocument(data) {
+      this.form.database = data.db;
+      this.form.collection = data.coll;
+      this.form.index = data.index;
 
-      this.document = document; // clear the _id from the data and save a copy
-      //let str = this.$convObj( document ).json();
-      //this.document = str.replace("\"_id\":null,", "");
+      if (data.document) {
+        // save requirements
+        this.form._id = data.document._id; // document._id  = null;
+
+        this.document = data.document;
+      } else {
+        // if no document is passed this.index is null
+        if (this.index == null) {
+          this.apply.both = false;
+        }
+      }
     },
 
     /*
@@ -4675,19 +4796,34 @@ __webpack_require__.r(__webpack_exports__);
      *  This is our method that handles the save field click
      */
     saveField: function saveField(action) {
-      this.errorMessage = null;
       this.action = action;
       console.log("saving action: " + this.action);
 
-      if (action === 'apply-all') {
-        this.saveAllDocuments();
-        return;
-      } else {
-        // add field and check overwrite
-        if (this.addFieldToDocument(this.document)) {
-          this.saveDocument();
+      if (this.validate()) {
+        if (action === 'apply-all') {
+          this.saveAllDocuments();
+        } else {
+          // add field and check overwrite
+          if (this.addFieldToDocument(this.document)) {
+            this.saveDocument();
+          }
         }
       }
+    },
+    validate: function validate() {
+      if (this.form.field == null) {
+        this.errorMessage = this.showLanguage('document', 'validate.fieldNameEmpty');
+        this.invalid.push('field');
+        this.$jqf(this.$refs.field).add('is-invalid');
+        return false;
+      }
+
+      return true;
+    },
+    reset: function reset() {
+      this.errorMessage = null;
+      this.$jqf(this.$refs.field).remove('is-invalid');
+      this.$jqf(this.$refs.value).remove('is-invalid');
     },
 
     /*
@@ -4702,6 +4838,9 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.form.type === 'mixed') {
         this.document[this.form.field] = JSON.parse(this.$convObj(this.form.value).minify(this.form.value));
+      } else if (this.form.type === 'null') {
+        this.document[this.form.field] = null;
+        return true;
       } else {
         this.document[this.form.field] = this.$convObj(this.form.value).minify(this.form.value);
       } // cleanup the value
@@ -4878,11 +5017,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-document-field', function (data) {
-      _this2.form.database = data.db;
-      _this2.form.collection = data.coll;
-      _this2.form.index = data.index;
-
-      _this2.setDocument(data.document);
+      _this2.setDocument(data);
 
       _this2.showComponent();
     });
@@ -4994,7 +5129,378 @@ __webpack_require__.r(__webpack_exports__);
         coll: this.collection.collectionName
       };
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-document-duplicate', data);
+    },
+    refresh: function refresh() {
+      var data = {
+        database: this.collection.databaseName,
+        collection: this.collection.collectionName
+      };
+      this.$store.dispatch('loadCollection', data);
+      setTimeout(function () {
+        _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('document-insert');
+      }, 500);
     }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/babel-loader/lib??ref--11-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/*
+ * Imports the Event Bus to pass events on tag updates
+ */
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  /*
+   *  Defines the data required by this component.
+   */
+  data: function data() {
+    return {
+      actionMessage: null,
+      created: 0,
+      document: {},
+      errorMessage: null,
+      errors: 0,
+      form: {
+        collection: null,
+        database: null,
+        format: 'json',
+        number: 1,
+        document: '{\n\n}'
+      },
+      show: false,
+      skel: {
+        collection: null,
+        database: null,
+        format: 'json',
+        number: 1,
+        document: '{\n\t\n}'
+      }
+    };
+  },
+  methods: {
+    /*
+     *   Calls the Translation and Language service
+     */
+    showLanguage: function showLanguage(context, key, str) {
+      if (str) {
+        var string = this.$store.getters.getLanguageString(context, key);
+        return string.replace("%s", str);
+      }
+
+      return this.$store.getters.getLanguageString(context, key);
+    },
+
+    /*
+     *  Switch the document view format
+     */
+    switchFormat: function switchFormat(event) {
+      var value = this.$jqf(event.target).value();
+      console.log('value: ' + value);
+
+      if (value === 'array') {
+        console.log('go to array...');
+        this.form.format = 'array';
+        this.form.document = this.makeArray(this.form.document);
+      } else if (value === 'json') {
+        console.log('go to json...');
+        this.form.format = 'json';
+        this.form.document = this.makeJson(this.form.document);
+      } else {
+        console.log("ohh no!!! not you again!!");
+      }
+    },
+    makeJson: function makeJson(document) {
+      return this.$convObj(document).jsonT();
+    },
+    makeArray: function makeArray(document) {
+      return this.$convObj(document).arrayT();
+    },
+
+    /*
+     *  This is our method that handles the insertDocument click
+     */
+    insertDocument: function insertDocument(action) {
+      this.errorMessage = null;
+      console.log("creating!"); // check format
+
+      if (this.form.format === 'array') {
+        this.form.document = this.makeJson(this.form.document);
+      } // save duplicate
+
+
+      this.saveDocument();
+    },
+
+    /*
+     *  Run the save field to all document iteration
+     */
+    saveDocument: function saveDocument() {
+      // iterate docs
+      var i;
+
+      for (i = 0; i < this.form.number; i += 1) {
+        // minify
+        this.form.document = this.$convObj(this.form.document).minify(); // send
+
+        this.$store.dispatch('createDocument', this.form); // used to monitor send success/fail
+
+        if (this.handleAll()) {
+          // notify doc duplicate success
+          this.created += 1;
+          this.actionMessage = this.showLanguage('document', 'created', this.duplicated);
+        } else {
+          // track errors
+          this.errors += 1;
+          this.errorMessage = this.showLanguage('document', 'errorsCreate', this.errors);
+        }
+      } // complete
+
+
+      this.handleDuplicate();
+    },
+
+    /*
+     *  Handle a single document duplicates'
+     */
+    handleDuplicate: function handleDuplicate() {
+      var status = this.$store.getters.getCreateDocumentStatus;
+
+      if (status === 1) {
+        var self = this;
+        setTimeout(function () {
+          self.handleDuplicate();
+        }, 100);
+      }
+
+      if (status === 2) {
+        _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-success', {
+          notification: this.showLanguage('document', 'createSuccess', this.created)
+        });
+        _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('document-inserted');
+        this.clearData();
+        this.hideComponent();
+      }
+
+      if (status === 3) {
+        _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-error', {
+          notification: this.showLanguage('document', 'createError', this.errors)
+        });
+      }
+    },
+
+    /*
+     *  use this when iterating through the full document array to monitor progress
+     */
+    handleAll: function handleAll() {
+      var status = this.$store.getters.getDuplicateDocumentStatus;
+
+      if (status === 1) {
+        var self = this;
+        setTimeout(function () {
+          self.handleAll();
+        }, 100);
+      }
+
+      if (status === 2) {
+        return true;
+      }
+
+      if (status === 3) {
+        return false;
+      }
+    },
+
+    /*
+     *  Clear on destroyed and completion
+     */
+    clearData: function clearData() {
+      this.actionMessage = null;
+      this.document = {};
+      this.errorMessage = null;
+      this.errors = 0;
+      this.form = this.skel;
+      this.updated = 0;
+    },
+
+    /*
+     *   Show component
+     */
+    showComponent: function showComponent() {
+      this.show = true;
+    },
+
+    /*
+     *   Hide component
+     */
+    hideComponent: function hideComponent() {
+      this.show = false;
+    }
+  },
+
+  /*
+    Sets up the component when mounted.
+  */
+  mounted: function mounted() {
+    var _this = this;
+    /*
+     * On event, show the new document field modal
+     */
+
+
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-document-new', function (data) {
+      _this.form.database = data.db;
+      _this.form.collection = data.coll; //    this.setDocument();
+
+      _this.showComponent();
+    });
+  },
+  destroyed: function destroyed() {
+    this.clearData();
   }
 });
 
@@ -5208,15 +5714,18 @@ function _typeof(obj) {
      *  Set the document for editing - received from view
      * JSON is the default to use that service method first
      */
-    setDocument: function setDocument(document) {
+    setDocument: function setDocument(data) {
       // save requirements
-      this.form._id = document._id;
-      document._id = null;
-      this.document = document; // clear the _id from the data and save a copy
+      this.form.database = data.db;
+      this.form.collection = data.coll;
+      this.form.index = data.index;
+      this.form._id = data.document._id;
+      data.document._id = null;
+      this.document = data.document; // clear the _id from the data and save a copy
       //let str = this.$convObj( document ).json();
       //this.document = str.replace("\"_id\":null,", "");
 
-      this.form.document = this.makeJson(document);
+      this.form.document = this.makeJson(data.document);
     },
 
     /*
@@ -5374,12 +5883,7 @@ function _typeof(obj) {
 
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-document-update', function (data) {
-      //    console.log(data);
-      _this.form.database = data.db;
-      _this.form.collection = data.coll;
-      _this.form.index = data.index;
-
-      _this.setDocument(data.document);
+      _this.setDocument(data);
 
       _this.showComponent();
     });
@@ -5922,6 +6426,231 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/babel-loader/lib??ref--11-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/*
+ * Imports the Event Bus to pass events on tag updates
+ */
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  /*
+   *  Defines the data required by this component.
+   */
+  data: function data() {
+    return {
+      actionMessage: null,
+      collection: null,
+      database: null,
+      errorMessage: null,
+      index: 0,
+      limit: 75,
+      // limit the status check iterations
+      queryLogs: [],
+      show: false
+    };
+  },
+  methods: {
+    /*
+     *   Calls the Translation and Language service
+     */
+    showLanguage: function showLanguage(context, key, str) {
+      if (str) {
+        var string = this.$store.getters.getLanguageString(context, key);
+        return string.replace("%s", str);
+      }
+
+      return this.$store.getters.getLanguageString(context, key);
+    },
+    getQueryLogs: function getQueryLogs() {
+      var data = {
+        database: this.database,
+        collection: this.collection
+      };
+      this.$store.dispatch('getQueryLogs', data);
+      this.handleQueryLogs();
+    },
+    handleQueryLogs: function handleQueryLogs() {
+      var status = this.$store.getters.getQueryLogsLoadStatus;
+      console.log("status: " + status);
+
+      if (status === 1 && this.index < this.limit) {
+        this.index += 1;
+        var self = this;
+        setTimeout(function () {
+          self.handleQueryLogs();
+        }, 100);
+      } else if (status === 2) {
+        // success!
+        this.queryLogs = this.$store.getters.getQueryLogs;
+
+        if (this.queryLogs.length > 0) {
+          this.actionMessage = this.showLanguage('collection', 'logsAction', this.queryLogs.length);
+        } else {
+          this.actionMessage = this.showLanguage('collection', 'logsActionEmpty');
+        }
+      } else if (status === 3) {
+        this.errorMessage = this.showLanguage('collection', 'logsActionError');
+      }
+    },
+
+    /*
+     *   Show component
+     */
+    showComponent: function showComponent() {
+      this.show = true;
+    },
+
+    /*
+     *   Hide component
+     */
+    hideComponent: function hideComponent() {
+      this.show = false;
+    }
+  },
+
+  /*
+    Sets up the component when mounted.
+  */
+  mounted: function mounted() {
+    var _this = this;
+    /*
+     * On event, show the new document field modal
+     */
+
+
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-document-history', function (data) {
+      _this.database = data.db;
+      _this.collection = data.coll;
+
+      _this.getQueryLogs();
+
+      _this.showComponent();
+    });
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/top/CollectionNav.vue?vue&type=script&lang=js&":
 /*!**************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/babel-loader/lib??ref--11-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/top/CollectionNav.vue?vue&type=script&lang=js& ***!
@@ -6107,9 +6836,13 @@ __webpack_require__.r(__webpack_exports__);
     return {
       activePanel: null,
       activeFormat: 'json',
+      collapsed: false,
+      collection: null,
       current: null,
-      show: false,
-      collapsed: false
+      db: null,
+      index: 0,
+      limit: 75,
+      show: false
     };
   },
 
@@ -6121,6 +6854,9 @@ __webpack_require__.r(__webpack_exports__);
     checkCollection: function checkCollection() {
       return this.$store.getters.getActiveCollection;
     },
+    checkDb: function checkDb() {
+      return this.$store.getters.getActiveDatabase;
+    },
     isFormatJson: function isFormatJson() {
       return this.activeFormat === 'json' ? 'underline' : '';
     },
@@ -6129,7 +6865,7 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /*
-     *  Seconfary collapse handler
+     *  Secondary collapse handler
      */
     showHide: function showHide() {
       return this.show && !this.collapsed;
@@ -6143,7 +6879,12 @@ __webpack_require__.r(__webpack_exports__);
     /*
     *   Calls the Translation and Language service
     */
-    showLanguage: function showLanguage(context, key) {
+    showLanguage: function showLanguage(context, key, str) {
+      if (str) {
+        var string = this.$store.getters.getLanguageString(context, key);
+        return string.replace("%s", str);
+      }
+
       return this.$store.getters.getLanguageString(context, key);
     },
 
@@ -6154,6 +6895,42 @@ __webpack_require__.r(__webpack_exports__);
       this.activePanel = item;
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('hide-collection-panels');
       _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-collection-' + item);
+    },
+    loadModal: function loadModal(panel) {
+      var data = {
+        document: null,
+        db: this.db,
+        coll: this.collection,
+        index: null
+      };
+      _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-document-' + panel, data);
+    },
+    runCommand: function runCommand(command) {
+      var data = null;
+
+      switch (true) {
+        case command === 'refresh':
+          data = {
+            database: this.db,
+            collection: this.collection
+          };
+          this.$store.dispatch('loadCollection', data);
+          setTimeout(function () {
+            _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('document-insert');
+          }, 500);
+          break;
+
+        case command === 'clear':
+          data = {
+            notification: this.showLanguage('collection', 'clearConfirm', this.collection),
+            element: 'clear-collection',
+            id: this.collection
+          };
+          _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('delete-confirmation', data);
+
+        default:
+          console.log("commanding: " + command);
+      }
     },
 
     /*
@@ -6168,7 +6945,45 @@ __webpack_require__.r(__webpack_exports__);
      */
     setFormat: function setFormat(format) {
       this.activeFormat = format;
-      this.$store.dispatch('setCurrentFormat', format); //EventBus.$emit('set-query-format', format);
+      this.$store.dispatch('setCurrentFormat', format);
+    },
+    getCollection: function getCollection() {
+      this.collection = this.$store.getters.getActiveCollection;
+    },
+    getDb: function getDb() {
+      this.db = this.$store.getters.getActiveDatabase;
+    },
+    clearCollection: function clearCollection(data) {
+      console.log("clearing collection: " + data);
+
+      if (data && data === this.collection) {
+        var _data = {
+          database: this.db,
+          collection: this.collection
+        };
+        this.$store.dispatch('clearCollection', _data);
+      }
+    },
+    handleClearCollection: function handleClearCollection() {
+      var status = this.$store.getters.getClearCollectionStatus;
+
+      if (status === 1 && this.index < this.limit) {
+        this.index += 1;
+        var self = this;
+        setTimeout(function () {
+          this.handleClearCollection();
+        }, 100);
+      } else if (status === 2) {
+        _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-success', {
+          notification: this.showLanguage('collection', 'clearSuccess', this.collection),
+          timer: 5000
+        });
+      } else if (status === 3) {
+        _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-success', {
+          notification: this.showLanguage('collection', 'clearError', this.collection),
+          timer: 5000
+        });
+      }
     },
 
     /*
@@ -6200,6 +7015,20 @@ __webpack_require__.r(__webpack_exports__);
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('default-query-format', function (format) {
       _this.activeFormat = format;
     });
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('confirm-delete-clear-collection', function (data) {
+      _this.clearCollection(data);
+    });
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('cancel-delete-clear-collection', function () {
+      _this.clearCollection();
+    });
+  },
+  watch: {
+    checkCollection: function checkCollection() {
+      this.getCollection();
+    },
+    checkDb: function checkDb() {
+      this.getDb();
+    }
   }
 });
 
@@ -10079,12 +10908,12 @@ __webpack_require__.r(__webpack_exports__);
   */
   data: function data() {
     return {
+      collapsed: false,
       countryName: null,
-      searchActive: null,
       isLoggedIn: null,
+      searchActive: null,
       userName: null,
-      user: {},
-      collapsed: false
+      user: {}
     };
   },
 
@@ -14942,7 +15771,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.collection-list ul {\n  list-style: none;\n  display: block;\n  margin-left: 20px;\n}\n.collection-list ul li.coll {\n  margin: 0;\n}\n.collection-list ul li.coll input {\n  margin-right: 20px !important;\n}\n.collection-list ul li.coll .obj-count {\n  width: 10.5vw;\n}\n.collection-list ul li.coll:hover {\n  backbround-color: #e0e0e0;\n}\n.hide-list {\n  display: none !important;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.collection-list ul {\n  list-style: none;\n  display: block;\n  margin-left: 20px;\n}\n.collection-list ul li.coll {\n  margin: 0;\n}\n.collection-list ul li.coll input {\n  margin-right: 20px !important;\n}\n.collection-list ul li.coll .obj-count {\n  width: 10.5vw;\n}\n.collection-list ul li.coll:hover {\n  background-color: #e0e0e0;\n}\n.hide-list {\n  display: none !important;\n}", ""]);
 
 // exports
 
@@ -14980,7 +15809,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.collection-inner .criteria {\n  height: 160px;\n  margin-bottom: 0;\n  max-width: 99%;\n}\n.collection-inner .v-top {\n  vertical-align: top;\n  width: 50%;\n}\n.collection-inner .field-orders p {\n  height: 40px;\n  margin-top: 0;\n}\n.collection-inner .field-orders p input, .collection-inner .field-orders p select {\n  display: inline-block;\n}\n.collection-inner .field-orders p input {\n  width: 200px;\n}\n.collection-inner .field-orders p select {\n  width: 120px;\n}\n.collection-inner .f11 {\n  font-size: 11px;\n}\n.collection-inner .page-message {\n  font-weight: 600;\n}\n.collection-inner .buttons span, .collection-inner .buttons label, .collection-inner .buttons input, .collection-inner .buttons select {\n  display: inline-block;\n  width: auto;\n}\n.collection-inner .buttons input[type=submit], .collection-inner .buttons input[type=button] {\n  cursor: pointer;\n  padding: 5px;\n}\n.collection-inner .fields-control {\n  display: none;\n}\n.collection-inner .collection-document {\n  border: 2px #ccc solid;\n  margin-bottom: 10px;\n  min-height: 100px;\n  position: relative;\n}\n.collection-inner .collection-document:hover {\n  background-color: #f9f9f9;\n}\n.collection-inner .collection-document .doc-nav {\n  border-bottom: 1px #999 solid;\n  display: inline-block;\n  margin: 0 0 5px 50px;\n  padding: 5px 0 0 0;\n}\n.collection-inner .collection-document .doc-data {\n  display: block;\n  max-height: 150px;\n  overflow-y: hidden;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-text {\n  max-height: 150px;\n  overflow-y: auto;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-right-to-top {\n  bottom: 5px;\n  position: absolute;\n  right: 10px;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.collection-inner .criteria {\n  height: 160px;\n  margin-bottom: 0;\n  max-width: 99%;\n}\n.collection-inner .v-top {\n  vertical-align: top;\n  width: 50%;\n}\n.collection-inner .field-orders p {\n  height: 40px;\n  margin-top: 0;\n}\n.collection-inner .field-orders p input, .collection-inner .field-orders p select {\n  display: inline-block;\n}\n.collection-inner .field-orders p input {\n  width: 200px;\n}\n.collection-inner .field-orders p select {\n  width: 120px;\n}\n.collection-inner .f11 {\n  font-size: 11px;\n}\n.collection-inner .page-message {\n  font-weight: 600;\n}\n.collection-inner .buttons span, .collection-inner .buttons label, .collection-inner .buttons input, .collection-inner .buttons select {\n  display: inline-block;\n  width: auto;\n}\n.collection-inner .buttons input[type=submit], .collection-inner .buttons input[type=button] {\n  cursor: pointer;\n  padding: 5px;\n}\n.collection-inner .buttons p.error {\n  color: #e3342f;\n  font-weight: 600;\n}\n.collection-inner .fields-control {\n  display: none;\n}\n.collection-inner .collection-document {\n  border: 2px #ccc solid;\n  margin-bottom: 10px;\n  min-height: 100px;\n  position: relative;\n}\n.collection-inner .collection-document:hover {\n  background-color: #f9f9f9;\n}\n.collection-inner .collection-document .doc-nav {\n  border-bottom: 1px #999 solid;\n  display: inline-block;\n  margin: 0 0 5px 50px;\n  padding: 5px 0 0 0;\n}\n.collection-inner .collection-document .doc-data {\n  display: block;\n  max-height: 150px;\n  overflow-y: hidden;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-text {\n  max-height: 150px;\n  overflow-y: auto;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-right-to-top {\n  bottom: 5px;\n  position: absolute;\n  right: 10px;\n}", ""]);
 
 // exports
 
@@ -15082,6 +15911,25 @@ exports.push([module.i, "/* no style yet */", ""]);
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=style&index=0&lang=scss&":
+/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=style&index=0&lang=scss& ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv.document-new-container {\n  position: fixed;\n  z-index: 999999;\n  left: 10vw;\n  right: 0;\n  top: 0;\n}\ndiv.document-new-container div.document-new {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #f6993f;\n  border-right: 5px solid #f6993f;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n  line-height: 60px;\n  margin: auto auto auto auto;\n  max-height: 90vh;\n  max-width: 800px;\n  min-height: 50px;\n  min-width: 400px;\n  overflow-y: auto;\n  padding: 0 3rem 3rem 3rem;\n}\ndiv.document-new-container div.document-new .modal-header {\n  background-color: #888888;\n  height: 33px;\n  margin: 0 -3rem 0 -3rem;\n  max-width: 790px;\n  padding: 0.55rem 20px 0 0;\n  position: fixed;\n  width: 100%;\n}\ndiv.document-new-container div.document-new .modal-header span.msg {\n  background-color: #f9f9f9;\n  border-radius: 5px;\n  left: 30px;\n  max-height: 25px;\n  padding: 2px 5px;\n  position: absolute;\n  top: 5px;\n}\ndiv.document-new-container div.document-new .modal-header span.msg span.error {\n  color: #e3342f;\n  position: relative;\n  top: -21px;\n}\ndiv.document-new-container div.document-new .modal-header span.msg span.action {\n  color: #38c172;\n  position: relative;\n  top: -21px;\n}\ndiv.document-new-container div.document-new .modal-header span.close {\n  cursor: pointer;\n}\ndiv.document-new-container div.document-new .modal-header img {\n  vertical-align: top;\n}\ndiv.document-new-container div.document-new h3 {\n  margin-top: 40px;\n}\ndiv.document-new-container div.document-new label.padd-left label {\n  padding-left: 50px;\n}\ndiv.document-new-container div.document-new textarea {\n  height: auto;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/DocumentUpdate.vue?vue&type=style&index=0&lang=scss&":
 /*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/collection/DocumentUpdate.vue?vue&type=style&index=0&lang=scss& ***!
@@ -15152,6 +16000,25 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 // module
 exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pagination-wrapper {\n  display: inline-block;\n  font-weight: 600;\n  width: 99%;\n}\n.pagination-wrapper .page {\n  display: inline-block;\n  float: left;\n}\n.pagination-wrapper .pagination {\n  list-style-type: none;\n  float: right;\n}\n.pagination-wrapper .pagination .active {\n  background-color: #4dc0b5;\n}\n.pagination-wrapper .pagination .pagination-item {\n  display: inline-block;\n}\n.pagination-wrapper .pagination .pagination-item button {\n  cursor: pointer;\n}\n.pagination-wrapper .pagination .pagination-item button[disabled=disabled]:hover {\n  background-color: transparent;\n}", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=style&index=0&lang=scss&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=style&index=0&lang=scss& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv.document-queries-container {\n  position: fixed;\n  z-index: 999999;\n  left: 10vw;\n  right: 0;\n  top: 0;\n}\ndiv.document-queries-container div.document-queries {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #f6993f;\n  border-right: 5px solid #f6993f;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n  line-height: 60px;\n  margin: auto auto auto auto;\n  max-height: 90vh;\n  max-width: 800px;\n  min-height: 50px;\n  min-width: 400px;\n  overflow-y: auto;\n  padding: 0 3rem 3rem 3rem;\n}\ndiv.document-queries-container div.document-queries .modal-header {\n  background-color: #888888;\n  height: 33px;\n  margin: 0 -3rem 0 -3rem;\n  max-width: 790px;\n  padding: 0.55rem 20px 0 0;\n  position: fixed;\n  width: 100%;\n}\ndiv.document-queries-container div.document-queries .modal-header span.msg {\n  background-color: #f9f9f9;\n  border-radius: 5px;\n  left: 30px;\n  max-height: 25px;\n  padding: 2px 5px;\n  position: absolute;\n  top: 5px;\n}\ndiv.document-queries-container div.document-queries .modal-header span.msg span.error {\n  color: #e3342f;\n  position: relative;\n  top: -21px;\n}\ndiv.document-queries-container div.document-queries .modal-header span.msg span.action {\n  color: #38c172;\n  position: relative;\n  top: -21px;\n}\ndiv.document-queries-container div.document-queries .modal-header span.close {\n  cursor: pointer;\n}\ndiv.document-queries-container div.document-queries .modal-header img {\n  vertical-align: top;\n}\ndiv.document-queries-container div.document-queries h3 {\n  margin-top: 40px;\n}\ndiv.document-queries-container div.document-queries ul {\n  list-style: none;\n}", ""]);
 
 // exports
 
@@ -15683,7 +16550,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv.delete-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 10vh;\n}\ndiv.delete-notification-container div.delete-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #FF0000;\n  border-right: 5px solid #FF0000;\n  min-height: 60px;\n  line-height: 50px;\n  margin: 0 auto 0 auto;\n  min-width: 400px;\n  max-width: 800px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.delete-notification-container div.delete-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n  height: 20px;\n}\ndiv.delete-notification-container div.delete-notification button {\n  margin: 0 0 0 1rem;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv.delete-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 10vh;\n}\ndiv.delete-notification-container div.delete-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #FF0000;\n  border-right: 5px solid #FF0000;\n  min-height: 60px;\n  line-height: 50px;\n  margin: 0 auto 0 auto;\n  min-width: 400px;\n  max-width: 920px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.delete-notification-container div.delete-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n  height: 20px;\n}\ndiv.delete-notification-container div.delete-notification button {\n  margin: 0 0 0 1rem;\n}", ""]);
 
 // exports
 
@@ -15854,7 +16721,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv.success-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 25vh;\n}\ndiv.success-notification-container div.success-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #00C853;\n  border-right: 5px solid #00C853;\n  min-height: 50px;\n  line-height: 60px;\n  margin: 85px auto auto auto;\n  min-width: 400px;\n  max-width: 800px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.success-notification-container div.success-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\ndiv.success-notification-container {\n  position: fixed;\n  z-index: 999999;\n  left: 0;\n  right: 0;\n  top: 25vh;\n}\ndiv.success-notification-container div.success-notification {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #00C853;\n  border-right: 5px solid #00C853;\n  min-height: 50px;\n  line-height: 60px;\n  margin: 85px auto auto auto;\n  min-width: 400px;\n  max-width: 920px;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n}\ndiv.success-notification-container div.success-notification img {\n  margin-right: 20px;\n  margin-left: 20px;\n}", ""]);
 
 // exports
 
@@ -61030,6 +61897,36 @@ if(false) {}
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=style&index=0&lang=scss&":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=style&index=0&lang=scss& ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader!../../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../../node_modules/postcss-loader/src??ref--7-2!../../../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../../../node_modules/vue-loader/lib??vue-loader-options!./DocumentNew.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=style&index=0&lang=scss&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/DocumentUpdate.vue?vue&type=style&index=0&lang=scss&":
 /*!******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/collection/DocumentUpdate.vue?vue&type=style&index=0&lang=scss& ***!
@@ -61129,6 +62026,36 @@ if(false) {}
 
 
 var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader!../../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../../node_modules/postcss-loader/src??ref--7-2!../../../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../../../node_modules/vue-loader/lib??vue-loader-options!./Pagination.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/Pagination.vue?vue&type=style&index=0&lang=scss&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=style&index=0&lang=scss&":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--7-2!./node_modules/sass-loader/dist/cjs.js??ref--7-3!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=style&index=0&lang=scss& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../../../../node_modules/css-loader!../../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../../node_modules/postcss-loader/src??ref--7-2!../../../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../../../node_modules/vue-loader/lib??vue-loader-options!./QueryLogs.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=style&index=0&lang=scss&");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -64420,17 +65347,26 @@ var render = function() {
           _c("tr", [
             _c("td", { staticClass: "buttons", attrs: { colspan: "2" } }, [
               _c("input", {
-                attrs: { type: "submit", value: "Submit Query" },
+                attrs: { type: "submit" },
+                domProps: {
+                  value: _vm.showLanguage("collection", "buttonSubmit")
+                },
                 on: { click: _vm.submitQuery }
               }),
               _vm._v(" "),
               _c("input", {
-                attrs: { type: "button", value: "Explain" },
+                attrs: {
+                  type: "button",
+                  value: _vm.showLanguage("collection", "buttonExplain")
+                },
                 on: { click: _vm.explainQuery }
               }),
               _vm._v(" "),
               _c("input", {
-                attrs: { type: "button", value: "Clear Conditions" },
+                attrs: {
+                  type: "button",
+                  value: _vm.showLanguage("collection", "buttonClear")
+                },
                 on: { click: _vm.clearForm }
               }),
               _vm._v("\n                ["),
@@ -64568,7 +65504,11 @@ var render = function() {
       _vm._v(" "),
       _c("document-field"),
       _vm._v(" "),
-      _c("document-duplicate")
+      _c("document-duplicate"),
+      _vm._v(" "),
+      _c("document-new"),
+      _vm._v(" "),
+      _c("query-logs")
     ],
     1
   )
@@ -64638,7 +65578,12 @@ var render = function() {
     "div",
     {
       directives: [
-        { name: "show", rawName: "v-show", value: _vm.show, expression: "show" }
+        {
+          name: "show",
+          rawName: "v-show",
+          value: _vm.show && _vm.hasDocument,
+          expression: "show && hasDocument"
+        }
       ],
       staticClass: "collection-document"
     },
@@ -64887,7 +65832,7 @@ var render = function() {
                     expression: "form.number"
                   }
                 ],
-                attrs: { type: "number" },
+                attrs: { type: "number", min: "1", required: "" },
                 domProps: { value: _vm.form.number },
                 on: {
                   input: function($event) {
@@ -65137,7 +66082,7 @@ var render = function() {
               })
             ]),
             _vm._v(" "),
-            _c("label", [
+            _c("label", { ref: "field" }, [
               _c("span", {
                 domProps: {
                   textContent: _vm._s(
@@ -65219,7 +66164,7 @@ var render = function() {
               })
             ]),
             _vm._v(" "),
-            _c("label", [
+            _c("label", { ref: "value" }, [
               _c("span", {
                 domProps: {
                   textContent: _vm._s(
@@ -65392,6 +66337,14 @@ var render = function() {
             _vm._v(" "),
             _c("p", [
               _c("span", {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.apply.both,
+                    expression: "apply.both"
+                  }
+                ],
                 staticClass: "save button",
                 domProps: {
                   textContent: _vm._s(_vm.showLanguage("document", "apply"))
@@ -65451,126 +66404,361 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    {
-      ref: "doc-nav",
-      staticClass: "doc-nav",
-      attrs: { id: "document-nav-" + _vm.index }
-    },
-    [
-      _vm.document.can_modify
-        ? _c("span", [
-            _c("span", {
-              staticClass: "pma-link",
-              domProps: {
-                textContent: _vm._s(_vm.showLanguage("document", "update"))
-              },
-              on: { click: _vm.update }
-            }),
-            _vm._v(" |")
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.document.can_delete
-        ? _c("span", [
-            _c("span", {
-              staticClass: "pma-link",
-              domProps: {
-                textContent: _vm._s(_vm.showLanguage("document", "delete"))
-              },
-              on: { click: _vm.deleteDocument }
-            })
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      !_vm.document.can_delete
-        ? _c("span", [
-            _c("span", {
-              staticClass: "disabled-link",
-              domProps: {
-                textContent: _vm._s(_vm.showLanguage("document", "delete"))
-              }
-            })
-          ])
-        : _vm._e(),
-      _vm._v(" |\n    "),
-      _vm.document.can_add_field
-        ? _c("span", [
-            _c("span", {
-              staticClass: "pma-link",
-              domProps: {
-                textContent: _vm._s(_vm.showLanguage("document", "newField"))
-              },
-              on: { click: _vm.newField }
-            })
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      !_vm.document.can_add_field
-        ? _c("span", [
-            _c("span", {
-              staticClass: "disabled-link",
-              domProps: {
-                textContent: _vm._s(_vm.showLanguage("document", "newField"))
-              }
-            })
-          ])
-        : _vm._e(),
-      _vm._v(" |\n    "),
-      _vm.document.can_duplicate
-        ? _c("span", [
-            _c("span", {
-              staticClass: "pma-link",
-              domProps: {
-                textContent: _vm._s(_vm.showLanguage("document", "duplicate"))
-              },
-              on: { click: _vm.duplicate }
-            }),
-            _vm._v(" |")
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      _vm.document.can_refresh
-        ? _c("span", [
-            _c("span", {
-              staticClass: "pma-link",
-              domProps: {
-                textContent: _vm._s(_vm.showLanguage("document", "refresh"))
-              },
-              on: {
-                click: function($event) {
-                  return _vm.$emit("refresh", _vm.document._id)
-                }
-              }
-            }),
-            _vm._v(" |")
-          ])
-        : _vm._e(),
-      _vm._v(" "),
-      _c("span", {
-        staticClass: "pma-link",
-        domProps: { textContent: _vm._s(_vm.showLanguage("document", "text")) },
-        on: {
-          click: function($event) {
-            return _vm.$emit("text", $event.target)
-          }
-        }
-      }),
-      _vm._v(" |\n    "),
-      _c("span", {
-        staticClass: "pma-link",
-        domProps: {
-          textContent: _vm._s(_vm.showLanguage("document", "expand"))
+  return _vm.document
+    ? _c(
+        "div",
+        {
+          ref: "doc-nav",
+          staticClass: "doc-nav",
+          attrs: { id: "document-nav-" + _vm.index }
         },
-        on: {
-          click: function($event) {
-            return _vm.$emit("expand", $event.target)
+        [
+          _vm.document.can_modify
+            ? _c("span", [
+                _c("span", {
+                  staticClass: "pma-link",
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("document", "update"))
+                  },
+                  on: { click: _vm.update }
+                }),
+                _vm._v(" |")
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.document.can_delete
+            ? _c("span", [
+                _c("span", {
+                  staticClass: "pma-link",
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("document", "delete"))
+                  },
+                  on: { click: _vm.deleteDocument }
+                })
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          !_vm.document.can_delete
+            ? _c("span", [
+                _c("span", {
+                  staticClass: "disabled-link",
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("document", "delete"))
+                  }
+                })
+              ])
+            : _vm._e(),
+          _vm._v(" |\n    "),
+          _vm.document.can_add_field
+            ? _c("span", [
+                _c("span", {
+                  staticClass: "pma-link",
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("document", "newField")
+                    )
+                  },
+                  on: { click: _vm.newField }
+                })
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          !_vm.document.can_add_field
+            ? _c("span", [
+                _c("span", {
+                  staticClass: "disabled-link",
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("document", "newField")
+                    )
+                  }
+                })
+              ])
+            : _vm._e(),
+          _vm._v(" |\n    "),
+          _vm.document.can_duplicate
+            ? _c("span", [
+                _c("span", {
+                  staticClass: "pma-link",
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("document", "duplicate")
+                    )
+                  },
+                  on: { click: _vm.duplicate }
+                }),
+                _vm._v(" |")
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _vm.document.can_refresh
+            ? _c("span", [
+                _c("span", {
+                  staticClass: "pma-link",
+                  domProps: {
+                    textContent: _vm._s(_vm.showLanguage("document", "refresh"))
+                  },
+                  on: { click: _vm.refresh }
+                }),
+                _vm._v(" |")
+              ])
+            : _vm._e(),
+          _vm._v(" "),
+          _c("span", {
+            staticClass: "pma-link",
+            domProps: {
+              textContent: _vm._s(_vm.showLanguage("document", "text"))
+            },
+            on: {
+              click: function($event) {
+                return _vm.$emit("text", $event.target)
+              }
+            }
+          }),
+          _vm._v(" |\n    "),
+          _c("span", {
+            staticClass: "pma-link",
+            domProps: {
+              textContent: _vm._s(_vm.showLanguage("document", "expand"))
+            },
+            on: {
+              click: function($event) {
+                return _vm.$emit("expand", $event.target)
+              }
+            }
+          })
+        ]
+      )
+    : _vm._e()
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=template&id=56a8d58d&":
+/*!****************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=template&id=56a8d58d& ***!
+  \****************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("transition", { attrs: { name: "slide-in-top" } }, [
+    _c(
+      "div",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.show,
+            expression: "show"
           }
-        }
-      })
-    ]
-  )
+        ],
+        staticClass: "document-new-container"
+      },
+      [
+        _c("div", { staticClass: "document-new" }, [
+          _c("div", { staticClass: "modal-header" }, [
+            _c(
+              "span",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.errorMessage || _vm.actionMessage,
+                    expression: "errorMessage || actionMessage"
+                  }
+                ],
+                staticClass: "msg"
+              },
+              [
+                _c("span", { staticClass: "error" }, [
+                  _vm._v(_vm._s(_vm.errorMessage))
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "action" }, [
+                  _vm._v(_vm._s(_vm.actionMessage))
+                ])
+              ]
+            ),
+            _c(
+              "span",
+              {
+                staticClass: "close u-pull-right",
+                on: { click: _vm.hideComponent }
+              },
+              [_c("img", { attrs: { src: "/img/icon/cross-red.png" } })]
+            )
+          ]),
+          _vm._v(" "),
+          _c("h3", {
+            domProps: {
+              textContent: _vm._s(
+                _vm.showLanguage("document", "documentCreate")
+              )
+            }
+          }),
+          _vm._v(" "),
+          _c("form", [
+            _c("label", [
+              _c("span", {
+                domProps: {
+                  textContent: _vm._s(_vm.showLanguage("document", "format"))
+                }
+              }),
+              _vm._v(":\n                    "),
+              _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.form.format,
+                      expression: "form.format"
+                    }
+                  ],
+                  on: {
+                    change: [
+                      function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.$set(
+                          _vm.form,
+                          "format",
+                          $event.target.multiple
+                            ? $$selectedVal
+                            : $$selectedVal[0]
+                        )
+                      },
+                      function($event) {
+                        return _vm.switchFormat($event)
+                      }
+                    ]
+                  }
+                },
+                [
+                  _c("option", {
+                    attrs: { value: "json" },
+                    domProps: {
+                      textContent: _vm._s(_vm.showLanguage("document", "json"))
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("option", {
+                    attrs: { value: "array" },
+                    domProps: {
+                      textContent: _vm._s(_vm.showLanguage("document", "array"))
+                    }
+                  })
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("label", [
+              _c("span", {
+                domProps: {
+                  textContent: _vm._s(_vm.showLanguage("document", "document"))
+                }
+              }),
+              _vm._v(":\n                    "),
+              _c("textarea", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.form.document,
+                    expression: "form.document"
+                  }
+                ],
+                attrs: { rows: "7" },
+                domProps: { value: _vm.form.document },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.form, "document", $event.target.value)
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("label", [
+              _c("span", {
+                domProps: {
+                  textContent: _vm._s(_vm.showLanguage("document", "number"))
+                }
+              }),
+              _vm._v(":\n                    "),
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.form.number,
+                    expression: "form.number"
+                  }
+                ],
+                attrs: { type: "number", min: "1", required: "" },
+                domProps: { value: _vm.form.number },
+                on: {
+                  input: function($event) {
+                    if ($event.target.composing) {
+                      return
+                    }
+                    _vm.$set(_vm.form, "number", $event.target.value)
+                  }
+                }
+              })
+            ]),
+            _vm._v(" "),
+            _c("p", [_vm._v(" ")]),
+            _vm._v(" "),
+            _c("p", [
+              _c("span", {
+                staticClass: "save button",
+                domProps: {
+                  textContent: _vm._s(_vm.showLanguage("document", "save"))
+                },
+                on: {
+                  click: function($event) {
+                    return _vm.insertDocument()
+                  }
+                }
+              }),
+              _vm._v(" "),
+              _c("span", {
+                staticClass: "cancel button warning",
+                domProps: {
+                  textContent: _vm._s(_vm.showLanguage("document", "cancel"))
+                },
+                on: { click: _vm.hideComponent }
+              })
+            ])
+          ])
+        ])
+      ]
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -66245,6 +67433,100 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=template&id=6c53bec2&":
+/*!**************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=template&id=6c53bec2& ***!
+  \**************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("transition", { attrs: { name: "slide-in-top" } }, [
+    _c(
+      "div",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.show,
+            expression: "show"
+          }
+        ],
+        staticClass: "document-queries-container"
+      },
+      [
+        _c("div", { staticClass: "document-queries" }, [
+          _c("div", { staticClass: "modal-header" }, [
+            _c(
+              "span",
+              {
+                directives: [
+                  {
+                    name: "show",
+                    rawName: "v-show",
+                    value: _vm.errorMessage || _vm.actionMessage,
+                    expression: "errorMessage || actionMessage"
+                  }
+                ],
+                staticClass: "msg"
+              },
+              [
+                _c("span", { staticClass: "error" }, [
+                  _vm._v(_vm._s(_vm.errorMessage))
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "action" }, [
+                  _vm._v(_vm._s(_vm.actionMessage))
+                ])
+              ]
+            ),
+            _c(
+              "span",
+              {
+                staticClass: "close u-pull-right",
+                on: { click: _vm.hideComponent }
+              },
+              [_c("img", { attrs: { src: "/img/icon/cross-red.png" } })]
+            )
+          ]),
+          _vm._v(" "),
+          _c("h3", {
+            domProps: {
+              textContent: _vm._s(
+                _vm.showLanguage("collection", "collectionHistory")
+              )
+            }
+          }),
+          _vm._v(" "),
+          _c(
+            "ul",
+            _vm._l(_vm.queryLogs, function(log, index) {
+              return _c("li", { attrs: { log: log } }, [
+                _c("p", [_vm._v("You have been logged!")])
+              ])
+            }),
+            0
+          )
+        ])
+      ]
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/top/CollectionNav.vue?vue&type=template&id=0b7bda42&":
 /*!***********************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/admin/database/top/CollectionNav.vue?vue&type=template&id=0b7bda42& ***!
@@ -66315,14 +67597,13 @@ var render = function() {
           _vm._v(" "),
           _c("li", { class: { active: _vm.getActivePanel("history") } }, [
             _c("span", {
-              staticClass: "hide",
               attrs: { title: _vm.showLanguage("title", "historyTitle") },
               domProps: {
                 textContent: _vm._s(_vm.showLanguage("collection", "history"))
               },
               on: {
                 click: function($event) {
-                  return _vm.loadPanel("history", $event)
+                  return _vm.loadModal("history")
                 }
               }
             })
@@ -66330,29 +67611,27 @@ var render = function() {
           _vm._v(" "),
           _c("li", { class: { active: _vm.getActivePanel("refresh") } }, [
             _c("span", {
-              staticClass: "hide",
               attrs: { title: _vm.showLanguage("title", "refreshTitle") },
               domProps: {
                 textContent: _vm._s(_vm.showLanguage("collection", "refresh"))
               },
               on: {
                 click: function($event) {
-                  return _vm.loadPanel("refresh", $event)
+                  return _vm.runCommand("refresh")
                 }
               }
             })
           ]),
           _vm._v(" "),
-          _c("li", { class: { active: _vm.getActivePanel("insert") } }, [
+          _c("li", { class: { active: _vm.getActivePanel("new") } }, [
             _c("span", {
-              staticClass: "hide",
               attrs: { title: _vm.showLanguage("title", "insertTitle") },
               domProps: {
                 textContent: _vm._s(_vm.showLanguage("collection", "insert"))
               },
               on: {
                 click: function($event) {
-                  return _vm.loadPanel("insert", $event)
+                  return _vm.loadModal("new")
                 }
               }
             })
@@ -66360,29 +67639,27 @@ var render = function() {
           _vm._v(" "),
           _c("li", { class: { active: _vm.getActivePanel("clear") } }, [
             _c("span", {
-              staticClass: "hide",
               attrs: { title: _vm.showLanguage("title", "clearTitle") },
               domProps: {
                 textContent: _vm._s(_vm.showLanguage("collection", "clear"))
               },
               on: {
                 click: function($event) {
-                  return _vm.loadPanel("clear", $event)
+                  return _vm.runCommand("clear")
                 }
               }
             })
           ]),
           _vm._v(" "),
-          _c("li", { class: { active: _vm.getActivePanel("newField") } }, [
+          _c("li", { class: { active: _vm.getActivePanel("field") } }, [
             _c("span", {
-              staticClass: "hide",
               attrs: { title: _vm.showLanguage("title", "newFieldTitle") },
               domProps: {
                 textContent: _vm._s(_vm.showLanguage("collection", "newField"))
               },
               on: {
                 click: function($event) {
-                  return _vm.loadPanel("newField", $event)
+                  return _vm.loadModal("field")
                 }
               }
             })
@@ -88860,6 +90137,20 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /*
+  *   Query a collection
+  *   POST /api/v1/collection/query
+  */
+  queryCollection: function queryCollection(data) {
+    return axios.post(_config__WEBPACK_IMPORTED_MODULE_0__["MONGO_CONFIG"].API_URL + '/collection/query', {
+      params: data.params,
+      format: data.format,
+      collection: data.collection,
+      database: data.database,
+      _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+    });
+  },
+
+  /*
   *   Delete one or more collection(s)
   *   POST  /api/v1/collection/delete
   */
@@ -88871,11 +90162,45 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   /*
+  *  Clear all documents from a collection
+  *   POST  /api/v1/collection/clear
+  */
+  clearCollection: function clearCollection(data) {
+    return axios.post(_config__WEBPACK_IMPORTED_MODULE_0__["MONGO_CONFIG"].API_URL + '/collection/clear', {
+      database: data.database,
+      collection: data.collection,
+      _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+    });
+  },
+
+  /*
+  *   Fetch query logs for a database.collection
+  *   GET  /api/v1/collection/querylogs/{database}/{collection}
+  */
+  getQueryLogs: function getQueryLogs(data) {
+    return axios.get(_config__WEBPACK_IMPORTED_MODULE_0__["MONGO_CONFIG"].API_URL + '/collection/querylogs/' + data.database + '/' + data.collection);
+  },
+
+  /*
   *   Create one document
   *   POST /api/v1/document/create
   */
   createDocument: function createDocument(data) {
     return axios.post(_config__WEBPACK_IMPORTED_MODULE_0__["MONGO_CONFIG"].API_URL + '/document/create', {
+      document: data.document,
+      format: data.format,
+      collection: data.collection,
+      database: data.database,
+      _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+    });
+  },
+
+  /*
+  *   Duplicate one document
+  *   POST /api/v1/document/duplicate
+  */
+  duplicateDocument: function duplicateDocument(data) {
+    return axios.post(_config__WEBPACK_IMPORTED_MODULE_0__["MONGO_CONFIG"].API_URL + '/document/duplicate', {
       document: data.document,
       format: data.format,
       collection: data.collection,
@@ -88897,21 +90222,6 @@ __webpack_require__.r(__webpack_exports__);
       field: data.field,
       value: data.value,
       type: data.type,
-      collection: data.collection,
-      database: data.database,
-      _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
-    });
-  },
-
-  /*
-  *   Duplicate one document
-  *   POST /api/v1/document/duplicate
-  */
-  duplicateDocument: function duplicateDocument(data) {
-    console.log("duplicating doco");
-    return axios.post(_config__WEBPACK_IMPORTED_MODULE_0__["MONGO_CONFIG"].API_URL + '/document/duplicate', {
-      document: data.document,
-      format: data.format,
       collection: data.collection,
       database: data.database,
       _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
@@ -90316,6 +91626,93 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/admin/database/collection/DocumentNew.vue":
+/*!***************************************************************************!*\
+  !*** ./resources/js/components/admin/database/collection/DocumentNew.vue ***!
+  \***************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _DocumentNew_vue_vue_type_template_id_56a8d58d___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DocumentNew.vue?vue&type=template&id=56a8d58d& */ "./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=template&id=56a8d58d&");
+/* harmony import */ var _DocumentNew_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./DocumentNew.vue?vue&type=script&lang=js& */ "./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _DocumentNew_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DocumentNew.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=style&index=0&lang=scss&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _DocumentNew_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _DocumentNew_vue_vue_type_template_id_56a8d58d___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _DocumentNew_vue_vue_type_template_id_56a8d58d___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/admin/database/collection/DocumentNew.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=script&lang=js&":
+/*!****************************************************************************************************!*\
+  !*** ./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=script&lang=js& ***!
+  \****************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_babel_loader_lib_index_js_ref_11_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DocumentNew_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../../node_modules/babel-loader/lib??ref--4-0!../../../../../../node_modules/babel-loader/lib??ref--11-0!../../../../../../node_modules/vue-loader/lib??vue-loader-options!./DocumentNew.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_babel_loader_lib_index_js_ref_11_0_node_modules_vue_loader_lib_index_js_vue_loader_options_DocumentNew_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=style&index=0&lang=scss&":
+/*!*************************************************************************************************************!*\
+  !*** ./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=style&index=0&lang=scss& ***!
+  \*************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DocumentNew_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../../node_modules/style-loader!../../../../../../node_modules/css-loader!../../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../../node_modules/postcss-loader/src??ref--7-2!../../../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../../../node_modules/vue-loader/lib??vue-loader-options!./DocumentNew.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=style&index=0&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DocumentNew_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DocumentNew_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DocumentNew_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DocumentNew_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_DocumentNew_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=template&id=56a8d58d&":
+/*!**********************************************************************************************************!*\
+  !*** ./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=template&id=56a8d58d& ***!
+  \**********************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DocumentNew_vue_vue_type_template_id_56a8d58d___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../../node_modules/vue-loader/lib??vue-loader-options!./DocumentNew.vue?vue&type=template&id=56a8d58d& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/DocumentNew.vue?vue&type=template&id=56a8d58d&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DocumentNew_vue_vue_type_template_id_56a8d58d___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_DocumentNew_vue_vue_type_template_id_56a8d58d___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/admin/database/collection/DocumentUpdate.vue":
 /*!******************************************************************************!*\
   !*** ./resources/js/components/admin/database/collection/DocumentUpdate.vue ***!
@@ -90659,6 +92056,93 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Pagination_vue_vue_type_template_id_4f33ef7c___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Pagination_vue_vue_type_template_id_4f33ef7c___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/admin/database/collection/QueryLogs.vue":
+/*!*************************************************************************!*\
+  !*** ./resources/js/components/admin/database/collection/QueryLogs.vue ***!
+  \*************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _QueryLogs_vue_vue_type_template_id_6c53bec2___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./QueryLogs.vue?vue&type=template&id=6c53bec2& */ "./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=template&id=6c53bec2&");
+/* harmony import */ var _QueryLogs_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./QueryLogs.vue?vue&type=script&lang=js& */ "./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _QueryLogs_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./QueryLogs.vue?vue&type=style&index=0&lang=scss& */ "./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=style&index=0&lang=scss&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _QueryLogs_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _QueryLogs_vue_vue_type_template_id_6c53bec2___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _QueryLogs_vue_vue_type_template_id_6c53bec2___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/admin/database/collection/QueryLogs.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=script&lang=js&":
+/*!**************************************************************************************************!*\
+  !*** ./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_babel_loader_lib_index_js_ref_11_0_node_modules_vue_loader_lib_index_js_vue_loader_options_QueryLogs_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../../node_modules/babel-loader/lib??ref--4-0!../../../../../../node_modules/babel-loader/lib??ref--11-0!../../../../../../node_modules/vue-loader/lib??vue-loader-options!./QueryLogs.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_babel_loader_lib_index_js_ref_11_0_node_modules_vue_loader_lib_index_js_vue_loader_options_QueryLogs_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=style&index=0&lang=scss&":
+/*!***********************************************************************************************************!*\
+  !*** ./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=style&index=0&lang=scss& ***!
+  \***********************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_QueryLogs_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../../node_modules/style-loader!../../../../../../node_modules/css-loader!../../../../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../../../../node_modules/postcss-loader/src??ref--7-2!../../../../../../node_modules/sass-loader/dist/cjs.js??ref--7-3!../../../../../../node_modules/vue-loader/lib??vue-loader-options!./QueryLogs.vue?vue&type=style&index=0&lang=scss& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/sass-loader/dist/cjs.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=style&index=0&lang=scss&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_QueryLogs_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_QueryLogs_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_QueryLogs_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_QueryLogs_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_7_2_node_modules_sass_loader_dist_cjs_js_ref_7_3_node_modules_vue_loader_lib_index_js_vue_loader_options_QueryLogs_vue_vue_type_style_index_0_lang_scss___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=template&id=6c53bec2&":
+/*!********************************************************************************************************!*\
+  !*** ./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=template&id=6c53bec2& ***!
+  \********************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_QueryLogs_vue_vue_type_template_id_6c53bec2___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../../../../node_modules/vue-loader/lib??vue-loader-options!./QueryLogs.vue?vue&type=template&id=6c53bec2& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/admin/database/collection/QueryLogs.vue?vue&type=template&id=6c53bec2&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_QueryLogs_vue_vue_type_template_id_6c53bec2___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_QueryLogs_vue_vue_type_template_id_6c53bec2___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
@@ -94605,10 +96089,24 @@ var application = {
     getLanguageString: function getLanguageString(state) {
       return function (context, key) {
         if (state.languageArray[context]) {
-          if (state.languageArray[context][key]) {
-            return state.languageArray[context][key];
+          if (key.indexOf('.') !== -1) {
+            var keys = key.split(".");
+
+            if (state.languageArray[context][keys[0]]) {
+              if (state.languageArray[context][keys[0]][keys[1]]) {
+                return state.languageArray[context][keys[0]][keys[1]];
+              } else {
+                console.log("no secondary key: " + keys[1]);
+              }
+            } else {
+              console.log("no primary key: " + keys[0]);
+            }
           } else {
-            console.log("no key: " + key);
+            if (state.languageArray[context][key]) {
+              return state.languageArray[context][key];
+            } else {
+              console.log("no key: " + key);
+            }
           }
         } else {
           console.log("no context: " + context);
@@ -94727,6 +96225,13 @@ var collection = {
     displayCollectionStatus: 0,
     createCollectionStatus: 0,
     deleteCollectionStatus: 0,
+    clearCollectionStatus: 0,
+    clearCollectionCount: 0,
+    queryLogs: [],
+    queryLogsLoadStatus: 0,
+    queryCollection: [],
+    queryCollectionLoadStatus: 0,
+    documentCreateStatus: 0,
     documentUpdateStatus: 0,
     documentDeleteStatus: 0,
     documentDuplicateStatus: 0,
@@ -94753,7 +96258,8 @@ var collection = {
         commit('setCollectionsLoadStatus', 3);
         console.log(error);
         _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('no-results-found', {
-          notification: 'No collections were returned from the api - please try again later'
+          notification: 'No collections were returned from the api - please try again later',
+          timer: 5000
         });
       });
     },
@@ -94774,7 +96280,8 @@ var collection = {
         commit('setCollectionLoadStatus', 3);
         console.log(error);
         _event_bus_js__WEBPACK_IMPORTED_MODULE_1__["EventBus"].$emit('no-results-found', {
-          notification: 'No collection was returned from the api - please try again later'
+          notification: 'No collection was returned from the api - please try again later',
+          timer: 5000
         });
       });
     },
@@ -94799,12 +96306,30 @@ var collection = {
     },
 
     /*
-    *   Delete one or more collections - remove collection from array
+    *   Query a collection - add result to queryResults array
     */
-    deleteCollection: function deleteCollection(_ref4, data) {
+    queryCollection: function queryCollection(_ref4, data) {
       var commit = _ref4.commit,
           rootState = _ref4.rootState,
           dispatch = _ref4.dispatch;
+      commit('setQueryCollectionLoadStatus', 1);
+      _api_collection_js__WEBPACK_IMPORTED_MODULE_0__["default"].queryCollection(data).then(function (response) {
+        commit('setQueryCollectionLoadStatus', 2);
+        commit('setQueryCollection', response.data.data.documents);
+      })["catch"](function (error) {
+        commit('setQueryCollectionLoadStatus', 3);
+        commit('setErrorData', error);
+        console.log(error);
+      });
+    },
+
+    /*
+    *   Delete one or more collections - remove collection from array
+    */
+    deleteCollection: function deleteCollection(_ref5, data) {
+      var commit = _ref5.commit,
+          rootState = _ref5.rootState,
+          dispatch = _ref5.dispatch;
       commit('setDeleteCollectionStatus', 1);
       _api_collection_js__WEBPACK_IMPORTED_MODULE_0__["default"].deleteCollection(data).then(function (response) {
         commit('setDeletedCollection', data);
@@ -94815,35 +96340,69 @@ var collection = {
         console.log(error);
       });
     },
-    setDbCollections: function setDbCollections(_ref5, data) {
-      var commit = _ref5.commit;
+
+    /*
+    *   Clear all documents from one collection -  clear all cached doc objects
+    */
+    clearCollection: function clearCollection(_ref6, data) {
+      var commit = _ref6.commit,
+          rootState = _ref6.rootState,
+          dispatch = _ref6.dispatch;
+      commit('setClearCollectionStatus', 1);
+      _api_collection_js__WEBPACK_IMPORTED_MODULE_0__["default"].clearCollection(data).then(function (response) {
+        commit('setClearedCollection', response.data.data.status);
+        commit('setClearCollectionStatus', 2);
+      })["catch"](function (error) {
+        commit('setClearCollectionStatus', 3);
+        commit('setErrorData', error);
+        console.log(error);
+      });
+    },
+    setDbCollections: function setDbCollections(_ref7, data) {
+      var commit = _ref7.commit;
       commit('setCollections', data);
     },
 
     /*
     *   Set the active collection - used for collection tracking
     */
-    setActiveCollection: function setActiveCollection(_ref6, data) {
-      var commit = _ref6.commit;
+    setActiveCollection: function setActiveCollection(_ref8, data) {
+      var commit = _ref8.commit;
       console.log("setting active collection: " + data);
       commit('setActiveCollection', data);
     },
 
     /*
+     *  Get the query logs for a database.collection - displays in a modal
+     */
+    getQueryLogs: function getQueryLogs(_ref9, data) {
+      var commit = _ref9.commit;
+      commit('setQueryLogsLoadStatus', 1);
+      _api_collection_js__WEBPACK_IMPORTED_MODULE_0__["default"].getQueryLogs(data).then(function (response) {
+        commit('setQueryLogs', response.data.data.logs);
+        commit('setQueryLogsLoadStatus', 2);
+      })["catch"](function (error) {
+        commit('setQueryLogs', []);
+        commit('setQueryLogsLoadStatus', 3);
+        console.log(error);
+      });
+    },
+
+    /*
     *   Set the current format for data entry (json | array)
     */
-    setCurrentFormat: function setCurrentFormat(_ref7, data) {
-      var commit = _ref7.commit;
+    setCurrentFormat: function setCurrentFormat(_ref10, data) {
+      var commit = _ref10.commit;
       commit('setCurrentFormat', data);
     },
 
     /*
     *  Update a document within the collection
     */
-    updateDocument: function updateDocument(_ref8, data) {
-      var commit = _ref8.commit,
-          rootStore = _ref8.rootStore,
-          dispatch = _ref8.dispatch;
+    updateDocument: function updateDocument(_ref11, data) {
+      var commit = _ref11.commit,
+          rootStore = _ref11.rootStore,
+          dispatch = _ref11.dispatch;
       commit('setUpdateDocumentStatus', 1);
       _api_collection_js__WEBPACK_IMPORTED_MODULE_0__["default"].updateDocument(data).then(function (response) {
         if (response.data.message === 'success') {
@@ -94862,11 +96421,12 @@ var collection = {
 
     /*
     *  Duplicate a document within the collection
+    *  This method and 'createDocument' are basically synonymous
     */
-    duplicateDocument: function duplicateDocument(_ref9, data) {
-      var commit = _ref9.commit,
-          rootStore = _ref9.rootStore,
-          dispatch = _ref9.dispatch;
+    duplicateDocument: function duplicateDocument(_ref12, data) {
+      var commit = _ref12.commit,
+          rootStore = _ref12.rootStore,
+          dispatch = _ref12.dispatch;
       commit('setDuplicateDocumentStatus', 1);
       _api_collection_js__WEBPACK_IMPORTED_MODULE_0__["default"].duplicateDocument(data).then(function (response) {
         if (response.data.message === 'success') {
@@ -94884,12 +96444,36 @@ var collection = {
     },
 
     /*
+    *  Create (insert) a document within the collection
+    *  This method and 'duplicateDocument' are basically synonymous
+    */
+    createDocument: function createDocument(_ref13, data) {
+      var commit = _ref13.commit,
+          rootStore = _ref13.rootStore,
+          dispatch = _ref13.dispatch;
+      commit('setCreateDocumentStatus', 1);
+      _api_collection_js__WEBPACK_IMPORTED_MODULE_0__["default"].createDocument(data).then(function (response) {
+        if (response.data.message === 'success') {
+          commit('setCreatedDocument', response.data.data.document);
+          commit('setCreateDocumentStatus', 2);
+        } else {
+          commit('setCreateDocumentStatus', 3);
+          commit('setErrorData', 'no result');
+        }
+      })["catch"](function (error) {
+        commit('setCreateDocumentStatus', 3);
+        commit('setErrorData', error);
+        console.log(error);
+      });
+    },
+
+    /*
     *   Delete one or more documents - remove document from array
     */
-    deleteDocument: function deleteDocument(_ref10, data) {
-      var commit = _ref10.commit,
-          rootState = _ref10.rootState,
-          dispatch = _ref10.dispatch;
+    deleteDocument: function deleteDocument(_ref14, data) {
+      var commit = _ref14.commit,
+          rootState = _ref14.rootState,
+          dispatch = _ref14.dispatch;
       commit('setDeleteDocumentStatus', 1);
       _api_collection_js__WEBPACK_IMPORTED_MODULE_0__["default"].deleteDocument(data).then(function (response) {
         // ToDo: we are just handling single doc delete today
@@ -94907,8 +96491,8 @@ var collection = {
         console.log(error);
       });
     },
-    setDocument: function setDocument(_ref11, data) {
-      var commit = _ref11.commit;
+    setDocument: function setDocument(_ref15, data) {
+      var commit = _ref15.commit;
       commit('setDocumentUpdates', data);
     }
   },
@@ -94974,6 +96558,79 @@ var collection = {
     },
 
     /*
+    *   Set the delete collection status
+    */
+    setDeleteCollectionStatus: function setDeleteCollectionStatus(state, status) {
+      state.deleteCollectionStatus = status;
+    },
+
+    /*
+    *   Set (remove) the deleted collection(s) from the existing array
+    */
+    setDeletedCollection: function setDeletedCollection(state, collections) {
+      collections.forEach(function (value, index) {
+        var arr = [];
+        state.collections.forEach(function (db, index) {
+          if (db.db.name !== value) {
+            arr.push(db);
+          }
+        });
+        state.collections = arr;
+      });
+    },
+
+    /*
+    *   Set the clear collection status
+    */
+    setClearCollectionStatus: function setClearCollectionStatus(state, status) {
+      state.clearCollectionStatus = status;
+    },
+
+    /*
+    *   Set (remove) the deleted collection(s) from the existing array
+    */
+    setClearedCollection: function setClearedCollection(state, status) {
+      state.collection.objects.count = 0;
+      state.collection.objects.objects = [];
+      state.clearCollectionCount = status.deleted;
+    },
+
+    /*
+    *   Set the active collection
+    */
+    setActiveCollection: function setActiveCollection(state, collection) {
+      state.activeCollection = collection;
+    },
+
+    /*
+    *   Set the query collection load status
+    */
+    setQueryCollectionLoadStatus: function setQueryCollectionLoadStatus(state, status) {
+      state.queryCollectionLoadStatus = status;
+    },
+
+    /*
+    *   Set the query collection results data
+    */
+    setQueryCollection: function setQueryCollection(state, documents) {
+      state.queryCollection = documents;
+    },
+
+    /*
+    *   Set the query logs load status
+    */
+    setQueryLogsLoadStatus: function setQueryLogsLoadStatus(state, status) {
+      state.queryLogsLoadStatus = status;
+    },
+
+    /*
+    *   Set the query log load data
+    */
+    setQueryLogs: function setQueryLogs(state, logs) {
+      state.queryLogs = logs;
+    },
+
+    /*
      *  Set the document update status
      */
     setUpdateDocumentStatus: function setUpdateDocumentStatus(state, status) {
@@ -95002,6 +96659,13 @@ var collection = {
      */
     setDuplicateDocumentStatus: function setDuplicateDocumentStatus(state, status) {
       state.documentDuplicateStatus = status;
+    },
+
+    /*
+     *  Set the document create status
+     */
+    setCreateDocumentStatus: function setCreateDocumentStatus(state, status) {
+      state.documentCreateStatus = status;
     },
 
     /*
@@ -95050,39 +96714,10 @@ var collection = {
     },
 
     /*
-    *   Set the delete collection status
-    */
-    setDeleteCollectionStatus: function setDeleteCollectionStatus(state, status) {
-      state.deleteCollectionStatus = status;
-    },
-
-    /*
-    *   Set (remove) the deleted collection(s) from the existing array
-    */
-    setDeletedCollection: function setDeletedCollection(state, collections) {
-      collections.forEach(function (value, index) {
-        var arr = [];
-        state.collections.forEach(function (db, index) {
-          if (db.db.name !== value) {
-            arr.push(db);
-          }
-        });
-        state.collections = arr;
-      });
-    },
-
-    /*
     *   Save the error data for reference
     */
     setErrorData: function setErrorData(state, error) {
       state.errorData = error;
-    },
-
-    /*
-    *   Set the active collection
-    */
-    setActiveCollection: function setActiveCollection(state, collection) {
-      state.activeCollection = collection;
     },
 
     /*
@@ -95168,24 +96803,10 @@ var collection = {
     },
 
     /*
-     *  Get the document update status
-     */
-    getUpdateDocumentStatus: function getUpdateDocumentStatus(state) {
-      return state.documentUpdateStatus;
-    },
-
-    /*
-     *  Get the document duplicate status
-     */
-    getDuplicateDocumentStatus: function getDuplicateDocumentStatus(state) {
-      return state.documentDuplicateStatus;
-    },
-
-    /*
-    *   Get the delete document status
+    *   Get the clear collection status
     */
-    getDeleteDocumentStatus: function getDeleteDocumentStatus(state) {
-      return state.documentDeleteStatus;
+    getClearCollectionStatus: function getClearCollectionStatus(state) {
+      return state.clearCollectionStatus;
     },
 
     /*
@@ -95212,10 +96833,66 @@ var collection = {
     },
 
     /*
+    *   Get the query collection load status
+    */
+    getQueryCollectionLoadStatus: function getQueryCollectionLoadStatus(state) {
+      return state.queryCollectionLoadStatus;
+    },
+
+    /*
+    *   Get the query collection results data
+    */
+    getQueryCollection: function getQueryCollection(state) {
+      return state.queryCollection;
+    },
+
+    /*
+    *   Get the query logs load status
+    */
+    getQueryLogsLoadStatus: function getQueryLogsLoadStatus(state) {
+      return state.queryLogsLoadStatus;
+    },
+
+    /*
+    *   Get the query logs data
+    */
+    getQueryLogs: function getQueryLogs(state) {
+      return state.queryLogs;
+    },
+
+    /*
     *   Det the current format
     */
     getCurrentFormat: function getCurrentFormat(state) {
       return state.currentFormat;
+    },
+
+    /*
+     *  Get the document update status
+     */
+    getUpdateDocumentStatus: function getUpdateDocumentStatus(state) {
+      return state.documentUpdateStatus;
+    },
+
+    /*
+     *  Get the document duplicate status
+     */
+    getDuplicateDocumentStatus: function getDuplicateDocumentStatus(state) {
+      return state.documentDuplicateStatus;
+    },
+
+    /*
+     *  Get the document create status
+     */
+    getCreateDocumentStatus: function getCreateDocumentStatus(state) {
+      return state.documentCreateStatus;
+    },
+
+    /*
+    *   Get the delete document status
+    */
+    getDeleteDocumentStatus: function getDeleteDocumentStatus(state) {
+      return state.documentDeleteStatus;
     },
 
     /*

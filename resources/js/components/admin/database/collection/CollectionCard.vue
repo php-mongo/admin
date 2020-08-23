@@ -58,6 +58,10 @@
                 cursor: pointer;
                 padding: 5px;
             }
+            p.error {
+                color: $red;
+                font-weight: 600;
+            }
         }
         .fields-control {
             display: none;
@@ -178,9 +182,9 @@
             </tr>
             <tr>
                 <td colspan="2" class="buttons">
-                    <input type="submit" value="Submit Query" v-on:click="submitQuery" />
-                    <input type="button" value="Explain" v-on:click="explainQuery" />
-                    <input type="button" value="Clear Conditions" v-on:click="clearForm" />
+                    <input type="submit" :value="showLanguage('collection', 'buttonSubmit')" v-on:click="submitQuery" />
+                    <input type="button" :value="showLanguage('collection', 'buttonExplain')" v-on:click="explainQuery" />
+                    <input type="button" :value="showLanguage('collection', 'buttonClear')" v-on:click="clearForm" />
                     [<a href="http://rockmongo.com/wiki/queryExamples?lang=en_us" target="_blank" v-text="showLanguage('collection', 'queryExamples')"></a>]
                     <span v-if="cost"><span v-text="showLanguage('collection', 'cost')"></span> {{ roundCost }}s</span>
                     <p v-if="message" class="error">{{ message }}</p>
@@ -216,6 +220,8 @@
         <document-update></document-update>
         <document-field></document-field>
         <document-duplicate></document-duplicate>
+        <document-new></document-new>
+        <query-logs></query-logs>
     </div>
 </template>
 
@@ -234,6 +240,8 @@
     import DocumentUpdate from "./DocumentUpdate";
     import DocumentField from "./DocumentField";
     import DocumentDuplicate from "./DocumentDuplicate";
+    import DocumentNew from "./DocumentNew";
+    import QueryLogs from "./QueryLogs";
 
     export default {
         /*
@@ -245,7 +253,9 @@
             Pagination,
             DocumentUpdate,
             DocumentField,
-            DocumentDuplicate
+            DocumentDuplicate,
+            DocumentNew,
+            QueryLogs
         },
 
         /*
@@ -270,8 +280,8 @@
                 allObjects: [],
                 visibleObjects:[],
                 criteriaDefault: '{\n' +
-                    '\t\n' +
-                    '}',
+                        '\t\n' +
+                        '}',
                 newObjDefault: '{\n' +
                     '\t\'$set\': {\n' +
                     '\t\t//your attributes\n' +
@@ -328,6 +338,7 @@
                     10, 15, 20, 30, 50, 100, 200
                 ],
                 maxPageButtonDisplay: 3,
+                // query elements
                 nativeFields: null,
                 queryFields: [],
                 queryHints: [],
@@ -342,7 +353,9 @@
                         message: null
                     }
                 },
-                message: null
+                message: null,
+                index: 0,
+                limit: 75
             }
         },
 
@@ -356,7 +369,7 @@
 
             getTotal() {
                 if (this.collection && this.collection.objects) {
-                    if (this.collection.objects) {
+                    if (this.collection.objects || this.allObjects) {
                         if (this.collection.objects.count == 0) {
                             this.page.find.message = this.showLanguage('collection', 'empty', this.collection.collection.collectionName);
                             this.clearValues();
@@ -364,7 +377,8 @@
                         } else {
                             this.page.find.message = null;
                         }
-                        return this.collection.objects.count;
+                        //return this.collection.objects.count;
+                        return this.allObjects.length;
                     }
                 }
                 return 0;
@@ -417,6 +431,10 @@
                 if (this.collection && this.collection.objects) {
                     return this.collection.objects;
                 }
+            },
+
+            roundCost: function() {
+                return Math.round(this.cost);
             }
         },
 
@@ -467,6 +485,75 @@
                 }
             },
 
+            getDatabaseName() {
+                return this.collection.collection.databaseName;
+            },
+
+            getCollectionName() {
+                return this.collection.collection.collectionName;
+            },
+
+            submitQuery() {
+                this.message = null;
+                if (this.collection.objects.count === 0) {
+                    this.message = this.showLanguage('collection', 'msgNoDocs');
+                    return;
+                }
+                if (this.collection.objects.count <= this.pageSizeDefault) {
+                    this.message = this.showLanguage('collection', 'msgTooFew');
+                    return;
+                }
+                if (this.format === 'json') {
+                    let json = this.$convObj(this.form.criteria.json).minify();
+                    console.log(json);
+                    if (json === '{}') {
+                        this.message = this.showLanguage('collection', 'msgEmptyQuery');
+                        return;
+                    }
+                }
+                if (this.format === 'array') {
+                    let array = this.$convObj(this.form.criteria.array).minify();
+                    console.log(array);
+                    if (array === '()') {
+                        this.message = this.showLanguage('collection', 'msgEmptyQuery');
+                        return;
+                    }
+                }
+                // tests completed - send query to DB
+                let data = {params: this.form, format: this.format, database: this.getDatabaseName(), collection: this.getCollectionName()};
+                this.$store.dispatch('queryCollection', data);
+                this.handleQuery();
+            },
+
+            handleQuery() {
+                let status = this.$store.getters.getQueryCollectionLoadStatus;
+                console.log("handleQuery status: " + status);
+                if (status === 1 && this.index < this.limit) {
+                    let self = this;
+                    setTimeout(function() {
+                        self.handleQuery();
+                    }, 100);
+                }
+                else if (status === 2) {
+                    this.allObjects = this.$store.getters.getQueryCollection;
+                    this.count = this.allObjects.length;
+                    if (this.count >= 1) {
+                        this.visibleObjects = [];
+                        let x = 0;
+                        for (x = this.start; x  < this.pageSizeDefault; x += 1) {
+                            if (this.allObjects[x]) {
+                                this.visibleObjects.push(this.allObjects[x]);
+                            }
+                        }
+                    } else {
+                        this.message = this.showLanguage('collection', 'msgEmptyResult');
+                    }
+                }
+                else if (status === 3) {
+                    this.message = this.showLanguage('collection', 'msgQueryError');
+                }
+            },
+
             showQueryFields( event ) {
                 console.log("query fields...");
                 console.log(event);
@@ -482,16 +569,6 @@
                 console.log(event);
             },
 
-            roundCost: function() {
-                console.log('rounding: ' + this.cost);
-                return Math.round(this.cost);
-            },
-
-            submitQuery() {
-                console.log("submitting query...");
-                console.log(this.form);
-            },
-
             explainQuery() {
                 console.log("explain form...");
                 console.log(this.form);
@@ -500,9 +577,14 @@
             clearForm() {
                 console.log("clearing form...");
                 this.form = {
-                    criteria: '{\n' +
-                        '\t\n' +
-                        '}',
+                    criteria: {
+                        json: '{\n' +
+                            '\t\n' +
+                            '}',
+                        array: '(\n' +
+                            '\t\n' +
+                            ')'
+                    },
                     newObj: '{\n' +
                         '\t\'$set\': {\n' +
                         '\t\t//your attributes\n' +
@@ -524,6 +606,7 @@
                     pageSize: 10,
                     command: 'findAll'
                 };
+                this.handlePageLoad();
             },
 
             closeQueryFields() {
@@ -560,7 +643,7 @@
                 this.visibleObjects = [];
                 this.start = (p * this.pageSizeDefault);
                 this.end = page * this.pageSizeDefault; // not really using this
-                for (x = this.start; x  < this.pageSizeDefault * page; x+=1) {
+                for (x = this.start; x  < this.pageSizeDefault * page; x += 1) {
                     if (this.allObjects[x]) {
                         this.visibleObjects.push(this.allObjects[x]);
                     }
@@ -578,8 +661,10 @@
                 if (this.collection && this.collection.objects) {
                     this.count = this.collection.objects.count;
                     this.allObjects = this.collection.objects.objects;
-                    for (x = this.start; x  < this.pageSizeDefault; x+=1) {
-                        this.visibleObjects.push(this.allObjects[x]);
+                    for (x = this.start; x  < this.pageSizeDefault; x += 1) {
+                        if (this.allObjects[x]) {
+                            this.visibleObjects.push(this.allObjects[x]);
+                        }
                     }
                 }
             },
@@ -589,12 +674,13 @@
              */
             clearValues() {
                 this.allObjects     = [];
-                this.visibleObjects = [];
-                this.showing        = 0;
-                this.start          = 0;
-                this.end            = 0;
-                this.current        = 1;
                 this.count          = 0;
+                this.current        = 1;
+                this.end            = 0;
+                this.message        = null;
+                this.start          = 0;
+                this.showing        = 0;
+                this.visibleObjects = [];
             },
 
             updateDocument( data ) {
@@ -619,6 +705,10 @@
                         this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
                     }
                 }
+            },
+
+            fetchData() {
+                this.handlePageLoad();
             }
         },
 
@@ -635,7 +725,11 @@
             });
 
             EventBus.$on('document-updated', (data) => {
-                 this.updateDocument( data );
+                this.updateDocument( data );
+            });
+
+            EventBus.$on('document-inserted', () => {
+                this.fetchData();
             });
         },
 

@@ -181,17 +181,20 @@
              *  Set the document for editing - received from view
              * JSON is the default to use that service method first
              */
-            setDocument( document ) {
+            setDocument( data ) {
                 // save requirements
-                this.form._id = document._id;
-                document._id  = null;
-                this.document = document;
+                this.form.database   = data.db;
+                this.form.collection = data.coll;
+                this.form.index      = data.index;
+                this.form._id        = data.document._id;
+                data.document._id    = null;
+                this.document        = data.document;
 
                 // clear the _id from the data and save a copy
                 //let str = this.$convObj( document ).json();
                 //this.document = str.replace("\"_id\":null,", "");
 
-                this.form.document = this.makeJson( document );
+                this.form.document = this.makeJson( data.document );
             },
 
             /*
@@ -354,11 +357,7 @@
               On event show the document update modal
             */
             EventBus.$on('show-document-update', ( data ) => {
-            //    console.log(data);
-                this.form.database   = data.db;
-                this.form.collection = data.coll;
-                this.form.index      = data.index;
-                this.setDocument( data.document);
+                this.setDocument( data );
                 this.showComponent();
             });
         }

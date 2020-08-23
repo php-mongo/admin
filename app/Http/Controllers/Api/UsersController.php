@@ -479,8 +479,6 @@ class UsersController extends RegisterController
                         ->get();
                 }
 
-                ///   dd($result);
-
                 if (isset($result)) {
 
                     $output = array();

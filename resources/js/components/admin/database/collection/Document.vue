@@ -20,7 +20,7 @@
 </style>
 
 <template>
-    <div class="collection-document" v-show="show">
+    <div class="collection-document" v-show="show && hasDocument">
         <document-nav @expand="expand($event)" @text="text($event)" v-bind:document="document" v-bind:collection="collection" v-bind:index="index"></document-nav>
         <div :id="'text_' + index" :class="'doc-data index-' + index" ref="data-document" v-html="getDataByFormat"></div>
         <div :id="'field_' + index" class="doc-text hidden-element" ref="text-document">
@@ -67,7 +67,9 @@
              */
             getDataByFormat( document ) {
                 if (this.format === 'json') {
-                    return this.document.data;
+                    if ( this.document ) {
+                        return this.document.data;
+                    }
                 }
                 if (this.format === 'array') {
                     //return this.document.text;
@@ -80,12 +82,18 @@
              */
             getTextByFormat( document ) {
                 if (this.format === 'json') {
-                    return this.document.text;
+                    if ( this.document ) {
+                        return this.document.text;
+                    }
                 }
                 if (this.format === 'array') {
                     //return this.document.data;
                     return this.$convObj(this.document.raw).arrayT(); //this.document.data;
                 }
+            },
+
+            hasDocument() {
+                return (this.document != null);
             }
         },
 

@@ -46,8 +46,16 @@ body {
     }
 
     form {
-        .is-invalid {
-            border-color: $formErrorColor;
+
+        label {
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 10px;
+
+            &.is-invalid {
+                border-color: $formErrorColor;
+                color: $red;
+            }
         }
 
         .invalid-feedback {
@@ -68,5 +76,4 @@ body {
         color: $dangerColor;
         cursor: pointer;
     }
-
 }
