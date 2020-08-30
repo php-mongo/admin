@@ -21,9 +21,9 @@
     div.success-notification-container {
         position: fixed;
         z-index: 999999;
-        left: 0;
+        left: 12rem;
         right: 0;
-        top: 25vh;
+        top: 0;
 
         div.success-notification {
             background: $white;
@@ -31,8 +31,8 @@
             border-left: 5px solid $successBorder;
             border-right: 5px solid $successBorder;
             min-height: 50px;
-            line-height: 60px;
-            margin: 85px auto auto auto;
+            line-height: 55px;
+            margin: 2.25rem auto auto auto;
             min-width: 400px;
             max-width: 920px;
             color: $noticeColor;
@@ -85,7 +85,7 @@
       EventBus.$on('show-success', ( data ) => {
         this.successMessage = data.notification;
         this.show = true;
-        let timer = data.timer ? data.timer : 7000;
+        let timer = data.timer ? data.timer : 5000;
 
         /*
         *  Default display duration is 7 seconds

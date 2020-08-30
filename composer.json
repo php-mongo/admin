@@ -43,7 +43,8 @@
         "laravel/passport": "^9.3",
         "laravel/tinker": "^2.0",
         "mongodb/mongodb": "^1.6",
-        "ext-mongo": "*"
+        "ext-mongo": "*",
+        "ext-zlib": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

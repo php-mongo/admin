@@ -161,22 +161,24 @@ class QueryLogs
                 $text = fread($fp, $size);
                 fclose($fp);
 
+                // fetch the logs from the file
                 preg_match_all("/(\\d+\\-\\d+\\-\\d+\\s+\\d+:\\d+:\\d+)\n(.+)(={10,})/sU", $text, $match);
 
+                // split out each log
                 foreach ($match[1] as $k => $time) {
-                    /*$eval   = new VarEval($match[2][$k]);
-                    $params = $eval->execute();*/
                     $query = $match[2][$k];
+                    // too mack sure we dont end up with indexed duplicates
                     if (!in_array($query, $criterias)) {
                         $logs[] = array(
                             "time"   => $time,
-                            "params" => $query,
-                            "query"  => http_build_query($query)
+                            "params" => trim(str_replace(array("\n", "\t", " "), "", $query), "'"),
+                            "query"  => trim(str_replace(array("\n", "\t", " "), "", $query), "'")
                         );
                         $criterias[] = $query;
                     }
                 }
 
+                // this error may be redundant unless we pass i  back to the front-end
                 if (!is_writeable($logFile)) {
                     $this->error = "To use log_query feature, please make file '{$logFile}' writeable.";
                 }

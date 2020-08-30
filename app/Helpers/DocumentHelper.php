@@ -52,7 +52,7 @@ class DocumentHelper
     /**
      * Run a basic validation on the JSON string
      *
-     * @param   string $mixed This shound be a JSON string
+     * @param   string $mixed This should be a JSON string
      * @return  string|bool
      */
     public static function varEval( $mixed )

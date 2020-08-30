@@ -119,13 +119,13 @@
                     <span v-bind:title="showLanguage('title', 'newFieldTitle')" v-on:click="loadModal('field')" v-text="showLanguage('collection', 'newField')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('statistics')}">
-                    <span class="hide" v-bind:title="showLanguage('title', 'statisticsTitle')" v-on:click="loadPanel('statistics', $event)" v-text="showLanguage('collection', 'statistics')"></span>
+                    <span v-bind:title="showLanguage('title', 'statisticsTitle')" v-on:click="loadModal('statistics')" v-text="showLanguage('collection', 'statistics')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('export')}">
-                    <span class="hide" v-bind:title="showLanguage('title', 'exportTitle')" v-on:click="loadPanel('export', $event)" v-text="showLanguage('collection', 'export')"></span>
+                    <span v-bind:title="showLanguage('title', 'exportTitle')" v-on:click="loadModal('export')" v-text="showLanguage('collection', 'export')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('import')}">
-                    <span class="hide" v-bind:title="showLanguage('title', 'importTitle')" v-on:click="loadPanel('import', $event)" v-text="showLanguage('collection', 'import')"></span>
+                    <span v-bind:title="showLanguage('title', 'importTitle')" v-on:click="loadModal('import')" v-text="showLanguage('collection', 'import')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('properties')}">
                     <span class="hide" v-bind:title="showLanguage('title', 'propertiesTitle')" v-on:click="loadPanel('properties', $event)" v-text="showLanguage('collection', 'properties')"></span>
@@ -146,7 +146,7 @@
                     <span class="hide" v-bind:title="showLanguage('title', 'validateTitle')" v-on:click="loadPanel('validate', $event)" v-text="showLanguage('collection', 'validate')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('drop')}">
-                    <span class="hide" v-bind:title="showLanguage('title', 'dropCollectionTitle')" v-on:click="loadPanel('drop', $event)" v-text="showLanguage('collection', 'drop')"></span>
+                    <span v-bind:title="showLanguage('title', 'dropCollectionTitle')" v-on:click="runCommand('drop')" v-text="showLanguage('collection', 'drop')"></span>
                 </li>
             </ul>
         </div>
@@ -179,6 +179,7 @@
                 current: null,
                 db: null,
                 index: 0,
+                lastPanel: null,
                 limit: 75,
                 show: false,
             }
@@ -232,6 +233,8 @@
             *   Load database panel content via event
             */
             loadPanel( item ) {
+                // track current panel
+                this.lastPanel   = this.activePanel;
                 this.activePanel = item;
                 EventBus.$emit('hide-collection-panels');
                 EventBus.$emit('show-collection-' + item);
@@ -254,8 +257,18 @@
                         break;
 
                     case command === 'clear':
+                        this.lastPanel   = this.activePanel;
+                        this.activePanel = 'clear';
                         data = { notification: this.showLanguage('collection', 'clearConfirm', this.collection), element: 'clear-collection', id: this.collection };
                         EventBus.$emit('delete-confirmation', data);
+                        break;
+
+                    case command === 'drop':
+                        this.lastPanel   = this.activePanel;
+                        this.activePanel = 'drop';
+                        data = { notification: this.showLanguage('collection', 'dropConfirm', this.collection), element: 'drop-collection', id: this.collection };
+                        EventBus.$emit('delete-confirmation', data);
+                        break;
 
                     default:
                         console.log("commanding: " + command);
@@ -286,10 +299,11 @@
             },
 
             clearCollection( data ) {
-                console.log("clearing collection: " + data);
                 if (data && data === this.collection) {
                     let data = { database: this.db, collection: this.collection };
                     this.$store.dispatch('clearCollection', data );
+                    this.index = 0;
+                    this.handleClearCollection();
                 }
             },
 
@@ -298,15 +312,52 @@
                 if (status === 1 && this.index < this.limit) {
                     this.index+=1;
                     let self = this;
-                    setTimeout(function() {
+                    setTimeout(() => {
                         this.handleClearCollection();
                     }, 100);
                 }
                 else if (status === 2) {
                     EventBus.$emit('show-success', { notification: this.showLanguage('collection', 'clearSuccess', this.collection), timer: 5000 });
+                    this.activePanel = this.lastPanel;
                 }
                 else if (status === 3) {
                     EventBus.$emit('show-success', { notification: this.showLanguage('collection', 'clearError', this.collection), timer: 5000 });
+                }
+            },
+
+            dropCollection( data ) {
+                console.log("dropping collection: " + data);
+                if (data && data === this.collection) {
+                    let data = { database: this.db, collection: this.collection };
+                    if (this.$store.getters.getDeletingCollection !== data.collection) {
+                        // ToDo: !! this prevents an error causing double delete initialisation !!
+                        this.$store.dispatch('deleteCollection', data );
+                    }
+                    this.index = 0;
+                    this.handleDropCollection();
+
+                } else {
+                    this.activePanel = this.lastPanel;
+                }
+            },
+
+            handleDropCollection() {
+                let status = this.$store.getters.getDeleteCollectionStatus;
+                if (status === 1 && this.index < this.limit) {
+                    this.index+=1;
+                    let self = this;
+                    setTimeout(() => {
+                        this.handleDropCollection();
+                    }, 100);
+                }
+                else if (status === 2) {
+                    this.activePanel = this.lastPanel;
+                    EventBus.$emit('show-database');
+                    EventBus.$emit('show-success', { notification: this.showLanguage('collection', 'dropSuccess', this.collection), timer: 5000 });
+
+                }
+                else if (status === 3) {
+                    EventBus.$emit('show-error', { notification: this.showLanguage('collection', 'dropError', this.collection), timer: 5000 });
                 }
             },
 
@@ -348,6 +399,14 @@
 
             EventBus.$on('cancel-delete-clear-collection', () => {
                 this.clearCollection();
+            });
+
+            EventBus.$on('confirm-delete-drop-collection', (data) => {
+                this.dropCollection(data);
+            });
+
+            EventBus.$on('cancel-delete-drop-collection', () => {
+                this.dropCollection();
             });
         },
 

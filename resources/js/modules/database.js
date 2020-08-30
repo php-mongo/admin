@@ -31,6 +31,7 @@ import DatabaseApi from '../api/database.js'
 *   Imports the Event Bus to pass events on tag updates
 */
 import { EventBus } from '../event-bus.js';
+import CollectionApi from "../api/collection";
 
 export const database = {
     /*
@@ -44,6 +45,8 @@ export const database = {
         databaseLoadStatus: 0,
         displayDatabase: {},
         displayDatabaseStatus: 0,
+        dbCollection: {},
+        dbCollectionStatus: 0,
         createDatabaseStatus: 0,
         deleteDatabaseStatus: 0,
         errorData: {}
@@ -89,7 +92,7 @@ export const database = {
 
             DatabaseApi.getDatabase( data )
                 .then( ( response ) => {
-                    console.log("fetched db: " + data);
+                //    console.log("fetched db: " + data);
                     commit( 'setActiveDatabase', data );
                     commit( 'setDatabase', response.data.data.database );
                     commit( 'setDatabaseLoadStatus', 2 );
@@ -149,8 +152,20 @@ export const database = {
                 });
         },
 
+        /*
+        *   Get a collection from the stored single database object
+        */
+        getDbCollection( { commit }, collection ) {
+            commit('setDbCollectionStatus', 1);
+            commit( 'findDbCollection', collection);
+        },
+
         setCollection( { commit }, data) {
             commit( 'setCollectionToDatabase', data);
+        },
+
+        dropCollection( { commit }, data) {
+            commit( 'setDropCollectionFromDatabase', data);
         },
 
         /*
@@ -265,13 +280,21 @@ export const database = {
         },
 
         /*
-         * With luck - save the new collection into the current exibited database
+         * With luck - save the new collection into the current exhibited database
          */
         setCollectionToDatabase( state, collection ) {
             if (state.database) {
                 if (state.database.collections) {
                     state.database.collections.push(collection);
                 }
+            }
+            if (state.databases) {
+                state.databases.forEach( (database, index ) => {
+                    if (database.db.name === collection.collection.databaseName) {
+                        state.databases[index].collections.push(collection);
+                        return true;
+                    }
+                });
             }
         },
 
@@ -280,6 +303,56 @@ export const database = {
         */
         setActiveDatabase(state, database) {
             state.activeDatabase = database;
+        },
+
+        /*
+         *  The method removes a collection for both database instances (database & databases)
+         */
+        setDropCollectionFromDatabase(state, data) {
+            let db   = data.database;
+            console.log("sdcfd db: " + db);
+            let coll = data.collection;
+            console.log("sdcfd coll: " + coll);
+
+            let arr = [];
+            // handle the single database object
+            let collections = state.database.collections;
+            collections.forEach( (collection, index) => {
+                if (collection.collection.name !== coll && collection.collection.collectionName !== coll) {
+                    arr.push(collection);
+                }
+            });
+            state.database.collections = arr;
+
+            // handle the databases array
+            state.databases.forEach( ( database, index) => {
+                if (database.db.name === db) {
+                    collections = database.collections;
+                    arr = [];
+                    collections.forEach( (collection, index) => {
+                        if (collection.collection.name !== coll && collection.collection.collectionName !== coll) {
+                            arr.push(collection);
+                        }
+                    });
+                    database.collections = arr;
+                    state.databases[index] = database;
+                    return true;
+                }
+            });
+        },
+
+        setDbCollectionStatus( state, status ) {
+            state.dbCollectionStatus = status;
+        },
+
+        findDbCollection(state, c ) {
+            let collection = state.database.collections.find(coll => coll.collection.name === c);
+            if (collection) {
+                state.dbCollection = collection;
+                state.dbCollectionStatus = 2;
+            } else {
+                state.dbCollectionStatus = 3;
+            }
         }
     },
 
@@ -377,6 +450,14 @@ export const database = {
         */
         getActiveDatabase( state) {
             return state.activeDatabase;
+        },
+
+        getDbCollectionStatus( state ) {
+            return state.dbCollectionStatus;
+        },
+
+        getDbCollection( state ) {
+            return state.dbCollection;
         }
     }
 };

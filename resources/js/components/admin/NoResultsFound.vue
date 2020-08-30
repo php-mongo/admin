@@ -21,7 +21,7 @@
     div.no-results-notification-container{
         position: fixed;
         z-index: 999999;
-        left: 0;
+        left: 12rem;
         right: 0;
         top: 0;
         text-align: center;
@@ -32,10 +32,9 @@
             border-left: 5px solid $red;
             height: 60px;
             line-height: 50px;
-            margin: auto;
+            margin: 2.3rem auto auto auto;
             min-width: 400px;
-            max-width: 640px;
-            margin-top: 150px;
+            max-width: 720px;
             color: $errorColor;
             font-family: "Lato", sans-serif;
             font-size: 16px;

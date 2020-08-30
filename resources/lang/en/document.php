@@ -63,6 +63,7 @@ return [
     "long" => "Long",
     "mixed" => "Mixed",
     "newField" => "New Field",
+    "noDocuments" => "There are no documents to update. A new document will be created automatically",
     "null" => "Null",
     "nullIsSet" => "Value is set to NULL",
     "number" => "Number",

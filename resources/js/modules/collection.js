@@ -47,8 +47,13 @@ export const collection = {
         displayCollectionStatus: 0,
         createCollectionStatus: 0,
         deleteCollectionStatus: 0,
+        deletingCollection: null,
+        deleteCollectionCount: 0,
         clearCollectionStatus: 0,
         clearCollectionCount: 0,
+        exportCollectionStatus: 0,
+        exportData: null,
+        importCollectionStatus: 0,
         queryLogs: [],
         queryLogsLoadStatus: 0,
         queryCollection: [],
@@ -111,7 +116,7 @@ export const collection = {
             CollectionApi.createCollection( data )
                 .then( ( response ) => {
                     commit( 'setCreateCollectionStatus', 2 );
-                    commit( 'setCreatedCollection', response.data.data.collection );
+                    //commit( 'setCreatedCollection', response.data.data.collection );
                     dispatch( 'setCollection', response.data.data.collection );
                 })
                 .catch( (error) => {
@@ -129,8 +134,8 @@ export const collection = {
 
             CollectionApi.queryCollection( data )
                 .then( ( response ) => {
-                    commit( 'setQueryCollectionLoadStatus', 2 );
                     commit( 'setQueryCollection', response.data.data.documents );
+                    commit( 'setQueryCollectionLoadStatus', 2 );
                 })
                 .catch( (error) => {
                     commit( 'setQueryCollectionLoadStatus', 3 );
@@ -143,16 +148,21 @@ export const collection = {
         *   Delete one or more collections - remove collection from array
         */
         deleteCollection( { commit, rootState, dispatch }, data ) {
+            console.log("deleteCollection called...");
             commit( 'setDeleteCollectionStatus', 1);
+            commit( 'setDeletingCollection', data.collection );
 
             CollectionApi.deleteCollection( data )
                 .then( ( response ) => {
-                    commit( 'setDeletedCollection', data );
+                    dispatch('dropCollection', data);
+                //    commit( 'setDeletedCollection', data );
                     commit( 'setDeleteCollectionStatus', 2 );
+                    commit( 'setDeletingCollection', null );
                 })
                 .catch( (error) => {
                     commit( 'setDeleteCollectionStatus', 3 );
                     commit( 'setErrorData', error);
+                    commit( 'setDeletingCollection', null );
                     console.log(error);
                 });
         },
@@ -170,6 +180,85 @@ export const collection = {
                 })
                 .catch( (error) => {
                     commit( 'setClearCollectionStatus', 3 );
+                    commit( 'setErrorData', error);
+                    console.log(error);
+                });
+        },
+
+        exportCollection( { commit }, data ) {
+            commit( 'setExportCollectionStatus', 1);
+
+            if (data.params.download === true) {
+                CollectionApi.exportCollectionDownload( data )
+                    .then( (response ) => {
+                        if (response.data.success === false) {
+                            commit( 'setErrorData', response.data.errors);
+                            console.log(response.data.errors);
+
+                        } else {
+                            let blob        = response.data;
+                        //    console.log(blob.size);
+                        //    console.log(blob);
+                            let ext = 'js';
+                            if (data.params.gzip === true) {
+                                ext = 'gz';
+                            }
+                            let date        = new Date();
+                            let ts          = "_" + date.getTime();
+                            let dt          = "_" + date.getFullYear() + parseInt(date.getMonth() + 1) + date.getDate();
+                            let fileName    = "mongodb-" + data.database + dt + ts + "." + ext;
+                            let link        = document.createElement('a');
+
+                            link.href       = window.URL.createObjectURL(blob);
+                            link.download   = fileName.replace(" ", "_").replace("+", "");
+                            link.click();
+                        }
+                        commit( 'setExportCollectionStatus', 2 );
+                    })
+                    .catch( (error) => {
+                        commit( 'setExportCollectionStatus', 3 );
+                        commit( 'setErrorData', error);
+                        console.log(error);
+                    });
+
+            } else {
+                CollectionApi.exportCollectionView( data )
+                    .then( (response ) => {
+                        if (response.data.success === false) {
+                            commit( 'setErrorData', response.data.errors);
+                            console.log(response.data.errors);
+
+                        } else {
+                            commit( 'setExportData', response.data.data.export);
+                            console.log(response.data.data);
+                        }
+                        commit( 'setExportCollectionStatus', 2 );
+                    })
+                    .catch( (error) => {
+                        commit( 'setExportCollectionStatus', 3 );
+                        commit( 'setErrorData', error);
+                        console.log(error);
+                    });
+            }
+        },
+
+        importCollection( { commit, dispatch }, data ) {
+            commit('setImportCollectionStatus', 1);
+
+            CollectionApi.importCollection( data )
+                .then( (response) => {
+                    if (response.data.success === false) {
+                        commit( 'setErrorData', response.data.errors);
+                        commit('setImportCollectionStatus', 3);
+                        console.log(response.data.errors);
+
+                    } else {
+                        dispatch('loadDatabase', data.database);
+                        commit('setImportCollectionStatus', 2);
+                    }
+                })
+                .catch( (error) => {
+                    commit('setImportCollectionStatus', 3);
                     commit( 'setErrorData', error);
                     console.log(error);
                 });
@@ -381,10 +470,17 @@ export const collection = {
         },
 
         /*
+        *   Set the deleting collection value
+        */
+        setDeletingCollection( state, collection) {
+            state.deletingCollection = collection;
+        },
+
+        /*
         *   Set (remove) the deleted collection(s) from the existing array
         */
         setDeletedCollection( state, collections ) {
-            collections.forEach(function(value, index) {
+            /*collections.forEach(function(value, index) {
                 let arr = [];
                 state.collections.forEach(function(db, index) {
                     if (db.db.name !== value) {
@@ -392,7 +488,7 @@ export const collection = {
                     }
                 });
                 state.collections = arr;
-            });
+            });*/
         },
 
         /*
@@ -527,11 +623,27 @@ export const collection = {
             state.collection.objects.count -= 1;
         },
 
+        setExportCollectionStatus( state, status ) {
+            state.exportCollectionStatus = status;
+        },
+
+        setExportData( state, data ) {
+            state.exportData = data;
+        },
+
+        setImportCollectionStatus( state, status ) {
+            state.importCollectionStatus = status;
+        },
+
         /*
         *   Save the error data for reference
         */
-        setErrorData( state, error ) {
-            state.errorData = error;
+        setErrorData( state, errors ) {
+            if (errors.message) {
+                state.errorData = errors.message;
+            } else {
+                state.errorData = errors;
+            }
         },
 
         /*
@@ -612,6 +724,13 @@ export const collection = {
         },
 
         /*
+        *   Get the deleting collection value
+        */
+        getDeletingCollection( state) {
+            return state.deletingCollection;
+        },
+
+        /*
         *   Get the clear collection status
         */
         getClearCollectionStatus( state ) {
@@ -632,6 +751,27 @@ export const collection = {
         */
         getCollectionErrorData( state ) {
             return state.errorData;
+        },
+
+        /*
+        *   Return the export status
+        */
+        getExportCollectionStatus( state ) {
+            return state.exportCollectionStatus;
+        },
+
+        /*
+        *   Return the export data when no download is required
+        */
+        getExportData( state ) {
+            return state.exportData;
+        },
+
+        /*
+        *   Return the import status
+        */
+        getImportCollectionStatus( state ) {
+            return state.importCollectionStatus;
         },
 
         /*
@@ -721,6 +861,10 @@ export const collection = {
                     return document._id = id;
                 });
             }
+        },
+
+        getErrorData( state ) {
+            return state.exportData;
         }
     }
 };

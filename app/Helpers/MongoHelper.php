@@ -56,7 +56,8 @@ class MongoHelper
      *
      * @author sajjad at sajjad dot biz (copied from PHP manual)
      */
-    public static function utf8_substr( $str, $from, $len ) {
+    public static function utf8_substr( $str, $from, $len )
+    {
         return function_exists('mb_substr') ?
             mb_substr( $str, $from, $len, 'UTF-8' ) :
             preg_replace('#^(?:[\x00-\x7F]|[\xC0-\xFF][\x80-\xBF]+){0,'. $from .'}'.'((?:[\x00-\x7F]|[\xC0-\xFF][\x80-\xBF]+){0,'. $len .'}).*#s','$1', $str);
@@ -69,7 +70,8 @@ class MongoHelper
      *
      * @return  string  utf-8 string
      */
-    public static function json_unicode_to_utf8( $json ) {
+    public static function json_unicode_to_utf8( $json )
+    {
         $json = preg_replace_callback("/\\\\u([0-9a-f]{4})/", function($match) {
                 $val = intval($match[1], 16);
                 $c   = "";
@@ -127,9 +129,7 @@ class MongoHelper
             return false;
         }
         $json = json_encode($json_obj);
-
         $len  = strlen($json);
-
         for ($c = 0; $c < $len; $c++)
         {
             $char = $json[$c];
@@ -311,7 +311,8 @@ class MongoHelper
      *
      * @return string
      */
-    public static function id_string($id) {
+    public static function id_string($id)
+    {
         if (is_object($id) && $id instanceof MongoId) {
             return "rid_object:" . $id->__toString();
         }
@@ -389,7 +390,8 @@ class MongoHelper
      *
      * @return array
      */
-    public static function iterateObject( $array, $level, $key, & $fields ) {
+    public static function iterateObject( $array, $level, $key, & $fields )
+    {
         $arr = [];
         foreach ($array as $k => $v) {
             if ($v instanceof MongoDb\Model\BSONDocument) {
@@ -483,7 +485,8 @@ class MongoHelper
      *
      * @return array
      */
-    public static function iterateDocument( $array, $level, $key ) {
+    public static function iterateDocument( $array, $level, $key )
+    {
         $arr = [];
         foreach ($array as $k => $v) {
             if ($v instanceof MongoDb\Model\BSONDocument) {
@@ -508,6 +511,30 @@ class MongoHelper
     }
 
     /**
+     * This is used in the IMPORT method
+     *
+     * @param $insert
+     * @return string|string[]
+     */
+    public static function getCollectionNameFromInsert( $insert )
+    {
+        $str = substr( $insert, 0, strpos( $insert, ".insert") );
+        return str_replace(array('db.getCollection("', '")'), "", $str );
+    }
+
+    /**
+     * Ths is used in the IMPORT method
+     *
+     * @param $insert
+     * @return string|string[]
+     */
+    public static function getDateFromInsert( $insert )
+    {
+        $str = substr( $insert, strpos( $insert, "{"), strlen( $insert ));
+        return str_replace( array(');', ''), "", $str );
+    }
+
+    /**
      * Format bytes to human size
      *
      * @param integer $bytes Size in byte
@@ -517,7 +544,8 @@ class MongoHelper
      *
      * @since 1.0.0
      */
-    public static function readHumanBytes($bytes, $precision = 2) {
+    public static function readHumanBytes($bytes, $precision = 2)
+    {
         if ($bytes == 0) {
             return 0;
         }
