@@ -24,6 +24,8 @@ namespace App\Http\Controllers\Api;
 /**
  *   Defines the requests used by the controller.
  */
+
+use App\Http\Classes\VarExport;
 use Illuminate\Http\Request;
 
 /**
@@ -155,7 +157,9 @@ class CollectionController extends Controller implements Unserializable
 
             /** @var MongoDB\BSON\ObjectId $id */
             $id         = $obj['_id'];
-            $obj['_id'] = $id->__toString();
+            if (is_object($id)) {
+                $obj['_id'] = $id->__toString();
+            }
 
             // we need a raw version - easier to updated and manipulates with JS
             $raw  = MongoHelper::extractDocument($obj);
@@ -312,14 +316,17 @@ class CollectionController extends Controller implements Unserializable
     /**
      * Used to confirm that a collection has been dropped
      *
-     * @param string $name
-     * @param array $result
+     * @param  string $name
+     * @param  array  $result
+     * @param  bool   $ns
      * @return array
      */
-    private function setDeleteStatus(string $name, array $result)
+    private function setDeleteStatus(string $name, array $result, $ns = false)
     {
-        if ($result['dropped'] == $name && $result['ok'] == 1) {
-            return array($name => 'success');
+        if ($result['ok'] == 1) {
+            if (@$result['dropped'] == $name ||  @$result['ns'] == $ns) {
+                return array($name => 'success');
+            }
         }
         return array($name => 'failed');
     }
@@ -452,16 +459,30 @@ class CollectionController extends Controller implements Unserializable
     public function deleteCollection(Request $request)
     {
         try {
-            $database    = $request->get('database');
-            $collections = $request->get('collection', false);
-            $status      = array();
-            if ($collections && is_array($collections)) {
-                foreach ($collections as $name) {
+            $database   = $request->get('database');
+            $collection = $request->get('collection', false);
+            $ns = $database . '.' . $collection;
+            if (!is_array($collection)) {
+                $collection = array($collection);
+            }
+            $status     = array();
+            if ($collection && is_array($collection)) {
+                foreach ($collection as $name) {
                     if (!empty($name)) {
                         $collection = $this->mongo->connectClientCollection($database, $name);
                         /** @var MongoDB\Model\BSONDocument $result */
-                        $result   = $collection->drop();
-                        $status[] = $this->setDeleteStatus( $name, $result->getArrayCopy());
+                        $result = $collection->drop();
+                    //    echo '<pre>'; var_dump(is_object($result)); echo '</pre>';
+                    //    echo '<pre>'; var_dump($result); echo '</pre>';
+                    //    echo '<pre>'; var_dump($ns); echo '</pre>';
+                    //    echo '<pre>'; var_dump($name); echo '</pre>'; die;
+                        // ToDo: !! getting an odd error from front-end - request is sent twice
+                        if ($result->errmsg) {
+                            return response()->error('failed', array('message' => $result->errmsg));
+
+                        } else {
+                            $status[] = $this->setDeleteStatus( $name, $result->getArrayCopy(), $ns);
+                        }
                     }
                 }
             }
@@ -495,6 +516,167 @@ class CollectionController extends Controller implements Unserializable
                 $status = array("collection" => $collection, "deleted" => $result->getDeletedCount());
             }
             return response()->success('success', array('status' => $status ));
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Export all documents from one or more collections
+     *
+     * URL:         /api/v1/collection/export
+     * Method:      POST
+     * Description: Export all documents within collection(s) matching the given database
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function exportCollection(Request $request)
+    {
+        try {
+            $database = $request->get('database');
+            $params   = $request->get('params', false);
+            if (isset($database, $params)) {
+                $collections = $params['collections'];
+                /** @var MongoDB\Database $database */
+                $database = $this->mongo->connectClientDb($database);
+
+                // value containers
+                $contents       = "";
+                $countDocuments = 0;
+
+                // handle indexes
+                foreach ($collections as $collectionName) {
+                    /** @var MongoDB\Collection $collection */
+                    $collection  = $database->selectCollection( $collectionName );
+                    $information = $collection->listIndexes();
+                    // for now : we are not importing the indexes
+                    foreach ($information as $info) {
+                        $options   = array();
+                        $exporter  =  new VarExport( $database, $info['key']);
+                        $contents .= "\n/** {$collection} indexes **/\ndb.getCollection(\"" . addslashes($collectionName) . "\").ensureIndex(" . $exporter->export('json') . ");\n";
+                    }
+                }
+
+                // handle data
+                foreach ($collections as $collectionName) {
+                    $documents  = $database->selectCollection( $collectionName )->find();
+                    $contents .= "\n/** " . $collectionName  . " records **/\n";
+                    foreach ($documents as $document) {
+                        $countDocuments ++;
+                        $exporter = new VarExport($database, $document);
+                        $doc = MongoHelper::extractDocument($document);
+                        $contents .= "db.getCollection(\"" . addslashes($collectionName) . "\").insert(" . json_encode($exporter->setObjectId($doc)) . ");\n";
+                    }
+                }
+
+                if ($params['download'] == true) {
+                    // set the file name
+                    $filePrefix = "mongodb-" . urldecode($database) . "-" . date("Ymd-His");
+
+                    if ($params['gzip'] == true) {
+                        header("Content-type: application/x-gzip");
+                        header("Content-Disposition: attachment; filename=\"{$filePrefix}.gz\"");
+                        echo gzcompress($contents, 9);
+
+                    } else {
+                        header("Content-type: application/octet-stream");
+                        header("Content-Disposition: attachment; filename=\"{$filePrefix}.js\"");
+                        echo $contents;
+                    }
+                    exit;
+                }
+                return response()->success('success', array('export' => $contents ));
+            }
+            return response()->error('failed', array('message' => "missing parameters"));
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Import documents from one or more collections
+     *
+     * URL:         /api/v1/collection/export
+     * Method:      POST
+     * Description: Import documents from one or ore collection(s) into the given database
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function importCollection(Request $request)
+    {
+        try {
+            $database       = $request->get('database');
+            $collection     = $request->get('collection');
+            $type           = $request->get('type', 'admin');
+            $gzip           = $request->get('gzip', false);
+            $useCollection  = $request->get('useCurrentCollection', false);
+
+            if (isset($database, $type)) {
+                // get the file
+                foreach ($_FILES AS $f) {
+                    $file = $f;
+                }
+
+                function ns($db, $coll) {
+                    return $db . '.' . $coll;
+                }
+
+                // for zipped files
+                if ($gzip === true) {
+                    $body = gzuncompress( file_get_contents( $file['tmp_name'] ) );
+
+                } else {
+                    $body = file_get_contents( $file['tmp_name'] );
+                }
+
+                // connect the manager
+                $this->mongo->connectManager();
+                /** @var MongoDB\Driver\Manager $manager */
+                $manager = $this->mongo->getManager();
+
+                // return the inserted count to the front-end
+                $inserted = 0;
+                // explode the body into an array - we'll use thus for both file formats
+                $arr = explode("\n", $body);
+
+                // this is for file exported from PhpMongoAdmin *.js
+                if ($type == 'admin') {
+                    $insertArray = [];
+                    // iterate the import array
+                    foreach ($arr as $insert) {
+                        // ignore the comments, index insert etc
+                        if (strpos( $insert, "insert") !== false) {
+                            // we're good to go! get the collection(s)
+                            // track using collections as primary array key
+                            $insertArray[ MongoHelper::getCollectionNameFromInsert( $insert ) ][] = MongoHelper::getDateFromInsert( $insert );
+                        }
+                    }
+
+                    // this will handle multiple collection inserts
+                    foreach ($insertArray as $coll => $inserts) {
+                        $bulk = new MongoDB\Driver\BulkWrite();
+
+                        // if $useCollection is TRUE : all inserts will use the 'current collection' in the namespace
+                        $ns   = $useCollection == false ? ns( $database, $coll) : ns($database, $collection);
+                        // iterate the insert and add to the $bulk write object
+                        foreach ($inserts as $insert) {
+                            // expects an array
+                            $bulk->insert( json_decode($insert, true) );
+                            $inserted++;
+                        }
+                        $manager->executeBulkWrite( $ns, $bulk );
+                    }
+
+                } else {
+                    die("mongodb file...");
+                }
+                return response()->success('success', array('import' => $inserted ));
+            }
+            return response()->error('failed', array('message' => 'parameters missing'));
         }
         catch(\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));

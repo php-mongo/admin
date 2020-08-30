@@ -187,18 +187,8 @@
                     document: null
                 },
                 invalid: [],
+                newDocument: false,
                 show: false,
-                skel: {
-                    collection: null,
-                    database: null,
-                    _id: null,
-                    field: null,
-                    index: null,
-                    exists: true,
-                    type: 'string',
-                    value: null,
-                    document: null
-                },
                 total: 0,
                 types: [
                     'boolean',
@@ -278,6 +268,10 @@
 
                 if (this.validate()) {
                     if (action === 'apply-all') {
+                        if (this.newDocument === true) {
+                            this.createNewDocument();
+                            return;
+                        }
                         this.saveAllDocuments();
 
                     } else {
@@ -286,6 +280,45 @@
                             this.saveDocument();
                         }
                     }
+                }
+            },
+
+            createNewDocument() {
+                let document = '{"' + this.form.field + '":"' + this.form.value + '"}';
+             //   console.log(document);
+                let form = {
+                    collection: this.form.collection,
+                    database: this.form.database,
+                    format: 'json',
+                    number: 1,
+                    document: document
+                };
+             //   console.log(form);
+             //   return;
+                // send
+                this.$store.dispatch( 'createDocument', form );
+                this.handleNew();
+            },
+
+            /*
+             *  Handle the create new scenario
+             */
+            handleNew() {
+                let status = this.$store.getters.getCreateDocumentStatus;
+                if (status === 1) {
+                    let self = this;
+                    setTimeout(function() {
+                        self.handleNew();
+                    }, 100);
+                }
+                if (status === 2) {
+                    EventBus.$emit('show-success', { notification: this.showLanguage('document', 'createSuccess', this.created) });
+                    EventBus.$emit('document-inserted');
+                    this.clearData();
+                    this.hideComponent();
+                }
+                if (status === 3) {
+                    EventBus.$emit('show-error', { notification: this.showLanguage('document', 'createError', this.errors) });
                 }
             },
 
@@ -461,8 +494,32 @@
                 this.document = {};
                 this.errorMessage = null;
                 this.errors = 0;
-                this.form = this.skel;
                 this.updated = 0;
+                this.form =  {
+                    collection: null,
+                    database: null,
+                    _id: null,
+                    field: null,
+                    index: null,
+                    exists: true,
+                    type: 'string',
+                    value: null,
+                    document: null
+                };
+            },
+
+            /*
+             *  This method help sort out changes in context for this component
+             */
+            checkDocumentCount() {
+                this.newDocument = false;
+                this.documents   = this.$store.getters.getDocuments;
+             // this.$jqf().isEmpty(this.documents)
+                if (this.documents.length === 0) {
+                    // this infirm the user that a NEW document will have to be created in order to add a field
+                    this.errorMessage = this.showLanguage('document', 'noDocuments');
+                    this.newDocument  = true;
+                }
             },
 
             /*
@@ -488,8 +545,10 @@
              * On event, show the new document field modal
              */
             EventBus.$on('show-document-field', ( data ) => {
+                this.clearData();
                 this.setDocument( data );
                 this.showComponent();
+                this.checkDocumentCount();
             });
         },
 

@@ -203,7 +203,7 @@
                         self.handleCreateStatus();
                     }, 50);
                 }
-                if (status === 2) {
+                else if (status === 2) {
                     // all good
                     EventBus.$emit('show-success', { notification: this.showLanguage('collection', 'createSuccess', this.form.name) });
                     let db = this.form.db;
@@ -211,9 +211,9 @@
                     setTimeout( () => {
                         this.show = false;
                         EventBus.$emit('load-database-panel', { panel: 'database', value: db });
-                    }, 2500);
+                    }, 1000);
                 }
-                if (status === 3) {
+                else if (status === 3) {
                     // opps
                     EventBus.$emit('show-error', { notification: this.showLanguage('collection', 'createError', this.form.name) });
                     this.error = 'An error has occurred...';

@@ -21,18 +21,18 @@
     div.delete-notification-container{
         position: fixed;
         z-index: 999999;
-        left: 0;
+        left: 12rem;
         right: 0;
-        top: 10vh;
+        top: 0;
 
         div.delete-notification  {
             background: $white;
             box-shadow: 0 0 4px 0 rgba(0,0,0,0.12), 0 4px 4px 0 rgba(0,0,0,0.24);
             border-left: 5px solid $errorBorder;
             border-right: 5px solid $errorBorder;
-            min-height: 60px;
-            line-height: 50px;
-            margin: 0 auto 0 auto;
+            min-height: 50px;
+            line-height: 55px;
+            margin: 2.25rem auto auto auto;
             min-width: 400px;
             max-width: 920px;
             color: $noticeColor;

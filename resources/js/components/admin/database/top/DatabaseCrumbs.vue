@@ -283,7 +283,11 @@
         */
         mounted() {
             EventBus.$on('show-database', (db) => {
-                this.activeDb = db;
+                if (db) {
+                    this.activeDb = db;
+                } else {
+                    this.loadDatabase();
+                }
             });
 
             EventBus.$on('show-collection-nav', (collectionName) => {
@@ -299,7 +303,7 @@
         },
 
         /*
-         *  Wes having issues with data hanfing around after this was closed
+         *  Was having issues with data hanging around after this was closed
          */
         destroyed() {
             this.clearData();

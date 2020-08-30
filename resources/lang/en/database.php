@@ -39,7 +39,7 @@ return [
     "execute" => "Execute",
     "export" => "Export",
     "import" => "Import",
-    "indexSize" => "Index size",
+    "indexSize" => "Total index size",
     "newCollection" => "New collection",
     "objects" => "Total objects",
     "objectsCount" => "Object count",

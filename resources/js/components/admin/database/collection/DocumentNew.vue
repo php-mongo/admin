@@ -154,7 +154,7 @@
                     database: null,
                     format: 'json',
                     number: 1,
-                    document: '{\n\n}'
+                    document: '{\n\t\n}'
                 },
                 show: false,
                 skel: {

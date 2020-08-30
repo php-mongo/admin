@@ -92,32 +92,6 @@
         ],
 
         /*
-        *   Listen to the mounted lifecycle hook.
-        */
-        mounted(){
-            /*
-                Hide any displayed collections lists
-            */
-            EventBus.$on('hide-collection-lists', ( )  => {
-                this.hideCollections();
-
-            });
-
-            /*
-              When the filters are updated, we process the filters.
-            */
-            EventBus.$on('filters-updated', ( filters ) => {
-                this.processFilters( filters );
-
-            });
-
-            /*
-              Apply filters
-            */
-            this.processFilters();
-        },
-
-        /*
         * Defines the computed properties on the component.
         */
         computed: {
@@ -177,7 +151,9 @@
             */
             hideCollections() {
                 this.activeDb = null;
-                this.$jqf(this.$refs.coll).replace(['active', 'hide-list']);
+                if (this.$refs.coll) {
+                    this.$jqf(this.$refs.coll).replace(['active', 'hide-list']);
+                }
             },
 
             loadCollection( collection ) {
@@ -226,6 +202,32 @@
                     this.show = textPassed;
                 }
             }
+        },
+
+        /*
+        *   Listen to the mounted lifecycle hook.
+        */
+        mounted(){
+            /*
+                Hide any displayed collections lists
+            */
+            EventBus.$on('hide-collection-lists', ( )  => {
+                this.hideCollections();
+
+            });
+
+            /*
+              When the filters are updated, we process the filters.
+            */
+            EventBus.$on('filters-updated', ( filters ) => {
+                this.processFilters( filters );
+
+            });
+
+            /*
+              Apply filters
+            */
+            this.processFilters();
         },
 
         /*

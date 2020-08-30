@@ -222,6 +222,9 @@
         <document-duplicate></document-duplicate>
         <document-new></document-new>
         <query-logs></query-logs>
+        <collection-statistics></collection-statistics>
+        <collection-export></collection-export>
+        <collection-import></collection-import>
     </div>
 </template>
 
@@ -242,6 +245,9 @@
     import DocumentDuplicate from "./DocumentDuplicate";
     import DocumentNew from "./DocumentNew";
     import QueryLogs from "./QueryLogs";
+    import CollectionStatistics from "./CollectionStatistics";
+    import CollectionExport from "./CollectionExport";
+    import CollectionImport from "./CollectionImport";
 
     export default {
         /*
@@ -255,7 +261,10 @@
             DocumentField,
             DocumentDuplicate,
             DocumentNew,
-            QueryLogs
+            QueryLogs,
+            CollectionStatistics,
+            CollectionExport,
+            CollectionImport
         },
 
         /*
@@ -709,6 +718,11 @@
 
             fetchData() {
                 this.handlePageLoad();
+            },
+
+            sendQuery(query) {
+                this.form.criteria[this.format] = query;
+                this.submitQuery();
             }
         },
 
@@ -730,6 +744,10 @@
 
             EventBus.$on('document-inserted', () => {
                 this.fetchData();
+            });
+
+            EventBus.$on('send-query', (query) => {
+                this.sendQuery(query);
             });
         },
 

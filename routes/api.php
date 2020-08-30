@@ -319,6 +319,28 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
 
     /*
     * -------------------------------------------------------
+    * Export one or more Collections (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/export
+    * Controller:  API/CollectionController@exportCollection
+    * Method:      POST
+    * Description: Export one or more collections from the provided database
+    */
+    Route::post('/collection/export', 'Api\CollectionController@exportCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Import one or more Collections (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/import
+    * Controller:  API/CollectionController@importCollection
+    * Method:      POST
+    * Description: Import one or more collections into the provided database
+    */
+    Route::post('/collection/import', 'Api\CollectionController@importCollection');
+
+    /*
+    * -------------------------------------------------------
     * Create a Document (private route)
     * -------------------------------------------------------
     * URL:         /api/v1/document/create

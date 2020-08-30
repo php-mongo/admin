@@ -21,9 +21,9 @@
     div.error-notification-container{
         position: fixed;
         z-index: 999999;
-        left: 0;
+        left: 12rem;
         right: 0;
-        top: 25vh;
+        top: 0;
 
         div.error-notification  {
             background: $white;
@@ -31,10 +31,10 @@
             border-left: 5px solid $errorBorder;
             border-right: 5px solid $errorBorder;
             min-height: 50px;
-            line-height: 60px;
-            margin: 85px auto auto auto;
+            line-height: 55px;
+            margin: 2.3rem auto auto auto;
             min-width: 400px;
-            max-width: 800px;
+            max-width: 920px;
             color: $noticeColor;
             font-family: "Lato", sans-serif;
             font-size: 16px;
