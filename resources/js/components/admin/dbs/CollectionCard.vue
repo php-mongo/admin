@@ -31,7 +31,7 @@
 
 <template>
     <li ref="colbox" class="collection-list-item">
-        <img alt="Collection icon" src="/img/icon/collection.png" /> <span class="pma-link" @click="$emit('loadCollection', collection.collection.name)">{{collection.collection.name}}</span>
+        <img alt="Collection icon" src="/img/icon/collection.png" /> <span class="pma-link" @click="$emit('loadCollection', getName)">{{getName}}</span>
     </li>
 </template>
 
@@ -53,10 +53,17 @@
         */
         computed: {
             /*
-            *
+            *   This was added for future use
             */
-            countItems() {
-                return ' (' + this.collection.items.length + ')';
+            /*countItems() {
+                return '(' + this.collection.items.length + ')';
+            },*/
+
+            /*
+             *  Because database and collections bot have two version of name keys (name & collectionName)
+             */
+            getName() {
+              return this.collection.collection.name ? this.collection.collection.name : this.collection.collection.collectionName;
             },
 
             /*

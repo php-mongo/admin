@@ -360,6 +360,39 @@ export default function makeConvObj() {
                  // doc = doc.replace(/\s/g, ""); // removing all space was a bad idea
                  doc = doc.replace(/\s\s/g, " ");
                  return doc;
+             },
+
+             typeOf: (string) => {
+                 let value = string ? string : str;
+                 let s = typeof value;
+                 if (s === 'object') {
+                     if (value) {
+                         if (Object.prototype.toString.call(value) === '[object Array]') {
+                             s = 'array';
+                         }
+                     } else {
+                         s = 'null';
+                     }
+                 }
+                 return s;
+             },
+             isEmpty: function (string) {
+                 let o = string ? string : str;
+                 let i, v, t = this.typeOf(o);
+                 if (t === 'object') {
+                     for (i in o) {
+                         v = o[i];
+                         if (v !== undefined && this.typeOf(v) !== 'function') {
+                             return false;
+                         }
+                     }
+                 }
+                 if (t === 'array') {
+                     if (t.length >= 1) {
+                         return false;
+                     }
+                 }
+                 return true;
              }
         };
     };

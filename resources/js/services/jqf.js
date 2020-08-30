@@ -40,6 +40,7 @@ export default function makeJqf() {
      * Returns a set of methods for manipulating classes and actions on DOM elements
      */
     return function jqf(element) {
+        // nearly every method here will require the 'list' reference
         let list = element.classList;
 
         return {
@@ -83,18 +84,18 @@ export default function makeJqf() {
             show: function () {
                 element.style.display = 'inline-block';
             },
-            hide: function() {
+            hide: function () {
                 element.style.display = 'none';
             },
-            css: function(e, v) {
+            css: function (e, v) {
                 element.style[e] = v;
             },
-            value: function() {
+            value: function () {
                 if (element.value) {
                     return element.value;
                 }
                 return element.options[element.selectedIndex].value;
             }
-        };
+        }
     }
 }

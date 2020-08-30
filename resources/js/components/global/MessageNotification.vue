@@ -21,7 +21,7 @@
     div.success-notification-container {
         position: fixed;
         z-index: 999999;
-        left: 0;
+        left: 12rem;
         right: 0;
         top: 0;
 
@@ -31,10 +31,10 @@
             border-left: 5px solid $messageBorder;
             border-right: 5px solid $messageBorder;
             min-height: 50px;
-            line-height: 50px;
-            margin: 85px auto auto auto;
+            line-height: 60px;
+            margin: 2.5rem auto auto auto;
             min-width: 400px;
-            max-width: 800px;
+            max-width: 920px;
             color: $noticeColor;
             font-family: "Lato", sans-serif;
             font-size: 16px;
@@ -92,7 +92,7 @@
                 setTimeout( function() {
                     this.show = false;
 
-                }.bind(this), 15000);
+                }.bind(this), 10000);
 
             });
 

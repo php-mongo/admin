@@ -87,6 +87,20 @@
 
             ul {
                 list-style: none;
+
+                li {
+                    background-color: $lighterGrey;
+                    margin-bottom: 10px;
+                    padding: 4px 10px;
+
+                    p.time {
+                        border-bottom: 1px solid $darkGreyColor;
+
+                        .log-link {
+                            float: right;
+                        }
+                    }
+                }
             }
 
         }
@@ -100,8 +114,9 @@
                 <div class="modal-header"><span class="msg" v-show="errorMessage || actionMessage"><span class="error">{{ errorMessage }}</span> <span class="action">{{ actionMessage }}</span></span><span class="close u-pull-right" v-on:click="hideComponent"><img src="/img/icon/cross-red.png" /></span></div>
                 <h3 v-text="showLanguage('collection','collectionHistory')"></h3>
                 <ul>
-                    <li v-for="(log, index) in queryLogs" v-bind:log="log">
-                        <p>You have been logged!</p>
+                    <li class="log-entry" v-for="(log, index) in queryLogs" v-bind:log="log">
+                        <p class="time"><span>{{ log.time }}</span> <span class="log-link pma-link" v-on:click="sendQuery(log.query)" v-text="showLanguage('collection', 'queryAgain')"></span></p>
+                        <p>{{ log.params }}</p>
                     </li>
                 </ul>
             </div>
@@ -144,8 +159,10 @@
                 return this.$store.getters.getLanguageString( context, key );
             },
 
-            getQueryLogs() {
-                let data = {database: this.database, collection: this.collection };
+            getQueryLogs(data) {
+                this.database   = data.db;
+                this.collection = data.coll;
+                data = {database: this.database, collection: this.collection };
                 this.$store.dispatch('getQueryLogs', data);
                 this.handleQueryLogs();
             },
@@ -175,6 +192,14 @@
                 }
             },
 
+            sendQuery( query ) {
+                console.log("querying: " + query);
+                EventBus.$emit('send-query', query);
+                setTimeout(() => {
+                    this.hideComponent();
+                },250);
+            },
+
             /*
              *   Show component
              */
@@ -198,9 +223,7 @@
              * On event, show the new document field modal
              */
             EventBus.$on('show-document-history', ( data ) => {
-                this.database   = data.db;
-                this.collection = data.coll;
-                this.getQueryLogs();
+                this.getQueryLogs(data);
                 this.showComponent();
             });
         }

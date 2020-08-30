@@ -19,6 +19,7 @@
 *  Imports the PHP Mongo Admin URL from the config.
 */
 import { MONGO_CONFIG } from "../config";
+import {EventBus} from "../event-bus";
 
 export default {
     /*
@@ -64,10 +65,11 @@ export default {
     *   Delete one or more collection(s)
     *   POST  /api/v1/collection/delete
     */
-    deleteCollection: ( names ) => {
+    deleteCollection: ( data ) => {
         return axios.post( MONGO_CONFIG.API_URL + '/collection/delete',
             {
-                names: names,
+                database: data.database,
+                collection: data.collection,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
             });
     },
@@ -83,6 +85,69 @@ export default {
                 collection: data.collection,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
             });
+    },
+
+    /*
+    *  Export one or more collections (download version)
+    *   POST  /api/v1/collection/export
+    */
+    exportCollectionDownload: ( data ) => {
+        return axios({
+            url: MONGO_CONFIG.API_URL + '/collection/export',
+            method: 'POST',
+            responseType: 'blob',
+            data:
+                {
+                    database: data.database,
+                    params: data.params,
+                    _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+                }
+        });
+    },
+
+    /*
+    *  Export one or more collections (download version)
+    *   POST  /api/v1/collection/exports
+    */
+    exportCollectionView: (data) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/collection/export',
+            {
+                database: data.database,
+                params: data.params,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *  Import one or more collections (download version)
+    *  POST  /api/v1/collection/import
+    */
+    importCollection: ( data ) => {
+        let formData = new FormData;
+        formData.append('database', data.database);
+        formData.append('collection', data.collection);
+        formData.append('file', data.params.file);
+        formData.append('type', data.params.selected);
+        formData.append('gzip', data.params.gzip);
+        formData.append('useCurrentCollection', data.params.useCurrentCollection);
+        formData.append('_token',  window.axios.defaults.headers.common['X-CSRF-TOKEN']);
+        return axios.post(MONGO_CONFIG.API_URL + '/collection/import',
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress: function( progressEvent ) {
+                    let monitor = 0;
+                    let uploadPercentage = parseInt( Math.round(( progressEvent.loaded / progressEvent.total ) * 100 ));
+                    if (uploadPercentage !== monitor) {
+                        EventBus.$emit("upload-progress", uploadPercentage);
+                        monitor = uploadPercentage;
+                    }
+
+                }.bind(this)
+            }
+        );
     },
 
     /*

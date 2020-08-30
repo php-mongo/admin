@@ -20,7 +20,7 @@
 </style>
 
 <template>
-    <li class="coll" v-show="checkCollection">
+    <li class="coll" v-if="checkCollection">
         <input type="checkbox" v-model="checked" />
         <span class="pma-link" @click="$emit('loadCollection', getCollectionName )">{{ getCollectionName }}</span>
         <span class="obj-count u-pull-right">{{ getObjectsCount }}</span>
