@@ -426,10 +426,17 @@ class DocumentController extends Controller implements Unserializable
             // get the collection
             $collection = $this->mongo->connectClientCollection( $database, $collection );
 
-            // generate the OID object
-            $arr = array(
-                '_id' => new MongoDB\BSON\ObjectId( $oid )
-            );
+            try {
+                // generate the OID object
+                $arr = array(
+                    '_id' => new MongoDB\BSON\ObjectId( $oid )
+                );
+            }
+            catch(\Exception $e) {
+                if (strpos($e->getMessage(), "Error parsing ObjectId string:") !== false) {
+                    $arr = array("_id" => $oid);
+                }
+            }
 
             // delete doc
             $status   = array();

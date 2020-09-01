@@ -71,6 +71,7 @@ return [
     "error" => "Please add a name for your collection",
     "expand" => "Expand",
     "export" => "Export",
+    "exportJson" => "Export as JSON - currently only available for single collections export",
     "fields" => "Fields",
     "file" => "File",
     "fileAdmin" => "Choose a *.js file exported from PhpMongoAdmin",

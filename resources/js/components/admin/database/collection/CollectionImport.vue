@@ -247,6 +247,8 @@
              *  Send to API
              */
             runImport() {
+                this.actionMessage = null;
+                this.errorMessage  = null;
                 let data = {database: this.database, collection: this.collection, params: this.form };
                 this.$store .dispatch('importCollection', data);
                 this.handleImport();

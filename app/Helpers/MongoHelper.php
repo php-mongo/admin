@@ -27,7 +27,7 @@ namespace App\Helpers;
 use MongoDB;
 
 /**
- * Thesre are specific MongDB types we ant to implement
+ * These are specific MongoDB types we ant to implement
  */
 use MongoId;
 use MongoInt32;
@@ -37,7 +37,6 @@ use MongoInt64;
  * Always be prepared to accept failure !!
  */
 use Exception;
-
 
 /**
  * Class MongoHelper
@@ -429,7 +428,7 @@ class MongoHelper
      *
      * @return array
      */
-    public static function extractDocument( $document, &$fields = [] )
+    public static function extractDocument( $document, &$fields = [], $OID = false )
     {
         $arr    = [];
         $level  = 0;
@@ -438,12 +437,26 @@ class MongoHelper
     //    dd($document);
         foreach ($document as $key => $value) {
             if ($key == '_id') {
-                if (is_object($value)) {
+         //       echo '<pre>'; var_dump($value); echo '</pre>'; die;
+                if (is_object($value) && $OID == false) {
+
+                //    echo '<pre>'; var_dump($value); echo '</pre>'; die;
+
                     $oid = $value->__toString();
-                } else {
+
+                //    echo '<pre>'; var_dump($oid); echo '</pre>'; die;
+
+                }
+                elseif ($OID == true && !is_string($value)) {
+                    $oid = array("oid" => $value->__toString());
+            //        echo '<pre>'; var_dump($key); echo '</pre>';
+            //        echo '<pre>'; var_dump($oid); echo '</pre>'; die;
+                }
+                else {
                     $oid = $value;
                 }
                 $arr[ $key ] =  $oid;
+            //    echo '<pre>'; var_dump($arr); echo '</pre>'; die;
 
             } else {
                 if ($value instanceof MongoDB\Model\BSONDocument) {
@@ -532,6 +545,67 @@ class MongoHelper
     {
         $str = substr( $insert, strpos( $insert, "{"), strlen( $insert ));
         return str_replace( array(');', ''), "", $str );
+    }
+
+    /**
+     * Generate a mongodb namespace
+     *
+     * @param  string $db
+     * @param  string $coll
+     * @return string
+     */
+    public static function ns(string $db, string $coll) : string
+    {
+        return $db . '.' . $coll;
+    }
+
+    /**
+     * Handle Bulk Inserts
+     *
+     * @param MongoDB\Driver\Manager $manager
+     * @param string                 $database
+     * @param array                  $array
+     * @param string                 $collection
+     * @param boolean                $useCollection
+     * @param integer                $inserted
+     * @param boolean                $isJson         Enforces use of the provided $collection value
+     */
+    public static function handleBulkInsert( $manager, $database, $array, $collection, $useCollection, &$inserted, $isJson = false )
+    {
+        foreach ($array as $coll => $inserts) {
+            // renew for each collection insert
+            $bulk = new MongoDB\Driver\BulkWrite();
+
+            // If $useCollection is TRUE : all inserts will use the 'current collection' in the namespace
+            // If $isJson is TRUE we must use the provided $collection
+            $ns = $useCollection == false && $isJson == false ? self::ns( $database, $coll) : self::ns($database, $collection);
+
+            if ($isJson) {
+                // form JSON insert use only the internal iteration
+                $inserts = $array;
+            }
+
+            // iterate the insert and add to the $bulk write object
+            foreach ($inserts as $insert) {
+                if (is_string($insert)) {
+                    // decode the insert only is its a string
+                    $insert = json_decode($insert, true);
+                }
+                // if the ObjectId has been included as $oid => 'blah blah blah'
+                if (isset($insert['_id']['oid'])) {
+                    $insert['_id'] = new MongoDB\BSON\ObjectId ($insert['_id']['oid'] );
+                }
+                // expects an array
+                $bulk->insert($insert);
+                $inserted++;
+            }
+            $manager->executeBulkWrite( $ns, $bulk );
+
+            if ($isJson) {
+                // iterations should be complete
+               break;
+            }
+        }
     }
 
     /**

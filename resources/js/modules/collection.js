@@ -203,6 +203,9 @@ export const collection = {
                             if (data.params.gzip === true) {
                                 ext = 'gz';
                             }
+                            if (data.params.json === true) {
+                                ext = 'json';
+                            }
                             let date        = new Date();
                             let ts          = "_" + date.getTime();
                             let dt          = "_" + date.getFullYear() + parseInt(date.getMonth() + 1) + date.getDate();

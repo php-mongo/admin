@@ -22,9 +22,15 @@
 namespace App\Http\Classes;
 
 use App\Helpers\MongoHelper;
-
 use MongoDB\Database;
 
+/**
+ * Class VarExport
+ * ToDo: !! this class need serious attention !!
+ * We need to implement more accurate export data type detections
+ *
+ * @package App\Http\Classes
+ */
 class VarExport
 {
     /**
@@ -89,33 +95,17 @@ class VarExport
 
     private function _exportJSON()
     {
-     //   echo '<pre>called: _exportJSON'; echo '</pre>';
         $service = "json_encode";
-
-     //   echo '<pre>';var_dump($this->var); echo '</pre>';
-
         $var     = $this->_formatVarAsJSON($this->var, $service);
-
-    //    echo '<pre>';var_dump($this->jsonParams); echo '</pre>';
-    //    echo '<pre>var: '; var_dump($var); echo '</pre>'; die;
-
         $string  = call_user_func($service, $var);
-
-    //    dd($var);
 
         // Remove "\/" escape
         $string = str_replace('\/', "/", $string);
 
-    //    echo '<pre>';var_dump($string); echo '</pre>';
-
         $params = array();
         foreach ($this->jsonParams as $index => $value) {
             $params['"' . $this->_param($index) . '"'] = $value;
-      //      dd($params);
         }
-     //   echo '<pre>';var_dump($this->json_format(strtr($string, $params))); echo '</pre>'; die;
-     //   echo '<pre>';var_dump($params); echo '</pre>';
-     //   echo '<pre>';var_dump($string); echo '</pre>'; die;
         return MongoHelper::json_unicode_to_utf8($this->json_format(strtr($string, $params)));
     }
 
@@ -124,51 +114,30 @@ class VarExport
         $service = "json_encode";
         $vars    = $this->var->getArrayCopy();
         $output  = '';
-     //   echo '<pre>';var_dump($vars->getArrayCopy()); echo '</pre>'; die;
-
-     //   echo '<pre>'; var_dump($vars); echo '</pre>'; die;
 
         foreach ($vars as $key => $row) {
-
-         //   echo '<pre>'; var_dump(array($key => $row)); echo '</pre>'; die;
-
             $var     = $this->_formatVarAsJSON(array($key => $row), $service);
-
-         //   echo '<pre>'; var_dump($var); echo '</pre>'; die;
 
             $string  = call_user_func($service, $var);
             // Remove "\/" escape
             $string = str_replace('\/', "/", $string);
 
-         //   echo '<pre>'; var_dump($string); echo '</pre>';
-
             $params = array();
             foreach ($this->jsonParams as $index => $value) {
                 $params['"' . $this->_param($index) . '"'] = $value;
-                //      dd($params);
             }
 
-       //     echo '<pre>';var_dump($params); echo '</pre>';
-
             $output .= MongoHelper::json_unicode_to_utf8($this->json_format(strtr($string, $params)));
-       //     echo '<pre>';var_dump($output); echo '</pre>'; die;
-      //      dd($output);
         }
-     //   dd($output);
     }
 
     private function _formatVarAsJSON($var, $jsonService,  $key = false)
     {
-      //  echo '<pre>called: _formatVarAsJSON'; echo '</pre>';
-     //   echo '<pre>'; var_dump($var); echo '</pre>';
         if (is_scalar($var) || is_null($var)) {
             switch (gettype($var)) {
                 case "integer":
-        //            echo '<pre>'; var_dump($var); echo '</pre>';
                     $this->paramIndex ++;
                     $this->jsonParams[$this->paramIndex] = 'NumberInt(' . $var . ')';
-           //         echo '<pre>'; var_dump($this->jsonParams); echo '</pre>';
-          //          echo '<pre>'; var_dump($this->_param($this->paramIndex)); echo '</pre>';
                     return $this->_param($this->paramIndex);
                 default:
                     //return $var;
@@ -183,8 +152,6 @@ class VarExport
         }
         if (is_object($var)) {
             $this->paramIndex ++;
-       //     echo '<pre>'; var_dump($var); echo '</pre>';
-       //     echo '<pre>'; var_dump(get_class($var)); echo '</pre>'; die;
             switch (get_class($var)) {
                 case "MongoDB\BSON\ObjectId":
                     $this->jsonParams[$this->paramIndex] = 'ObjectId("' . $var->__toString() . '")';
@@ -407,7 +374,7 @@ class VarExport
     public function export( $type = 'array', $fieldLabel = false)
     {
         if ($fieldLabel) {
-            // $this->var = $this->_addLabelToArray($this->var);
+            $this->var = $this->_addLabelToArray($this->var);
         }
         if ($type == 'array') {
             return $this->_exportPHP();
@@ -418,12 +385,19 @@ class VarExport
         return $this->_exportJSON();
     }
 
+    /**
+     * Used in our export methods
+     *
+     * @param $document
+     * @return array
+     */
     public function setObjectId( $document )
     {
         $arr = [];
         foreach ($document as $key => $value) {
             if ($key == '_id') {
-                $arr[ $key ] = 'ObjectId("' . $value . '")';
+                // we need to pass this back for exports instead of ObjectId('r42ry6y54t43r5y6y54t45t54y54ya')
+                $arr[ $key ] = array("oid" => $value);
 
             } else {
                 $arr[ $key ] = $value;
