@@ -546,33 +546,48 @@ class CollectionController extends Controller implements Unserializable
                 $contents       = "";
                 $countDocuments = 0;
 
-                // handle indexes
-                foreach ($collections as $collectionName) {
-                    /** @var MongoDB\Collection $collection */
-                    $collection  = $database->selectCollection( $collectionName );
-                    $information = $collection->listIndexes();
-                    // for now : we are not importing the indexes
-                    foreach ($information as $info) {
-                        $options   = array();
-                        $exporter  =  new VarExport( $database, $info['key']);
-                        $contents .= "\n/** {$collection} indexes **/\ndb.getCollection(\"" . addslashes($collectionName) . "\").ensureIndex(" . $exporter->export('json') . ");\n";
-                    }
-                }
+            //    echo '<pre>'; var_dump($collections); echo '</pre>';
 
-                // handle data
-                foreach ($collections as $collectionName) {
-                    $documents  = $database->selectCollection( $collectionName )->find();
-                    $contents .= "\n/** " . $collectionName  . " records **/\n";
+                // handle some variations on the export theme
+                if ($params['json'] == true) {
+                    // only available for a single collection
+                    $documents  = $database->selectCollection( $collections[0] )->find();
+                    $array  = [];
+                    $fields = [];
                     foreach ($documents as $document) {
-                        $countDocuments ++;
-                        $exporter = new VarExport($database, $document);
-                        $doc = MongoHelper::extractDocument($document);
-                        $contents .= "db.getCollection(\"" . addslashes($collectionName) . "\").insert(" . json_encode($exporter->setObjectId($doc)) . ");\n";
+                        $array[] = MongoHelper::extractDocument($document, $fields, true);
+                    }
+                    $contents = json_encode($array);
+                }
+                else {
+                    // handle indexes
+                    foreach ($collections as $collectionName) {
+                        /** @var MongoDB\Collection $collection */
+                        $collection  = $database->selectCollection( $collectionName );
+                        $information = $collection->listIndexes();
+                        // for now : we are not importing the indexes
+                        foreach ($information as $info) {
+                            $options   = array();
+                            $exporter  =  new VarExport( $database, $info['key']);
+                            $contents .= "\n/** {$collection} indexes **/\ndb.getCollection(\"" . addslashes($collectionName) . "\").ensureIndex(" . $exporter->export('json') . ");\n";
+                        }
+                    }
+
+                    // handle data
+                    foreach ($collections as $collectionName) {
+                        $documents  = $database->selectCollection( $collectionName )->find();
+                        $contents .= "\n/** " . $collectionName  . " records **/\n";
+                        foreach ($documents as $document) {
+                            $countDocuments ++;
+                            $exporter = new VarExport($database, $document);
+                            $doc = MongoHelper::extractDocument($document);
+                            $contents .= "db.getCollection(\"" . addslashes($collectionName) . "\").insert(" . json_encode($exporter->setObjectId($doc)) . ");\n";
+                        }
                     }
                 }
 
                 if ($params['download'] == true) {
-                    // set the file name
+                    // set the file name // ToDo !! this is actually handled in the front-end : we are using AJAX downloads !!
                     $filePrefix = "mongodb-" . urldecode($database) . "-" . date("Ymd-His");
 
                     if ($params['gzip'] == true) {
@@ -582,7 +597,7 @@ class CollectionController extends Controller implements Unserializable
 
                     } else {
                         header("Content-type: application/octet-stream");
-                        header("Content-Disposition: attachment; filename=\"{$filePrefix}.js\"");
+                      //  header("Content-type: application/json");
                         echo $contents;
                     }
                     exit;
@@ -621,12 +636,8 @@ class CollectionController extends Controller implements Unserializable
                     $file = $f;
                 }
 
-                function ns($db, $coll) {
-                    return $db . '.' . $coll;
-                }
-
                 // for zipped files
-                if ($gzip === true) {
+                if ($gzip == true) {
                     $body = gzuncompress( file_get_contents( $file['tmp_name'] ) );
 
                 } else {
@@ -640,39 +651,34 @@ class CollectionController extends Controller implements Unserializable
 
                 // return the inserted count to the front-end
                 $inserted = 0;
+
                 // explode the body into an array - we'll use thus for both file formats
                 $arr = explode("\n", $body);
 
                 // this is for file exported from PhpMongoAdmin *.js
-                if ($type == 'admin') {
+                // our JSON export will only produce a single element array
+                if ($type == 'admin' && count($arr) >= 3) {
                     $insertArray = [];
+
                     // iterate the import array
                     foreach ($arr as $insert) {
                         // ignore the comments, index insert etc
                         if (strpos( $insert, "insert") !== false) {
                             // we're good to go! get the collection(s)
-                            // track using collections as primary array key
+                            // create array using collections as primary array key
                             $insertArray[ MongoHelper::getCollectionNameFromInsert( $insert ) ][] = MongoHelper::getDateFromInsert( $insert );
                         }
                     }
 
                     // this will handle multiple collection inserts
-                    foreach ($insertArray as $coll => $inserts) {
-                        $bulk = new MongoDB\Driver\BulkWrite();
-
-                        // if $useCollection is TRUE : all inserts will use the 'current collection' in the namespace
-                        $ns   = $useCollection == false ? ns( $database, $coll) : ns($database, $collection);
-                        // iterate the insert and add to the $bulk write object
-                        foreach ($inserts as $insert) {
-                            // expects an array
-                            $bulk->insert( json_decode($insert, true) );
-                            $inserted++;
-                        }
-                        $manager->executeBulkWrite( $ns, $bulk );
-                    }
+                    MongoHelper::handleBulkInsert($manager, $database, $insertArray, $collection, $useCollection, $inserted);
 
                 } else {
-                    die("mongodb file...");
+                    // ToDo: !! for now - we accept the JSON file exported by PhpMongoAdmin and also JSON export from Compass
+                    $arr = $arr[0];
+                //    dd(json_decode($arr, true));
+                    $arr = json_decode($arr, true);
+                    MongoHelper::handleBulkInsert($manager, $database, $arr, $collection, $useCollection, $inserted, true);
                 }
                 return response()->success('success', array('import' => $inserted ));
             }

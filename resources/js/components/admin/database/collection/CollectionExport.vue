@@ -157,14 +157,20 @@
                 </ul>
                 <p>
                     <label>
-                        <span v-text="showLanguage('collection', 'download')"></span>
                         <input type="checkbox" v-model="form.download" >
+                        <span v-text="showLanguage('collection', 'download')"></span>
+                    </label>
+                </p>
+                <p v-if="form.all === false">
+                    <label>
+                        <input type="checkbox" v-model="form.json" >
+                        <span v-text="showLanguage('collection', 'exportJson')"></span>
                     </label>
                 </p>
                 <p>
                     <label>
-                        <span v-text="showLanguage('collection', 'compress')"></span>
                         <input type="checkbox" v-model="form.gzip" >
+                        <span v-text="showLanguage('collection', 'compress')"></span>
                     </label>
                 </p>
                 <p>
@@ -203,7 +209,8 @@
                     all: false,
                     collections: [],
                     download: true,
-                    gzip: false
+                    gzip: false,
+                    json: false
                 }
             }
         },
@@ -230,6 +237,7 @@
                         this.form.collections.push(this.collection);
                     }
                     if (this.form.all === true) {
+                        this.form.json = false;
                         this.form.collections = [];
                         this.collections.forEach( (collection, index) => {
                             this.form.collections.push(collection.collection.name);
@@ -239,9 +247,25 @@
             },
 
             /*
+             *  Clear the fuel injectors
+             */
+            clearData() {
+                this.collections = [];
+                this.exportData  = null;
+                this.form = {
+                    all: false,
+                    collections: [],
+                    download: true,
+                    gzip: false,
+                    json: false
+                }
+            },
+
+            /*
              *  Set the component data on call
              */
             setData(data) {
+                this.clearData();
                 this.database    = data.db;
                 this.collection  = data.coll;
                 this.collections = this.$store.getters.getCollections;

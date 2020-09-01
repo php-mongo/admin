@@ -130,6 +130,33 @@ class ServerController extends Controller
         return $this->errorMessage;
     }
 
+    private function getVersion()
+    {
+        try {
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
+            $url      = $protocol . '://' . $_SERVER['HTTP_HOST'] . '/version.php';
+            // initialise curl
+            $ch = curl_init();
+
+            // set url
+            curl_setopt($ch, CURLOPT_URL, $url);
+
+            //return the transfer as a string
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+            // $output contains the output string
+            $output = curl_exec($ch);
+
+            // close curl resource to free up system resources
+            curl_close($ch);
+
+            return $output;
+        }
+        catch(Exception $e) {
+            $this->setErrorMessage($e->getMessage());
+        }
+    }
+
     /**
      * @param string|array|null $errorMessage
      * @return mixed|null
@@ -302,7 +329,7 @@ class ServerController extends Controller
                 "configuration"     => $obj->support->configuration
             );
             $composer['license']    = $data->license();
-            $composer['version']    = $data->version();
+            $composer['version']    = $this->getVersion();
             $this->composer         = $composer;
         }
         catch (Exception $e) {

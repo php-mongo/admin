@@ -2,7 +2,6 @@
     "name": "php-mongo/admin",
     "type": "project",
     "description": "PHP Mongo Admin. Built for PHP 7.2.+",
-    "version": "1.0.0-alpha-0.1",
     "keywords": [
         "framework",
         "laravel",
@@ -31,8 +30,11 @@
     "license": "GNU GPLv3",
     "require": {
         "php": "^7.2.5",
+        "ext-curl": "*",
         "ext-json": "*",
+        "ext-mongo": "*",
         "ext-mongodb": "*",
+        "ext-zlib": "*",
         "eloquent/composer-config-reader": "^2.1",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
@@ -42,9 +44,7 @@
         "laravel/framework": "^7.18.0",
         "laravel/passport": "^9.3",
         "laravel/tinker": "^2.0",
-        "mongodb/mongodb": "^1.6",
-        "ext-mongo": "*",
-        "ext-zlib": "*"
+        "mongodb/mongodb": "^1.6"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

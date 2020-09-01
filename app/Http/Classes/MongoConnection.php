@@ -92,6 +92,12 @@ class MongoConnection
         $this->server = $server;
     }
 
+    /**
+     * Sets up the mongodb connection options
+     * Only uses the server details if they exist
+     *
+     * @return array
+     */
     private function prepareConnection()
     {
         $server = $this->getServer();
