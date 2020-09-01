@@ -3887,6 +3887,12 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 /*
  * Imports the Event Bus to pass events on tag updates
@@ -3912,7 +3918,8 @@ __webpack_require__.r(__webpack_exports__);
         all: false,
         collections: [],
         download: true,
-        gzip: false
+        gzip: false,
+        json: false
       }
     };
   },
@@ -3943,6 +3950,7 @@ __webpack_require__.r(__webpack_exports__);
         }
 
         if (_this.form.all === true) {
+          _this.form.json = false;
           _this.form.collections = [];
 
           _this.collections.forEach(function (collection, index) {
@@ -3953,9 +3961,25 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     /*
+     *  Clear the fuel injectors
+     */
+    clearData: function clearData() {
+      this.collections = [];
+      this.exportData = null;
+      this.form = {
+        all: false,
+        collections: [],
+        download: true,
+        gzip: false,
+        json: false
+      };
+    },
+
+    /*
      *  Set the component data on call
      */
     setData: function setData(data) {
+      this.clearData();
       this.database = data.db;
       this.collection = data.coll;
       this.collections = this.$store.getters.getCollections;
@@ -4297,6 +4321,8 @@ __webpack_require__.r(__webpack_exports__);
      *  Send to API
      */
     runImport: function runImport() {
+      this.actionMessage = null;
+      this.errorMessage = null;
       var data = {
         database: this.database,
         collection: this.collection,
@@ -67084,14 +67110,6 @@ var render = function() {
             _vm._v(" "),
             _c("p", [
               _c("label", [
-                _c("span", {
-                  domProps: {
-                    textContent: _vm._s(
-                      _vm.showLanguage("collection", "download")
-                    )
-                  }
-                }),
-                _vm._v(" "),
                 _c("input", {
                   directives: [
                     {
@@ -67131,20 +67149,75 @@ var render = function() {
                       }
                     }
                   }
+                }),
+                _vm._v(" "),
+                _c("span", {
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("collection", "download")
+                    )
+                  }
                 })
               ])
             ]),
             _vm._v(" "),
+            _vm.form.all === false
+              ? _c("p", [
+                  _c("label", [
+                    _c("input", {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.form.json,
+                          expression: "form.json"
+                        }
+                      ],
+                      attrs: { type: "checkbox" },
+                      domProps: {
+                        checked: Array.isArray(_vm.form.json)
+                          ? _vm._i(_vm.form.json, null) > -1
+                          : _vm.form.json
+                      },
+                      on: {
+                        change: function($event) {
+                          var $$a = _vm.form.json,
+                            $$el = $event.target,
+                            $$c = $$el.checked ? true : false
+                          if (Array.isArray($$a)) {
+                            var $$v = null,
+                              $$i = _vm._i($$a, $$v)
+                            if ($$el.checked) {
+                              $$i < 0 &&
+                                _vm.$set(_vm.form, "json", $$a.concat([$$v]))
+                            } else {
+                              $$i > -1 &&
+                                _vm.$set(
+                                  _vm.form,
+                                  "json",
+                                  $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                                )
+                            }
+                          } else {
+                            _vm.$set(_vm.form, "json", $$c)
+                          }
+                        }
+                      }
+                    }),
+                    _vm._v(" "),
+                    _c("span", {
+                      domProps: {
+                        textContent: _vm._s(
+                          _vm.showLanguage("collection", "exportJson")
+                        )
+                      }
+                    })
+                  ])
+                ])
+              : _vm._e(),
+            _vm._v(" "),
             _c("p", [
               _c("label", [
-                _c("span", {
-                  domProps: {
-                    textContent: _vm._s(
-                      _vm.showLanguage("collection", "compress")
-                    )
-                  }
-                }),
-                _vm._v(" "),
                 _c("input", {
                   directives: [
                     {
@@ -67183,6 +67256,14 @@ var render = function() {
                         _vm.$set(_vm.form, "gzip", $$c)
                       }
                     }
+                  }
+                }),
+                _vm._v(" "),
+                _c("span", {
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("collection", "compress")
+                    )
                   }
                 })
               ])
@@ -99096,6 +99177,10 @@ var collection = {
 
             if (data.params.gzip === true) {
               ext = 'gz';
+            }
+
+            if (data.params.json === true) {
+              ext = 'json';
             }
 
             var date = new Date();
