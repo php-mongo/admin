@@ -75,7 +75,7 @@ export default {
     },
 
     /*
-    *  Clear all documents from a collection
+    *   Clear all documents from a collection
     *   POST  /api/v1/collection/clear
     */
     clearCollection: ( data ) => {
@@ -88,7 +88,7 @@ export default {
     },
 
     /*
-    *  Export one or more collections (download version)
+    *   Export one or more collections (download version)
     *   POST  /api/v1/collection/export
     */
     exportCollectionDownload: ( data ) => {
@@ -106,7 +106,7 @@ export default {
     },
 
     /*
-    *  Export one or more collections (download version)
+    *   Export one or more collections (download version)
     *   POST  /api/v1/collection/exports
     */
     exportCollectionView: (data) => {
@@ -148,6 +148,48 @@ export default {
                 }.bind(this)
             }
         );
+    },
+
+    /*
+    *   Save one collection properties
+    *   POST  /api/v1/collection/properties
+    */
+    saveProperties: (data) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/collection/properties',
+            {
+                database: data.database,
+                collection: data.collection,
+                params: data.params,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Save one collection index
+    *   POST  /api/v1/collection/index
+    */
+    saveIndex: (data) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/collection/index',
+            {
+                database: data.database,
+                collection: data.collection,
+                params: data.params,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Rename one collection index
+    *   POST  /api/v1/collection/rename
+    */
+    renameCollection: (data) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/collection/rename',
+            {
+                database: data.database,
+                collection: data.collection,
+                params: data.params,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
     },
 
     /*

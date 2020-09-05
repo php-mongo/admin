@@ -42,7 +42,10 @@ export const collection = {
         collectionLoadStatus: 0,
         collections: [],
         collectionsLoadStatus: 0,
-        currentFormat: 'json',
+        collectionPropertiesStatus: 0,
+        collectionRenameStatus: 0,
+        collectionIndexStatus: 0,
+        collectionIndex: null,
         displayCollection: {},
         displayCollectionStatus: 0,
         createCollectionStatus: 0,
@@ -62,6 +65,7 @@ export const collection = {
         documentUpdateStatus: 0,
         documentDeleteStatus: 0,
         documentDuplicateStatus: 0,
+        currentFormat: 'json',
         errorData: {}
     },
 
@@ -267,6 +271,75 @@ export const collection = {
                 });
         },
 
+        saveCollectionProperties( { commit }, data) {
+            commit('setCollectionPropertiesStatus', 1);
+
+            CollectionApi.saveProperties( data )
+                .then( (response) => {
+                    if (response.data.success === false) {
+                        commit( 'setErrorData', response.data.errors);
+                        commit('setCollectionPropertiesStatus', 3);
+                        console.log(response.data.errors);
+
+                    } else {
+                        commit('setCollection', response.data.data.collection);
+                        commit('setCollectionPropertiesStatus', 2);
+                    }
+                })
+                .catch( (error) => {
+                    commit('setCollectionPropertiesStatus', 3);
+                    commit( 'setErrorData', error);
+                    console.log(error);
+                });
+        },
+
+        saveCollectionIndex( { commit }, data) {
+            commit('setCollectionIndexStatus', 1);
+            commit( 'setCollectionIndex', null );
+
+            CollectionApi.saveIndex( data )
+                .then( (response) => {
+                    if (response.data.success === false) {
+                        commit( 'setErrorData', response.data.errors );
+                        commit( 'setCollectionIndexStatus', 3 );
+                        console.log(response.data.errors);
+
+                    } else {
+                        commit( 'setCollectionIndex', response.data.data.index );
+                        commit( 'setCollectionIndexStatus', 2 );
+                    }
+                })
+                .catch( (error) => {
+                    commit( 'setCollectionIndexStatus', 3 );
+                    commit( 'setErrorData', error );
+                    console.log(error);
+                });
+        },
+
+        renameCollection( { commit, dispatch }, data) {
+            commit('setCollectionRenameStatus', 1);
+
+            CollectionApi.renameCollection( data )
+                .then( (response) => {
+                    if (response.data.success === false) {
+                        commit( 'setErrorData', response.data.errors );
+                        commit( 'setCollectionRenameStatus', 3 );
+                        console.log(response.data.errors);
+
+                    } else {
+                        console.log("rename success - fetch database: " + data.database);
+                        dispatch( 'loadDatabase', data.database );
+                        dispatch( 'setActiveCollection', data.params.newName );
+                        commit( 'setCollectionRenameStatus', 2 );
+                    }
+                })
+                .catch( (error) => {
+                    commit( 'setCollectionRenameStatus', 3 );
+                    commit( 'setErrorData', error );
+                    console.log(error);
+                });
+        },
+
         setDbCollections( { commit }, data) {
             commit( 'setCollections', data);
         },
@@ -435,6 +508,31 @@ export const collection = {
         */
         setCollection( state, collection ) {
             state.collection = collection;
+        },
+
+        /*
+        *   Set the collection save properties status
+        */
+        setCollectionPropertiesStatus( state, status ) {
+            state.collectionPropertiesStatus = status;
+        },
+
+        /*
+        *   Set the collection save index status
+        */
+        setCollectionIndexStatus( state, status ) {
+            state.collectionIndexStatus = status;
+        },
+
+        setCollectionIndex( state, index ) {
+            state.collectionIndex = index;
+        },
+
+        /*
+        *   Set the collection save rename status
+        */
+        setCollectionRenameStatus( state, status ) {
+            state.collectionRenameStatus = status;
         },
 
         /*
@@ -690,6 +788,31 @@ export const collection = {
         },
 
         /*
+        *   Get the collection save properties status
+        */
+        getCollectionPropertiesStatus( state ) {
+            return state.collectionPropertiesStatus;
+        },
+
+        /*
+        *   Set the collection save index status
+        */
+        getCollectionIndexStatus( state ) {
+            return state.collectionIndexStatus;
+        },
+
+        getCollectionIndex( state ) {
+            return state.collectionIndex;
+        },
+
+        /*
+        *   Get the collection save rename status
+        */
+        getCollectionRenameStatus( state ) {
+            return state.collectionRenameStatus;
+        },
+
+        /*
         *   Return the display collection status
         */
         getDisplayCollectionStatus( state ) {
@@ -866,7 +989,7 @@ export const collection = {
             }
         },
 
-        getErrorData( state ) {
+        getCollErrorData( state ) {
             return state.exportData;
         }
     }

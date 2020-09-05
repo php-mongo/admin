@@ -31,7 +31,7 @@
     }
 </style>
 <template>
-    <div ref="pmaMainPanel" class="pma-main-panel">
+    <div ref="pmaMainPanel" class="pma-main-panel" @scroll.passive="handleScroll">
         <div ref="pmaInner" class="pma-main-inner">
             <server-view></server-view>
             <php-mongo></php-mongo>
@@ -77,7 +77,15 @@
          */
         data() {
             return {
-                expanded: false
+                expanded: false,
+                scrolled: false,
+                collectionActive: false
+            }
+        },
+
+        computed: {
+            watchCollection() {
+                return this.$store.getters.getActiveCollection;
             }
         },
 
@@ -95,6 +103,31 @@
                     this.$jqf(this.$refs.pmaMainPanel).css('margin-left', '245px');
                     this.$jqf(this.$refs.pmaInner).css('width', '88vw');
                 }
+            },
+
+            /*
+             *  We have scrolling on the main panel - we want to 'lock' the documents pagination bar
+             */
+            handleScroll(e) {
+                let scrollPos = e.target.scrollTop;
+                if (this.collectionActive === true) {
+             //       console.log("scrollPos: " + scrollPos);
+                    if (scrollPos >= 389 && this.scrolled === false) {
+                        this.scrolled = true;
+                        EventBus.$emit('lockCollectionPagination', true);
+                    }
+                    if (scrollPos <= 388 && this.scrolled === true) {
+                        this.scrolled = false;
+                        EventBus.$emit('lockCollectionPagination', false);
+                    }
+                }
+            },
+
+            /*
+             *  We have a reference for the activeCollection status
+             */
+            setActiveCollection() {
+                this.collectionActive = !this.collectionActive;
             }
         },
 
@@ -109,6 +142,12 @@
             EventBus.$on('expand-left-nav', () => {
                 this.watchLeftNav();
             });
+        },
+
+        watch: {
+            watchCollection() {
+                this.setActiveCollection();
+            }
         }
     }
 </script>

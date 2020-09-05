@@ -463,7 +463,7 @@ class MongoHelper
                     /** @var MongoDB\Model\BSONDocument  $value */
                     $array = $value->getArrayCopy();
                     $level++;
-                    $arr[ $key ] = self::iterateDocument($array, $level, $key);
+                    $arr[ $key ] = self::iterateDocument($array, $level);
 
                 } elseif ($value instanceof MongoDB\BSON\Binary) {
                     /** @var MongoDB\BSON\Binary $value */
@@ -479,7 +479,7 @@ class MongoHelper
                     /** @var MongoDB\Model\BSONArray $value */
                     $array = $value->getArrayCopy();
                     $level++;
-                    $arr[ $key ] = self::iterateDocument($array, $level, $key);
+                    $arr[ $key ] = self::iterateDocument($array, $level);
 
                 } else {
                     $arr[ $key ] = $value ;
@@ -498,13 +498,13 @@ class MongoHelper
      *
      * @return array
      */
-    public static function iterateDocument( $array, $level, $key )
+    public static function iterateDocument( array $array, int $level )
     {
         $arr = [];
         foreach ($array as $k => $v) {
             if ($v instanceof MongoDb\Model\BSONDocument) {
                 $level++;
-                $arr[ $k ] = self::iterateDocument($v, $level, $k);
+                $arr[ $k ] = self::iterateDocument($v, $level);
 
             } elseif ($v instanceof MongoDb\Model\BSONArray) {
                 /** @var MongoDb\Model\BSONArray $v */
@@ -520,6 +520,33 @@ class MongoHelper
                 $arr[ $k ] = $v;
             }
         }
+        return $arr;
+    }
+
+    /**
+     * Returns the objects for the given collection
+     *
+     * @param   MongoDB\Client $client          Mongo Client
+     * @param   string         $db              string DB Name
+     * @param   string         $collection      string Collection name
+     * @return  array
+     */
+    public static function getObjects($client, $db, $collection)
+    {
+        // no errors this way
+        $arr = array(
+            "objects" => [],
+            "count" => 0
+        );
+
+        $cursor    = $client->$db->selectCollection($collection);
+        $objects   = $cursor->find();
+        $array     = $objects->toArray();
+
+        foreach ($array as $object) {
+            $arr['objects'][] = $object;
+        }
+        $arr['count'] = count($arr['objects']);
         return $arr;
     }
 
@@ -592,7 +619,8 @@ class MongoHelper
                     $insert = json_decode($insert, true);
                 }
                 // if the ObjectId has been included as $oid => 'blah blah blah'
-                if (isset($insert['_id']['oid'])) {
+                $isOID = $insert['_id'] instanceof MongoDB\BSON\ObjectId;
+                if ($isOID == false && isset($insert['_id']['oid'])) {
                     $insert['_id'] = new MongoDB\BSON\ObjectId ($insert['_id']['oid'] );
                 }
                 // expects an array
@@ -606,6 +634,39 @@ class MongoHelper
                break;
             }
         }
+    }
+
+    /**
+     * @param  array $properties
+     * @param  array $errors
+     * @return array|bool
+     */
+    public static function validateCollectionProperties( array $properties, &$errors )
+    {
+        if ($properties['capped'] == true) {
+            // validate the params
+            // size must be set if collection is capped
+            if (!empty($properties['size']) && is_numeric($properties['size']) && $properties['size'] >= 1) {
+                // ToDo: !! 1 is a ridiculously small test - but will suffice for now
+                if (!empty($properties['max']) && !is_numeric($properties['max'])) {
+                    $errors[] = 'max document count is invalid';
+                    return false;
+                }
+                return array(
+                    "capped" => $properties['capped'],
+                    "size" => (int) $properties['size'],
+                    "max" => (int) $properties['max']
+                );
+            }
+            $errors[] = 'size must be a positive value if capped is true';
+            return false;
+        }
+        // Capped is false! Ensure all values are empty
+        return array(
+            "capped" => '',
+            "size" => '',
+            "max" => ''
+        );
     }
 
     /**

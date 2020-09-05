@@ -15,94 +15,13 @@
   -  See COPYRIGHT.php for copyright notices and further details.
   -->
 <style lang="scss">
-    @import '~@/abstracts/_variables.scss';
-
-    div.document-new-container {
-        position: fixed;
-        z-index: 999999;
-        left: 10vw;
-        right: 0;
-        top: 0;
-
-        div.document-new {
-            background: $white;
-            box-shadow: 0 0 4px 0 rgba(0,0,0,0.12), 0 4px 4px 0 rgba(0,0,0,0.24);
-            border-left: 5px solid $orange;
-            border-right: 5px solid $orange;
-            color: $noticeColor;
-            font-family: "Lato", sans-serif;
-            font-size: 16px;
-            line-height: 60px;
-            margin: auto auto auto auto;
-            max-height: 90vh;
-            max-width: 800px;
-            min-height: 50px;
-            min-width: 400px;
-            overflow-y: auto;
-            padding: 0 3rem 3rem 3rem;
-
-            .modal-header {
-                background-color: $lightGreyColor;
-                height: 33px;
-                margin: 0 -3rem 0 -3rem;
-                max-width: 790px;
-                padding: 0.55rem 20px 0 0;
-                position: fixed;
-                width: 100%;
-
-                span.msg {
-                    background-color: $offWhite;
-                    border-radius: 5px;
-                    left: 30px;
-                    max-height: 25px;
-                    padding: 2px 5px;
-                    position: absolute;
-                    top: 5px;
-
-                    span.error {
-                        color: $red;
-                        position: relative;
-                        top: -21px;
-                    }
-
-                    span.action {
-                        color: $green;
-                        position: relative;
-                        top: -21px;
-                    }
-                }
-
-                span.close {
-                    cursor: pointer;
-                }
-
-                img {
-                    vertical-align: top;
-                }
-            }
-
-            h3 {
-                margin-top: 40px;
-            }
-
-            label.padd-left {
-
-                label {
-                    padding-left: 50px;
-                }
-            }
-
-            textarea {
-                height: auto;
-            }
-        }
-    }
+    /* @import '~@/abstracts/_variables.scss'; */
 </style>
 
 <template>
     <transition name="slide-in-top">
-        <div class="document-new-container" v-show="show">
-            <div class="document-new">
+        <div class="panel-modal" v-show="show">
+            <div class="panel-modal-inner">
                 <div class="modal-header"><span class="msg" v-show="errorMessage || actionMessage"><span class="error">{{ errorMessage }}</span> <span class="action">{{ actionMessage }}</span></span><span class="close u-pull-right" v-on:click="hideComponent"><img src="/img/icon/cross-red.png" /></span></div>
                 <h3 v-text="showLanguage('document','documentNew')"></h3>
                 <form>

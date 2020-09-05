@@ -46,6 +46,22 @@
         .f11 {
             font-size: 11px;
         }
+        .records-header {
+            &.fixed {
+                background: $cyan;
+                color: aliceblue;
+                left: 245px;
+                padding: 10px 0 0 10px;
+                position: fixed;
+                top: 75px;
+                width: 86.4%;
+                z-index: 9000;
+
+                ul {
+                    margin-bottom: .7rem;
+                }
+            }
+        }
         .page-message {
             font-weight: 600;
         }
@@ -99,6 +115,156 @@
                 bottom: 5px;
                 position: absolute;
                 right: 10px;
+            }
+        }
+        .panel-modal {
+            position: fixed;
+            z-index: 999999;
+            left: 10vw;
+            right: 0;
+            top: 0;
+
+            .panel-modal-inner {
+                background: $white;
+                box-shadow: 0 0 4px 0 rgba(0,0,0,0.12), 0 4px 4px 0 rgba(0,0,0,0.24);
+                border-left: 5px solid $orange;
+                border-right: 5px solid $orange;
+                color: $noticeColor;
+                font-family: "Lato", sans-serif;
+                font-size: 16px;
+                line-height: 60px;
+                margin: auto auto auto auto;
+                max-height: 90vh;
+                max-width: 50vw;
+                min-height: 666px;
+                min-width: 400px;
+                overflow-y: auto;
+                padding: 0 3rem 3rem 3rem;
+
+                .modal-header {
+                    background-color: $lightGreyColor;
+                    height: 33px;
+                    margin: 0 -3rem 0 -3rem;
+                    max-width: 49.5vw;
+                    padding: 0.55rem 20px 0 0;
+                    position: fixed;
+                    width: 100%;
+
+                    span.msg {
+                        background-color: $offWhite;
+                        border-radius: 5px;
+                        left: 30px;
+                        max-height: 25px;
+                        padding: 2px 5px;
+                        position: absolute;
+                        top: 5px;
+
+                        span.error {
+                            color: $red;
+                            position: relative;
+                            top: -21px;
+                        }
+
+                        span.action {
+                            color: $green;
+                            position: relative;
+                            top: -21px;
+                        }
+                    }
+
+                    span.close {
+                        cursor: pointer;
+                    }
+
+                    img {
+                        vertical-align: top;
+                    }
+                }
+
+                h3 {
+                    margin-top: 40px;
+                }
+
+                label.padd-left {
+                    label {
+                        padding-left: 50px;
+                    }
+                }
+
+                textarea {
+                    height: auto;
+                }
+
+                textarea.export-data {
+                    min-height: 150px;
+                    width: 100%;
+                }
+
+                p {
+                    label {
+                        input {
+                            margin-left: 5px;
+                            vertical-align: baseline;
+                        }
+                    }
+                    &.file-select {
+                        border-bottom: solid 1px $darkBlue;
+                        margin-bottom: 20px;
+                    }
+                }
+
+                p.file-select {
+                    border-bottom: solid 1px $darkBlue;
+                    margin-bottom: 20px;
+                }
+
+                ul {
+                    list-style: none;
+
+                    li {
+                        background-color: $lighterGrey;
+                        margin-bottom: 10px;
+                        padding: 4px 10px;
+
+                        .title {
+                            display: inline-block;
+                            min-width: 150px;
+                        }
+
+                        .clr-bg {
+                            background-color: transparent;
+                        }
+
+                        p {
+                            padding: 2px 0 3px 5px;
+
+                            label {
+                                background-color: $tabColor;
+                                margin-left: 5px;
+                            }
+
+                            input {
+                                margin: 0;
+                                vertical-align: middle;
+                            }
+                        }
+
+                        p.time {
+                            border-bottom: 1px solid $darkGreyColor;
+
+                            .log-link {
+                                float: right;
+                            }
+                        }
+
+                        .data {
+                            display: inline-block;
+                            max-width: 100%;
+                            overflow-x: auto;
+                            vertical-align: bottom;
+                        }
+                    }
+                }
             }
         }
     }
@@ -204,7 +370,7 @@
             </ul>
         </div>
         <div id="records" ref="records">
-            <div class="records-header">
+            <div :class="'records-header ' + watchScroll">
                 <p class="page-message" v-if="page.find.message">{{ page.find.message }}</p>
                 <pagination
                     @pageChanged="pageChanged($event)"
@@ -225,6 +391,9 @@
         <collection-statistics></collection-statistics>
         <collection-export></collection-export>
         <collection-import></collection-import>
+        <collection-properties></collection-properties>
+        <collection-indexes></collection-indexes>
+        <collection-rename></collection-rename>
     </div>
 </template>
 
@@ -248,6 +417,9 @@
     import CollectionStatistics from "./CollectionStatistics";
     import CollectionExport from "./CollectionExport";
     import CollectionImport from "./CollectionImport";
+    import CollectionProperties from "./CollectionProperties";
+    import CollectionIndexes from "./CollectionIndexes";
+    import CollectionRename from "./CollectionRename";
 
     export default {
         /*
@@ -264,7 +436,10 @@
             QueryLogs,
             CollectionStatistics,
             CollectionExport,
-            CollectionImport
+            CollectionImport,
+            CollectionProperties,
+            CollectionIndexes,
+            CollectionRename
         },
 
         /*
@@ -304,6 +479,7 @@
                     3 : 'ASC'
                 },
                 limitDefault: 0,
+                lockPagination: false,
                 pageSizeDefault: 10,
                 commandDefault: 'findAll',
                 form : {
@@ -444,6 +620,10 @@
 
             roundCost: function() {
                 return Math.round(this.cost);
+            },
+
+            watchScroll() {
+                return this.lockPagination === true ? 'fixed' : '';
             }
         },
 
@@ -692,6 +872,9 @@
                 this.visibleObjects = [];
             },
 
+            /*
+             *  Handles a document updated by the Update modal
+             */
             updateDocument( data ) {
                 if (data) {
                     let obj = JSON.parse(data.document);
@@ -716,13 +899,26 @@
                 }
             },
 
+            /*
+             *  When a document is inserted via the New Document modal we want to refresh this panel
+             */
             fetchData() {
                 this.handlePageLoad();
             },
 
+            /*
+             *  Handle a 'query resend' initialised by modal
+             */
             sendQuery(query) {
                 this.form.criteria[this.format] = query;
                 this.submitQuery();
+            },
+
+            /*
+             *  This is sent from the PanelView.vue when a collection is active
+             */
+            handleScroll(status) {
+               this.lockPagination = status; //!this.lockPagination;
             }
         },
 
@@ -749,6 +945,14 @@
             EventBus.$on('send-query', (query) => {
                 this.sendQuery(query);
             });
+
+            EventBus.$on('lockCollectionPagination', (status) => {
+                this.handleScroll(status);
+            });
+        },
+
+        beforeDestroy() {
+      //      window.removeEventListener("scroll", this.onScroll)
         },
 
         /*

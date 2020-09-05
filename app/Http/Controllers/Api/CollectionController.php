@@ -690,6 +690,182 @@ class CollectionController extends Controller implements Unserializable
     }
 
     /**
+     * Update the properties on one collection
+     *
+     * URL:         /api/v1/collection/properties
+     * Method:      POST
+     * Description: Update properties (capped, size, max)
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function propertiesCollection(Request $request)
+    {
+        try {
+            $database       = $request->get('database');
+            $collection     = $request->get('collection');
+            $params         = $request->get('params');
+            $errors         = [];
+            if (isset($database, $collection, $params)) {
+                // get the database
+                /** @var MongoDB\Database $db */
+                $db         = $this->mongo->connectClientDb( $database );
+
+                // temp collection name
+                $tempCollectionName = 'phpMongoAdmin_' . time();
+                if ($options   = MongoHelper::validateCollectionProperties( $params, $errors )) {
+                    // get the document from current collection
+                    /** @var MongoDB\Collection $documents */
+                    $documents = MongoHelper::getObjects( $this->client, $database, $collection )['objects'];
+
+                    // convert to array -> make compatible with primary BulkInsert action
+                    $arr[ $tempCollectionName ] = [];
+                    foreach ( $documents as $doc ) {
+                        $arr[ $tempCollectionName ][] = $doc;
+                    }
+
+                    // create the TEMP collection -> continue on success
+                    $result = $db->createCollection( $tempCollectionName, $options )->getArrayCopy();
+                    if ( $result['ok'] == 1 ) {
+                        // track
+                        $inserted = 0;
+                        // connect the manager
+                        $this->mongo->connectManager();
+                        /** @var MongoDB\Driver\Manager $manager */
+                        $manager = $this->mongo->getManager();
+                        // this will handle multiple collection inserts
+                        MongoHelper::handleBulkInsert($manager, $database, $arr, $tempCollectionName, false, $inserted);
+
+                        if  ( $inserted == count($arr[ $tempCollectionName ]) ) {
+                            // temp collection populated successfully -> drop the old collection
+                            $result = $db->dropCollection( $collection )->getArrayCopy();
+                            if ( $result['ok'] == 1 ) {
+                                /** @var MongoDB\Collection $coll */
+                                $command = new MongoDB\Driver\Command([
+                                    'renameCollection' => $database.'.'.$tempCollectionName,
+                                    'to' => $database.'.'.$collection
+                                ]);
+                                $result = $manager->executeCommand('admin', $command);
+
+                        //        dd($result);
+
+                                $collection = $this->getOneCollection ($database, $collection );
+                                return response()->success('success', array( 'collection' => $collection ));
+                            }
+                        }
+                    }
+                    return response()->error('failed', array('message' => 'unhandled errors have occurred'));
+                }
+                return response()->error('failed', array('message' => $errors));
+            }
+        }
+        catch(\MongoDB\Driver\Exception\Exception $exception) {
+         //   dd($exception);
+            return response()->error('failed', array('message' => $exception->getMessage()));
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
+     *Add an Index to one collection
+     *
+     * URL:         /api/v1/collection/index
+     * Method:      POST
+     * Description: Add an new Index to a collection (standard or 2d)
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function indexCollection(Request $request)
+    {
+        try {
+            $database       = $request->get('database');
+            $collection     = $request->get('collection');
+            $params         = $request->get('params');
+            $errors         = [];
+            $directions     = array(
+                "ASC" => 1,
+                "DESC" => -1
+            );
+
+         //   dd($params);
+
+            // get the database
+            /** @var MongoDB\Collection $coll */
+            $coll         = $this->mongo->connectClientCollection( $database, $collection );
+
+            if ($params['create'] == true) {
+                $keys    = [];
+                $options = [];
+
+                // set the options
+                if ($params['unique'] == true) {
+                    $options['unique'] = true;
+                }
+                if ($params['sparse'] == true) {
+                    $options['sparse'] = true;
+                }
+
+                // extract the keys
+                $fields = $params['fields'];
+                foreach ($fields as $field) {
+                    $keys[ $field['field'] ] = $directions[ $field['direction'] ];
+                }
+
+                //dd($keys);
+
+                // create
+                $indexName = $coll->createIndex($keys, $options);
+
+             //   dd($indexName);
+
+                return response()->success('success', array( 'index' => $indexName ));
+            }
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    public function renameCollection(Request $request)
+    {
+        try {
+            $database       = $request->get('database');
+            $collection     = $request->get('collection');
+            $params         = $request->get('params');
+
+         //   dd($params);
+
+            if (!empty($params['newName'])) {
+                // connect the manager
+                $this->mongo->connectManager();
+                /** @var MongoDB\Driver\Manager $manager */
+                $manager = $this->mongo->getManager();
+
+                /** @var MongoDB\Collection $coll */
+                $command = new MongoDB\Driver\Command([
+                    'renameCollection' => $database.'.'.$collection,
+                    'to' => $database.'.'.$params['newName']
+                ]);
+                $result = $manager->executeCommand('admin', $command);
+
+            //    dd($result);
+
+                return response()->success('success', array( 'collection' => $collection ));
+            }
+            return response()->error('failed', array('message' => 'missing required parameters'));
+        }
+        catch(MongoDB\Driver\Exception\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
      * @param $database
      * @param $collection
      *

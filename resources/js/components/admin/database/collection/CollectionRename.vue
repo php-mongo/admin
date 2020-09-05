@@ -20,16 +20,27 @@
 
 <template>
     <transition name="slide-in-top">
-        <div class="panel-modal" v-show="show">
+        <div class="panel-modal" v-if="show">
             <div class="panel-modal-inner">
-                <div class="modal-header"><span class="msg" v-show="errorMessage || actionMessage"><span class="error">{{ errorMessage }}</span> <span class="action">{{ actionMessage }}</span></span><span class="close u-pull-right" v-on:click="hideComponent"><img src="/img/icon/cross-red.png" /></span></div>
-                <h3 v-text="showLanguage('collection','collectionHistory')"></h3>
-                <ul>
-                    <li class="log-entry" v-for="(log, index) in queryLogs" v-bind:log="log">
-                        <p class="time"><span>{{ log.time }}</span> <span class="log-link pma-link" v-on:click="sendQuery(log.query)" v-text="showLanguage('collection', 'queryAgain')"></span></p>
-                        <p>{{ log.params }}</p>
-                    </li>
-                </ul>
+                <div class="modal-header">
+                    <span class="msg" v-show="errorMessage || actionMessage">
+                        <span class="error">{{ errorMessage }}</span>
+                        <span class="action">{{ actionMessage }}</span>
+                    </span>
+                    <span class="close u-pull-right" v-on:click="hideComponent">
+                        <img src="/img/icon/cross-red.png" />
+                    </span>
+                </div>
+                <h3 v-text="showLanguage('collection','collectionRename')"></h3>
+                <!--<p v-text="showLanguage('collection', 'renameInfo')"></p>-->
+                <p>
+                    <label for="doc-count" class="title clr-bg" v-text="showLanguage('collection', 'renameInfo')"></label>
+                    <input id="doc-count" type="text" v-model="form.newName" />
+                </p>
+                <p>
+                    <button class="button" v-on:click="saveRename" v-text="showLanguage('collection', 'save')"></button>
+                    <button class="button warning" v-on:click="hideComponent" v-text="showLanguage('collection', 'cancel')"></button>
+                </p>
             </div>
         </div>
     </transition>
@@ -51,10 +62,13 @@
                 collection: null,
                 database: null,
                 errorMessage: null,
+                form: {
+                    newName: null
+                },
                 index: 0,
                 limit: 75, // limit the status check iterations
-                queryLogs: [],
-                show: false
+                show: false,
+                statistics: {}
             }
         },
 
@@ -70,45 +84,38 @@
                 return this.$store.getters.getLanguageString( context, key );
             },
 
-            getQueryLogs(data) {
+            getProperties(data) {
                 this.database   = data.db;
                 this.collection = data.coll;
-                data = {database: this.database, collection: this.collection };
-                this.$store.dispatch('getQueryLogs', data);
-                this.handleQueryLogs();
             },
 
-            handleQueryLogs() {
-                let status = this.$store.getters.getQueryLogsLoadStatus;
+            saveRename() {
+                console.log("save the props..");
+                let data = { database: this.database, collection: this.collection, params: this.form };
+                this.$store.dispatch('renameCollection', data);
+                this.handleSaveRename();
+            },
+
+            handleSaveRename() {
+                let status = this.$store.getters.getCollectionRenameStatus;
                 console.log("status: " + status);
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     let self = this;
                     setTimeout(function() {
-                        self.handleQueryLogs();
+                        self.handleSaveRename();
                     }, 100);
-
                 }
                 else if (status === 2) {
                     // success!
-                    this.queryLogs = this.$store.getters.getQueryLogs;
-                    if ( this.queryLogs.length > 0) {
-                        this.actionMessage = this.showLanguage('collection', 'logsAction', this.queryLogs.length);
-                    } else {
-                        this.actionMessage = this.showLanguage('collection', 'logsActionEmpty');
-                    }
+                    this.actionMessage = this.showLanguage('collection', 'renameSuccess', this.form.newName);
+                    setTimeout(() => {
+                        this.hideComponent();
+                    }, 2000);
                 }
                 else if (status === 3) {
-                    this.errorMessage = this.showLanguage('collection', 'logsActionError');
+                    this.errorMessage = this.showLanguage('collection', 'renameError');
                 }
-            },
-
-            sendQuery( query ) {
-                console.log("querying: " + query);
-                EventBus.$emit('send-query', query);
-                setTimeout(() => {
-                    this.hideComponent();
-                },250);
             },
 
             /*
@@ -131,10 +138,10 @@
         */
         mounted() {
             /*
-             * On event, show the new document field modal
+             * On event, show the collection rename modal
              */
-            EventBus.$on('show-document-history', ( data ) => {
-                this.getQueryLogs(data);
+            EventBus.$on('show-document-rename', ( data ) => {
+                this.getProperties(data);
                 this.showComponent();
             });
         }

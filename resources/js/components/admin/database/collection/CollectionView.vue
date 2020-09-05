@@ -21,6 +21,10 @@
         float: left;
         width: 96%;
 
+        td.rb {
+            border-right: 1px solid $lighterGrey;
+        }
+
         .collection-inner {
             form {
                 margin-bottom: 10px;
@@ -81,36 +85,6 @@
                 background-color: $infoBgColor;
                 padding: 4px 4px 4px 8px;
             }
-            /*table.bordered td.tr, table.collection td.tr {
-                text-align: right;
-                width: 50%;
-            }
-            table.collection td {
-                li.coll {
-                    margin-left: 20%;
-                }
-            }
-            table.bordered {
-                th.bb {
-                    border-bottom: 1px solid $infoColor;
-                }
-                th.rb {
-                    border-right: 1px solid $infoColor;
-                }
-                td {
-                    border-bottom: 1px solid $infoColor;
-                    text-align: left;
-                }
-                td.rb, table.collection td.rb {
-                    border-right: 1px solid $infoColor;
-                }
-                td.text-center {
-                    text-align: center !important;
-                }
-                td.vat {
-                    vertical-align: top;
-                }
-            }*/
         }
     }
 </style>

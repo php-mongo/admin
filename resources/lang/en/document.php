@@ -32,6 +32,7 @@ return [
     "array" => "Array",
     "boolean" => "Boolean",
     "cancel" => "Cancel",
+    "close" => "Close",
     "created" => "Document inserted %s times",
     "createError" => "An error occurred while inserting the document",
     "createSuccess" => "Document was inserted successfully",

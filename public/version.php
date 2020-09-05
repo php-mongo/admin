@@ -16,4 +16,4 @@
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
-echo '1.0.0-alpha-0.1';
+echo '1.0.0-alpha-0.8';

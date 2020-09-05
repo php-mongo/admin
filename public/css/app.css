@@ -8145,6 +8145,15 @@ body form .button {
   border-radius: 6px;
 }
 
+body span.button.grey {
+  background-color: #e0e0e0;
+  color: #444444;
+}
+
+body input.width-150 {
+  width: 150px;
+}
+
 body .pma-link {
   color: #00B7FF;
   cursor: pointer;

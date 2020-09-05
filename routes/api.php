@@ -341,6 +341,39 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
 
     /*
     * -------------------------------------------------------
+    * Update one Collection properties (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/properties
+    * Controller:  API/CollectionController@propertiesCollection
+    * Method:      POST
+    * Description: Update one collection properties
+    */
+    Route::post('/collection/properties', 'Api\CollectionController@propertiesCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Add an Index to a Collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/index
+    * Controller:  API/CollectionController@indexCollection
+    * Method:      POST
+    * Description: Add a new Index to a collection (standard or 2d)
+    */
+    Route::post('/collection/index', 'Api\CollectionController@indexCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Rename a Collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/rename
+    * Controller:  API/CollectionController@renameCollection
+    * Method:      POST
+    * Description: Rename a single collection
+    */
+    Route::post('/collection/rename', 'Api\CollectionController@renameCollection');
+
+    /*
+    * -------------------------------------------------------
     * Create a Document (private route)
     * -------------------------------------------------------
     * URL:         /api/v1/document/create
