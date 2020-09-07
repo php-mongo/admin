@@ -15,7 +15,18 @@
   -  See COPYRIGHT.php for copyright notices and further details.
   -->
 <style lang="scss">
-    /* @import '~@/abstracts/_variables.scss'; */
+    @import '~@/abstracts/_variables.scss';
+    .panel-modal-inner {
+        .validation-data {
+            background-color: aquamarine;
+            line-height: 1.5rem;
+            padding: 1rem;
+
+            .colon {
+                padding: 0 5px;
+            }
+        }
+    }
 </style>
 
 <template>
@@ -31,37 +42,9 @@
                         <img src="/img/icon/cross-red.png" />
                     </span>
                 </div>
-                <h3 v-text="showLanguage('collection','collectionDuplicate')"></h3>
-                <ul class="properties">
-                    <li>
-                        <p>
-                            <span class="title"><span v-text="showLanguage('collection', 'duplicating')"></span>:</span>
-                            <span class="data"><strong>{{ collection }}</strong></span>
-                        </p>
-                    </li>
-                    <li>
-                        <p>
-                            <label for="name" class="title clr-bg" v-text="showLanguage('collection', 'duplicateName')"></label>
-                            <input id="name" type="text" v-model="form.duplicateName" />
-                        </p>
-                    </li>
-                    <li>
-                        <p>
-                            <label for="overwrite" class="title clr-bg" v-text="showLanguage('collection', 'overwrite')"></label>
-                            <input id="overwrite" type="checkbox" v-model="form.overwrite" />
-                        </p>
-                    </li>
-                    <li>
-                        <p>
-                            <label for="indexes" class="title clr-bg" v-text="showLanguage('collection', 'duplicateIndexes')"></label>
-                            <input id="indexes" type="checkbox" v-model="form.indexes" />
-                        </p>
-                    </li>
-                </ul>
-                <p>
-                    <button class="button" v-on:click="saveDuplicate" v-text="showLanguage('collection', 'duplicate')"></button>
-                    <button class="button warning" v-on:click="hideComponent" v-text="showLanguage('collection', 'cancel')"></button>
-                </p>
+                <h3 v-text="showLanguage('collection','collectionValidation')"></h3>
+                <p v-if="validation" v-text="showLanguage('collection', 'validateInfo')"></p>
+                <div v-if="validation" class="validation-data" v-html="validation"></div>
             </div>
         </div>
     </transition>
@@ -83,15 +66,10 @@
                 collection: null,
                 database: null,
                 errorMessage: null,
-                form: {
-                    duplicateName: this.collection + "_copy",
-                    overwrite: false,
-                    indexes: false
-                },
                 index: 0,
                 limit: 75, // limit the status check iterations
                 show: false,
-                statistics: {}
+                validation: null
             }
         },
 
@@ -107,46 +85,34 @@
                 return this.$store.getters.getLanguageString( context, key );
             },
 
-            getProperties(data) {
-                this.errorMessage  = null;
-                this.actionMessage = null;
-                this.database   = data.db;
-                this.collection = data.coll;
-                this.form = {
-                    duplicateName: this.collection + "_copy",
-                    overwrite: false,
-                    indexes: false
-                };
+            getValidation(data) {
+                this.database    = data.db;
+                this.collection  = data.coll;
+                this.$store.dispatch('validateCollection', {database: data.db, collection: data.coll });
+                this.handleValidate();
             },
 
-            saveDuplicate() {
-                console.log("save the duplicate..");
-                let data = { database: this.database, collection: this.collection, params: this.form };
-                this.$store.dispatch('duplicateCollection', data);
-                this.handleDuplicate();
-            },
-
-            handleDuplicate() {
-                let status = this.$store.getters.getCollectionDuplicateStatus;
+            handleValidate() {
+                let status = this.$store.getters.getCollectionValidationStatus;
                 console.log("status: " + status);
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleDuplicate();
+                    setTimeout(() => {
+                        this.handleValidate();
                     }, 100);
+
                 }
                 else if (status === 2) {
                     // success!
-                    this.actionMessage = this.showLanguage('collection', 'duplicateSuccess', this.form.duplicateName);
-                    setTimeout(() => {
-                        EventBus.$emit('hide-panels');
-                        EventBus.$emit('show-collection', this.form.duplicateName );
-                        this.hideComponent();
-                    }, 2000);
+                    this.actionMessage = this.showLanguage('collection', 'validateSuccess');
+                    let validation = this.$store.getters.getCollectionValidation;
+                    console.log("ns: " + validation.ns);
+                    validation = JSON.stringify(validation);
+                //    console.log(validation);
+                    this.validation  = this.$convObj().jsonH(validation);
                 }
                 else if (status === 3) {
-                    this.errorMessage = this.showLanguage('collection', 'duplicateError');
+                    this.errorMessage = this.showLanguage('collection', 'validateError');
                 }
             },
 
@@ -170,10 +136,10 @@
         */
         mounted() {
             /*
-             * On event, show the collection duplicate modal
+             * On event, show the collection validate modal
              */
-            EventBus.$on('show-document-coll-duplicate', ( data ) => {
-                this.getProperties(data);
+            EventBus.$on('show-document-validate', ( data ) => {
+                this.getValidation(data);
                 this.showComponent();
             });
         }

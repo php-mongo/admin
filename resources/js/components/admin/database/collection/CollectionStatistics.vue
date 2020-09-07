@@ -207,34 +207,6 @@
                 this.database   = data.db;
                 this.collection = data.coll;
                 this.statistics = this.$store.getters.getCollectionStats;
-               // data = {database: this.database, collection: this.collection };
-                //this.$store.dispatch('getQueryLogs', data);
-               // this.handleQueryLogs();
-            },
-
-            handleQueryLogs() {
-                let status = this.$store.getters.getQueryLogsLoadStatus;
-                console.log("status: " + status);
-                if (status === 1 && this.index < this.limit) {
-                    this.index += 1;
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleQueryLogs();
-                    }, 100);
-
-                }
-                else if (status === 2) {
-                    // success!
-                    this.queryLogs = this.$store.getters.getQueryLogs;
-                    if ( this.queryLogs.length > 0) {
-                        this.actionMessage = this.showLanguage('collection', 'logsAction', this.queryLogs.length);
-                    } else {
-                        this.actionMessage = this.showLanguage('collection', 'logsActionEmpty');
-                    }
-                }
-                else if (status === 3) {
-                    this.errorMessage = this.showLanguage('collection', 'logsActionError');
-                }
             },
 
             /*

@@ -186,7 +186,7 @@ export default function makeConvObj() {
                          }
                      }
                      else if (str[x] === ':') {
-                         divAreaH += '<span style="color: green">' + str[x] + '</span>';
+                         divAreaH += '<span class="colon" style="color: green">' + str[x] + '</span>';
                      }
                      else if (str[x] === '"') {
                          divAreaH += '<span style="color: #800000">' + str[x] + '</span>';

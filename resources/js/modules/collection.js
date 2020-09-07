@@ -44,8 +44,11 @@ export const collection = {
         collectionsLoadStatus: 0,
         collectionPropertiesStatus: 0,
         collectionRenameStatus: 0,
+        collectionDuplicateStatus: 0,
         collectionIndexStatus: 0,
         collectionIndex: null,
+        collectionValidationStatus: 0,
+        collectionValidation: null,
         displayCollection: {},
         displayCollectionStatus: 0,
         createCollectionStatus: 0,
@@ -59,6 +62,8 @@ export const collection = {
         importCollectionStatus: 0,
         queryLogs: [],
         queryLogsLoadStatus: 0,
+        queryExplain: {},
+        queryExplainStatus: 0,
         queryCollection: [],
         queryCollectionLoadStatus: 0,
         documentCreateStatus: 0,
@@ -198,8 +203,10 @@ export const collection = {
                         if (response.data.success === false) {
                             commit( 'setErrorData', response.data.errors);
                             console.log(response.data.errors);
+                            commit( 'setExportCollectionStatus', 3 );
 
                         } else {
+                            commit( 'setExportCollectionStatus', 2 );
                             let blob        = response.data;
                         //    console.log(blob.size);
                         //    console.log(blob);
@@ -220,7 +227,6 @@ export const collection = {
                             link.download   = fileName.replace(" ", "_").replace("+", "");
                             link.click();
                         }
-                        commit( 'setExportCollectionStatus', 2 );
                     })
                     .catch( (error) => {
                         commit( 'setExportCollectionStatus', 3 );
@@ -231,15 +237,16 @@ export const collection = {
             } else {
                 CollectionApi.exportCollectionView( data )
                     .then( (response ) => {
-                        if (response.data.success === false) {
-                            commit( 'setErrorData', response.data.errors);
-                            console.log(response.data.errors);
+                        if (response.data.success === true) {
+                            commit( 'setExportData', response.data.data.export);
+                            commit( 'setExportCollectionStatus', 2 );
+                            console.log(response.data.data);
 
                         } else {
-                            commit( 'setExportData', response.data.data.export);
-                            console.log(response.data.data);
+                            commit( 'setErrorData', response.data.errors);
+                            commit( 'setExportCollectionStatus', 3 );
+                            console.log(response.data.errors);
                         }
-                        commit( 'setExportCollectionStatus', 2 );
                     })
                     .catch( (error) => {
                         commit( 'setExportCollectionStatus', 3 );
@@ -254,14 +261,14 @@ export const collection = {
 
             CollectionApi.importCollection( data )
                 .then( (response) => {
-                    if (response.data.success === false) {
+                    if (response.data.success === true) {
+                        dispatch('loadDatabase', data.database);
+                        commit('setImportCollectionStatus', 2);
+
+                    } else {
                         commit( 'setErrorData', response.data.errors);
                         commit('setImportCollectionStatus', 3);
                         console.log(response.data.errors);
-
-                    } else {
-                        dispatch('loadDatabase', data.database);
-                        commit('setImportCollectionStatus', 2);
                     }
                 })
                 .catch( (error) => {
@@ -276,14 +283,15 @@ export const collection = {
 
             CollectionApi.saveProperties( data )
                 .then( (response) => {
-                    if (response.data.success === false) {
+                    if (response.data.success === true) {
+                        commit('setCollection', response.data.data.collection);
+                        commit('setCollectionPropertiesStatus', 2);
+
+                    } else {
+
                         commit( 'setErrorData', response.data.errors);
                         commit('setCollectionPropertiesStatus', 3);
                         console.log(response.data.errors);
-
-                    } else {
-                        commit('setCollection', response.data.data.collection);
-                        commit('setCollectionPropertiesStatus', 2);
                     }
                 })
                 .catch( (error) => {
@@ -299,14 +307,14 @@ export const collection = {
 
             CollectionApi.saveIndex( data )
                 .then( (response) => {
-                    if (response.data.success === false) {
+                    if (response.data.success === true) {
+                        commit( 'setCollectionIndex', response.data.data.index );
+                        commit( 'setCollectionIndexStatus', 2 );
+
+                    } else {
                         commit( 'setErrorData', response.data.errors );
                         commit( 'setCollectionIndexStatus', 3 );
                         console.log(response.data.errors);
-
-                    } else {
-                        commit( 'setCollectionIndex', response.data.data.index );
-                        commit( 'setCollectionIndexStatus', 2 );
                     }
                 })
                 .catch( (error) => {
@@ -321,20 +329,68 @@ export const collection = {
 
             CollectionApi.renameCollection( data )
                 .then( (response) => {
-                    if (response.data.success === false) {
-                        commit( 'setErrorData', response.data.errors );
-                        commit( 'setCollectionRenameStatus', 3 );
-                        console.log(response.data.errors);
-
-                    } else {
+                    if (response.data.success === true) {
                         console.log("rename success - fetch database: " + data.database);
                         dispatch( 'loadDatabase', data.database );
                         dispatch( 'setActiveCollection', data.params.newName );
                         commit( 'setCollectionRenameStatus', 2 );
+
+                    } else {
+                        commit( 'setErrorData', response.data.errors );
+                        commit( 'setCollectionRenameStatus', 3 );
+                        console.log(response.data.errors);
                     }
                 })
                 .catch( (error) => {
                     commit( 'setCollectionRenameStatus', 3 );
+                    commit( 'setErrorData', error );
+                    console.log(error);
+                });
+        },
+
+        duplicateCollection( { commit, dispatch }, data) {
+            commit('setCollectionDuplicateStatus', 1);
+
+            CollectionApi.duplicateCollection( data )
+                .then( (response) => {
+                    if (response.data.success === true) {
+                        dispatch( 'loadDatabase', data.database );
+                        dispatch( 'setActiveCollection', data.params.duplicateName );
+                        dispatch( 'loadCollection', { database: data.database, collection: data.params.duplicateName } );
+                        commit( 'setCollectionDuplicateStatus', 2 );
+
+                    } else {
+                        commit( 'setErrorData', response.data.errors );
+                        commit( 'setCollectionDuplicateStatus', 3 );
+                        console.log(response.data.errors);
+                    }
+                })
+                .catch( (error) => {
+                    commit( 'setCollectionDuplicateStatus', 3 );
+                    commit( 'setErrorData', error );
+                    console.log(error);
+                });
+        },
+
+        validateCollection( { commit, dispatch }, data) {
+            commit('setCollectionValidationStatus', 1);
+            console.log("validating collection: " + data.collection);
+
+            CollectionApi.validateCollection( data )
+                .then( (response) => {
+                    if (response.data.success === true) {
+                        console.log("validate success: " + response);
+                        commit( 'setCollectionValidation', response.data.data.validation[0] );
+                        commit( 'setCollectionValidationStatus', 2 );
+
+                    } else {
+                        commit( 'setErrorData', response.data.errors );
+                        commit( 'setCollectionValidationStatus', 3 );
+                        console.log(response.data.errors);
+                    }
+                })
+                .catch( (error) => {
+                    commit( 'setCollectionValidationStatus', 3 );
                     commit( 'setErrorData', error );
                     console.log(error);
                 });
@@ -366,6 +422,25 @@ export const collection = {
                 .catch( (error) => {
                     commit( 'setQueryLogs', [] );
                     commit( 'setQueryLogsLoadStatus', 3 );
+                    console.log(error);
+                });
+        },
+
+        /*
+         *  Get the query explain results - displays in a modal
+         */
+        getQueryExplain( { commit }, data) {
+            commit( 'setQueryExplainStatus', 1 );
+
+            CollectionApi.getQueryExplain( data )
+                .then( ( response ) => {
+                    console.log("please explain: " + response.data.data);
+                    commit( 'setQueryExplain', response.data.data.explain );
+                    commit( 'setQueryExplainStatus', 2 );
+                })
+                .catch( (error) => {
+                    commit( 'setQueryExplain', [] );
+                    commit( 'setQueryExplainStatus', 3 );
                     console.log(error);
                 });
         },
@@ -536,6 +611,24 @@ export const collection = {
         },
 
         /*
+        *   Set the collection duplicate status
+        */
+        setCollectionDuplicateStatus( state, status ) {
+            state.collectionDuplicateStatus = status;
+        },
+
+        /*
+        *   Set the collection validation status
+        */
+        setCollectionValidationStatus( state, status ) {
+            state.collectionValidationStatus = status;
+        },
+
+        setCollectionValidation( state, validation ) {
+            state.collectionValidation = validation;
+        },
+
+        /*
         *   Set the display collection
         */
         setDisplayCollection( state, collection) {
@@ -641,6 +734,20 @@ export const collection = {
         */
         setQueryLogs(state, logs) {
             state.queryLogs = logs;
+        },
+
+        /*
+        *   Set the query explain load status
+        */
+        setQueryExplainStatus(state, status) {
+            state.queryExplainStatus = status;
+        },
+
+        /*
+        *   Set the query explain data
+        */
+        setQueryExplain(state, explain) {
+            state.queryExplain = explain;
         },
 
         /*
@@ -813,6 +920,24 @@ export const collection = {
         },
 
         /*
+        *   Get the collection duplicate status
+        */
+        getCollectionDuplicateStatus( state ) {
+            return state.collectionDuplicateStatus;
+        },
+
+        /*
+        *   Get the collection validation status
+        */
+        getCollectionValidationStatus( state ) {
+            return state.collectionValidationStatus;
+        },
+
+        getCollectionValidation( state ) {
+            return state.collectionValidation;
+        },
+
+        /*
         *   Return the display collection status
         */
         getDisplayCollectionStatus( state ) {
@@ -933,6 +1058,20 @@ export const collection = {
         */
         getQueryLogs( state) {
             return state.queryLogs;
+        },
+
+        /*
+        *   Get the query explain load status
+        */
+        getQueryExplainStatus(state) {
+            return state.queryExplainStatus;
+        },
+
+        /*
+        *   Get the query explain data
+        */
+        getQueryExplain(state) {
+            return state.queryExplain;
         },
 
         /*

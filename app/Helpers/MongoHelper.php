@@ -504,7 +504,7 @@ class MongoHelper
         foreach ($array as $k => $v) {
             if ($v instanceof MongoDb\Model\BSONDocument) {
                 $level++;
-                $arr[ $k ] = self::iterateDocument($v, $level);
+                $arr[ $k ] = self::iterateDocument($v->getArrayCopy(), $level);
 
             } elseif ($v instanceof MongoDb\Model\BSONArray) {
                 /** @var MongoDb\Model\BSONArray $v */
@@ -599,6 +599,7 @@ class MongoHelper
      */
     public static function handleBulkInsert( $manager, $database, $array, $collection, $useCollection, &$inserted, $isJson = false )
     {
+    //    dd($array);
         foreach ($array as $coll => $inserts) {
             // renew for each collection insert
             $bulk = new MongoDB\Driver\BulkWrite();
@@ -612,26 +613,28 @@ class MongoHelper
                 $inserts = $array;
             }
 
-            // iterate the insert and add to the $bulk write object
-            foreach ($inserts as $insert) {
-                if (is_string($insert)) {
-                    // decode the insert only is its a string
-                    $insert = json_decode($insert, true);
+            if (is_array($inserts)) {
+                // iterate the insert and add to the $bulk write object
+                foreach ($inserts as $insert) {
+                    if (is_string($insert)) {
+                        // decode the insert only is its a string
+                        $insert = json_decode($insert, true);
+                    }
+                    // if the ObjectId has been included as $oid => 'blah blah blah'
+                    $isOID = $insert['_id'] instanceof MongoDB\BSON\ObjectId;
+                    if ($isOID == false && isset($insert['_id']['oid'])) {
+                        $insert['_id'] = new MongoDB\BSON\ObjectId ($insert['_id']['oid'] );
+                    }
+                    // expects an array
+                    $bulk->insert($insert);
+                    $inserted++;
                 }
-                // if the ObjectId has been included as $oid => 'blah blah blah'
-                $isOID = $insert['_id'] instanceof MongoDB\BSON\ObjectId;
-                if ($isOID == false && isset($insert['_id']['oid'])) {
-                    $insert['_id'] = new MongoDB\BSON\ObjectId ($insert['_id']['oid'] );
-                }
-                // expects an array
-                $bulk->insert($insert);
-                $inserted++;
-            }
-            $manager->executeBulkWrite( $ns, $bulk );
+                $manager->executeBulkWrite( $ns, $bulk );
 
-            if ($isJson) {
-                // iterations should be complete
-               break;
+                if ($isJson) {
+                    // iterations should be complete
+                    break;
+                }
             }
         }
     }

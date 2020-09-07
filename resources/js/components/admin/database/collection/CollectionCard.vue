@@ -388,12 +388,15 @@
         <document-duplicate></document-duplicate>
         <document-new></document-new>
         <query-logs></query-logs>
+        <query-explain></query-explain>
         <collection-statistics></collection-statistics>
         <collection-export></collection-export>
         <collection-import></collection-import>
         <collection-properties></collection-properties>
         <collection-indexes></collection-indexes>
         <collection-rename></collection-rename>
+        <collection-duplicate></collection-duplicate>
+        <collection-validation></collection-validation>
     </div>
 </template>
 
@@ -420,6 +423,9 @@
     import CollectionProperties from "./CollectionProperties";
     import CollectionIndexes from "./CollectionIndexes";
     import CollectionRename from "./CollectionRename";
+    import CollectionDuplicate from "./CollectionDuplicate";
+    import CollectionValidation from "./CollectionValidation";
+    import QueryExplain from "./QueryExplain";
 
     export default {
         /*
@@ -434,12 +440,15 @@
             DocumentDuplicate,
             DocumentNew,
             QueryLogs,
+            QueryExplain,
             CollectionStatistics,
             CollectionExport,
             CollectionImport,
             CollectionProperties,
             CollectionIndexes,
-            CollectionRename
+            CollectionRename,
+            CollectionDuplicate,
+            CollectionValidation
         },
 
         /*
@@ -759,8 +768,26 @@
             },
 
             explainQuery() {
-                console.log("explain form...");
-                console.log(this.form);
+                console.log("explain query...");
+                let query;
+                if (this.format === 'json') {
+                    query = this.$convObj(this.form.criteria.json).minify();
+                    if (query === '{}') {
+                        this.message = this.showLanguage('collection', 'msgEmptyQuery');
+                        return;
+                    }
+                }
+                if (this.format === 'array') {
+                    query = this.$convObj(this.form.criteria.array).minify();
+                    if (query === '()') {
+                        this.message = this.showLanguage('collection', 'msgEmptyQuery');
+                        return;
+                    }
+                    query = this.$convObj(query).arrayToJson();
+                }
+                console.log(query);
+                let data = { query: query, format: this.format, database: this.getDatabaseName(), collection: this.getCollectionName() };
+                EventBus.$emit('show-query-explain', data);
             },
 
             clearForm() {

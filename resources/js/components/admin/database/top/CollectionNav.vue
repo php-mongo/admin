@@ -137,16 +137,16 @@
                     <span v-bind:title="showLanguage('title', 'renameTitle')" v-on:click="loadModal('rename')" v-text="showLanguage('collection', 'rename')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('duplicate')}">
-                    <span v-bind:title="showLanguage('title', 'duplicateTitle')" v-on:click="loadModal('duplicate')" v-text="showLanguage('collection', 'duplicate')"></span>
-                </li>
-                <li v-bind:class="{active: getActivePanel('transfer')}">
-                    <span v-bind:title="showLanguage('title', 'transferTitle')" v-on:click="loadModal('transfer')" v-text="showLanguage('collection', 'transfer')"></span>
+                    <span v-bind:title="showLanguage('title', 'duplicateTitle')" v-on:click="loadModal('coll-duplicate')" v-text="showLanguage('collection', 'duplicate')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('validate')}">
                     <span v-bind:title="showLanguage('title', 'validateTitle')" v-on:click="loadModal('validate')" v-text="showLanguage('collection', 'validate')"></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('drop')}">
                     <span v-bind:title="showLanguage('title', 'dropCollectionTitle')" v-on:click="runCommand('drop')" v-text="showLanguage('collection', 'drop')"></span>
+                </li>
+                <li v-bind:class="{active: getActivePanel('transfer')}">
+                    <span class="hide" v-bind:title="showLanguage('title', 'transferTitle')" v-on:click="loadModal('transfer')" v-text="showLanguage('collection', 'transfer')"></span>
                 </li>
             </ul>
         </div>
