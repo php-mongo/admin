@@ -328,7 +328,7 @@
             *   Set the selected language into the application store
             */
             setSelectedLanguage( lang ) {
-                console.log('setting language to: ' + lang);
+             //   console.log('setting language to: ' + lang);
                 this.$store.dispatch('setLanguage', lang );
                 this.currentLanguage = lang;
             },

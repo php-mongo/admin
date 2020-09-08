@@ -46,6 +46,22 @@
         .f11 {
             font-size: 11px;
         }
+        .records-header {
+            &.fixed {
+                background: $cyan;
+                color: aliceblue;
+                left: 245px;
+                padding: 10px 0 0 10px;
+                position: fixed;
+                top: 75px;
+                width: 86.4%;
+                z-index: 9000;
+
+                ul {
+                    margin-bottom: .7rem;
+                }
+            }
+        }
         .page-message {
             font-weight: 600;
         }
@@ -67,7 +83,7 @@
             display: none;
         }
         .collection-document {
-            border: 2px #ccc solid;
+            border: 2px $regularGrey solid;
             margin-bottom: 10px;
             min-height: 100px;
             position: relative;
@@ -77,14 +93,14 @@
             }
 
             .doc-nav {
-                border-bottom: 1px #999 solid;
+                border-bottom: 1px $lighterGrey solid;
                 display: inline-block;
                 margin: 0 0 5px 50px;
                 padding: 5px 0 0 0;
             }
             .doc-data {
                 display: block;
-                max-height: 150px;
+                max-height: 100px;
                 overflow-y: hidden;
                 padding: 0 0 5px 50px;
                 width: 99%;
@@ -99,6 +115,156 @@
                 bottom: 5px;
                 position: absolute;
                 right: 10px;
+            }
+        }
+        .panel-modal {
+            position: fixed;
+            z-index: 999999;
+            left: 10vw;
+            right: 0;
+            top: 0;
+
+            .panel-modal-inner {
+                background: $white;
+                box-shadow: 0 0 4px 0 rgba(0,0,0,0.12), 0 4px 4px 0 rgba(0,0,0,0.24);
+                border-left: 5px solid $orange;
+                border-right: 5px solid $orange;
+                color: $noticeColor;
+                font-family: "Lato", sans-serif;
+                font-size: 16px;
+                line-height: 60px;
+                margin: auto auto auto auto;
+                max-height: 90vh;
+                max-width: 50vw;
+                min-height: 666px;
+                min-width: 400px;
+                overflow-y: auto;
+                padding: 0 3rem 3rem 3rem;
+
+                .modal-header {
+                    background-color: $lightGreyColor;
+                    height: 33px;
+                    margin: 0 -3rem 0 -3rem;
+                    max-width: 49.5vw;
+                    padding: 0.55rem 20px 0 0;
+                    position: fixed;
+                    width: 100%;
+
+                    span.msg {
+                        background-color: $offWhite;
+                        border-radius: 5px;
+                        left: 30px;
+                        max-height: 25px;
+                        padding: 2px 5px;
+                        position: absolute;
+                        top: 5px;
+
+                        span.error {
+                            color: $red;
+                            position: relative;
+                            top: -21px;
+                        }
+
+                        span.action {
+                            color: $green;
+                            position: relative;
+                            top: -21px;
+                        }
+                    }
+
+                    span.close {
+                        cursor: pointer;
+                    }
+
+                    img {
+                        vertical-align: top;
+                    }
+                }
+
+                h3 {
+                    margin-top: 40px;
+                }
+
+                label.padd-left {
+                    label {
+                        padding-left: 50px;
+                    }
+                }
+
+                textarea {
+                    height: auto;
+                }
+
+                textarea.export-data {
+                    min-height: 150px;
+                    width: 100%;
+                }
+
+                p {
+                    label {
+                        input {
+                            margin-left: 5px;
+                            vertical-align: baseline;
+                        }
+                    }
+                    &.file-select {
+                        border-bottom: solid 1px $darkBlue;
+                        margin-bottom: 20px;
+                    }
+                }
+
+                p.file-select {
+                    border-bottom: solid 1px $darkBlue;
+                    margin-bottom: 20px;
+                }
+
+                ul {
+                    list-style: none;
+
+                    li {
+                        background-color: $lighterGrey;
+                        margin-bottom: 10px;
+                        padding: 4px 10px;
+
+                        .title {
+                            display: inline-block;
+                            min-width: 150px;
+                        }
+
+                        .clr-bg {
+                            background-color: transparent;
+                        }
+
+                        p {
+                            padding: 2px 0 3px 5px;
+
+                            label {
+                                background-color: $tabColor;
+                                margin-left: 5px;
+                            }
+
+                            input {
+                                margin: 0;
+                                vertical-align: middle;
+                            }
+                        }
+
+                        p.time {
+                            border-bottom: 1px solid $darkGreyColor;
+
+                            .log-link {
+                                float: right;
+                            }
+                        }
+
+                        .data {
+                            display: inline-block;
+                            max-width: 100%;
+                            overflow-x: auto;
+                            vertical-align: bottom;
+                        }
+                    }
+                }
             }
         }
     }
@@ -185,7 +351,7 @@
                     <input type="submit" :value="showLanguage('collection', 'buttonSubmit')" v-on:click="submitQuery" />
                     <input type="button" :value="showLanguage('collection', 'buttonExplain')" v-on:click="explainQuery" />
                     <input type="button" :value="showLanguage('collection', 'buttonClear')" v-on:click="clearForm" />
-                    [<a href="http://rockmongo.com/wiki/queryExamples?lang=en_us" target="_blank" v-text="showLanguage('collection', 'queryExamples')"></a>]
+                    [<a href="https://phpmongoadmin.com/support/documentation/collections/collection-query-examples" target="_blank" v-text="showLanguage('collection', 'queryExamples')"></a>]
                     <span v-if="cost"><span v-text="showLanguage('collection', 'cost')"></span> {{ roundCost }}s</span>
                     <p v-if="message" class="error">{{ message }}</p>
                 </td>
@@ -204,7 +370,7 @@
             </ul>
         </div>
         <div id="records" ref="records">
-            <div class="records-header">
+            <div :class="'records-header ' + watchScroll">
                 <p class="page-message" v-if="page.find.message">{{ page.find.message }}</p>
                 <pagination
                     @pageChanged="pageChanged($event)"
@@ -222,9 +388,15 @@
         <document-duplicate></document-duplicate>
         <document-new></document-new>
         <query-logs></query-logs>
+        <query-explain></query-explain>
         <collection-statistics></collection-statistics>
         <collection-export></collection-export>
         <collection-import></collection-import>
+        <collection-properties></collection-properties>
+        <collection-indexes></collection-indexes>
+        <collection-rename></collection-rename>
+        <collection-duplicate></collection-duplicate>
+        <collection-validation></collection-validation>
     </div>
 </template>
 
@@ -248,6 +420,12 @@
     import CollectionStatistics from "./CollectionStatistics";
     import CollectionExport from "./CollectionExport";
     import CollectionImport from "./CollectionImport";
+    import CollectionProperties from "./CollectionProperties";
+    import CollectionIndexes from "./CollectionIndexes";
+    import CollectionRename from "./CollectionRename";
+    import CollectionDuplicate from "./CollectionDuplicate";
+    import CollectionValidation from "./CollectionValidation";
+    import QueryExplain from "./QueryExplain";
 
     export default {
         /*
@@ -262,9 +440,15 @@
             DocumentDuplicate,
             DocumentNew,
             QueryLogs,
+            QueryExplain,
             CollectionStatistics,
             CollectionExport,
-            CollectionImport
+            CollectionImport,
+            CollectionProperties,
+            CollectionIndexes,
+            CollectionRename,
+            CollectionDuplicate,
+            CollectionValidation
         },
 
         /*
@@ -287,6 +471,7 @@
                 count: 0,
                 stats: {},
                 allObjects: [],
+                filterObjects: [], // used to store allObjects while filtering
                 visibleObjects:[],
                 criteriaDefault: '{\n' +
                         '\t\n' +
@@ -304,6 +489,7 @@
                     3 : 'ASC'
                 },
                 limitDefault: 0,
+                lockPagination: false,
                 pageSizeDefault: 10,
                 commandDefault: 'findAll',
                 form : {
@@ -444,6 +630,10 @@
 
             roundCost: function() {
                 return Math.round(this.cost);
+            },
+
+            watchScroll() {
+                return this.lockPagination === true ? 'fixed' : '';
             }
         },
 
@@ -513,20 +703,20 @@
                     return;
                 }
                 if (this.format === 'json') {
-                    let json = this.$convObj(this.form.criteria.json).minify();
-                    console.log(json);
+                    let json = this.$convObj().minify(this.form.criteria.json);
                     if (json === '{}') {
                         this.message = this.showLanguage('collection', 'msgEmptyQuery');
                         return;
                     }
+                    this.form.criteria.json = json;
                 }
                 if (this.format === 'array') {
-                    let array = this.$convObj(this.form.criteria.array).minify();
-                    console.log(array);
+                    let array = this.$convObj().minify(this.form.criteria.array);
                     if (array === '()') {
                         this.message = this.showLanguage('collection', 'msgEmptyQuery');
                         return;
                     }
+                    this.form.criteria.array = array;
                 }
                 // tests completed - send query to DB
                 let data = {params: this.form, format: this.format, database: this.getDatabaseName(), collection: this.getCollectionName()};
@@ -536,7 +726,6 @@
 
             handleQuery() {
                 let status = this.$store.getters.getQueryCollectionLoadStatus;
-                console.log("handleQuery status: " + status);
                 if (status === 1 && this.index < this.limit) {
                     let self = this;
                     setTimeout(function() {
@@ -579,12 +768,27 @@
             },
 
             explainQuery() {
-                console.log("explain form...");
-                console.log(this.form);
+                let query;
+                if (this.format === 'json') {
+                    query = this.$convObj(this.form.criteria.json).minify();
+                    if (query === '{}') {
+                        this.message = this.showLanguage('collection', 'msgEmptyQuery');
+                        return;
+                    }
+                }
+                if (this.format === 'array') {
+                    query = this.$convObj(this.form.criteria.array).minify();
+                    if (query === '()') {
+                        this.message = this.showLanguage('collection', 'msgEmptyQuery');
+                        return;
+                    }
+                    query = this.$convObj(query).arrayToJson();
+                }
+                let data = { query: query, format: this.format, database: this.getDatabaseName(), collection: this.getCollectionName() };
+                EventBus.$emit('show-query-explain', data);
             },
 
             clearForm() {
-                console.log("clearing form...");
                 this.form = {
                     criteria: {
                         json: '{\n' +
@@ -670,6 +874,7 @@
                 if (this.collection && this.collection.objects) {
                     this.count = this.collection.objects.count;
                     this.allObjects = this.collection.objects.objects;
+                    this.filterObjects = this.allObjects;
                     for (x = this.start; x  < this.pageSizeDefault; x += 1) {
                         if (this.allObjects[x]) {
                             this.visibleObjects.push(this.allObjects[x]);
@@ -683,6 +888,7 @@
              */
             clearValues() {
                 this.allObjects     = [];
+                this.filterObjects  = [];
                 this.count          = 0;
                 this.current        = 1;
                 this.end            = 0;
@@ -692,6 +898,9 @@
                 this.visibleObjects = [];
             },
 
+            /*
+             *  Handles a document updated by the Update modal
+             */
             updateDocument( data ) {
                 if (data) {
                     let obj = JSON.parse(data.document);
@@ -716,13 +925,53 @@
                 }
             },
 
+            /*
+             *  When a document is inserted via the New Document modal we want to refresh this panel
+             */
             fetchData() {
                 this.handlePageLoad();
             },
 
+            /*
+             *  Handle a 'query resend' initialised by modal
+             */
             sendQuery(query) {
                 this.form.criteria[this.format] = query;
                 this.submitQuery();
+            },
+
+            /*
+             *  This is sent from the PanelView.vue when a collection is active
+             */
+            handleScroll(status) {
+               this.lockPagination = status; //!this.lockPagination;
+            },
+
+            /*
+             *  This method receives input from the Breadcrumbs text filter
+             */
+            handleFilter(filter) {
+                if (filter) {
+                    this.allObjects = [];
+                    this.visibleObjects = [];
+                    let raw;
+                    let x = 0;
+                    this.filterObjects.forEach((object, index) => {
+                        raw = JSON.stringify(object.raw);
+                        if (raw.indexOf(filter) !== -1) {
+                            this.allObjects.push(object);
+                        }
+                    });
+                    this.count = this.allObjects.length;
+                    for (x = this.start; x  < this.pageSizeDefault; x += 1) {
+                        if (this.allObjects[x]) {
+                            this.visibleObjects.push(this.allObjects[x]);
+                        }
+                    }
+
+                } else {
+                    this.handlePageLoad();
+                }
             }
         },
 
@@ -748,6 +997,18 @@
 
             EventBus.$on('send-query', (query) => {
                 this.sendQuery(query);
+            });
+
+            EventBus.$on('lockCollectionPagination', (status) => {
+                this.handleScroll(status);
+            });
+
+            EventBus.$on('run-document-filter', (filter) => {
+                this.handleFilter(filter);
+            });
+
+            EventBus.$on('clear-document-filter', () => {
+                this.handleFilter();
             });
         },
 

@@ -67,6 +67,15 @@ body {
         }
     }
 
+    span.button.grey {
+        background-color: $lighterGrey;
+        color: $darkGreyColor
+    }
+
+    input.width-150 {
+        width: 150px;
+    }
+
     .pma-link {
         color: $linkColor;
         cursor: pointer;

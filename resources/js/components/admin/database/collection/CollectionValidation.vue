@@ -15,21 +15,36 @@
   -  See COPYRIGHT.php for copyright notices and further details.
   -->
 <style lang="scss">
-    /* @import '~@/abstracts/_variables.scss'; */
+    @import '~@/abstracts/_variables.scss';
+    .panel-modal-inner {
+        .validation-data {
+            background-color: aquamarine;
+            line-height: 1.5rem;
+            padding: 1rem;
+
+            .colon {
+                padding: 0 5px;
+            }
+        }
+    }
 </style>
 
 <template>
     <transition name="slide-in-top">
-        <div class="panel-modal" v-show="show">
+        <div class="panel-modal" v-if="show">
             <div class="panel-modal-inner">
-                <div class="modal-header"><span class="msg" v-show="errorMessage || actionMessage"><span class="error">{{ errorMessage }}</span> <span class="action">{{ actionMessage }}</span></span><span class="close u-pull-right" v-on:click="hideComponent"><img src="/img/icon/cross-red.png" /></span></div>
-                <h3 v-text="showLanguage('collection','collectionHistory')"></h3>
-                <ul>
-                    <li class="log-entry" v-for="(log, index) in queryLogs" v-bind:log="log">
-                        <p class="time"><span>{{ log.time }}</span> <span class="log-link pma-link" v-on:click="sendQuery(log.query)" v-text="showLanguage('collection', 'queryAgain')"></span></p>
-                        <p>{{ log.params }}</p>
-                    </li>
-                </ul>
+                <div class="modal-header">
+                    <span class="msg" v-show="errorMessage || actionMessage">
+                        <span class="error">{{ errorMessage }}</span>
+                        <span class="action">{{ actionMessage }}</span>
+                    </span>
+                    <span class="close u-pull-right" v-on:click="hideComponent">
+                        <img src="/img/icon/cross-red.png" />
+                    </span>
+                </div>
+                <h3 v-text="showLanguage('collection','collectionValidation')"></h3>
+                <p v-if="validation" v-text="showLanguage('collection', 'validateInfo')"></p>
+                <div v-if="validation" class="validation-data" v-html="validation"></div>
             </div>
         </div>
     </transition>
@@ -53,8 +68,8 @@
                 errorMessage: null,
                 index: 0,
                 limit: 75, // limit the status check iterations
-                queryLogs: [],
-                show: false
+                show: false,
+                validation: null
             }
         },
 
@@ -70,43 +85,32 @@
                 return this.$store.getters.getLanguageString( context, key );
             },
 
-            getQueryLogs(data) {
-                this.database   = data.db;
-                this.collection = data.coll;
-                data = {database: this.database, collection: this.collection };
-                this.$store.dispatch('getQueryLogs', data);
-                this.handleQueryLogs();
+            getValidation(data) {
+                this.database    = data.db;
+                this.collection  = data.coll;
+                this.$store.dispatch('validateCollection', {database: data.db, collection: data.coll });
+                this.handleValidate();
             },
 
-            handleQueryLogs() {
-                let status = this.$store.getters.getQueryLogsLoadStatus;
+            handleValidate() {
+                let status = this.$store.getters.getCollectionValidationStatus;
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleQueryLogs();
+                    setTimeout(() => {
+                        this.handleValidate();
                     }, 100);
 
                 }
                 else if (status === 2) {
                     // success!
-                    this.queryLogs = this.$store.getters.getQueryLogs;
-                    if ( this.queryLogs.length > 0) {
-                        this.actionMessage = this.showLanguage('collection', 'logsAction', this.queryLogs.length);
-                    } else {
-                        this.actionMessage = this.showLanguage('collection', 'logsActionEmpty');
-                    }
+                    this.actionMessage = this.showLanguage('collection', 'validateSuccess');
+                    let validation = this.$store.getters.getCollectionValidation;
+                    validation = JSON.stringify(validation);
+                    this.validation  = this.$convObj().jsonH(validation);
                 }
                 else if (status === 3) {
-                    this.errorMessage = this.showLanguage('collection', 'logsActionError');
+                    this.errorMessage = this.showLanguage('collection', 'validateError');
                 }
-            },
-
-            sendQuery( query ) {
-                EventBus.$emit('send-query', query);
-                setTimeout(() => {
-                    this.hideComponent();
-                },250);
             },
 
             /*
@@ -129,10 +133,10 @@
         */
         mounted() {
             /*
-             * On event, show the new document field modal
+             * On event, show the collection validate modal
              */
-            EventBus.$on('show-document-history', ( data ) => {
-                this.getQueryLogs(data);
+            EventBus.$on('show-document-validate', ( data ) => {
+                this.getValidation(data);
                 this.showComponent();
             });
         }

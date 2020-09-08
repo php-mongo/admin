@@ -332,6 +332,18 @@ class CollectionController extends Controller implements Unserializable
     }
 
     /**
+     * Mostly we dont need this as we want to strip out all the bits individually
+     * In most cases ->getArrayCopy() or ->__toString() suffice
+     *
+     * @inheritDoc
+     */
+    public function bsonUnserialize(array $data)
+    {
+        // TODO: Implement bsonUnserialize() method.
+        $this->unserialised = $data;
+    }
+
+    /**
      * DatabasesController constructor.
      */
     public function __construct()
@@ -380,7 +392,8 @@ class CollectionController extends Controller implements Unserializable
             $params           = $request->get('params');
             $format           = $request->get('format');
             $criteria         = $params['criteria'];
-            $query            = $format == 'json' ? json_decode($criteria[ $format ], true) : $criteria[ $format ];
+            // ToDo: !! implement a sanity check if the format is array and we need to use EVIL eval() !!
+            $query            = $format == 'json' ? json_decode($criteria[ $format ], true) : eval("return " . $criteria[ $format ] . ";");
             $collection       = $this->mongo->connectClientCollection($this->database, $this->collection);
             $results          = $collection->find( $query );
             $results          = $results->toArray();
@@ -447,82 +460,6 @@ class CollectionController extends Controller implements Unserializable
     }
 
     /**
-     * Deleting a MongoDB collection
-     *
-     * URL:         /api/v1/collection/delete
-     * Method:      POST
-     * Description: Delete the database matching the given name
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function deleteCollection(Request $request)
-    {
-        try {
-            $database   = $request->get('database');
-            $collection = $request->get('collection', false);
-            $ns = $database . '.' . $collection;
-            if (!is_array($collection)) {
-                $collection = array($collection);
-            }
-            $status     = array();
-            if ($collection && is_array($collection)) {
-                foreach ($collection as $name) {
-                    if (!empty($name)) {
-                        $collection = $this->mongo->connectClientCollection($database, $name);
-                        /** @var MongoDB\Model\BSONDocument $result */
-                        $result = $collection->drop();
-                    //    echo '<pre>'; var_dump(is_object($result)); echo '</pre>';
-                    //    echo '<pre>'; var_dump($result); echo '</pre>';
-                    //    echo '<pre>'; var_dump($ns); echo '</pre>';
-                    //    echo '<pre>'; var_dump($name); echo '</pre>'; die;
-                        // ToDo: !! getting an odd error from front-end - request is sent twice
-                        if ($result->errmsg) {
-                            return response()->error('failed', array('message' => $result->errmsg));
-
-                        } else {
-                            $status[] = $this->setDeleteStatus( $name, $result->getArrayCopy(), $ns);
-                        }
-                    }
-                }
-            }
-            return response()->success('success', array('status' => $status ));
-        }
-        catch(\Exception $e) {
-            return response()->error('failed', array('message' => $e->getMessage()));
-        }
-    }
-
-    /**
-     * Clearing all documents from a MongoDB collection
-     *
-     * URL:         /api/v1/collection/clear
-     * Method:      POST
-     * Description: Clear all documents from collection matching the given name
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function clearCollection(Request $request)
-    {
-        try {
-            $database   = $request->get('database');
-            $collection = $request->get('collection', false);
-            $status     = array();
-            if (isset($database, $collection)) {
-                /** @var MongoDB\Collection $collection */
-                $collection = $this->mongo->connectClientCollection($database, $collection);
-                $result = $collection->deleteMany([]);
-                $status = array("collection" => $collection, "deleted" => $result->getDeletedCount());
-            }
-            return response()->success('success', array('status' => $status ));
-        }
-        catch(\Exception $e) {
-            return response()->error('failed', array('message' => $e->getMessage()));
-        }
-    }
-
-    /**
      * Export all documents from one or more collections
      *
      * URL:         /api/v1/collection/export
@@ -545,8 +482,6 @@ class CollectionController extends Controller implements Unserializable
                 // value containers
                 $contents       = "";
                 $countDocuments = 0;
-
-            //    echo '<pre>'; var_dump($collections); echo '</pre>';
 
                 // handle some variations on the export theme
                 if ($params['json'] == true) {
@@ -676,7 +611,6 @@ class CollectionController extends Controller implements Unserializable
                 } else {
                     // ToDo: !! for now - we accept the JSON file exported by PhpMongoAdmin and also JSON export from Compass
                     $arr = $arr[0];
-                //    dd(json_decode($arr, true));
                     $arr = json_decode($arr, true);
                     MongoHelper::handleBulkInsert($manager, $database, $arr, $collection, $useCollection, $inserted, true);
                 }
@@ -690,6 +624,437 @@ class CollectionController extends Controller implements Unserializable
     }
 
     /**
+     * Update the properties on one collection
+     *
+     * URL:         /api/v1/collection/properties
+     * Method:      POST
+     * Description: Update properties (capped, size, max)
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function propertiesCollection(Request $request)
+    {
+        try {
+            $database       = $request->get('database');
+            $collection     = $request->get('collection');
+            $params         = $request->get('params');
+            $errors         = [];
+            if (isset($database, $collection, $params)) {
+                // get the database
+                /** @var MongoDB\Database $db */
+                $db         = $this->mongo->connectClientDb( $database );
+
+                // temp collection name
+                $tempCollectionName = 'phpMongoAdmin_' . time();
+                if ($options   = MongoHelper::validateCollectionProperties( $params, $errors )) {
+                    // get the document from current collection
+                    /** @var MongoDB\Collection $documents */
+                    $documents = MongoHelper::getObjects( $this->client, $database, $collection )['objects'];
+
+                    // convert to array -> make compatible with primary BulkInsert action
+                    $arr[ $tempCollectionName ] = [];
+                    foreach ( $documents as $doc ) {
+                        $arr[ $tempCollectionName ][] = $doc;
+                    }
+
+                    // create the TEMP collection -> continue on success
+                    $result = $db->createCollection( $tempCollectionName, $options )->getArrayCopy();
+                    if ( $result['ok'] == 1 ) {
+                        // track
+                        $inserted = 0;
+                        // connect the manager
+                        $this->mongo->connectManager();
+                        /** @var MongoDB\Driver\Manager $manager */
+                        $manager = $this->mongo->getManager();
+                        // this will handle multiple collection inserts
+                        MongoHelper::handleBulkInsert($manager, $database, $arr, $tempCollectionName, false, $inserted);
+
+                        if  ( $inserted == count($arr[ $tempCollectionName ]) ) {
+                            // temp collection populated successfully -> drop the old collection
+                            $result = $db->dropCollection( $collection )->getArrayCopy();
+                            if ( $result['ok'] == 1 ) {
+                                /** @var MongoDB\Collection $coll */
+                                $command = new MongoDB\Driver\Command([
+                                    'renameCollection' => $database.'.'.$tempCollectionName,
+                                    'to' => $database.'.'.$collection
+                                ]);
+                                // ToDo !! analyse result and act accordingly !!
+                                $result = $manager->executeCommand('admin', $command);
+
+                                $collection = $this->getOneCollection ($database, $collection );
+                                return response()->success('success', array( 'collection' => $collection ));
+                            }
+                        }
+                    }
+                    return response()->error('failed', array('message' => 'unhandled errors have occurred'));
+                }
+                return response()->error('failed', array('message' => $errors));
+            }
+        }
+        catch(\MongoDB\Driver\Exception\Exception $exception) {
+            return response()->error('failed', array('message' => $exception->getMessage()));
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
+     *Add an Index to one collection
+     *
+     * URL:         /api/v1/collection/index
+     * Method:      POST
+     * Description: Add an new Index to a collection (standard or 2d)
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function indexCollection(Request $request)
+    {
+        try {
+            $database       = $request->get('database');
+            $collection     = $request->get('collection');
+            $params         = $request->get('params');
+            $errors         = [];
+            $directions     = array(
+                "ASC" => 1,
+                "DESC" => -1
+            );
+
+            // get the collection
+            /** @var MongoDB\Collection $coll */
+            $coll         = $this->mongo->connectClientCollection( $database, $collection );
+
+            if ($params['create'] == true) {
+                $keys    = [];
+                $options = [];
+
+                // set the options
+                if ($params['unique'] == true) {
+                    $options['unique'] = true;
+                }
+                if ($params['sparse'] == true) {
+                    $options['sparse'] = true;
+                }
+
+                // extract the keys
+                $fields = $params['fields'];
+                foreach ($fields as $field) {
+                    $keys[ $field['field'] ] = $directions[ $field['direction'] ];
+                }
+
+                // create
+                $indexName = $coll->createIndex($keys, $options);
+
+                return response()->success('success', array( 'index' => $indexName ));
+            }
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Rename a collection
+     *
+     * URL:         /api/v1/collection/rename
+     * Method:      POST
+     * Description: Rename a single collection
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function renameCollection(Request $request)
+    {
+        try {
+            $database       = $request->get('database');
+            $collection     = $request->get('collection');
+            $params         = $request->get('params');
+
+            if (!empty($params['newName'])) {
+                // connect the manager
+                $this->mongo->connectManager();
+                /** @var MongoDB\Driver\Manager $manager */
+                $manager = $this->mongo->getManager();
+
+                /** @var MongoDB\Collection $coll */
+                $command = new MongoDB\Driver\Command([
+                    'renameCollection' => $database.'.'.$collection,
+                    'to' => $database.'.'.$params['newName']
+                ]);
+                // ToDo: analyse this result and acto accordingly
+                $result = $manager->executeCommand('admin', $command);
+
+                return response()->success('success', array( 'collection' => $collection ));
+            }
+            return response()->error('failed', array('message' => 'missing required parameters'));
+        }
+        catch(MongoDB\Driver\Exception\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Rename a collection
+     *
+     * URL:         /api/v1/collection/duplicate
+     * Method:      POST
+     * Description: Duplicate a single collection
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function duplicateCollection(Request $request)
+    {
+        try {
+            $database       = $request->get('database');
+            $collection     = $request->get('collection');
+            $params         = $request->get('params');
+
+            if (!empty($params['duplicateName'])) {
+                $duplicateName = $params['duplicateName'];
+                $overwrite     = $params['overwrite'];
+                $indexes       = $params['indexes'];
+
+                // get the database
+                /** @var MongoDB\Database $db */
+                $db         = $this->mongo->connectClientDb( $database );
+
+                if ($overwrite == true) {
+                    // get the destination
+                    $destination = $this->mongo->connectClientCollection( $database, $duplicateName );
+                    // confirm we have a collection
+                    if ( $destination instanceof MongoDB\Collection ) {
+                        /** @var MongoDB\Model\BSONDocument $result */
+                        $result = $destination->drop();
+                        if ($result->errmsg) {
+                            return response()->error('failed', array('message' => $result->errmsg));
+                        }
+                    }
+                }
+
+                // default options
+                // ToDo: we will introduce an option to 'preserve' the options from the source collections
+                $options = [];
+                $db->createCollection( $duplicateName, $options );
+
+                // ToDo:  modify the getObjects() so that we can onlt have the 'objects' data returned
+                $documents = MongoHelper::getObjects( $this->client, $database, $collection )['objects'];
+
+                // connect the manager
+                $this->mongo->connectManager();
+                /** @var MongoDB\Driver\Manager $manager */
+                $manager = $this->mongo->getManager();
+
+                $inserted = 0;
+                // enforce the use of our provided collection name - also passing the documents array within an indexed array container
+                MongoHelper::handleBulkInsert($manager, $database, array(0 => $documents), $duplicateName, true, $inserted);
+
+                if ($indexes == true) {
+                    $keys = [];
+                    $i    = 0;  // might be able to use (~ as $i => $index) instead
+                    // copy the indexes from source to duplicate
+                    /** @var MongoDB\Collection $source */
+                    $source  = $this->mongo->connectClientCollection( $database, $collection );
+                    foreach ( $source->listIndexes() as $index ) {
+                        // we dont need the _id_ index as its created along with the collection
+                        if ($i >= 1) {
+                            foreach ($index['key'] as $k => $v) {
+                                $keys[ $k ] = $v;
+                            }
+                        }
+                        $i++;
+                    }
+
+                    if (count($keys) >= 1) {
+                        /** @var MongoDB\Collection $coll */
+                        $coll = $this->mongo->connectClientCollection( $database, $duplicateName );
+                        $coll->createIndex($keys, $options);
+                    }
+                }
+                $duplicate = $this->getOneCollection( $database, $duplicateName );
+                return response()->success('success', array( 'collection' => $duplicate ));
+            }
+            return response()->error('failed', array('message' => 'missing required parameters'));
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Validate a collection
+     *
+     * URL:         /api/v1/collection/validate/{database}/{collection}
+     * Method:      GET
+     * Description: Validate a single collection
+     *
+     * @param Request $request
+     * @param $database
+     * @param $collection
+     * @return mixed
+     */
+    public function validateCollection(Request $request, $database, $collection)
+    {
+        try {
+            if (isset($database, $collection)) {
+                // connect the manager
+                $this->mongo->connectManager();
+                /** @var MongoDB\Driver\Manager $manager */
+                $manager = $this->mongo->getManager();
+
+                /** @var MongoDB\Collection $coll */
+                $command = new MongoDB\Driver\Command([
+                    'validate' => $collection,
+                    'full' => true
+                ]);
+                $validation = $manager->executeCommand($database, $command);
+
+                return response()->success('success', array( 'validation' => $validation->toArray() ));
+            }
+        }
+        catch(\MongoDB\Driver\Exception\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Exlain a mongodb query
+     *
+     * URL:         /api/v1/collection/query/explain
+     * Method:      POSY
+     * Description: Validate a single collection
+     * @return mixed
+     * @throws MongoDB\Driver\Exception\Exception
+     */
+    public function getQueryExplain(Request $request)
+    {
+        try {
+            $database       = $request->get('database');
+            $collection     = $request->get('collection');
+            $format         = $request->get('format');
+            $query          = $request->get('query');
+
+            $query = json_decode($query, true);
+
+            /** @var MongoDB\Collection $coll */
+            $coll = $this->mongo->connectClientCollection( $database, $collection );
+
+            $query = new MongoDb\Operation\Find(
+                $coll->getDatabaseName(),
+                $coll->getCollectionName(),
+                $query
+            );
+
+            /** @var MongoDB\Model\BSONDocument $result */
+            $result = $coll->explain( $query );
+            $array  = $result->getArrayCopy();
+
+            $result = [];
+            foreach ($array as $section) {
+                if ($section instanceof MongoDB\Model\BSONDocument) {
+                    $arr = [];
+                    $elements = $section->getArrayCopy();
+                    foreach ($elements as $key => $element) {
+                        if ($element instanceof MongoDB\Model\BSONDocument) {
+                            $value = $element->getArrayCopy();
+                            if ($value instanceof MongoDB\Model\BSONDocument || $value instanceof MongoDB\Model\BSONArray) {
+                                $value = $value->getArrayCopy();
+                            }
+                            $arr[ $key ] = $value;
+                        } else {
+                            $arr[ $key ] = $element;
+                        }
+                    }
+                    $result[] = $arr;
+
+                } else {
+                    $result[] = $section;
+                }
+            }
+
+            // ToDo: !! Build a Document extraction class - the MongoHelper is not that good as yet - may as well create a dedicated Class for the task
+            if (isset($result[0]['parsedQuery']['x']) && $result[0]['parsedQuery']['x'] instanceof MongoDB\Model\BSONDocument) {
+                $result[0]['parsedQuery']['x'] = $result[0]['parsedQuery']['x']->getArrayCopy();
+            }
+
+            if (isset($result[0]['winningPlan']['inputStage']) && $result[0]['winningPlan']['inputStage'] instanceof MongoDB\Model\BSONDocument) {
+                $result[0]['winningPlan']['inputStage'] = $result[0]['winningPlan']['inputStage']->getArrayCopy();
+            }
+
+            if (isset($result[0]['winningPlan']['inputStage']['keyPattern']) && $result[0]['winningPlan']['inputStage']['keyPattern'] instanceof MongoDB\Model\BSONDocument) {
+                $result[0]['winningPlan']['inputStage']['keyPattern'] = $result[0]['winningPlan']['inputStage']['keyPattern']->getArrayCopy();
+            }
+
+            if (isset($result[0]['winningPlan']['inputStage']['multiKeyPaths']) && $result[0]['winningPlan']['inputStage']['multiKeyPaths'] instanceof MongoDB\Model\BSONDocument) {
+                $result[0]['winningPlan']['inputStage']['multiKeyPaths'] = $result[0]['winningPlan']['inputStage']['multiKeyPaths']->getArrayCopy();
+            }
+
+            if (isset($result[0]['winningPlan']['inputStage']['multiKeyPaths']['x']) && $result[0]['winningPlan']['inputStage']['multiKeyPaths']['x'] instanceof MongoDB\Model\BSONArray) {
+                $result[0]['winningPlan']['inputStage']['multiKeyPaths']['x'] = $result[0]['winningPlan']['inputStage']['multiKeyPaths']['x']->getArrayCopy();
+            }
+
+            if (isset($result[0]['winningPlan']['inputStage']['indexBounds']) && $result[0]['winningPlan']['inputStage']['indexBounds'] instanceof MongoDB\Model\BSONDocument) {
+                $result[0]['winningPlan']['inputStage']['indexBounds'] = $result[0]['winningPlan']['inputStage']['indexBounds']->getArrayCopy();
+            }
+
+            if (isset($result[0]['winningPlan']['inputStage']['indexBounds']['x']) && $result[0]['winningPlan']['inputStage']['indexBounds']['x'] instanceof MongoDB\Model\BSONArray) {
+                $result[0]['winningPlan']['inputStage']['indexBounds']['x'] = $result[0]['winningPlan']['inputStage']['indexBounds']['x']->getArrayCopy();
+            }
+
+            if (isset($result[0]['rejectedPlans']) && $result[0]['rejectedPlans'] instanceof MongoDB\Model\BSONArray) {
+                $result[0]['rejectedPlans']= $result[0]['rejectedPlans']->getArrayCopy();
+            }
+
+            if (isset($result[1]['executionStages']['inputStage']) && $result[1]['executionStages']['inputStage'] instanceof MongoDB\Model\BSONDocument) {
+                $result[1]['executionStages']['inputStage'] = $result[1]['executionStages']['inputStage']->getArrayCopy();
+            }
+
+            if (isset($result[1]['executionStages']['inputStage']['keyPattern']) && $result[1]['executionStages']['inputStage']['keyPattern'] instanceof MongoDB\Model\BSONDocument) {
+                $result[1]['executionStages']['inputStage']['keyPattern'] = $result[1]['executionStages']['inputStage']['keyPattern']->getArrayCopy();
+            }
+
+            if (isset($result[1]['executionStages']['inputStage']['multiKeyPaths']) && $result[1]['executionStages']['inputStage']['multiKeyPaths'] instanceof MongoDB\Model\BSONDocument) {
+                $result[1]['executionStages']['inputStage']['multiKeyPaths'] = $result[1]['executionStages']['inputStage']['multiKeyPaths']->getArrayCopy();
+            }
+
+            if (isset($result[1]['executionStages']['inputStage']['multiKeyPaths']['x']) && $result[1]['executionStages']['inputStage']['multiKeyPaths']['x'] instanceof MongoDB\Model\BSONArray) {
+                $result[1]['executionStages']['inputStage']['multiKeyPaths']['x'] = $result[1]['executionStages']['inputStage']['multiKeyPaths']['x']->getArrayCopy();
+            }
+
+            if (isset($result[1]['executionStages']['inputStage']['indexBounds']) && $result[1]['executionStages']['inputStage']['indexBounds'] instanceof MongoDB\Model\BSONDocument) {
+                $result[1]['executionStages']['inputStage']['indexBounds'] = $result[1]['executionStages']['inputStage']['indexBounds']->getArrayCopy();
+            }
+
+            if (isset($result[1]['executionStages']['inputStage']['indexBounds']['x']) && $result[1]['executionStages']['inputStage']['indexBounds']['x'] instanceof MongoDB\Model\BSONArray) {
+                $result[1]['executionStages']['inputStage']['indexBounds']['x'] = $result[1]['executionStages']['inputStage']['indexBounds']['x']->getArrayCopy();
+            }
+
+            if (isset($result[1]['allPlansExecution']) && $result[1]['allPlansExecution'] instanceof MongoDB\Model\BSONArray) {
+                $result[1]['allPlansExecution'] = $result[1]['allPlansExecution']->getArrayCopy();
+            }
+            return response()->success('success', array( 'explain' => $result ));
+
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Fetch query logs
+     *
+     * URL:         /api/v1/collection/query/logs/{database}/{collection}
+     * Method:      GET
+     * Description: Get query logs for a given database and collection and current user
+     *
      * @param $database
      * @param $collection
      *
@@ -711,14 +1076,75 @@ class CollectionController extends Controller implements Unserializable
     }
 
     /**
-     * Mostly we dont need this as we want to strip out all the bits individually
-     * In most cases ->getArrayCopy() or ->__toString() suffice
+     * Clearing all documents from a MongoDB collection
      *
-     * @inheritDoc
+     * URL:         /api/v1/collection/clear
+     * Method:      POST
+     * Description: Clear all documents from collection matching the given name
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function bsonUnserialize(array $data)
+    public function clearCollection(Request $request)
     {
-        // TODO: Implement bsonUnserialize() method.
-        $this->unserialised = $data;
+        try {
+            $database   = $request->get('database');
+            $collection = $request->get('collection', false);
+            $status     = array();
+            if (isset($database, $collection)) {
+                /** @var MongoDB\Collection $collection */
+                $collection = $this->mongo->connectClientCollection($database, $collection);
+                $result = $collection->deleteMany([]);
+                $status = array("collection" => $collection, "deleted" => $result->getDeletedCount());
+            }
+            return response()->success('success', array('status' => $status ));
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Deleting a MongoDB collection
+     *
+     * URL:         /api/v1/collection/delete
+     * Method:      POST
+     * Description: Delete the database matching the given name
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteCollection(Request $request)
+    {
+        try {
+            $database   = $request->get('database');
+            $collection = $request->get('collection', false);
+            $ns = $database . '.' . $collection;
+            if (!is_array($collection)) {
+                $collection = array($collection);
+            }
+            $status     = array();
+            if ($collection && is_array($collection)) {
+                foreach ($collection as $name) {
+                    if (!empty($name)) {
+                        $collection = $this->mongo->connectClientCollection($database, $name);
+                        /** @var MongoDB\Model\BSONDocument $result */
+                        $result = $collection->drop();
+
+                        // ToDo: !! getting an odd error from front-end - request is sent twice
+                        if ($result->errmsg) {
+                            return response()->error('failed', array('message' => $result->errmsg));
+
+                        } else {
+                            $status[] = $this->setDeleteStatus( $name, $result->getArrayCopy(), $ns);
+                        }
+                    }
+                }
+            }
+            return response()->success('success', array('status' => $status ));
+        }
+        catch(\Exception $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+        }
     }
 }

@@ -96,17 +96,17 @@
             }
             table.bordered {
                 th.bb {
-                    border-bottom: 1px solid $infoColor;
+                    border-bottom: 1px solid $cccColor;
                 }
                 th.rb {
-                    border-right: 1px solid $infoColor;
+                    border-right: 1px solid $cccColor;
                 }
                 td {
-                    border-bottom: 1px solid $infoColor;
+                    border-bottom: 1px solid $cccColor;
                     text-align: left;
                 }
                 td.rb, table.collection td.rb {
-                    border-right: 1px solid $infoColor;
+                    border-right: 1px solid $cccColor;
                 }
                 td.text-center {
                     text-align: center !important;

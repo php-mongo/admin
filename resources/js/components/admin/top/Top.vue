@@ -264,7 +264,7 @@
             },
 
             getError() {
-                if (this.error.error) {
+                if (this.error && this.error.error) {
                     return "Error: " + this.error.error;
                 }
             }

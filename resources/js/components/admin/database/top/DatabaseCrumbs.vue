@@ -32,7 +32,8 @@
             li {
                 display: inline-block;
                 list-style-type: none;
-                margin-left: 7px;
+                margin-left: 10px;
+
                 span.crumb {
                     font-weight: bold;
                     font-size: 12px;
@@ -51,24 +52,37 @@
         }
         ul.right {
             position: absolute;
-            right: 20px;
+            right: 18px;
             top: 0;
 
-            .country-flag {
-                height: 33px;
-                width: 33px;
-                cursor: pointer;
+            .li-filter {
+                position: relative;
 
-                img {
-                    margin-top: -5px;
+                .doc-filter {
+                    max-height: 30px;
+                    margin: 2px 0 0 0;
+                }
+
+                span {
+                    position: absolute;
+                    top: 0;
+                    right: 3px;
+
+                    img {
+                        cursor: pointer;
+                        display: inline-block;
+                        width: 1rem;
+                    }
                 }
             }
 
-            .nav-collapse {
-                cursor: pointer;
+            .nav-coll {
+                span {
+                    cursor: pointer;
 
-                img {
-                    width: 1.2rem;
+                    img {
+                        margin-top: -3px;
+                    }
                 }
             }
         }
@@ -110,7 +124,11 @@
                 </li>
             </ul>
             <ul class="links right">
-                <li v-on:click="collapseDb">
+                <li class="li-filter" v-if="watchActiveCollection">
+                    <input class="doc-filter" type="text" v-model="filter" v-on:keyup="filterCollection" placeholder="Document filter">
+                    <span v-on:click="clearFilter"><img src="/img/prev.png" alt="Clear filter" title="Clear filter"></span>
+                </li>
+                <li class="nav-coll" v-on:click="collapseDb">
                     <span class="nav-collapse" v-show="collapsed" :title="showLanguage('nav', 'collapse')"><img src="/img/sort-asc.svg" alt="Collapse nav" /> </span>
                     <span class="nav-collapse" v-show="!collapsed" :title="showLanguage('nav', 'expand')"><img src="/img/sort-desc.svg" alt="Expand nav" /> </span>
                 </li>
@@ -161,7 +179,9 @@
                 activeDatabase: null,
                 activeColl: null,
                 activeCollection: null,
-                collapsed: false
+                collapsed: false,
+                filter: null,
+                filtering: false
             };
         },
 
@@ -263,7 +283,7 @@
             },
 
             /*
-             *  Clear data so that we dont see previuos elements
+             *  Clear data so that we dont see previous elements
              */
             clearData() {
                 this.activeColl = this.activeCollection = this.activeDb = this.activeDatabase = null;
@@ -275,6 +295,25 @@
             collapseDb() {
                 this.collapsed = !this.collapsed;
                 EventBus.$emit('collapse-db', this.collapsed);
+            },
+
+            filterCollection() {
+                if (this.filter.length >= 1) {
+                    this.filtering = true;
+                    console.log("filtering: " + this.filter);
+                    EventBus.$emit('run-document-filter', this.filter);
+
+                } else {
+                    if (this.filtering === true) {
+                        EventBus.$emit('clear-document-filter');
+                        this.filtering = false;
+                    }
+                }
+            },
+
+            clearFilter() {
+                this.filter = null;
+                EventBus.$emit('clear-document-filter');
             }
         },
 

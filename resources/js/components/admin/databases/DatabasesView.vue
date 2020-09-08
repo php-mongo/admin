@@ -82,13 +82,13 @@
                 padding: 4px 4px 4px 8px;
             }
             table.bordered th.bb {
-                border-bottom: 1px solid $infoColor;
+                border-bottom: 1px solid $cccColor;
             }
             table.bordered th.rb {
                 border-right: 1px solid $infoColor;
             }
             table.bordered td {
-                border-bottom: 1px solid $infoColor;
+                border-bottom: 1px solid $cccColor;
                 text-align: left;
             }
             table.bordered td.rb {

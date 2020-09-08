@@ -47,21 +47,6 @@ export default {
     },
 
     /*
-    *   Query a collection
-    *   POST /api/v1/collection/query
-    */
-    queryCollection: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/collection/query',
-            {
-                params: data.params,
-                format: data.format,
-                collection: data.collection,
-                database: data.database,
-                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
-            });
-    },
-
-    /*
     *   Delete one or more collection(s)
     *   POST  /api/v1/collection/delete
     */
@@ -75,7 +60,7 @@ export default {
     },
 
     /*
-    *  Clear all documents from a collection
+    *   Clear all documents from a collection
     *   POST  /api/v1/collection/clear
     */
     clearCollection: ( data ) => {
@@ -88,7 +73,7 @@ export default {
     },
 
     /*
-    *  Export one or more collections (download version)
+    *   Export one or more collections (download version)
     *   POST  /api/v1/collection/export
     */
     exportCollectionDownload: ( data ) => {
@@ -106,7 +91,7 @@ export default {
     },
 
     /*
-    *  Export one or more collections (download version)
+    *   Export one or more collections (download version)
     *   POST  /api/v1/collection/exports
     */
     exportCollectionView: (data) => {
@@ -151,11 +136,105 @@ export default {
     },
 
     /*
+    *   Save one collection properties
+    *   POST  /api/v1/collection/properties
+    */
+    saveProperties: (data) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/collection/properties',
+            {
+                database: data.database,
+                collection: data.collection,
+                params: data.params,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Save one collection index
+    *   POST  /api/v1/collection/index
+    */
+    saveIndex: (data) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/collection/index',
+            {
+                database: data.database,
+                collection: data.collection,
+                params: data.params,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Rename one collection index
+    *   POST  /api/v1/collection/rename
+    */
+    renameCollection: (data) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/collection/rename',
+            {
+                database: data.database,
+                collection: data.collection,
+                params: data.params,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Duplicate one collection
+    *   POST  /api/v1/collection/duplicate
+    */
+    duplicateCollection: (data) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/collection/duplicate',
+            {
+                database: data.database,
+                collection: data.collection,
+                params: data.params,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Validation one collection
+    *   POST  /api/v1/collection/validate
+    */
+    validateCollection: (data) => {
+        return axios.get( MONGO_CONFIG.API_URL + '/collection/validate/' + data.database + '/' + data.collection);
+    },
+
+    /*
+    *   Query a collection
+    *   POST /api/v1/collection/query
+    */
+    queryCollection: ( data ) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/collection/query',
+            {
+                params: data.params,
+                format: data.format,
+                collection: data.collection,
+                database: data.database,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
     *   Fetch query logs for a database.collection
-    *   GET  /api/v1/collection/querylogs/{database}/{collection}
+    *   GET  /api/v1/collection/query/logs/{database}/{collection}
     */
     getQueryLogs: ( data ) => {
-        return axios.get( MONGO_CONFIG.API_URL + '/collection/querylogs/' + data.database + '/' + data.collection );
+        return axios.get( MONGO_CONFIG.API_URL + '/collection/query/logs/' + data.database + '/' + data.collection );
+    },
+
+    /*
+    *   Fetch query explain for a database.collection.query
+    *   GET  /api/v1/collection/query/explain
+    */
+    getQueryExplain: ( data ) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/collection/query/explain',
+            {
+                database: data.database,
+                collection: data.collection,
+                format: data.format,
+                query: data.query,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
     },
 
     /*
@@ -193,7 +272,6 @@ export default {
     *   POST /api/v1/document/update
     */
     updateDocument: ( data ) => {
-        console.log("updating for: " + data._id);
         return axios.put( MONGO_CONFIG.API_URL + '/document/update/' + data._id,
             {
                 _id: data._id,
