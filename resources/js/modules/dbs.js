@@ -235,7 +235,6 @@ export const dbs = {
             } else {
                 let db = state.dbs.find(db => db.id === id);
                 if (db) {
-                    console.log("setting display db state: " + id);
                     state.displayDbStatus = id;
                     state.displayDb = db;
                     return db;

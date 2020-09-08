@@ -122,7 +122,6 @@
             },
 
             setFile(event) {
-                console.log(event.target);
                 let name             = event.target.name;
                 this.form.type = name; //[name] = true;
                 this.form.selected   = name;

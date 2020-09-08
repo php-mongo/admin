@@ -25,7 +25,7 @@
             margin-left: 20px;
 
             li.coll {
-                border-bottom: 1px solid $darkGreyColor;
+                border-bottom: 1px solid $lighterGrey;
                 margin: 0 0 10px 0;
 
                 input {

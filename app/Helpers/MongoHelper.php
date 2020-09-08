@@ -434,29 +434,20 @@ class MongoHelper
         $level  = 0;
         // a function to handle recursive document levels
         // iterate the document
-    //    dd($document);
         foreach ($document as $key => $value) {
             if ($key == '_id') {
-         //       echo '<pre>'; var_dump($value); echo '</pre>'; die;
                 if (is_object($value) && $OID == false) {
 
-                //    echo '<pre>'; var_dump($value); echo '</pre>'; die;
-
                     $oid = $value->__toString();
-
-                //    echo '<pre>'; var_dump($oid); echo '</pre>'; die;
 
                 }
                 elseif ($OID == true && !is_string($value)) {
                     $oid = array("oid" => $value->__toString());
-            //        echo '<pre>'; var_dump($key); echo '</pre>';
-            //        echo '<pre>'; var_dump($oid); echo '</pre>'; die;
                 }
                 else {
                     $oid = $value;
                 }
                 $arr[ $key ] =  $oid;
-            //    echo '<pre>'; var_dump($arr); echo '</pre>'; die;
 
             } else {
                 if ($value instanceof MongoDB\Model\BSONDocument) {
@@ -599,7 +590,6 @@ class MongoHelper
      */
     public static function handleBulkInsert( $manager, $database, $array, $collection, $useCollection, &$inserted, $isJson = false )
     {
-    //    dd($array);
         foreach ($array as $coll => $inserts) {
             // renew for each collection insert
             $bulk = new MongoDB\Driver\BulkWrite();

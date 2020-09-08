@@ -461,7 +461,6 @@
                         //     return true;
                         // }
                         if (this.verifiedEmail === e) {
-                            console.log('email already verified!');
                             this.$refs.password.focus();
 
                         } else {
@@ -473,11 +472,9 @@
             },
 
             checkEmailResult(e) {
-                console.log("checkEmailResult: " + e);
                 let  status = this.$store.getters.getEmailCheckStatus;
                 let result = false, self = this;
                 if (status === 1) {
-                    console.log("getEmailCheckStatus return: " + status);
                     self.checkEmailResult();
                 }
                 result = this.$store.getters.getEmailCheck;

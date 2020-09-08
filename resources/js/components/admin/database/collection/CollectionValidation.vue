@@ -94,7 +94,6 @@
 
             handleValidate() {
                 let status = this.$store.getters.getCollectionValidationStatus;
-                console.log("status: " + status);
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     setTimeout(() => {
@@ -106,9 +105,7 @@
                     // success!
                     this.actionMessage = this.showLanguage('collection', 'validateSuccess');
                     let validation = this.$store.getters.getCollectionValidation;
-                    console.log("ns: " + validation.ns);
                     validation = JSON.stringify(validation);
-                //    console.log(validation);
                     this.validation  = this.$convObj().jsonH(validation);
                 }
                 else if (status === 3) {

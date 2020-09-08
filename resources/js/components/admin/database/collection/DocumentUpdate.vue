@@ -143,21 +143,17 @@
              */
             switchFormat(event) {
                 let value = this.$jqf(event.target).value();
-                console.log('value: ' + value);
                 if (value === 'array') {
-                    console.log('go to array...');
                     this.form.format   = 'array';
                     this.form.edit     = 'text';
                     this.form.document = this.makeArray();
 
                 }  else if (value === 'json') {
-                    console.log('go to json...');
                     this.form.format   = 'json';
                     this.form.edit     = 'text';
                     this.form.document = this.makeJson();
 
                 } else if (value === 'fields') {
-                    console.log('go to fields...');
                     this.form.format = 'fields';
                     this.fields      = this.makeFields();
                     this.form.edit   = 'fields';

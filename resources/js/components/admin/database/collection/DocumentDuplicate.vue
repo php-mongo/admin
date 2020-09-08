@@ -123,19 +123,14 @@
              */
             switchFormat(event) {
                 let value = this.$jqf(event.target).value();
-                console.log('value: ' + value);
                 if (value === 'array') {
-                    console.log('go to array...');
                     this.form.format   = 'array';
                     this.form.document = this.makeArray( this.form.document );
 
                 }  else if (value === 'json') {
-                    console.log('go to json...');
                     this.form.format   = 'json';
                     this.form.document = this.makeJson( this.form.document );
 
-                } else {
-                    console.log("ohh no!!! not you again!!");
                 }
             },
 
@@ -152,8 +147,6 @@
              */
             saveDuplicate( action ) {
                 this.errorMessage = null;
-
-                console.log( "duplicating!" );
 
                 // check format
                 if (this.form.format === 'array') {

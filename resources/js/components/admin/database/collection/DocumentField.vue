@@ -162,7 +162,6 @@
              */
             switchType(event) {
                 let type = this.$jqf(event.target).value();
-                console.log('value: ' + type);
                 this.form.type = type;
                 if (type === 'null') {
                     this.form.value = null;
@@ -183,8 +182,6 @@
              */
             saveField( action ) {
                 this.action = action;
-                console.log( "saving action: " + this.action );
-
                 if (this.validate()) {
                     if (action === 'apply-all') {
                         if (this.newDocument === true) {
@@ -204,7 +201,6 @@
 
             createNewDocument() {
                 let document = '{"' + this.form.field + '":"' + this.form.value + '"}';
-             //   console.log(document);
                 let form = {
                     collection: this.form.collection,
                     database: this.form.database,
@@ -212,8 +208,6 @@
                     number: 1,
                     document: document
                 };
-             //   console.log(form);
-             //   return;
                 // send
                 this.$store.dispatch( 'createDocument', form );
                 this.handleNew();

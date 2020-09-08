@@ -392,7 +392,8 @@ class CollectionController extends Controller implements Unserializable
             $params           = $request->get('params');
             $format           = $request->get('format');
             $criteria         = $params['criteria'];
-            $query            = $format == 'json' ? json_decode($criteria[ $format ], true) : $criteria[ $format ];
+            // ToDo: !! implement a sanity check if the format is array and we need to use EVIL eval() !!
+            $query            = $format == 'json' ? json_decode($criteria[ $format ], true) : eval("return " . $criteria[ $format ] . ";");
             $collection       = $this->mongo->connectClientCollection($this->database, $this->collection);
             $results          = $collection->find( $query );
             $results          = $results->toArray();
@@ -481,8 +482,6 @@ class CollectionController extends Controller implements Unserializable
                 // value containers
                 $contents       = "";
                 $countDocuments = 0;
-
-            //    echo '<pre>'; var_dump($collections); echo '</pre>';
 
                 // handle some variations on the export theme
                 if ($params['json'] == true) {
@@ -612,7 +611,6 @@ class CollectionController extends Controller implements Unserializable
                 } else {
                     // ToDo: !! for now - we accept the JSON file exported by PhpMongoAdmin and also JSON export from Compass
                     $arr = $arr[0];
-                //    dd(json_decode($arr, true));
                     $arr = json_decode($arr, true);
                     MongoHelper::handleBulkInsert($manager, $database, $arr, $collection, $useCollection, $inserted, true);
                 }
@@ -681,9 +679,8 @@ class CollectionController extends Controller implements Unserializable
                                     'renameCollection' => $database.'.'.$tempCollectionName,
                                     'to' => $database.'.'.$collection
                                 ]);
+                                // ToDo !! analyse result and act accordingly !!
                                 $result = $manager->executeCommand('admin', $command);
-
-                        //        dd($result);
 
                                 $collection = $this->getOneCollection ($database, $collection );
                                 return response()->success('success', array( 'collection' => $collection ));
@@ -696,7 +693,6 @@ class CollectionController extends Controller implements Unserializable
             }
         }
         catch(\MongoDB\Driver\Exception\Exception $exception) {
-         //   dd($exception);
             return response()->error('failed', array('message' => $exception->getMessage()));
         }
         catch(\Exception $e) {
@@ -726,8 +722,6 @@ class CollectionController extends Controller implements Unserializable
                 "DESC" => -1
             );
 
-         //   dd($params);
-
             // get the collection
             /** @var MongoDB\Collection $coll */
             $coll         = $this->mongo->connectClientCollection( $database, $collection );
@@ -750,12 +744,8 @@ class CollectionController extends Controller implements Unserializable
                     $keys[ $field['field'] ] = $directions[ $field['direction'] ];
                 }
 
-                //dd($keys);
-
                 // create
                 $indexName = $coll->createIndex($keys, $options);
-
-             //   dd($indexName);
 
                 return response()->success('success', array( 'index' => $indexName ));
             }
@@ -782,8 +772,6 @@ class CollectionController extends Controller implements Unserializable
             $collection     = $request->get('collection');
             $params         = $request->get('params');
 
-         //   dd($params);
-
             if (!empty($params['newName'])) {
                 // connect the manager
                 $this->mongo->connectManager();
@@ -795,9 +783,8 @@ class CollectionController extends Controller implements Unserializable
                     'renameCollection' => $database.'.'.$collection,
                     'to' => $database.'.'.$params['newName']
                 ]);
+                // ToDo: analyse this result and acto accordingly
                 $result = $manager->executeCommand('admin', $command);
-
-            //    dd($result);
 
                 return response()->success('success', array( 'collection' => $collection ));
             }
@@ -968,16 +955,10 @@ class CollectionController extends Controller implements Unserializable
 
             /** @var MongoDB\Model\BSONDocument $result */
             $result = $coll->explain( $query );
-
-        //    $fields = [];
-        //    $array  = MongoHelper::extractDocument( $result->getArrayCopy(), $fields); // $result->getArrayCopy();
-        //    dd($array);
-       //     echo '<pre>'; var_dump($array); echo '</pre>'; die;
-
             $array  = $result->getArrayCopy();
+
             $result = [];
             foreach ($array as $section) {
-                /** M */
                 if ($section instanceof MongoDB\Model\BSONDocument) {
                     $arr = [];
                     $elements = $section->getArrayCopy();
@@ -999,8 +980,7 @@ class CollectionController extends Controller implements Unserializable
                 }
             }
 
-         //   dd($result);
-
+            // ToDo: !! Build a Document extraction class - the MongoHelper is not that good as yet - may as well create a dedicated Class for the task
             if (isset($result[0]['parsedQuery']['x']) && $result[0]['parsedQuery']['x'] instanceof MongoDB\Model\BSONDocument) {
                 $result[0]['parsedQuery']['x'] = $result[0]['parsedQuery']['x']->getArrayCopy();
             }
@@ -1060,10 +1040,8 @@ class CollectionController extends Controller implements Unserializable
             if (isset($result[1]['allPlansExecution']) && $result[1]['allPlansExecution'] instanceof MongoDB\Model\BSONArray) {
                 $result[1]['allPlansExecution'] = $result[1]['allPlansExecution']->getArrayCopy();
             }
-
-         //   dd($result);
-
             return response()->success('success', array( 'explain' => $result ));
+
         }
         catch(\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
@@ -1152,10 +1130,7 @@ class CollectionController extends Controller implements Unserializable
                         $collection = $this->mongo->connectClientCollection($database, $name);
                         /** @var MongoDB\Model\BSONDocument $result */
                         $result = $collection->drop();
-                        //    echo '<pre>'; var_dump(is_object($result)); echo '</pre>';
-                        //    echo '<pre>'; var_dump($result); echo '</pre>';
-                        //    echo '<pre>'; var_dump($ns); echo '</pre>';
-                        //    echo '<pre>'; var_dump($name); echo '</pre>'; die;
+
                         // ToDo: !! getting an odd error from front-end - request is sent twice
                         if ($result->errmsg) {
                             return response()->error('failed', array('message' => $result->errmsg));

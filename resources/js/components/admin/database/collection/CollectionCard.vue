@@ -83,7 +83,7 @@
             display: none;
         }
         .collection-document {
-            border: 2px #ccc solid;
+            border: 2px $regularGrey solid;
             margin-bottom: 10px;
             min-height: 100px;
             position: relative;
@@ -93,14 +93,14 @@
             }
 
             .doc-nav {
-                border-bottom: 1px #999 solid;
+                border-bottom: 1px $lighterGrey solid;
                 display: inline-block;
                 margin: 0 0 5px 50px;
                 padding: 5px 0 0 0;
             }
             .doc-data {
                 display: block;
-                max-height: 150px;
+                max-height: 100px;
                 overflow-y: hidden;
                 padding: 0 0 5px 50px;
                 width: 99%;
@@ -351,7 +351,7 @@
                     <input type="submit" :value="showLanguage('collection', 'buttonSubmit')" v-on:click="submitQuery" />
                     <input type="button" :value="showLanguage('collection', 'buttonExplain')" v-on:click="explainQuery" />
                     <input type="button" :value="showLanguage('collection', 'buttonClear')" v-on:click="clearForm" />
-                    [<a href="http://rockmongo.com/wiki/queryExamples?lang=en_us" target="_blank" v-text="showLanguage('collection', 'queryExamples')"></a>]
+                    [<a href="https://phpmongoadmin.com/support/documentation/collections/collection-query-examples" target="_blank" v-text="showLanguage('collection', 'queryExamples')"></a>]
                     <span v-if="cost"><span v-text="showLanguage('collection', 'cost')"></span> {{ roundCost }}s</span>
                     <p v-if="message" class="error">{{ message }}</p>
                 </td>
@@ -471,6 +471,7 @@
                 count: 0,
                 stats: {},
                 allObjects: [],
+                filterObjects: [], // used to store allObjects while filtering
                 visibleObjects:[],
                 criteriaDefault: '{\n' +
                         '\t\n' +
@@ -702,20 +703,20 @@
                     return;
                 }
                 if (this.format === 'json') {
-                    let json = this.$convObj(this.form.criteria.json).minify();
-                    console.log(json);
+                    let json = this.$convObj().minify(this.form.criteria.json);
                     if (json === '{}') {
                         this.message = this.showLanguage('collection', 'msgEmptyQuery');
                         return;
                     }
+                    this.form.criteria.json = json;
                 }
                 if (this.format === 'array') {
-                    let array = this.$convObj(this.form.criteria.array).minify();
-                    console.log(array);
+                    let array = this.$convObj().minify(this.form.criteria.array);
                     if (array === '()') {
                         this.message = this.showLanguage('collection', 'msgEmptyQuery');
                         return;
                     }
+                    this.form.criteria.array = array;
                 }
                 // tests completed - send query to DB
                 let data = {params: this.form, format: this.format, database: this.getDatabaseName(), collection: this.getCollectionName()};
@@ -725,7 +726,6 @@
 
             handleQuery() {
                 let status = this.$store.getters.getQueryCollectionLoadStatus;
-                console.log("handleQuery status: " + status);
                 if (status === 1 && this.index < this.limit) {
                     let self = this;
                     setTimeout(function() {
@@ -768,7 +768,6 @@
             },
 
             explainQuery() {
-                console.log("explain query...");
                 let query;
                 if (this.format === 'json') {
                     query = this.$convObj(this.form.criteria.json).minify();
@@ -785,13 +784,11 @@
                     }
                     query = this.$convObj(query).arrayToJson();
                 }
-                console.log(query);
                 let data = { query: query, format: this.format, database: this.getDatabaseName(), collection: this.getCollectionName() };
                 EventBus.$emit('show-query-explain', data);
             },
 
             clearForm() {
-                console.log("clearing form...");
                 this.form = {
                     criteria: {
                         json: '{\n' +
@@ -877,6 +874,7 @@
                 if (this.collection && this.collection.objects) {
                     this.count = this.collection.objects.count;
                     this.allObjects = this.collection.objects.objects;
+                    this.filterObjects = this.allObjects;
                     for (x = this.start; x  < this.pageSizeDefault; x += 1) {
                         if (this.allObjects[x]) {
                             this.visibleObjects.push(this.allObjects[x]);
@@ -890,6 +888,7 @@
              */
             clearValues() {
                 this.allObjects     = [];
+                this.filterObjects  = [];
                 this.count          = 0;
                 this.current        = 1;
                 this.end            = 0;
@@ -946,6 +945,33 @@
              */
             handleScroll(status) {
                this.lockPagination = status; //!this.lockPagination;
+            },
+
+            /*
+             *  This method receives input from the Breadcrumbs text filter
+             */
+            handleFilter(filter) {
+                if (filter) {
+                    this.allObjects = [];
+                    this.visibleObjects = [];
+                    let raw;
+                    let x = 0;
+                    this.filterObjects.forEach((object, index) => {
+                        raw = JSON.stringify(object.raw);
+                        if (raw.indexOf(filter) !== -1) {
+                            this.allObjects.push(object);
+                        }
+                    });
+                    this.count = this.allObjects.length;
+                    for (x = this.start; x  < this.pageSizeDefault; x += 1) {
+                        if (this.allObjects[x]) {
+                            this.visibleObjects.push(this.allObjects[x]);
+                        }
+                    }
+
+                } else {
+                    this.handlePageLoad();
+                }
             }
         },
 
@@ -976,10 +1002,14 @@
             EventBus.$on('lockCollectionPagination', (status) => {
                 this.handleScroll(status);
             });
-        },
 
-        beforeDestroy() {
-      //      window.removeEventListener("scroll", this.onScroll)
+            EventBus.$on('run-document-filter', (filter) => {
+                this.handleFilter(filter);
+            });
+
+            EventBus.$on('clear-document-filter', () => {
+                this.handleFilter();
+            });
         },
 
         /*

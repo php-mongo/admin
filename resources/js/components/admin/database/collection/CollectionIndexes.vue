@@ -326,7 +326,6 @@
 
             handleSaveIndex() {
                 let status = this.$store.getters.getCollectionIndexStatus;
-                console.log("status: " + status);
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     let self = this;

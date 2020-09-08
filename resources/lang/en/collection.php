@@ -132,7 +132,7 @@ return [
     "msgEmptyQuery" => "You query has no criteria - please add at least one (key:value | key=>value) pair",
     "msgEmptyResult" => "No results were returned - try changing your search criteria",
     "msgNoDocs" => "This collection has no documents to search or filter",
-    "msgQueryError" => "The query process encountered errors",
+    "msgQueryError" => "The query process encountered errors - try adding &quot;'s around your elements",
     "msgTooFew" => "All documents in this collection are already showing - try using the Filter",
     "name" => "Name",
     "namePlaceholder" => "MongoDB uses this optional value to create a name",

@@ -272,7 +272,6 @@ export default {
     *   POST /api/v1/document/update
     */
     updateDocument: ( data ) => {
-        console.log("updating for: " + data._id);
         return axios.put( MONGO_CONFIG.API_URL + '/document/update/' + data._id,
             {
                 _id: data._id,

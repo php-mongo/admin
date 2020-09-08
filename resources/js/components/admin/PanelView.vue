@@ -111,7 +111,6 @@
             handleScroll(e) {
                 let scrollPos = e.target.scrollTop;
                 if (this.collectionActive === true) {
-             //       console.log("scrollPos: " + scrollPos);
                     if (scrollPos >= 389 && this.scrolled === false) {
                         this.scrolled = true;
                         EventBus.$emit('lockCollectionPagination', true);

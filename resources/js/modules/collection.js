@@ -157,7 +157,6 @@ export const collection = {
         *   Delete one or more collections - remove collection from array
         */
         deleteCollection( { commit, rootState, dispatch }, data ) {
-            console.log("deleteCollection called...");
             commit( 'setDeleteCollectionStatus', 1);
             commit( 'setDeletingCollection', data.collection );
 
@@ -240,7 +239,6 @@ export const collection = {
                         if (response.data.success === true) {
                             commit( 'setExportData', response.data.data.export);
                             commit( 'setExportCollectionStatus', 2 );
-                            console.log(response.data.data);
 
                         } else {
                             commit( 'setErrorData', response.data.errors);
@@ -330,7 +328,6 @@ export const collection = {
             CollectionApi.renameCollection( data )
                 .then( (response) => {
                     if (response.data.success === true) {
-                        console.log("rename success - fetch database: " + data.database);
                         dispatch( 'loadDatabase', data.database );
                         dispatch( 'setActiveCollection', data.params.newName );
                         commit( 'setCollectionRenameStatus', 2 );
@@ -374,12 +371,10 @@ export const collection = {
 
         validateCollection( { commit, dispatch }, data) {
             commit('setCollectionValidationStatus', 1);
-            console.log("validating collection: " + data.collection);
 
             CollectionApi.validateCollection( data )
                 .then( (response) => {
                     if (response.data.success === true) {
-                        console.log("validate success: " + response);
                         commit( 'setCollectionValidation', response.data.data.validation[0] );
                         commit( 'setCollectionValidationStatus', 2 );
 

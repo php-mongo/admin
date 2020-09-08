@@ -94,7 +94,6 @@
 
             handleExplain() {
                 let status = this.$store.getters.getQueryExplainStatus;
-                console.log("status: " + status);
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     setTimeout(() => {
@@ -106,9 +105,7 @@
                     // success!
                     this.actionMessage = this.showLanguage('collection', 'explainSuccess');
                     let explain        = this.$store.getters.getQueryExplain;
-                //    console.log("ns: " + validation.ns);
                     explain = JSON.stringify(explain);
-                    console.log(explain);
                     this.explain = this.$convObj().jsonH(explain);
                 }
                 else if (status === 3) {

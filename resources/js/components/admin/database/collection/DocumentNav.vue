@@ -63,7 +63,6 @@
             },
 
             deleteDocument() {
-                console.log("deleting: " + this.document._id);
                 EventBus.$emit('delete-confirmation', {id: this.document._id, element: 'document', notification: this.showLanguage('document', 'deleteConfirm') });
             },
 

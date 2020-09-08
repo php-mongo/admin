@@ -124,14 +124,12 @@
             },
 
             saveProperties() {
-                console.log("save the props..");
                 let data = { database: this.database, collection: this.collection, params: this.form };
                 this.$store.dispatch('saveCollectionProperties', data);
             },
 
             handleSaveProperties() {
                 let status = this.$store.getters.getCollectionPropertiesStatus;
-                console.log("status: " + status);
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     let self = this;

@@ -90,7 +90,6 @@
             },
 
             saveRename() {
-                console.log("save the props..");
                 let data = { database: this.database, collection: this.collection, params: this.form };
                 this.$store.dispatch('renameCollection', data);
                 this.handleSaveRename();
@@ -98,7 +97,6 @@
 
             handleSaveRename() {
                 let status = this.$store.getters.getCollectionRenameStatus;
-                console.log("status: " + status);
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     let self = this;
