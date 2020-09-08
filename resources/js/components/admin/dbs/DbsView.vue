@@ -75,6 +75,14 @@
                 .dbs-list {
                     list-style: none;
                     margin: 0;
+
+                    li {
+                        border-bottom: 1px solid $darkGreyColor;
+
+                        &:hover {
+                            background-color: $lightGrey !important;
+                        }
+                    }
                 }
             }
         }

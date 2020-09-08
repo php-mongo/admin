@@ -65,9 +65,7 @@ export default function makeJqf() {
                 console.log(list);
                 console.log(c);
                 return list.forEach(function(value, index) {
-                    console.log("checking: " + value);
                     if (value === c) {
-                        console.log("found it!!");
                         return true;
                     }
                 });

@@ -22,6 +22,11 @@
         margin: 0;
         overflow: hidden;
         padding: 0;
+
+        .header {
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
     }
 </style>
 

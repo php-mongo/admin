@@ -42,7 +42,6 @@ export default {
     *   POST  /api/v1/database/create
     */
     createDatabase: ( name) => {
-        console.log("name: " + name);
         return axios.post( MONGO_CONFIG.API_URL + '/databases/create',
             {
                 database: name,
@@ -55,7 +54,6 @@ export default {
     *   POST  /api/v1/database/delete
     */
     deleteDatabase: ( names) => {
-        console.log("name: " + names);
         return axios.post( MONGO_CONFIG.API_URL + '/databases/delete',
             {
                 names: names,

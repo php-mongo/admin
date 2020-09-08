@@ -121,9 +121,8 @@
             },
 
             weAreScrolling(event) {
-                console.log("scrolling...");
-                console.log(event.target.scrollHeight);
-                console.log(event.target.scrollTop);
+             //   console.log(event.target.scrollHeight);
+              //  console.log(event.target.scrollTop);
             }
         },
 

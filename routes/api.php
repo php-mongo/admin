@@ -253,17 +253,6 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
 
     /*
     * -------------------------------------------------------
-    * Get all query logs for a database.collection (private route)
-    * -------------------------------------------------------
-    * URL:         /api/v1/collection/querylogs/{database}/{collection}
-    * Controller:  API/CollectionController@getQueryLogs
-    * Method:      GET
-    * Description: Gets all query logs for given database & collection
-    */
-    Route::get('/collection/querylogs/{database}/{collection}', 'Api\CollectionController@getQueryLogs');
-
-    /*
-    * -------------------------------------------------------
     * Create new Collection (private route)
     * -------------------------------------------------------
     * URL:         /api/v1/collection/create
@@ -294,6 +283,28 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * Description: Queries a collection and returns matching documents
     */
     Route::post('/collection/query', 'Api\CollectionController@queryCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Get all query logs for a database.collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/query/logs/{database}/{collection}
+    * Controller:  API/CollectionController@getQueryLogs
+    * Method:      GET
+    * Description: Gets all query logs for given database & collection
+    */
+    Route::get('/collection/query/logs/{database}/{collection}', 'Api\CollectionController@getQueryLogs');
+
+    /*
+    * -------------------------------------------------------
+    * Get a query explanation (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/query/explain
+    * Controller:  API/CollectionController@getQueryExplain
+    * Method:      POST
+    * Description: Processes a query explain command and return the analysis
+    */
+    Route::post('/collection/query/explain', 'Api\CollectionController@getQueryExplain');
 
     /*
     * -------------------------------------------------------
@@ -338,6 +349,61 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * Description: Import one or more collections into the provided database
     */
     Route::post('/collection/import', 'Api\CollectionController@importCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Update one Collection properties (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/properties
+    * Controller:  API/CollectionController@propertiesCollection
+    * Method:      POST
+    * Description: Update one collection properties
+    */
+    Route::post('/collection/properties', 'Api\CollectionController@propertiesCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Add an Index to a Collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/index
+    * Controller:  API/CollectionController@indexCollection
+    * Method:      POST
+    * Description: Add a new Index to a collection (standard or 2d)
+    */
+    Route::post('/collection/index', 'Api\CollectionController@indexCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Rename a Collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/rename
+    * Controller:  API/CollectionController@renameCollection
+    * Method:      POST
+    * Description: Rename a single collection
+    */
+    Route::post('/collection/rename', 'Api\CollectionController@renameCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Duplicate a Collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/duplicate
+    * Controller:  API/CollectionController@duplicateCollection
+    * Method:      POST
+    * Description: Duplicate a collection (options include: overwrite exiting, include indexes)
+    */
+    Route::post('/collection/duplicate', 'Api\CollectionController@duplicateCollection');
+
+    /*
+    * -------------------------------------------------------
+    * Validate a Collection (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/collection/validate
+    * Controller:  API/CollectionController@validateCollection
+    * Method:      GET
+    * Description: Validate a collection and return the result
+    */
+    Route::get('/collection/validate/{database}/{collection}', 'Api\CollectionController@validateCollection');
 
     /*
     * -------------------------------------------------------

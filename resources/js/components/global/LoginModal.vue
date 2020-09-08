@@ -449,7 +449,6 @@
                 let self = this;
                 this.$store.dispatch( 'loginUser', { data: this.credentials } );
                 setTimeout(function() {
-                    console.log("running completeLogin()");
                     self.completeLogin();
                     }, 500);
             },
@@ -457,7 +456,6 @@
             completeLogin() {
                 let status = this.$store.getters.getUserLoginStatus, self = this;
                 if (status === 1) {
-                    console.log("getUserLoginStatus return: " + status);
                     self.completeLogin();
                 }
                 if (status === 2) {
@@ -502,7 +500,6 @@
             },
 
             checkUser() {
-                console.log("checking user...");
                 let e = this.credentials.user || false, self = this;
                 if (e.length <= 4) {
                     this.$jqf(this.$refs.userInfo).replace(['has-success', 'has-error']).text('Invalid username - minimum 5 characters!');
