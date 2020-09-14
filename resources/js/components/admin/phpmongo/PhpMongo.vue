@@ -67,10 +67,19 @@
             }
         }
     }
+
+    /* Medium only - (min-width: 40em) and (max-width: 63.9375em) */
+    @media (min-width: 768px) and (max-width: 992px) {
+        .pma-mongo-view {
+            float: none;
+            margin-left: 0;
+            width: calc(93vw - 262px);
+        }
+    }
 </style>
 
 <template>
-    <div id="pma-mongo-view" class="pma-mongo-view align-left" v-show="show">
+    <div ref="pmaMongoView" id="pma-mongo-view" class="pma-mongo-view align-left" v-show="show">
         <php-mongo-admin v-bind:pma="getComposerData"></php-mongo-admin>
     </div>
 </template>
@@ -99,7 +108,8 @@
         */
         data() {
             return {
-                show: true
+                show: true,
+                expanded: false
             }
         },
 
@@ -131,6 +141,16 @@
             */
             hideComponent() {
                 this.show = false;
+            },
+
+            watchLeftNav() {
+                this.expanded = !this.expanded;
+                if (this.expanded === true) {
+                    this.$jqf(this.$refs.pmaMongoView).css('width', '93vw');
+                }
+                if (this.expanded === false) {
+                    this.$jqf(this.$refs.pmaMongoView).css('width', 'calc(93vw - 262px)');
+                }
             }
         },
 
@@ -150,6 +170,14 @@
             */
             EventBus.$on('show-mongo', () => {
                 this.showComponent();
+            });
+
+            EventBus.$on('collapse-left-nav', () => {
+                this.watchLeftNav();
+            });
+
+            EventBus.$on('expand-left-nav', () => {
+                this.watchLeftNav();
             });
         }
     }

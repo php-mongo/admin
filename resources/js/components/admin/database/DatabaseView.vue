@@ -117,10 +117,23 @@
             }
         }
     }
+
+    /* Medium only - (min-width: 40em) and (max-width: 63.9375em) */
+    @media (min-width: 768px) and (max-width: 992px) {
+        .pma-database-view {
+            float: none;
+            width: calc(97vw - 260px);
+        }
+        .database-inner {
+            td.vat {
+                width: 75% !important;
+            }
+        }
+    }
 </style>
 
 <template>
-    <div id="pma-databases-view" class="pma-database-view align-left" v-show="show">
+    <div ref="pmaDatabaseView" id="pma-databases-view" class="pma-database-view align-left" v-show="show">
         <database-top-view></database-top-view>
         <database-card v-bind:db="getDatabase"></database-card>
         <NewCollection></NewCollection>
@@ -156,7 +169,8 @@
         data() {
             return {
                 show: false,
-                database: {}
+                database: {},
+                expanded: false
             }
         },
 
@@ -267,6 +281,16 @@
             */
             hideComponent() {
                 this.show = false;
+            },
+
+            watchLeftNav() {
+                this.expanded = !this.expanded;
+                if (this.expanded === true) {
+                    this.$jqf(this.$refs.pmaDatabaseView).css('width', '94vw');
+                }
+                if (this.expanded === false) {
+                    this.$jqf(this.$refs.pmaDatabaseView).css('width', 'calc(97vw - 260px)');
+                }
             }
         },
 
@@ -288,6 +312,14 @@
             EventBus.$on('show-database', () =>{
                 this.showComponent();
 
+            });
+
+            EventBus.$on('collapse-left-nav', () => {
+                this.watchLeftNav();
+            });
+
+            EventBus.$on('expand-left-nav', () => {
+                this.watchLeftNav();
             });
         }
     }

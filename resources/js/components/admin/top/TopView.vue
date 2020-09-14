@@ -23,6 +23,7 @@
         padding-bottom: 2px;
         position: relative;
         top: 0;
+        width: calc(100vw - 262px);
         z-index: 88;
 
         .pma-link {
@@ -104,9 +105,11 @@
                 this.expanded = !this.expanded;
                 if (this.expanded === true) {
                     this.$jqf(this.$refs.pmaTopPanel).css('margin-left', '5px');
+                    this.$jqf(this.$refs.pmaTopPanel).css('width', '99vw');
                 }
                 if (this.expanded === false) {
                     this.$jqf(this.$refs.pmaTopPanel).css('margin-left', '245px');
+                    this.$jqf(this.$refs.pmaTopPanel).css('width', 'calc(100vw - 262px)');
                 }
             },
 

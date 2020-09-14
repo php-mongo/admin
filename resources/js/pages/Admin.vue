@@ -23,9 +23,31 @@
         overflow: hidden;
         padding: 0;
 
-        .header {
+        /*.header {
             font-weight: 800;
             font-size: 1.1rem;
+        }*/
+
+        nav {
+            ul {
+                li {
+                    &:hover {
+                        background-color: $lighterGrey;
+                        color: $bodyFontColor;
+                    }
+                }
+            }
+        }
+
+        table {
+            td {
+                input[type="submit"], input[type="button"] {
+                    &:hover {
+                        background-color: $lightGrey;
+                        color: $bodyFontColor;
+                    }
+                }
+            }
         }
     }
 </style>

@@ -60,6 +60,20 @@
             }
         }
     }
+
+    /* Medium only - (min-width: 40em) and (max-width: 63.9375em) */
+    @media (min-width: 768px) and (max-width: 992px) {
+        .pma-new-collection {
+            float: none;
+            width: auto;
+        }
+        .pma-new-collection .new-collection-inner table .row {
+            padding-left: 0 !important;
+        }
+        .pma-new-collection .new-collection-inner .coll-help-link {
+            margin-right: 0;
+        }
+    }
 </style>
 
 <template>

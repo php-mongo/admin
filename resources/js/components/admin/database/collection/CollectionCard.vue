@@ -54,7 +54,7 @@
                 padding: 10px 0 0 10px;
                 position: fixed;
                 top: 75px;
-                width: 86.4%;
+                width: calc(100vw - 278px);
                 z-index: 9000;
 
                 ul {
@@ -118,14 +118,19 @@
             }
         }
         .panel-modal {
+            left: 0;
+            background-color: $darkGreyColor;
+            height: 100%;
+            opacity: 0.95;
             position: fixed;
-            z-index: 999999;
-            left: 10vw;
             right: 0;
             top: 0;
+            z-index: 9000;
 
             .panel-modal-inner {
-                background: $white;
+                /* background: $white; */
+                background: $white url("/img/white-bg.jpg") repeat center center;
+                background-size: cover;
                 box-shadow: 0 0 4px 0 rgba(0,0,0,0.12), 0 4px 4px 0 rgba(0,0,0,0.24);
                 border-left: 5px solid $orange;
                 border-right: 5px solid $orange;
@@ -138,8 +143,11 @@
                 max-width: 50vw;
                 min-height: 666px;
                 min-width: 400px;
+                opacity: 1;
                 overflow-y: auto;
                 padding: 0 3rem 3rem 3rem;
+                position: relative;
+                z-index: 9999;
 
                 .modal-header {
                     background-color: $lightGreyColor;
@@ -268,6 +276,18 @@
             }
         }
     }
+
+    /* Medium only - (min-width: 40em) and (max-width: 63.9375em) */
+    @media (min-width: 768px) and (max-width: 992px) {
+        .collection-inner {
+            .panel-modal .panel-modal-inner {
+                min-width: 500px;
+            }
+            .panel-modal .panel-modal-inner .modal-header {
+                max-width: 64vw;
+            }
+        }
+    }
 </style>
 
 <template>
@@ -370,7 +390,7 @@
             </ul>
         </div>
         <div id="records" ref="records">
-            <div :class="'records-header ' + watchScroll">
+            <div ref="recordsHeader" :class="'records-header ' + watchScroll">
                 <p class="page-message" v-if="page.find.message">{{ page.find.message }}</p>
                 <pagination
                     @pageChanged="pageChanged($event)"
@@ -463,6 +483,7 @@
             return {
                 show: false,
                 collapsed: false,
+                expanded: false,
                 name: null,
                 start: 0,
                 showing: 0,
@@ -944,7 +965,15 @@
              *  This is sent from the PanelView.vue when a collection is active
              */
             handleScroll(status) {
-               this.lockPagination = status; //!this.lockPagination;
+                this.lockPagination = status; //!this.lockPagination;
+                if (status === true && this.expanded === true) {
+                    this.$jqf(this.$refs.recordsHeader).css('left', '5px');
+                    this.$jqf(this.$refs.recordsHeader).css('width', '98vw');
+                }
+                if (status === true && this.expanded === false) {
+                    this.$jqf(this.$refs.recordsHeader).css('left', '245px');
+                    this.$jqf(this.$refs.recordsHeader).css('width', 'calc(97vw - 260px)');
+                }
             },
 
             /*
@@ -972,6 +1001,10 @@
                 } else {
                     this.handlePageLoad();
                 }
+            },
+
+            watchLeftNav() {
+                this.expanded = !this.expanded;
             }
         },
 
@@ -1009,6 +1042,14 @@
 
             EventBus.$on('clear-document-filter', () => {
                 this.handleFilter();
+            });
+
+            EventBus.$on('collapse-left-nav', () => {
+                this.watchLeftNav();
+            });
+
+            EventBus.$on('expand-left-nav', () => {
+                this.watchLeftNav();
             });
         },
 

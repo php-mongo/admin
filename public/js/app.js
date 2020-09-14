@@ -2075,6 +2075,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /*
  *  Impport the evant bus
@@ -2128,12 +2135,14 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.expanded === true) {
         this.$jqf(this.$refs.pmaMainPanel).css('margin-left', '5px');
+        this.$jqf(this.$refs.pmaMainPanel).css('width', '99vw');
         this.$jqf(this.$refs.pmaInner).css('width', '100vw');
       }
 
       if (this.expanded === false) {
         this.$jqf(this.$refs.pmaMainPanel).css('margin-left', '245px');
-        this.$jqf(this.$refs.pmaInner).css('width', '88vw');
+        this.$jqf(this.$refs.pmaMainPanel).css('width', 'calc(100vw - 262px)');
+        this.$jqf(this.$refs.pmaInner).css('width', 'calc(100vw - 262px)');
       }
     },
 
@@ -2415,6 +2424,13 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 /*
 * Import the Event bus
@@ -2563,7 +2579,7 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       if (bytes < 1024) {
-        return bytes + "B";
+        return Math.round(bytes, 2) + "B";
       }
 
       if (bytes < 1024 * 1024) {
@@ -2786,6 +2802,19 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Import the Event bus
@@ -2814,7 +2843,8 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       show: false,
-      database: {}
+      database: {},
+      expanded: false
     };
   },
 
@@ -2932,6 +2962,17 @@ __webpack_require__.r(__webpack_exports__);
     */
     hideComponent: function hideComponent() {
       this.show = false;
+    },
+    watchLeftNav: function watchLeftNav() {
+      this.expanded = !this.expanded;
+
+      if (this.expanded === true) {
+        this.$jqf(this.$refs.pmaDatabaseView).css('width', '94vw');
+      }
+
+      if (this.expanded === false) {
+        this.$jqf(this.$refs.pmaDatabaseView).css('width', 'calc(97vw - 260px)');
+      }
     }
   },
 
@@ -2954,6 +2995,12 @@ __webpack_require__.r(__webpack_exports__);
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database', function () {
       _this.showComponent();
+    });
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('collapse-left-nav', function () {
+      _this.watchLeftNav();
+    });
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('expand-left-nav', function () {
+      _this.watchLeftNav();
     });
   }
 });
@@ -2987,6 +3034,26 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _CollectionDuplicate__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./CollectionDuplicate */ "./resources/js/components/admin/database/collection/CollectionDuplicate.vue");
 /* harmony import */ var _CollectionValidation__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./CollectionValidation */ "./resources/js/components/admin/database/collection/CollectionValidation.vue");
 /* harmony import */ var _QueryExplain__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./QueryExplain */ "./resources/js/components/admin/database/collection/QueryExplain.vue");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -3451,6 +3518,7 @@ __webpack_require__.r(__webpack_exports__);
     return {
       show: false,
       collapsed: false,
+      expanded: false,
       name: null,
       start: 0,
       showing: 0,
@@ -3932,6 +4000,16 @@ __webpack_require__.r(__webpack_exports__);
      */
     handleScroll: function handleScroll(status) {
       this.lockPagination = status; //!this.lockPagination;
+
+      if (status === true && this.expanded === true) {
+        this.$jqf(this.$refs.recordsHeader).css('left', '5px');
+        this.$jqf(this.$refs.recordsHeader).css('width', '98vw');
+      }
+
+      if (status === true && this.expanded === false) {
+        this.$jqf(this.$refs.recordsHeader).css('left', '245px');
+        this.$jqf(this.$refs.recordsHeader).css('width', 'calc(97vw - 260px)');
+      }
     },
 
     /*
@@ -3962,6 +4040,9 @@ __webpack_require__.r(__webpack_exports__);
       } else {
         this.handlePageLoad();
       }
+    },
+    watchLeftNav: function watchLeftNav() {
+      this.expanded = !this.expanded;
     }
   },
 
@@ -3994,6 +4075,12 @@ __webpack_require__.r(__webpack_exports__);
     });
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('clear-document-filter', function () {
       _this2.handleFilter();
+    });
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('collapse-left-nav', function () {
+      _this2.watchLeftNav();
+    });
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('expand-left-nav', function () {
+      _this2.watchLeftNav();
     });
   },
 
@@ -6018,6 +6105,31 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Import the Event bus
@@ -6412,6 +6524,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
  * Imports the Event Bus to pass events on tag updates
@@ -6648,6 +6768,14 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -7305,6 +7433,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
  * Imports the Event Bus to pass events on tag updates
@@ -7547,6 +7683,10 @@ function _typeof(obj) {
 
   return _typeof(obj);
 } //
+//
+//
+//
+//
 //
 //
 //
@@ -7855,6 +7995,20 @@ function _typeof(obj) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../event-bus */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -8580,6 +8734,14 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
  * Imports the Event Bus to pass events on tag updates
@@ -9154,6 +9316,11 @@ __webpack_require__.r(__webpack_exports__);
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _event_bus_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../event-bus.js */ "./resources/js/event-bus.js");
+//
+//
+//
+//
+//
 //
 //
 //
@@ -11342,6 +11509,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Import the Event bus
@@ -11365,7 +11541,8 @@ __webpack_require__.r(__webpack_exports__);
   */
   data: function data() {
     return {
-      show: true
+      show: true,
+      expanded: false
     };
   },
 
@@ -11397,6 +11574,17 @@ __webpack_require__.r(__webpack_exports__);
     */
     hideComponent: function hideComponent() {
       this.show = false;
+    },
+    watchLeftNav: function watchLeftNav() {
+      this.expanded = !this.expanded;
+
+      if (this.expanded === true) {
+        this.$jqf(this.$refs.pmaMongoView).css('width', '93vw');
+      }
+
+      if (this.expanded === false) {
+        this.$jqf(this.$refs.pmaMongoView).css('width', 'calc(93vw - 262px)');
+      }
     }
   },
 
@@ -11419,6 +11607,12 @@ __webpack_require__.r(__webpack_exports__);
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-mongo', function () {
       _this.showComponent();
+    });
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('collapse-left-nav', function () {
+      _this.watchLeftNav();
+    });
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('expand-left-nav', function () {
+      _this.watchLeftNav();
     });
   }
 });
@@ -12134,6 +12328,15 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 * Import the Event bus
@@ -12165,7 +12368,8 @@ __webpack_require__.r(__webpack_exports__);
    */
   data: function data() {
     return {
-      show: true
+      show: true,
+      expanded: false
     };
   },
 
@@ -12212,6 +12416,17 @@ __webpack_require__.r(__webpack_exports__);
      */
     hideComponent: function hideComponent() {
       this.show = false;
+    },
+    watchLeftNav: function watchLeftNav() {
+      this.expanded = !this.expanded;
+
+      if (this.expanded === true) {
+        this.$jqf(this.$refs.pmaServerView).css('width', '93vw');
+      }
+
+      if (this.expanded === false) {
+        this.$jqf(this.$refs.pmaServerView).css('width', 'calc(93vw - 262px)');
+      }
     }
   },
 
@@ -12236,6 +12451,12 @@ __webpack_require__.r(__webpack_exports__);
 
     _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-server', function () {
       _this.showComponent();
+    });
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('collapse-left-nav', function () {
+      _this.watchLeftNav();
+    });
+    _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('expand-left-nav', function () {
+      _this.watchLeftNav();
     });
   }
 });
@@ -13549,6 +13770,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 /*
 *   Import components for the Gallery View
@@ -13593,10 +13815,12 @@ __webpack_require__.r(__webpack_exports__);
 
       if (this.expanded === true) {
         this.$jqf(this.$refs.pmaTopPanel).css('margin-left', '5px');
+        this.$jqf(this.$refs.pmaTopPanel).css('width', '99vw');
       }
 
       if (this.expanded === false) {
         this.$jqf(this.$refs.pmaTopPanel).css('margin-left', '245px');
+        this.$jqf(this.$refs.pmaTopPanel).css('width', 'calc(100vw - 262px)');
       }
     },
     collapseNav: function collapseNav(status) {
@@ -17774,6 +17998,28 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /*
 *   Imports the Event Bus to pass events on tag updates
@@ -17922,7 +18168,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../node_modules/css-
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-main-panel {\n  height: 95vh;\n  margin-left: 245px;\n  overflow-x: auto;\n  padding: 20px 0 20px 20px;\n  width: auto;\n}\n.pma-main-panel .pma-main-inner {\n  margin: 0;\n  width: 88vw;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-main-panel {\n  height: 95vh;\n  margin-left: 245px;\n  overflow-x: auto;\n  padding: 20px 0 20px 20px;\n  width: calc(100vw - 262px);\n}\n.pma-main-panel .pma-main-inner {\n  margin: 0;\n  width: calc(100vw - 262px);\n}\n\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 768px) and (max-width: 992px) {\n.pma-main-panel {\n    padding: 10px 0 10px 10px;\n}\n}", ""]);
 
 // exports
 
@@ -17941,7 +18187,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.collection-list ul {\n  list-style: none;\n  display: block;\n  margin-left: 20px;\n}\n.collection-list ul li.coll {\n  border-bottom: 1px solid #e0e0e0;\n  margin: 0 0 10px 0;\n}\n.collection-list ul li.coll input {\n  margin-right: 20px !important;\n}\n.collection-list ul li.coll .obj-count {\n  width: 10.5vw;\n}\n.collection-list ul li.coll:hover {\n  background-color: #e0e0e0;\n}\n.hide-list {\n  display: none !important;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.collection-list ul {\n  list-style: none;\n  display: block;\n  margin-left: 20px;\n}\n.collection-list ul li.coll {\n  border-bottom: 1px solid #e0e0e0;\n  margin: 0 0 10px 0;\n}\n.collection-list ul li.coll input {\n  margin-right: 20px !important;\n}\n.collection-list ul li.coll .obj-count {\n  width: 10.5vw;\n}\n.collection-list ul li.coll:hover {\n  background-color: #e0e0e0;\n}\n.hide-list {\n  display: none !important;\n}\n\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 768px) and (max-width: 992px) {\n.database-inner {\n    /* */\n}\n}", ""]);
 
 // exports
 
@@ -17960,7 +18206,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-database-view {\n  float: left;\n  width: 96%;\n}\n.pma-database-view .database-inner form, .pma-database-view .new-collection-inner form {\n  margin-bottom: 10px;\n}\n.pma-database-view .database-inner p, .pma-database-view .new-collection-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-database-view .database-inner p input, .pma-database-view .new-collection-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-database-view .database-inner p .button, .pma-database-view .new-collection-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-database-view .database-inner p.drop, .pma-database-view .new-collection-inner p.drop {\n  padding-left: 5px;\n}\n.pma-database-view .database-inner p.drop label, .pma-database-view .new-collection-inner p.drop label {\n  display: inline-block;\n}\n.pma-database-view .database-inner p.drop span, .pma-database-view .new-collection-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-database-view .database-inner p.drop input, .pma-database-view .new-collection-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop .pma-link, .pma-database-view .new-collection-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop button, .pma-database-view .new-collection-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-database-view .database-inner table, .pma-database-view .new-collection-inner table {\n  border: 1px solid #a6a6a6;\n  border-top: 1px solid #bbbbbb;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-database-view .database-inner table th, .pma-database-view .new-collection-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-database-view .database-inner table th.title, .pma-database-view .new-collection-inner table th.title {\n  padding: 10px 0;\n}\n.pma-database-view .database-inner table td, .pma-database-view .new-collection-inner table td {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n  vertical-align: top;\n}\n.pma-database-view .database-inner table td input, .pma-database-view .new-collection-inner table td input {\n  margin: 3px 0 0 0;\n}\n.pma-database-view .database-inner table.bordered td.tr, .pma-database-view .database-inner table.collection td.tr, .pma-database-view .new-collection-inner table.bordered td.tr, .pma-database-view .new-collection-inner table.collection td.tr {\n  text-align: right;\n  width: 50%;\n}\n.pma-database-view .database-inner table.bordered th.bb, .pma-database-view .new-collection-inner table.bordered th.bb {\n  border-bottom: 1px solid #cccccc;\n}\n.pma-database-view .database-inner table.bordered th.rb, .pma-database-view .new-collection-inner table.bordered th.rb {\n  border-right: 1px solid #cccccc;\n}\n.pma-database-view .database-inner table.bordered td, .pma-database-view .new-collection-inner table.bordered td {\n  border-bottom: 1px solid #cccccc;\n  text-align: left;\n}\n.pma-database-view .database-inner table.bordered td.rb, .pma-database-view .database-inner table.bordered table.collection td.rb, .pma-database-view .new-collection-inner table.bordered td.rb, .pma-database-view .new-collection-inner table.bordered table.collection td.rb {\n  border-right: 1px solid #cccccc;\n}\n.pma-database-view .database-inner table.bordered td.text-center, .pma-database-view .new-collection-inner table.bordered td.text-center {\n  text-align: center !important;\n}\n.pma-database-view .database-inner table.bordered td.vat, .pma-database-view .new-collection-inner table.bordered td.vat {\n  vertical-align: top;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-database-view {\n  float: left;\n  width: 96%;\n}\n.pma-database-view .database-inner form, .pma-database-view .new-collection-inner form {\n  margin-bottom: 10px;\n}\n.pma-database-view .database-inner p, .pma-database-view .new-collection-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-database-view .database-inner p input, .pma-database-view .new-collection-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-database-view .database-inner p .button, .pma-database-view .new-collection-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-database-view .database-inner p.drop, .pma-database-view .new-collection-inner p.drop {\n  padding-left: 5px;\n}\n.pma-database-view .database-inner p.drop label, .pma-database-view .new-collection-inner p.drop label {\n  display: inline-block;\n}\n.pma-database-view .database-inner p.drop span, .pma-database-view .new-collection-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-database-view .database-inner p.drop input, .pma-database-view .new-collection-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop .pma-link, .pma-database-view .new-collection-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-database-view .database-inner p.drop button, .pma-database-view .new-collection-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-database-view .database-inner table, .pma-database-view .new-collection-inner table {\n  border: 1px solid #a6a6a6;\n  border-top: 1px solid #bbbbbb;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-database-view .database-inner table th, .pma-database-view .new-collection-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-database-view .database-inner table th.title, .pma-database-view .new-collection-inner table th.title {\n  padding: 10px 0;\n}\n.pma-database-view .database-inner table td, .pma-database-view .new-collection-inner table td {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n  vertical-align: top;\n}\n.pma-database-view .database-inner table td input, .pma-database-view .new-collection-inner table td input {\n  margin: 3px 0 0 0;\n}\n.pma-database-view .database-inner table.bordered td.tr, .pma-database-view .database-inner table.collection td.tr, .pma-database-view .new-collection-inner table.bordered td.tr, .pma-database-view .new-collection-inner table.collection td.tr {\n  text-align: right;\n  width: 50%;\n}\n.pma-database-view .database-inner table.bordered th.bb, .pma-database-view .new-collection-inner table.bordered th.bb {\n  border-bottom: 1px solid #cccccc;\n}\n.pma-database-view .database-inner table.bordered th.rb, .pma-database-view .new-collection-inner table.bordered th.rb {\n  border-right: 1px solid #cccccc;\n}\n.pma-database-view .database-inner table.bordered td, .pma-database-view .new-collection-inner table.bordered td {\n  border-bottom: 1px solid #cccccc;\n  text-align: left;\n}\n.pma-database-view .database-inner table.bordered td.rb, .pma-database-view .database-inner table.bordered table.collection td.rb, .pma-database-view .new-collection-inner table.bordered td.rb, .pma-database-view .new-collection-inner table.bordered table.collection td.rb {\n  border-right: 1px solid #cccccc;\n}\n.pma-database-view .database-inner table.bordered td.text-center, .pma-database-view .new-collection-inner table.bordered td.text-center {\n  text-align: center !important;\n}\n.pma-database-view .database-inner table.bordered td.vat, .pma-database-view .new-collection-inner table.bordered td.vat {\n  vertical-align: top;\n}\n\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 768px) and (max-width: 992px) {\n.pma-database-view {\n    float: none;\n    width: calc(97vw - 260px);\n}\n.database-inner td.vat {\n    width: 75% !important;\n}\n}", ""]);
 
 // exports
 
@@ -17979,7 +18225,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.collection-inner .criteria {\n  height: 160px;\n  margin-bottom: 0;\n  max-width: 99%;\n}\n.collection-inner .v-top {\n  vertical-align: top;\n  width: 50%;\n}\n.collection-inner .field-orders p {\n  height: 40px;\n  margin-top: 0;\n}\n.collection-inner .field-orders p input, .collection-inner .field-orders p select {\n  display: inline-block;\n}\n.collection-inner .field-orders p input {\n  width: 200px;\n}\n.collection-inner .field-orders p select {\n  width: 120px;\n}\n.collection-inner .f11 {\n  font-size: 11px;\n}\n.collection-inner .records-header.fixed {\n  background: #6cb2eb;\n  color: aliceblue;\n  left: 245px;\n  padding: 10px 0 0 10px;\n  position: fixed;\n  top: 75px;\n  width: 86.4%;\n  z-index: 9000;\n}\n.collection-inner .records-header.fixed ul {\n  margin-bottom: 0.7rem;\n}\n.collection-inner .page-message {\n  font-weight: 600;\n}\n.collection-inner .buttons span, .collection-inner .buttons label, .collection-inner .buttons input, .collection-inner .buttons select {\n  display: inline-block;\n  width: auto;\n}\n.collection-inner .buttons input[type=submit], .collection-inner .buttons input[type=button] {\n  cursor: pointer;\n  padding: 5px;\n}\n.collection-inner .buttons p.error {\n  color: #e3342f;\n  font-weight: 600;\n}\n.collection-inner .fields-control {\n  display: none;\n}\n.collection-inner .collection-document {\n  border: 2px #ebebeb solid;\n  margin-bottom: 10px;\n  min-height: 100px;\n  position: relative;\n}\n.collection-inner .collection-document:hover {\n  background-color: #f9f9f9;\n}\n.collection-inner .collection-document .doc-nav {\n  border-bottom: 1px #e0e0e0 solid;\n  display: inline-block;\n  margin: 0 0 5px 50px;\n  padding: 5px 0 0 0;\n}\n.collection-inner .collection-document .doc-data {\n  display: block;\n  max-height: 100px;\n  overflow-y: hidden;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-text {\n  max-height: 150px;\n  overflow-y: auto;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-right-to-top {\n  bottom: 5px;\n  position: absolute;\n  right: 10px;\n}\n.collection-inner .panel-modal {\n  position: fixed;\n  z-index: 999999;\n  left: 10vw;\n  right: 0;\n  top: 0;\n}\n.collection-inner .panel-modal .panel-modal-inner {\n  background: #ffffff;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #f6993f;\n  border-right: 5px solid #f6993f;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n  line-height: 60px;\n  margin: auto auto auto auto;\n  max-height: 90vh;\n  max-width: 50vw;\n  min-height: 666px;\n  min-width: 400px;\n  overflow-y: auto;\n  padding: 0 3rem 3rem 3rem;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header {\n  background-color: #888888;\n  height: 33px;\n  margin: 0 -3rem 0 -3rem;\n  max-width: 49.5vw;\n  padding: 0.55rem 20px 0 0;\n  position: fixed;\n  width: 100%;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header span.msg {\n  background-color: #f9f9f9;\n  border-radius: 5px;\n  left: 30px;\n  max-height: 25px;\n  padding: 2px 5px;\n  position: absolute;\n  top: 5px;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header span.msg span.error {\n  color: #e3342f;\n  position: relative;\n  top: -21px;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header span.msg span.action {\n  color: #38c172;\n  position: relative;\n  top: -21px;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header span.close {\n  cursor: pointer;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header img {\n  vertical-align: top;\n}\n.collection-inner .panel-modal .panel-modal-inner h3 {\n  margin-top: 40px;\n}\n.collection-inner .panel-modal .panel-modal-inner label.padd-left label {\n  padding-left: 50px;\n}\n.collection-inner .panel-modal .panel-modal-inner textarea {\n  height: auto;\n}\n.collection-inner .panel-modal .panel-modal-inner textarea.export-data {\n  min-height: 150px;\n  width: 100%;\n}\n.collection-inner .panel-modal .panel-modal-inner p label input {\n  margin-left: 5px;\n  vertical-align: baseline;\n}\n.collection-inner .panel-modal .panel-modal-inner p.file-select {\n  border-bottom: solid 1px #000080;\n  margin-bottom: 20px;\n}\n.collection-inner .panel-modal .panel-modal-inner p.file-select {\n  border-bottom: solid 1px #000080;\n  margin-bottom: 20px;\n}\n.collection-inner .panel-modal .panel-modal-inner ul {\n  list-style: none;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li {\n  background-color: #e0e0e0;\n  margin-bottom: 10px;\n  padding: 4px 10px;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li .title {\n  display: inline-block;\n  min-width: 150px;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li .clr-bg {\n  background-color: transparent;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li p {\n  padding: 2px 0 3px 5px;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li p label {\n  background-color: #235a81;\n  margin-left: 5px;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li p input {\n  margin: 0;\n  vertical-align: middle;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li p.time {\n  border-bottom: 1px solid #444444;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li p.time .log-link {\n  float: right;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li .data {\n  display: inline-block;\n  max-width: 100%;\n  overflow-x: auto;\n  vertical-align: bottom;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.collection-inner .criteria {\n  height: 160px;\n  margin-bottom: 0;\n  max-width: 99%;\n}\n.collection-inner .v-top {\n  vertical-align: top;\n  width: 50%;\n}\n.collection-inner .field-orders p {\n  height: 40px;\n  margin-top: 0;\n}\n.collection-inner .field-orders p input, .collection-inner .field-orders p select {\n  display: inline-block;\n}\n.collection-inner .field-orders p input {\n  width: 200px;\n}\n.collection-inner .field-orders p select {\n  width: 120px;\n}\n.collection-inner .f11 {\n  font-size: 11px;\n}\n.collection-inner .records-header.fixed {\n  background: #6cb2eb;\n  color: aliceblue;\n  left: 245px;\n  padding: 10px 0 0 10px;\n  position: fixed;\n  top: 75px;\n  width: calc(100vw - 278px);\n  z-index: 9000;\n}\n.collection-inner .records-header.fixed ul {\n  margin-bottom: 0.7rem;\n}\n.collection-inner .page-message {\n  font-weight: 600;\n}\n.collection-inner .buttons span, .collection-inner .buttons label, .collection-inner .buttons input, .collection-inner .buttons select {\n  display: inline-block;\n  width: auto;\n}\n.collection-inner .buttons input[type=submit], .collection-inner .buttons input[type=button] {\n  cursor: pointer;\n  padding: 5px;\n}\n.collection-inner .buttons p.error {\n  color: #e3342f;\n  font-weight: 600;\n}\n.collection-inner .fields-control {\n  display: none;\n}\n.collection-inner .collection-document {\n  border: 2px #ebebeb solid;\n  margin-bottom: 10px;\n  min-height: 100px;\n  position: relative;\n}\n.collection-inner .collection-document:hover {\n  background-color: #f9f9f9;\n}\n.collection-inner .collection-document .doc-nav {\n  border-bottom: 1px #e0e0e0 solid;\n  display: inline-block;\n  margin: 0 0 5px 50px;\n  padding: 5px 0 0 0;\n}\n.collection-inner .collection-document .doc-data {\n  display: block;\n  max-height: 100px;\n  overflow-y: hidden;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-text {\n  max-height: 150px;\n  overflow-y: auto;\n  padding: 0 0 5px 50px;\n  width: 99%;\n}\n.collection-inner .collection-document .doc-right-to-top {\n  bottom: 5px;\n  position: absolute;\n  right: 10px;\n}\n.collection-inner .panel-modal {\n  left: 0;\n  background-color: #444444;\n  height: 100%;\n  opacity: 0.95;\n  position: fixed;\n  right: 0;\n  top: 0;\n  z-index: 9000;\n}\n.collection-inner .panel-modal .panel-modal-inner {\n  /* background: $white; */\n  background: #ffffff url(\"/img/white-bg.jpg\") repeat center center;\n  background-size: cover;\n  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.12), 0 4px 4px 0 rgba(0, 0, 0, 0.24);\n  border-left: 5px solid #f6993f;\n  border-right: 5px solid #f6993f;\n  color: #242E38;\n  font-family: \"Lato\", sans-serif;\n  font-size: 16px;\n  line-height: 60px;\n  margin: auto auto auto auto;\n  max-height: 90vh;\n  max-width: 50vw;\n  min-height: 666px;\n  min-width: 400px;\n  opacity: 1;\n  overflow-y: auto;\n  padding: 0 3rem 3rem 3rem;\n  position: relative;\n  z-index: 9999;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header {\n  background-color: #888888;\n  height: 33px;\n  margin: 0 -3rem 0 -3rem;\n  max-width: 49.5vw;\n  padding: 0.55rem 20px 0 0;\n  position: fixed;\n  width: 100%;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header span.msg {\n  background-color: #f9f9f9;\n  border-radius: 5px;\n  left: 30px;\n  max-height: 25px;\n  padding: 2px 5px;\n  position: absolute;\n  top: 5px;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header span.msg span.error {\n  color: #e3342f;\n  position: relative;\n  top: -21px;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header span.msg span.action {\n  color: #38c172;\n  position: relative;\n  top: -21px;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header span.close {\n  cursor: pointer;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header img {\n  vertical-align: top;\n}\n.collection-inner .panel-modal .panel-modal-inner h3 {\n  margin-top: 40px;\n}\n.collection-inner .panel-modal .panel-modal-inner label.padd-left label {\n  padding-left: 50px;\n}\n.collection-inner .panel-modal .panel-modal-inner textarea {\n  height: auto;\n}\n.collection-inner .panel-modal .panel-modal-inner textarea.export-data {\n  min-height: 150px;\n  width: 100%;\n}\n.collection-inner .panel-modal .panel-modal-inner p label input {\n  margin-left: 5px;\n  vertical-align: baseline;\n}\n.collection-inner .panel-modal .panel-modal-inner p.file-select {\n  border-bottom: solid 1px #000080;\n  margin-bottom: 20px;\n}\n.collection-inner .panel-modal .panel-modal-inner p.file-select {\n  border-bottom: solid 1px #000080;\n  margin-bottom: 20px;\n}\n.collection-inner .panel-modal .panel-modal-inner ul {\n  list-style: none;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li {\n  background-color: #e0e0e0;\n  margin-bottom: 10px;\n  padding: 4px 10px;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li .title {\n  display: inline-block;\n  min-width: 150px;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li .clr-bg {\n  background-color: transparent;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li p {\n  padding: 2px 0 3px 5px;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li p label {\n  background-color: #235a81;\n  margin-left: 5px;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li p input {\n  margin: 0;\n  vertical-align: middle;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li p.time {\n  border-bottom: 1px solid #444444;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li p.time .log-link {\n  float: right;\n}\n.collection-inner .panel-modal .panel-modal-inner ul li .data {\n  display: inline-block;\n  max-width: 100%;\n  overflow-x: auto;\n  vertical-align: bottom;\n}\n\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 768px) and (max-width: 992px) {\n.collection-inner .panel-modal .panel-modal-inner {\n    min-width: 500px;\n}\n.collection-inner .panel-modal .panel-modal-inner .modal-header {\n    max-width: 64vw;\n}\n}", ""]);
 
 // exports
 
@@ -18150,7 +18396,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-collection-view {\n  float: left;\n  width: 96%;\n}\n.pma-collection-view td.rb {\n  border-right: 1px solid #e0e0e0;\n}\n.pma-collection-view .collection-inner form {\n  margin-bottom: 10px;\n}\n.pma-collection-view .collection-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-collection-view .collection-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-collection-view .collection-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-collection-view .collection-inner p.drop {\n  padding-left: 5px;\n}\n.pma-collection-view .collection-inner p.drop label {\n  display: inline-block;\n}\n.pma-collection-view .collection-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-collection-view .collection-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-collection-view .collection-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-collection-view .collection-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-collection-view .collection-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-collection-view .collection-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-collection-view .collection-inner table td {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-collection-view {\n  float: left;\n  width: 96%;\n}\n.pma-collection-view td.rb {\n  border-right: 1px solid #e0e0e0;\n}\n.pma-collection-view .collection-inner form {\n  margin-bottom: 10px;\n}\n.pma-collection-view .collection-inner p {\n  margin-bottom: 0;\n  padding-left: 1px;\n}\n.pma-collection-view .collection-inner p input {\n  line-height: 1.65;\n  margin-top: 1px;\n  vertical-align: top;\n}\n.pma-collection-view .collection-inner p .button {\n  margin: 0;\n  padding: 0.5em 1em;\n}\n.pma-collection-view .collection-inner p.drop {\n  padding-left: 5px;\n}\n.pma-collection-view .collection-inner p.drop label {\n  display: inline-block;\n}\n.pma-collection-view .collection-inner p.drop span {\n  vertical-align: middle;\n}\n.pma-collection-view .collection-inner p.drop input {\n  margin-right: 0.1rem;\n  vertical-align: sub;\n}\n.pma-collection-view .collection-inner p.drop .pma-link {\n  font-size: 1.1rem;\n  margin-right: 20px;\n  vertical-align: sub;\n}\n.pma-collection-view .collection-inner p.drop button {\n  padding: 0.3em 0.5em;\n}\n.pma-collection-view .collection-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-collection-view .collection-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-collection-view .collection-inner table td {\n  background-color: #f9f9f9;\n  padding: 4px 4px 4px 8px;\n}\n\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 768px) and (max-width: 992px) {\n.pma-collection-view {\n    width: 97%;\n}\n.pma-collection-view .collection-inner .collection-document .doc-nav {\n    margin: 0 0 5px 5px;\n}\n.pma-collection-view .collection-inner .collection-document .doc-data {\n    padding: 0 0 5px 5px;\n}\n.pma-collection-view .collection-inner .collection-document .doc-text {\n    padding: 0 0 5px 5px;\n}\n.pma-collection-view nav.collection-navigation ul.links li span {\n    font-size: 10px;\n    line-height: 40px;\n    padding: 0.14rem;\n}\n}", ""]);
 
 // exports
 
@@ -18283,7 +18529,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-new-collection {\n  float: left;\n  width: 84.5vw;\n}\n.pma-new-collection .new-collection-inner table {\n  border: none;\n}\n.pma-new-collection .new-collection-inner table th {\n  height: 60px;\n  padding-right: 12px !important;\n  text-align: right;\n}\n.pma-new-collection .new-collection-inner table th.title {\n  height: auto;\n  padding: 10px 0;\n  text-align: center;\n}\n.pma-new-collection .new-collection-inner table td {\n  padding-left: 12px !important;\n}\n.pma-new-collection .new-collection-inner table .row {\n  padding-left: 18vw !important;\n}\n.pma-new-collection .new-collection-inner .coll-help-link {\n  margin-right: 10rem;\n}\n.pma-new-collection .new-collection-inner .coll-capped-help {\n  margin-left: 5rem;\n}\n.pma-new-collection .new-collection-inner button {\n  margin: 0 10px 0 0;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-new-collection {\n  float: left;\n  width: 84.5vw;\n}\n.pma-new-collection .new-collection-inner table {\n  border: none;\n}\n.pma-new-collection .new-collection-inner table th {\n  height: 60px;\n  padding-right: 12px !important;\n  text-align: right;\n}\n.pma-new-collection .new-collection-inner table th.title {\n  height: auto;\n  padding: 10px 0;\n  text-align: center;\n}\n.pma-new-collection .new-collection-inner table td {\n  padding-left: 12px !important;\n}\n.pma-new-collection .new-collection-inner table .row {\n  padding-left: 18vw !important;\n}\n.pma-new-collection .new-collection-inner .coll-help-link {\n  margin-right: 10rem;\n}\n.pma-new-collection .new-collection-inner .coll-capped-help {\n  margin-left: 5rem;\n}\n.pma-new-collection .new-collection-inner button {\n  margin: 0 10px 0 0;\n}\n\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 768px) and (max-width: 992px) {\n.pma-new-collection {\n    float: none;\n    width: auto;\n}\n.pma-new-collection .new-collection-inner table .row {\n    padding-left: 0 !important;\n}\n.pma-new-collection .new-collection-inner .coll-help-link {\n    margin-right: 0;\n}\n}", ""]);
 
 // exports
 
@@ -18378,7 +18624,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\nnav.collection-navigation {\n  min-height: 40px;\n  border-top: 1px solid #aaa;\n}\nnav.collection-navigation ul.links {\n  display: block;\n  float: left;\n  list-style: none;\n  margin: 0;\n}\nnav.collection-navigation ul.links li {\n  background-color: #F5F5F5;\n  border-right: 2px solid #ffffff;\n  border-left: 1px solid #cccccc;\n  border-bottom: 1px solid #cccccc;\n  display: inline-block;\n  float: left;\n  list-style-type: none;\n  padding: 0 10px;\n}\nnav.collection-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 40px;\n  padding: 8px;\n  color: #235a81;\n  cursor: pointer;\n}\nnav.collection-navigation ul.links li span:hover {\n  color: #333;\n}\nnav.collection-navigation ul.links li span.text {\n  color: #000000;\n  cursor: help;\n}\nnav.collection-navigation ul.links li span.underline {\n  text-decoration: underline;\n}\nnav.collection-navigation ul.links li .active {\n  background-color: #ffffff;\n  border-bottom: 1px solid #ffffff;\n  border-right: 0;\n}\nnav.collection-navigation ul.links li .hide {\n  display: none;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\nnav.collection-navigation {\n  min-height: 40px;\n  border-top: 1px solid #aaa;\n}\nnav.collection-navigation ul.links {\n  display: block;\n  float: left;\n  list-style: none;\n  margin: 0;\n}\nnav.collection-navigation ul.links li {\n  background-color: #F5F5F5;\n  border-right: 2px solid #ffffff;\n  border-left: 1px solid #cccccc;\n  border-bottom: 1px solid #cccccc;\n  display: inline-block;\n  float: left;\n  list-style-type: none;\n  /*padding: 0 10px;*/\n}\nnav.collection-navigation ul.links li span {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 40px;\n  padding: 8px;\n  color: #235a81;\n  cursor: pointer;\n  /*&:hover {\n      color: $bodyFontColor;\n  }*/\n}\nnav.collection-navigation ul.links li span.text {\n  color: #000000;\n  cursor: help;\n}\nnav.collection-navigation ul.links li span.underline {\n  text-decoration: underline;\n}\nnav.collection-navigation ul.links li .active {\n  background-color: #ffffff;\n  border-bottom: 1px solid #ffffff;\n  border-right: 0;\n}\nnav.collection-navigation ul.links li .hide {\n  display: none;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
 
 // exports
 
@@ -18397,7 +18643,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.crumb-nav-wrapper {\n  background-color: #999999;\n  padding-left: 50px;\n}\nnav.crumb-navigation {\n  background-color: #999999;\n  min-height: 33px;\n  max-width: 100%;\n  padding-left: 14px;\n}\nnav.crumb-navigation ul.links {\n  display: inline-block;\n  margin: 0;\n}\nnav.crumb-navigation ul.links li {\n  display: inline-block;\n  list-style-type: none;\n  margin-left: 10px;\n}\nnav.crumb-navigation ul.links li span.crumb {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 33px;\n  color: #ffffff;\n}\nnav.crumb-navigation ul.links li span.crumb:hover {\n  color: #00B7FF;\n  text-decoration: underline;\n}\nnav.crumb-navigation ul.links li span.dbl-arr {\n  color: #ffffff;\n  margin-right: 5px;\n}\nnav.crumb-navigation ul.right {\n  position: absolute;\n  right: 18px;\n  top: 0;\n}\nnav.crumb-navigation ul.right .li-filter {\n  position: relative;\n}\nnav.crumb-navigation ul.right .li-filter .doc-filter {\n  max-height: 30px;\n  margin: 2px 0 0 0;\n}\nnav.crumb-navigation ul.right .li-filter span {\n  position: absolute;\n  top: 0;\n  right: 3px;\n}\nnav.crumb-navigation ul.right .li-filter span img {\n  cursor: pointer;\n  display: inline-block;\n  width: 1rem;\n}\nnav.crumb-navigation ul.right .nav-coll span {\n  cursor: pointer;\n}\nnav.crumb-navigation ul.right .nav-coll span img {\n  margin-top: -3px;\n}\n\n/* Small only - (max-width: 39.9375em) */\n@media screen and (max-width: 769px) {\nnav.crumb-navigation {\n    /* nothing yet */\n}\n}\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 769px) and (max-width: 992px) {\nnav.crumb-navigation {\n    /* nothing yet */\n}\n}\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */\n@media (min-width: 993px) and (max-width: 2048px) {\nnav.crumb-navigation {\n    /* nothing yet */\n}\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.crumb-nav-wrapper {\n  background-color: #999999;\n  padding-left: 50px;\n}\nnav.crumb-navigation {\n  background-color: #999999;\n  min-height: 33px;\n  max-width: 100%;\n  padding-left: 14px;\n}\nnav.crumb-navigation ul.links {\n  display: inline-block;\n  margin: 0;\n}\nnav.crumb-navigation ul.links li {\n  display: inline-block;\n  list-style-type: none;\n  margin-left: 10px;\n}\nnav.crumb-navigation ul.links li:hover {\n  background-color: inherit;\n  color: inherit;\n}\nnav.crumb-navigation ul.links li span.crumb {\n  font-weight: bold;\n  font-size: 12px;\n  line-height: 33px;\n  color: #ffffff;\n}\nnav.crumb-navigation ul.links li span.crumb:hover {\n  color: #00B7FF;\n  text-decoration: underline;\n}\nnav.crumb-navigation ul.links li span.dbl-arr {\n  color: #ffffff;\n  margin-right: 5px;\n}\nnav.crumb-navigation ul.right {\n  position: absolute;\n  right: 18px;\n  top: 0;\n}\nnav.crumb-navigation ul.right .li-filter {\n  position: relative;\n}\nnav.crumb-navigation ul.right .li-filter .doc-filter {\n  max-height: 30px;\n  margin: 2px 0 0 0;\n}\nnav.crumb-navigation ul.right .li-filter span {\n  position: absolute;\n  top: 0;\n  right: 3px;\n}\nnav.crumb-navigation ul.right .li-filter span img {\n  cursor: pointer;\n  display: inline-block;\n  width: 1rem;\n}\nnav.crumb-navigation ul.right .nav-coll span {\n  cursor: pointer;\n}\nnav.crumb-navigation ul.right .nav-coll span img {\n  margin-top: -3px;\n}\n\n/* Small only - (max-width: 39.9375em) */\n@media screen and (max-width: 769px) {\nnav.crumb-navigation {\n    /* nothing yet */\n}\n}\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 769px) and (max-width: 992px) {\nnav.crumb-navigation {\n    /* nothing yet */\n}\n}\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */\n@media (min-width: 993px) and (max-width: 2048px) {\nnav.crumb-navigation {\n    /* nothing yet */\n}\n}", ""]);
 
 // exports
 
@@ -18587,7 +18833,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-mongo-view {\n  float: left;\n  height: auto;\n  margin-left: 20px;\n  width: 47%;\n}\n.pma-mongo-view .mongo-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-mongo-view .mongo-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-mongo-view .mongo-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n}\n.pma-mongo-view .mongo-inner table td p {\n  text-align: left;\n  margin-bottom: 0.21rem;\n}\n.pma-mongo-view .mongo-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-mongo-view .mongo-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-mongo-view .mongo-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-mongo-view .mongo-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n  min-width: 25%;\n  text-align: right !important;\n}\n.pma-mongo-view .mongo-inner .server-info .title {\n  display: inline-block;\n  min-width: 90px;\n  text-align: right;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-mongo-view {\n  float: left;\n  height: auto;\n  margin-left: 20px;\n  width: 47%;\n}\n.pma-mongo-view .mongo-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-mongo-view .mongo-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-mongo-view .mongo-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n}\n.pma-mongo-view .mongo-inner table td p {\n  text-align: left;\n  margin-bottom: 0.21rem;\n}\n.pma-mongo-view .mongo-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-mongo-view .mongo-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-mongo-view .mongo-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  text-align: left;\n}\n.pma-mongo-view .mongo-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n  min-width: 25%;\n  text-align: right !important;\n}\n.pma-mongo-view .mongo-inner .server-info .title {\n  display: inline-block;\n  min-width: 90px;\n  text-align: right;\n}\n\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 768px) and (max-width: 992px) {\n.pma-mongo-view {\n    float: none;\n    margin-left: 0;\n    width: calc(93vw - 262px);\n}\n}", ""]);
 
 // exports
 
@@ -18739,7 +18985,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-server-view {\n  float: left;\n  height: 105vh;\n  width: 47%;\n}\n.pma-server-view .server-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-server-view .server-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-server-view .server-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n  text-align: center;\n}\n.pma-server-view .server-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-server-view .server-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-server-view .server-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  min-width: 100px;\n  text-align: left;\n}\n.pma-server-view .server-inner table.bordered td.w50 {\n  min-width: 49.9%;\n  text-align: right;\n}\n.pma-server-view .server-inner table.bordered td.title {\n  width: 15rem;\n}\n.pma-server-view .server-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-server-view {\n  float: left;\n  height: 105vh;\n  width: 47%;\n}\n.pma-server-view .server-inner table {\n  border: 1px solid #a6a6a6;\n  border-radius: 5px;\n  box-shadow: 2px 2px 5px #cccccc;\n}\n.pma-server-view .server-inner table th {\n  background-color: #bbbbbb;\n  color: #ffffff;\n  font-size: 1.2rem;\n  padding: 4px;\n}\n.pma-server-view .server-inner table .server-info {\n  background-color: #f9f9f9;\n  padding: 4px;\n  text-align: center;\n}\n.pma-server-view .server-inner table.bordered th.bb {\n  border-bottom: 1px solid #a6a6a6;\n}\n.pma-server-view .server-inner table.bordered th.rb {\n  border-right: 1px solid #a6a6a6;\n}\n.pma-server-view .server-inner table.bordered td {\n  border-bottom: 1px solid #a6a6a6;\n  min-width: 100px;\n  text-align: left;\n}\n.pma-server-view .server-inner table.bordered td.w50 {\n  min-width: 49.9%;\n  text-align: right;\n}\n.pma-server-view .server-inner table.bordered td.title {\n  width: 15rem;\n}\n.pma-server-view .server-inner table.bordered td.rb {\n  border-right: 1px solid #a6a6a6;\n}\n\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n@media (min-width: 768px) and (max-width: 992px) {\n.pma-server-view {\n    float: none;\n    height: auto;\n    width: calc(93vw - 262px);\n}\n}", ""]);
 
 // exports
 
@@ -18853,7 +19099,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../node_modules/c
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-top-panel {\n  background-color: #eeeeee;\n  margin-left: 245px;\n  padding-bottom: 2px;\n  position: relative;\n  top: 0;\n  z-index: 88;\n}\n.pma-top-panel .pma-link {\n  color: #00B7FF;\n  cursor: pointer;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.pma-top-panel {\n  background-color: #eeeeee;\n  margin-left: 245px;\n  padding-bottom: 2px;\n  position: relative;\n  top: 0;\n  width: calc(100vw - 262px);\n  z-index: 88;\n}\n.pma-top-panel .pma-link {\n  color: #00B7FF;\n  cursor: pointer;\n}\n\n/* Small only - (max-width: 39.9375em) */\n/* Medium only - (min-width: 40em) and (max-width: 63.9375em) */\n/* Large only - (min-width: 64em) and (max-width: 74.9375em) */", ""]);
 
 // exports
 
@@ -19157,7 +19403,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.main-content {\n  height: 100vh;\n  margin: 0;\n  overflow: hidden;\n  padding: 0;\n}\n.main-content .header {\n  font-weight: 800;\n  font-size: 1.1rem;\n}", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.main-content {\n  height: 100vh;\n  margin: 0;\n  overflow: hidden;\n  padding: 0;\n  /*.header {\n      font-weight: 800;\n      font-size: 1.1rem;\n  }*/\n}\n.main-content nav ul li:hover {\n  background-color: #e0e0e0;\n  color: #333;\n}\n.main-content table td input[type=submit]:hover, .main-content table td input[type=button]:hover {\n  background-color: #f4f7f9;\n  color: #333;\n}", ""]);
 
 // exports
 
@@ -67220,6 +67466,7 @@ var render = function() {
       directives: [
         { name: "show", rawName: "v-show", value: _vm.show, expression: "show" }
       ],
+      ref: "pmaDatabaseView",
       staticClass: "pma-database-view align-left",
       attrs: { id: "pma-databases-view" }
     },
@@ -68071,7 +68318,10 @@ var render = function() {
         [
           _c(
             "div",
-            { class: "records-header " + _vm.watchScroll },
+            {
+              ref: "recordsHeader",
+              class: "records-header " + _vm.watchScroll
+            },
             [
               _vm.page.find.message
                 ? _c("p", { staticClass: "page-message" }, [
@@ -71073,6 +71323,7 @@ var render = function() {
                 ])
               ]
             ),
+            _vm._v(" "),
             _c(
               "span",
               {
@@ -71302,6 +71553,7 @@ var render = function() {
                 ])
               ]
             ),
+            _vm._v(" "),
             _c(
               "span",
               {
@@ -71959,6 +72211,7 @@ var render = function() {
                 ])
               ]
             ),
+            _vm._v(" "),
             _c(
               "span",
               {
@@ -72944,6 +73197,7 @@ var render = function() {
                 ])
               ]
             ),
+            _vm._v(" "),
             _c(
               "span",
               {
@@ -74498,6 +74752,7 @@ var render = function() {
       directives: [
         { name: "show", rawName: "v-show", value: _vm.show, expression: "show" }
       ],
+      ref: "pmaMongoView",
       staticClass: "pma-mongo-view align-left",
       attrs: { id: "pma-mongo-view" }
     },
@@ -75095,6 +75350,7 @@ var render = function() {
       directives: [
         { name: "show", rawName: "v-show", value: _vm.show, expression: "show" }
       ],
+      ref: "pmaServerView",
       staticClass: "pma-server-view align-left",
       attrs: { id: "pma-server-view" }
     },
