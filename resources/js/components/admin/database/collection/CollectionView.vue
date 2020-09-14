@@ -87,6 +87,31 @@
             }
         }
     }
+
+    /* Medium only - (min-width: 40em) and (max-width: 63.9375em) */
+    @media (min-width: 768px) and (max-width: 992px) {
+        .pma-collection-view {
+            width: 97%;
+
+            .collection-inner .collection-document .doc-nav {
+                margin: 0 0 5px 5px;
+            }
+
+            .collection-inner .collection-document .doc-data {
+                padding: 0 0 5px 5px;
+            }
+
+            .collection-inner .collection-document .doc-text {
+                padding: 0 0 5px 5px;
+            }
+
+            nav.collection-navigation ul.links li span {
+                font-size: 10px;
+                line-height: 40px;
+                padding: .14rem;
+            }
+        }
+    }
 </style>
 
 <template>

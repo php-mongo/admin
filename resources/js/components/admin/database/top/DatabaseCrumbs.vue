@@ -34,6 +34,11 @@
                 list-style-type: none;
                 margin-left: 10px;
 
+                &:hover {
+                    background-color: inherit;
+                    color: inherit;
+                }
+
                 span.crumb {
                     font-weight: bold;
                     font-size: 12px;

@@ -22,7 +22,15 @@
     <transition name="slide-in-top">
         <div class="panel-modal" v-show="show">
             <div class="panel-modal-inner">
-                <div class="modal-header"><span class="msg" v-show="errorMessage || actionMessage"><span class="error">{{ errorMessage }}</span> <span class="action">{{ actionMessage }}</span></span><span class="close u-pull-right" v-on:click="hideComponent"><img src="/img/icon/cross-red.png" /></span></div>
+                <div class="modal-header">
+                    <span class="msg" v-show="errorMessage || actionMessage">
+                        <span class="error">{{ errorMessage }}</span>
+                        <span class="action">{{ actionMessage }}</span>
+                    </span>
+                    <span class="close u-pull-right" v-on:click="hideComponent">
+                        <img src="/img/icon/cross-red.png" />
+                    </span>
+                </div>
                 <h3 v-text="showLanguage('document','documentCreate')"></h3>
                 <form>
                     <label>

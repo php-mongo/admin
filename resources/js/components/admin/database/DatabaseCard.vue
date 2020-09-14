@@ -46,6 +46,13 @@
     .hide-list {
         display: none !important;
     }
+
+    /* Medium only - (min-width: 40em) and (max-width: 63.9375em) */
+    @media (min-width: 768px) and (max-width: 992px) {
+        .database-inner {
+            /* */
+        }
+    }
 </style>
 
 <template>
@@ -273,7 +280,7 @@
                     return 0;
                 }
                 if (bytes < 1024) {
-                    return bytes + "B";
+                    return Math.round(bytes, 2) + "B";
                 }
                 if (bytes < 1024 * 1024) {
                     return Math.round(bytes/1024, precision) + "k";

@@ -22,7 +22,11 @@
     <transition name="slide-in-top">
         <div class="panel-modal" v-show="show">
             <div class="panel-modal-inner">
-                <div class="modal-header"><span class="u-pull-right" v-on:click="hideComponent"><img src="/img/icon/cross-red.png" /></span></div>
+                <div class="modal-header">
+                    <span class="u-pull-right" v-on:click="hideComponent">
+                        <img src="/img/icon/cross-red.png" />
+                    </span>
+                </div>
                 <h3 v-text="showLanguage('document', 'documentUpdate')"></h3>
                 <form>
                     <label>

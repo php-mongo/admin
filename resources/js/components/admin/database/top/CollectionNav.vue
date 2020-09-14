@@ -36,7 +36,7 @@
                 display: inline-block;
                 float: left;
                 list-style-type: none;
-                padding: 0 10px;
+                /*padding: 0 10px;*/
 
                 span {
                     font-weight: bold;
@@ -46,9 +46,9 @@
                     color: $tabColor;
                     cursor: pointer;
 
-                    &:hover {
+                    /*&:hover {
                         color: $bodyFontColor;
-                    }
+                    }*/
                 }
 
                 span.text {

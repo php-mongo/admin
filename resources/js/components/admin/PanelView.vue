@@ -22,11 +22,18 @@
         margin-left: 245px;
         overflow-x: auto;
         padding: 20px 0 20px 20px;
-        width:auto;
+        width: calc(100vw - 262px);
 
         .pma-main-inner {
             margin: 0;
-            width: 88vw;
+            width: calc(100vw - 262px);
+        }
+    }
+
+    /* Medium only - (min-width: 40em) and (max-width: 63.9375em) */
+    @media (min-width: 768px) and (max-width: 992px) {
+        .pma-main-panel {
+            padding: 10px 0 10px 10px;
         }
     }
 </style>
@@ -97,11 +104,13 @@
                 this.expanded = !this.expanded;
                 if (this.expanded === true) {
                     this.$jqf(this.$refs.pmaMainPanel).css('margin-left', '5px');
+                    this.$jqf(this.$refs.pmaMainPanel).css('width', '99vw');
                     this.$jqf(this.$refs.pmaInner).css('width', '100vw');
                 }
                 if (this.expanded === false) {
                     this.$jqf(this.$refs.pmaMainPanel).css('margin-left', '245px');
-                    this.$jqf(this.$refs.pmaInner).css('width', '88vw');
+                    this.$jqf(this.$refs.pmaMainPanel).css('width', 'calc(100vw - 262px)');
+                    this.$jqf(this.$refs.pmaInner).css('width', 'calc(100vw - 262px)');
                 }
             },
 
