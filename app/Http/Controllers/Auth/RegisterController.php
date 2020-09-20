@@ -98,7 +98,7 @@ class RegisterController extends Controller
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
-     * @return \App\Models\User
+     * @return User
      */
     protected function create(array $data)
     {
@@ -151,58 +151,14 @@ class RegisterController extends Controller
         $user->note         = $note;
         $user->save();
 
-        if ($hasKey == true) {
+        /*if (true === $hasKey) {
             $attrs = $user->getAttributes();
             // run the process that will syn any existing posts to this member
             $this->syncPosts( $userPublicKey, $attrs['id'] );
             $this->syncImageUploads($userPublicKey, $attrs['id'] );
-        }
+        }*/
 
         return $user;
-    }
-
-    /**
-     * @param $userPublicKey
-     * @param $user
-     */
-    private function syncPosts( $userPublicKey, $uid )
-    {
-        if ($userPublicKey) {
-            $publicPosts = Post::where('user_key', '=', $userPublicKey)
-                ->get();
-
-            if (count($publicPosts)) {
-                foreach ($publicPosts as $post) {
-                    $postPublicKey = $post->post_key;
-
-                    $ad = Ad::where('post_public_key', '=', $postPublicKey)
-                        ->first();
-
-                    $ad->user_id = $uid;
-                    $ad->save();
-                }
-            }
-        }
-    }
-
-    /**
-     * @param $userPublicKey
-     * @param $user
-     */
-    private function syncImageUploads( $userPublicKey, $uid)
-    {
-        if ($userPublicKey) {
-            $uploadLogs = Upload::where('user_key', '=', $userPublicKey)
-                ->get();
-
-            if (count($uploadLogs)) {
-                foreach ($uploadLogs as $upload) {
-
-                    $upload->file_user_id = $uid;
-                    $upload->save();
-                }
-            }
-        }
     }
 
     /**
@@ -219,17 +175,17 @@ class RegisterController extends Controller
         $key = $this->randomString($length, true);
 
         // check that its unique
-        $result = Post::where($context, '=', $key)
-            ->get();
+        //$result = Post::where($context, '=', $key)
+        //    ->get();
 
-        if (count($result) == 0) {
+        //if (count($result) == 0) {
             // gtg
             return $key;
 
-        } else {
+        // else {
             // rerun
-            return $this->generateToken($context, $length);
-        }
+        //    return $this->generateToken($context, $length);
+        //}
     }
 
     /**

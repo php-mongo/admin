@@ -124,7 +124,7 @@ class MongoHelper
 
         // we expect JSON - decode then encode
         $json_obj = json_decode($json);
-        if ($json_obj === false) {
+        if (false === $json_obj) {
             return false;
         }
         $json = json_encode($json_obj);
@@ -136,7 +136,7 @@ class MongoHelper
             {
                 case '{':
                 case '[':
-                    if(!$in_string)
+                    if (!$in_string)
                     {
                         $new_json .= $char . "\n" . str_repeat($tab, $indent_level+1);
                         $indent_level++;
@@ -149,7 +149,7 @@ class MongoHelper
 
                 case '}':
                 case ']':
-                    if(!$in_string)
+                    if (!$in_string)
                     {
                         $indent_level--;
                         $new_json .= "\n" . str_repeat($tab, $indent_level) . $char;
@@ -161,7 +161,7 @@ class MongoHelper
                     break;
 
                 case ',':
-                    if(!$in_string)
+                    if (!$in_string)
                     {
                         $new_json .= ",\n" . str_repeat($tab, $indent_level);
                     }
@@ -172,7 +172,7 @@ class MongoHelper
                     break;
 
                 case ':':
-                    if(!$in_string)
+                    if (!$in_string)
                     {
                         $new_json .= ": ";
                     }
@@ -183,7 +183,7 @@ class MongoHelper
                     break;
 
                 case '"':
-                    if($c > 0 && $json[$c-1] != '\\')
+                    if ('\\' != $json[$c-1] && $c > 0)
                     {
                         $in_string = !$in_string;
                     }
@@ -265,7 +265,7 @@ class MongoHelper
                     break;
 
                 case '"':
-                    if ($c > 0 && $json[$c-1] != '\\') {
+                    if ( '\\' != $json[$c-1] && $c > 0 ) {
                         $in_string = !$in_string;
                         if ($in_string) {
                             $new_json .= "<span style=\"color: #DD0000\" class=\"string_var\">" . $char;
@@ -275,18 +275,18 @@ class MongoHelper
                         }
                         break;
                     }
-                    else if ($c == 0) {
+                    else if (0 == $c) {
                         $in_string = !$in_string;
                         $new_json .= "<span style=\"color: red\">" . $char;
                         break;
                     }
 
                 default:
-                    if (!$in_string && trim($char) !== "") {
+                    if (!$in_string && "" !== trim($char)) {
                         $char = "<span style=\"color: blue\">" . $char . "</span>";
                     }
                     else {
-                        if ($char == "&" || $char == "'" || $char == "\"" || $char == "<" || $char == ">") {
+                        if ("&" == $char || "'" == $char || "\"" == $char || "<" == $char || ">" == $char) {
                             $char = htmlspecialchars($char);
                         }
                     }
@@ -336,7 +336,7 @@ class MongoHelper
         // a function to handle recursive document levels
         // iterate the document
         foreach ($document as $key => $value) {
-            if ($key == '_id') {
+            if ('_id' == $key) {
                 if (is_object($value)) {
                     $oid = $value->__toString();
                 } else {
@@ -401,7 +401,7 @@ class MongoHelper
                 /** @var MongoDb\Model\BSONArray $v */
                 $arr = $v->getArrayCopy();
               //  $level++;
-                if (count($v) == 0) {
+                if (0 == count($v)) {
                     $arr['key.' . $k . '.key'] = [];
                 } else {
                     $arr['key.' . $k . '.key'] = $v; //self::iterateObject($v, $level, $k, $fields);
@@ -424,7 +424,8 @@ class MongoHelper
      * Here we attempt to track the field keys that are found
      *
      * @param $document
-     * @param $fields
+     * @param array $fields
+     * @param bool  $OID
      *
      * @return array
      */
@@ -435,13 +436,11 @@ class MongoHelper
         // a function to handle recursive document levels
         // iterate the document
         foreach ($document as $key => $value) {
-            if ($key == '_id') {
-                if (is_object($value) && $OID == false) {
-
+            if ('_id' == $key) {
+                if (false == $OID && is_object($value)) {
                     $oid = $value->__toString();
-
                 }
-                elseif ($OID == true && !is_string($value)) {
+                elseif (true == $OID && !is_string($value)) {
                     $oid = array("oid" => $value->__toString());
                 }
                 else {
@@ -501,7 +500,7 @@ class MongoHelper
                 /** @var MongoDb\Model\BSONArray $v */
                 $arr = $v->getArrayCopy();
                 //  $level++;
-                if (count($v) == 0) {
+                if (0 == count($v)) {
                     $arr[ $k ] = [];
                 } else {
                     $arr[ $k ] = $v;
@@ -596,7 +595,7 @@ class MongoHelper
 
             // If $useCollection is TRUE : all inserts will use the 'current collection' in the namespace
             // If $isJson is TRUE we must use the provided $collection
-            $ns = $useCollection == false && $isJson == false ? self::ns( $database, $coll) : self::ns($database, $collection);
+            $ns = false == $useCollection && false == $isJson ? self::ns( $database, $coll) : self::ns($database, $collection);
 
             if ($isJson) {
                 // form JSON insert use only the internal iteration
@@ -612,7 +611,7 @@ class MongoHelper
                     }
                     // if the ObjectId has been included as $oid => 'blah blah blah'
                     $isOID = $insert['_id'] instanceof MongoDB\BSON\ObjectId;
-                    if ($isOID == false && isset($insert['_id']['oid'])) {
+                    if (false == $isOID && isset($insert['_id']['oid'])) {
                         $insert['_id'] = new MongoDB\BSON\ObjectId ($insert['_id']['oid'] );
                     }
                     // expects an array
@@ -636,7 +635,7 @@ class MongoHelper
      */
     public static function validateCollectionProperties( array $properties, &$errors )
     {
-        if ($properties['capped'] == true) {
+        if (true == $properties['capped']) {
             // validate the params
             // size must be set if collection is capped
             if (!empty($properties['size']) && is_numeric($properties['size']) && $properties['size'] >= 1) {
@@ -674,7 +673,7 @@ class MongoHelper
      */
     public static function readHumanBytes($bytes, $precision = 2)
     {
-        if ($bytes == 0) {
+        if (0 == $bytes) {
             return 0;
         }
         if ($bytes < 1024) {

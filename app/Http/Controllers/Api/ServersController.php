@@ -58,7 +58,7 @@ class ServersController extends Controller
     {
         $data = $request->validated();
 
-        /** @var \App\Model\User $user */
+        /** @var User $user */
         $user = auth('api')->user();
 
         if (empty($data['id'])) {
@@ -95,14 +95,14 @@ class ServersController extends Controller
         $servers      = Server::all();
         $updateServer = null;
         foreach ($servers as $server) {
-            if ($server->active == 1 && $server->id != $id) {
-                /** @var \App\Model\Server $update */
+            if (1 == $server->active && $id != $server->id) {
+                /** @var Server $update */
                 $update         = Server::where('id', $server->id )->get();
                 $update->active = 0;
                 $update->save();
             }
-            if ($server->id == $id) {
-                /** @var \App\Model\User $updateServer */
+            if ($id == $server->id) {
+                /** @var User $updateServer */
                 $updateServer = $server;
             }
         }

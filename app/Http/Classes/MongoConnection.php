@@ -101,7 +101,7 @@ class MongoConnection
     private function prepareConnection()
     {
         $server = $this->getServer();
-        $prefix = strpos($server['host'], 'localhost') !== false ? 'mongodb' : 'mongodb+srv';
+        $prefix = false !== strpos($server['host'], 'localhost') ? 'mongodb' : 'mongodb+srv';
         // create the URI
         $uri = $prefix . '://' . $server['host'] . ':' . $server['port'];
         $options = [];
@@ -122,7 +122,7 @@ class MongoConnection
         $server = $user->servers()->where('active', 1)->get();
         // this ensures we still connect with basic settings if there is NO server configuration
         $server = isset($server[0]) ? $server[0]->getAttributes() : array('host' => 'localhost', 'port' => 27017, 'username' => false, 'password' => false);
-        if (env('APP_ENV') == 'demo') {
+        if ('demo' == env('APP_ENV')) {
             // demo site only
             $server = array('host' => 'localhost', 'port' => 27017, 'username' =>  config('app.dbUser') , 'password' => config('app.dbPasswd'));
         }
@@ -130,7 +130,7 @@ class MongoConnection
     }
 
     /**
-     * Run a quick check that required server congid exist
+     * Run a quick check that required server config exist
      *
      * @return bool
      */
@@ -163,7 +163,7 @@ class MongoConnection
     }
 
     /**
-     * Create a conection to a collection via a database
+     * Create a connection to a collection via a database
      *
      * @param string $db
      * @param string $collection
@@ -185,7 +185,7 @@ class MongoConnection
     }
 
     /**
-     * Runs the MongoDB\Driver\Manager::executeComand method
+     * Runs the MongoDB\Driver\Manager::executeCommand method
      *
      * @param $db
      * @param $command

@@ -86,6 +86,7 @@
                     index: null,
                     _id: null,
                 },
+                id: null,
                 show: false,
                 skel: {
                     collection: null,
@@ -128,6 +129,7 @@
              */
             setDocument( data ) {
                 // save requirements
+                this.id              = data.document._id;
                 this.form.database   = data.db;
                 this.form.collection = data.coll;
                 this.form.index      = data.index;
@@ -225,7 +227,6 @@
 
                 // result
                 this.handleUpdate();
-
             },
 
             sendArray() {
@@ -259,7 +260,10 @@
                 }
                 if (status === 2) {
                     EventBus.$emit('show-success', { notification: this.showLanguage('document', 'updateSuccess', this.form._id) });
-                    EventBus.$emit('document-updated', { index: this.form.index, document: this.form.document });
+                    // restore the _id back to the document
+                    let document    = JSON.parse(this.form.document);
+                    document['_id'] = this.id;
+                    EventBus.$emit('document-updated', { index: this.form.index, document: JSON.stringify(document) });
                     this.clearData();
                     this.hideComponent();
                 }
