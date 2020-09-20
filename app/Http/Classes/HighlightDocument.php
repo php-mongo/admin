@@ -108,7 +108,7 @@ class HighlightDocument
     private function _setObjectId(array $arr )
     {
         $id = 'n/a';
-        if (isset($arr[2]) && strpos($arr[2], '"') === false) {
+        if (isset($arr[2]) && false === strpos($arr[2], '"')) {
             $id = $arr[2];
         }
         return '<span class="string" style="color: blue">ObjectId</span>' .
@@ -126,7 +126,7 @@ class HighlightDocument
     private function _setKeyWrapper( array $arr)
     {
         $key = 'n/a';
-        if (isset($arr[2]) && strpos($arr[2], '"') === false) {
+        if (isset($arr[2]) && false === strpos($arr[2], '"')) {
             $key = $arr[2];
         }
         return '<span class="field" data-field="' . $key . '">' .
@@ -143,7 +143,7 @@ class HighlightDocument
     private function _analyseValue(array $arr)
     {
         $value = 'n/a';
-        if (isset($arr[2]) && strpos($arr[2], '"') === false) {
+        if (isset($arr[2]) && false === strpos($arr[2], '"')) {
             $value = $arr[2];
         }
         if (is_scalar($value) || is_null($value)) {

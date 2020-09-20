@@ -294,7 +294,7 @@ class VarExport
             {
                 case '{':
                 case '[':
-                    if(!$in_string)
+                    if (!$in_string)
                     {
                         $new_json .= $char . "\n" . str_repeat($tab, $indent_level+1);
                         $indent_level++;
@@ -307,7 +307,7 @@ class VarExport
 
                 case '}':
                 case ']':
-                    if(!$in_string)
+                    if (!$in_string)
                     {
                         $indent_level--;
                         $new_json .= "\n" . str_repeat($tab, $indent_level) . $char;
@@ -319,7 +319,7 @@ class VarExport
                     break;
 
                 case ',':
-                    if(!$in_string)
+                    if (!$in_string)
                     {
                         $new_json .= ",\n" . str_repeat($tab, $indent_level);
                     }
@@ -330,7 +330,7 @@ class VarExport
                     break;
 
                 case ':':
-                    if(!$in_string)
+                    if (!$in_string)
                     {
                         $new_json .= ": ";
                     }
@@ -341,7 +341,7 @@ class VarExport
                     break;
 
                 case '"':
-                    if($c > 0 && $json[$c-1] != '\\')
+                    if ($c > 0 && $json[$c-1] != '\\')
                     {
                         $in_string = !$in_string;
                     }
@@ -376,10 +376,10 @@ class VarExport
         if ($fieldLabel) {
             $this->var = $this->_addLabelToArray($this->var);
         }
-        if ($type == 'array') {
+        if ('array' == $type) {
             return $this->_exportPHP();
         }
-        if ($type == 'document') {
+        if ('document' == $type) {
             return $this->_exportDocument();
         }
         return $this->_exportJSON();
@@ -395,7 +395,7 @@ class VarExport
     {
         $arr = [];
         foreach ($document as $key => $value) {
-            if ($key == '_id') {
+            if ('id' == $key) {
                 // we need to pass this back for exports instead of ObjectId('r42ry6y54t43r5y6y54t45t54y54ya')
                 $arr[ $key ] = array("oid" => $value);
 

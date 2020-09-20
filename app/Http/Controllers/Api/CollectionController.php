@@ -141,7 +141,12 @@ class CollectionController extends Controller implements Unserializable
         $this->collectionStatistics = $collectionStatistics;
     }
 
-    private function prepareObjects( $objectsArr, $documentsArray, &$arr)
+    /**
+     * @param $objectsArr
+     * @param $documentsArray
+     * @param $arr
+     */
+    private function prepareObjects(array $objectsArr, array $documentsArray, &$arr) : void
     {
         /** @var ExportDocument $docExport */
         $docExport    = new ExportDocument();
@@ -175,7 +180,7 @@ class CollectionController extends Controller implements Unserializable
             $obj['data'] = $data;
 
             // set the 'can_delete' bool
-            $obj['can_delete']    = (isset($obj['_id']) && $this->findCollectionStatisticsValue('capped') == false);
+            $obj['can_delete']    = (isset($obj['_id']) && false == $this->findCollectionStatisticsValue('capped'));
 
             // set the 'can_modify' bool
             $obj['can_modify']    = (isset($obj['_id']));
@@ -184,7 +189,7 @@ class CollectionController extends Controller implements Unserializable
             $obj['can_duplicate'] = (isset($obj['_id']));
 
             // set the 'can_add_field' bool
-            $obj['can_add_field'] = (isset($obj['_id']) && $this->findCollectionStatisticsValue('capped') == false);
+            $obj['can_add_field'] = (isset($obj['_id']) && false == $this->findCollectionStatisticsValue('capped'));
 
             // set the 'can_refresh' bool
             $obj['can_refresh']   = (isset($obj['_id']));
@@ -204,7 +209,7 @@ class CollectionController extends Controller implements Unserializable
      * @param   string    $collection   string Collection Name
      * @return  array
      */
-    private function getOneCollection($database, $collection)
+    private function getOneCollection(string $database, string $collection) : array
     {
         /** @var MongoDB\Collection $collection */
         $collection = $this->mongo->connectClientCollection( $database, $collection );
@@ -294,7 +299,7 @@ class CollectionController extends Controller implements Unserializable
      * @param   string  $collection     string Collection name
      * @return  array
      */
-    private function getObjects($db, $collection)
+    private function getObjects($db, $collection) : array
     {
         // no errors this way
         $arr = array(
@@ -321,10 +326,10 @@ class CollectionController extends Controller implements Unserializable
      * @param  bool   $ns
      * @return array
      */
-    private function setDeleteStatus(string $name, array $result, $ns = false)
+    private function setDeleteStatus(string $name, array $result, $ns = false) : array
     {
-        if ($result['ok'] == 1) {
-            if (@$result['dropped'] == $name ||  @$result['ns'] == $ns) {
+        if (1 == $result['ok']) {
+            if (@$result['dropped'] == $name || @$result['ns'] == $ns) {
                 return array($name => 'success');
             }
         }
@@ -384,6 +389,10 @@ class CollectionController extends Controller implements Unserializable
         }
     }
 
+    /**
+     * @param  Request $request
+     * @return mixed
+     */
     public function queryCollection(Request $request)
     {
         try {
@@ -393,7 +402,7 @@ class CollectionController extends Controller implements Unserializable
             $format           = $request->get('format');
             $criteria         = $params['criteria'];
             // ToDo: !! implement a sanity check if the format is array and we need to use EVIL eval() !!
-            $query            = $format == 'json' ? json_decode($criteria[ $format ], true) : eval("return " . $criteria[ $format ] . ";");
+            $query            = 'json' == $format ? json_decode($criteria[ $format ], true) : eval("return " . $criteria[ $format ] . ";");
             $collection       = $this->mongo->connectClientCollection($this->database, $this->collection);
             $results          = $collection->find( $query );
             $results          = $results->toArray();
@@ -429,7 +438,7 @@ class CollectionController extends Controller implements Unserializable
     {
         try {
             $data = $request->validated();
-            $name       = $data['name'];
+        //    $name       = $data['name'];
             $database   = $data['database'];
             $collection = $data['name'];
             $capped     = $data['capped'];
@@ -439,7 +448,7 @@ class CollectionController extends Controller implements Unserializable
             // default options
             $options = [];
 
-            if ($capped == true && $size >= 1) {
+            if (true == $capped && $size >= 1) {
                 $options['capped'] = true;
                 $options['size']   = $size;
                 if ($count) {
@@ -484,7 +493,7 @@ class CollectionController extends Controller implements Unserializable
                 $countDocuments = 0;
 
                 // handle some variations on the export theme
-                if ($params['json'] == true) {
+                if (true == $params['json']) {
                     // only available for a single collection
                     $documents  = $database->selectCollection( $collections[0] )->find();
                     $array  = [];
@@ -521,11 +530,11 @@ class CollectionController extends Controller implements Unserializable
                     }
                 }
 
-                if ($params['download'] == true) {
+                if (true == $params['download']) {
                     // set the file name // ToDo !! this is actually handled in the front-end : we are using AJAX downloads !!
                     $filePrefix = "mongodb-" . urldecode($database) . "-" . date("Ymd-His");
 
-                    if ($params['gzip'] == true) {
+                    if (true == $params['gzip']) {
                         header("Content-type: application/x-gzip");
                         header("Content-Disposition: attachment; filename=\"{$filePrefix}.gz\"");
                         echo gzcompress($contents, 9);
@@ -572,7 +581,7 @@ class CollectionController extends Controller implements Unserializable
                 }
 
                 // for zipped files
-                if ($gzip == true) {
+                if (true === $gzip) {
                     $body = gzuncompress( file_get_contents( $file['tmp_name'] ) );
 
                 } else {
@@ -592,13 +601,13 @@ class CollectionController extends Controller implements Unserializable
 
                 // this is for file exported from PhpMongoAdmin *.js
                 // our JSON export will only produce a single element array
-                if ($type == 'admin' && count($arr) >= 3) {
+                if ('admin' == $type && count($arr) >= 3) {
                     $insertArray = [];
 
                     // iterate the import array
                     foreach ($arr as $insert) {
                         // ignore the comments, index insert etc
-                        if (strpos( $insert, "insert") !== false) {
+                        if (false !== strpos( $insert, "insert")) {
                             // we're good to go! get the collection(s)
                             // create array using collections as primary array key
                             $insertArray[ MongoHelper::getCollectionNameFromInsert( $insert ) ][] = MongoHelper::getDateFromInsert( $insert );
@@ -726,15 +735,15 @@ class CollectionController extends Controller implements Unserializable
             /** @var MongoDB\Collection $coll */
             $coll         = $this->mongo->connectClientCollection( $database, $collection );
 
-            if ($params['create'] == true) {
+            if (true == $params['create']) {
                 $keys    = [];
                 $options = [];
 
                 // set the options
-                if ($params['unique'] == true) {
+                if (true == $params['unique']) {
                     $options['unique'] = true;
                 }
-                if ($params['sparse'] == true) {
+                if (true == $params['sparse']) {
                     $options['sparse'] = true;
                 }
 
@@ -824,7 +833,7 @@ class CollectionController extends Controller implements Unserializable
                 /** @var MongoDB\Database $db */
                 $db         = $this->mongo->connectClientDb( $database );
 
-                if ($overwrite == true) {
+                if (true == $overwrite) {
                     // get the destination
                     $destination = $this->mongo->connectClientCollection( $database, $duplicateName );
                     // confirm we have a collection
@@ -854,7 +863,7 @@ class CollectionController extends Controller implements Unserializable
                 // enforce the use of our provided collection name - also passing the documents array within an indexed array container
                 MongoHelper::handleBulkInsert($manager, $database, array(0 => $documents), $duplicateName, true, $inserted);
 
-                if ($indexes == true) {
+                if (true == $indexes) {
                     $keys = [];
                     $i    = 0;  // might be able to use (~ as $i => $index) instead
                     // copy the indexes from source to duplicate

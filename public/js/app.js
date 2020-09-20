@@ -3957,26 +3957,24 @@ __webpack_require__.r(__webpack_exports__);
 
 
         if (this.format === 'json') {
-          var t = this.$convObj(obj).jsonT(data.document);
-          var d = this.$convObj(obj).jsonH(data.document);
-          this.$store.dispatch('setDocument', {
-            text: t,
-            data: d,
-            index: data.index
-          });
+          var _t = this.$convObj(obj).jsonT(data.document);
+
+          var _d = this.$convObj(obj).jsonH(data.document);
         }
 
         if (this.format === 'array') {
-          var _t = this.$convObj(obj).arrayT(data.document);
+          var _t2 = this.$convObj(obj).arrayT(data.document);
 
-          var _d = this.$convObj(obj).arrayH(data.document);
-
-          this.$store.dispatch('setDocument', {
-            text: _t,
-            data: _d,
-            index: data.index
-          });
+          var _d2 = this.$convObj(obj).arrayH(data.document);
         }
+
+        this.visibleObjects[data.index].text = t;
+        this.visibleObjects[data.index].data = d;
+        this.$store.dispatch('setDocument', {
+          text: t,
+          data: d,
+          index: data.index
+        });
       }
     },
 
@@ -7771,6 +7769,7 @@ function _typeof(obj) {
         index: null,
         _id: null
       },
+      id: null,
       show: false,
       skel: {
         collection: null,
@@ -7813,6 +7812,7 @@ function _typeof(obj) {
      */
     setDocument: function setDocument(data) {
       // save requirements
+      this.id = data.document._id;
       this.form.database = data.db;
       this.form.collection = data.coll;
       this.form.index = data.index;
@@ -7928,10 +7928,13 @@ function _typeof(obj) {
       if (status === 2) {
         _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('show-success', {
           notification: this.showLanguage('document', 'updateSuccess', this.form._id)
-        });
+        }); // restore the _id back to the document
+
+        var document = JSON.parse(this.form.document);
+        document['_id'] = this.id;
         _event_bus_js__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$emit('document-updated', {
           index: this.form.index,
-          document: this.form.document
+          document: JSON.stringify(document)
         });
         this.clearData();
         this.hideComponent();
