@@ -175,13 +175,13 @@ class DocumentController extends Controller implements Unserializable
     /**
      * Used to confirm that a document has been updated
      *
-     * @param string $name
+     * @param string $id
      * @param array $result
      * @return array
      */
     private function setUpdatetatus(string $id, array $result)
     {
-        if ($result['dropped'] == $id && $result['ok'] == 1) {
+        if ($id == $result['dropped'] && 1 == $result['ok']) {
             return array($id => 'success');
         }
         return array($id => 'failed');
@@ -196,7 +196,7 @@ class DocumentController extends Controller implements Unserializable
      */
     private function setDeleteStatus(string $id, MongoDB\DeleteResult $result)
     {
-        if ($result->getDeletedCount() == 1 && $result->isAcknowledged() == true) {
+        if (true == $result->isAcknowledged() && 1 == $result->getDeletedCount()) {
             return array($id => 'success');
         }
         return array($id => 'failed');
@@ -272,7 +272,7 @@ class DocumentController extends Controller implements Unserializable
                 $cursor = $this->mongo->connectClientCollection( $database, $collection );
 
                 // insert doc
-                $result     = $cursor->insertOne( $document );
+                $result = $cursor->insertOne( $document );
 
                 // get the ObjectId and then the new object with extras intact
                 $insertId = $result->getInsertedId();
@@ -316,8 +316,13 @@ class DocumentController extends Controller implements Unserializable
             $document   = $request->get('document');
             $type       = $request->get('type', null);
 
+            //echo '<pre>'; var_dump(json_encode($document)); echo '</pre>';
+            //echo '<pre>'; var_dump(json_decode(json_encode($document), true)); echo '</pre>';
+
             // decode the document as we may need an array
             $document = json_decode($document, true);
+
+            //dd($document);
 
             // if type exists and matches, and we have field and value create the correct MongoDB data type
             if ($type && in_array($type, $this->types)) {
@@ -329,7 +334,7 @@ class DocumentController extends Controller implements Unserializable
                     $realValue = DocumentHelper::convertValue( 'admin', $type, $this->format, $value );
                     $document[ $field ] = $type == 'mixed' ? json_decode($realValue, true) : $realValue;
                 }
-                // ToDo: ? do we need to set and return an errro in this case ?
+                // ToDo: ? do we need to set and return an error in this case ?
             }
 
             // get the collection
@@ -340,7 +345,7 @@ class DocumentController extends Controller implements Unserializable
             $id = array('_id' => new MongoDB\BSON\ObjectId($id));
 
             //
-            $result     = $collection->replaceOne( $id, $document );
+            $result = $collection->replaceOne( $id, $document );
 
             // $doc = $this->getObject( $database, $collection, $result->getUpsertedId() );
             // possible result values
@@ -351,7 +356,7 @@ class DocumentController extends Controller implements Unserializable
             echo '<pre>'; var_dump($result->getUpsertedCount()); echo '</pre>';
             die;*/
 
-            if ($result->isAcknowledged() == true && $result->getModifiedCount() == 1) {
+            if (true == $result->isAcknowledged() && 1 == $result->getModifiedCount()) {
                 return response()->success('success', array( 'document' => $document ));
 
             } else {
@@ -395,7 +400,7 @@ class DocumentController extends Controller implements Unserializable
                 $arr = array(
                     '_id' => new MongoDB\BSON\ObjectId( $insertId->__toString() )
                 );
-                $doc      = $this->getObject( $database, $collection, $arr );
+                $doc = $this->getObject( $database, $collection, $arr );
 
                 return response()->success('success', array( 'document' => $doc ));
             }
@@ -433,7 +438,7 @@ class DocumentController extends Controller implements Unserializable
                 );
             }
             catch(\Exception $e) {
-                if (strpos($e->getMessage(), "Error parsing ObjectId string:") !== false) {
+                if (false !== strpos($e->getMessage(), "Error parsing ObjectId string:")) {
                     $arr = array("_id" => $oid);
                 }
             }

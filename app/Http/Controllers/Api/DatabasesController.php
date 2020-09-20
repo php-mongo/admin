@@ -111,14 +111,14 @@ class DatabasesController extends Controller implements Unserializable
     /**
      * We need a global method to monitor which database can be read for stats etc
      * For now its just fr the demo website
-     * ToDo: !! this can be extended and implementd further kater on !!
+     * ToDo: !! this can be extended and implemented further later on !!
      *
      * @param   string  $dbn
      * @return  bool
      */
     private function handleExclusions( $dbn ) {
         $env = env('APP_ENV');
-        if  ($env != 'demo') {
+        if  ('demo' !== $env) {
             // we  are only checking on the demo site
             return true;
         }
@@ -253,7 +253,7 @@ class DatabasesController extends Controller implements Unserializable
      */
     private function setDeleteStatus(string $name, array $result)
     {
-        if ($result['dropped'] == $name && $result['ok'] == 1) {
+        if (1 == $result['ok'] && $name == $result['dropped']) {
             return array($name => 'success');
         }
         return array($name => 'failed');
@@ -348,7 +348,7 @@ class DatabasesController extends Controller implements Unserializable
             // ToDo: their might be a better way to to this - something more efficient - haven't found it yet in the docs
             foreach ($this->client->listDatabases() as $mdb) {
                 $index++;
-                if ($mdb->getName() == $db) {
+                if ($db == $mdb->getName()) {
                     $dbn      = $mdb->getName();
                     $database = $this->mongo->connectClientDb( $dbn );
                 }

@@ -64,7 +64,7 @@ class DocumentHelper
             // we need to make suet there are an even number of quotes
             $quoteResult = preg_match_all('/(")/', $mixed, $quote);
 
-            if ($leftResult == $rightResult && $quoteResult % 2 == 0) {
+            if ($leftResult === $rightResult && 0 == $quoteResult % 2) {
                 return $mixed;
             }
             else {
@@ -80,7 +80,7 @@ class DocumentHelper
      * @param string $database The target database
      * @param string $dataType data type
      * @param string $format string format
-     * @param string|integer|double|float|mixed $value Valee may be string, integer, long, float|double, mixed (array or object)
+     * @param string|integer|double|float|mixed $value Value may be string, integer, long, float|double, mixed (array or object)
      * @return mixed
      * @throws Exception
      */
@@ -116,7 +116,7 @@ class DocumentHelper
                 break;
 
             case "boolean":
-                $realValue = ($value == "true");
+                $realValue = ("true" == $value);
                 break;
 
             case "null":
@@ -128,7 +128,7 @@ class DocumentHelper
                 /*$eval = new VarEval($value, $format, $database);
                 $realValue = $eval->execute();*/
                 $realValue = self::varEval( $value );
-                if ($realValue === false) {
+                if (false === $realValue) {
                     throw new Exception("Unable to parse mixed value, check your syntax!");
                 }
                 break;
@@ -151,7 +151,7 @@ class DocumentHelper
 
         // we expect JSON - decode then encode
         $json_obj = json_decode($json);
-        if ($json_obj === false) {
+        if (false === $json_obj) {
             //. opps !!
             return false;
         }
@@ -208,7 +208,7 @@ class DocumentHelper
                     break;
 
                 case '"':
-                    if ( $c > 0 && $json[ $c-1 ] != '\\' ) {
+                    if ( '\\' != $json[ $c-1 ] && $c > 0 ) {
                         $in_string = !$in_string;
                     }
                     break;

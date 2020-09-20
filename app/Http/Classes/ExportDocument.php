@@ -346,7 +346,7 @@ class ExportDocument
         if ($fieldLabel) {
             $this->setVar( $this->_addLabelToArray( $this->_var ) );
         }
-        if ($type == 'array') {
+        if ('array' == $type) {
             return $this->_exportArray();
         }
         return $this->_exportJSON();

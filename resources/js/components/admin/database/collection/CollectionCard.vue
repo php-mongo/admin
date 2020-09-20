@@ -933,16 +933,15 @@
                     if (this.format === 'json') {
                         let t = this.$convObj( obj ).jsonT( data.document );
                         let d = this.$convObj( obj ).jsonH( data.document );
-
-                        this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
-
                     }
                     if (this.format === 'array') {
                         let t = this.$convObj( obj ).arrayT( data.document );
                         let d = this.$convObj( obj ).arrayH( data.document );
-
-                        this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
                     }
+
+                    this.visibleObjects[ data.index ].text = t;
+                    this.visibleObjects[ data.index ].data = d;
+                    this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
                 }
             },
 
