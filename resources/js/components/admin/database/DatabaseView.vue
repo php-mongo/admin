@@ -136,7 +136,15 @@
     <div ref="pmaDatabaseView" id="pma-databases-view" class="pma-database-view align-left" v-show="show">
         <database-top-view></database-top-view>
         <database-card v-bind:db="getDatabase"></database-card>
-        <NewCollection></NewCollection>
+        <new-collection></new-collection>
+        <command></command>
+        <execute></execute>
+        <transfer></transfer>
+        <import></import>
+        <profile></profile>
+        <repair></repair>
+        <authenticate></authenticate>
+        <drop></drop>
     </div>
 </template>
 
@@ -152,6 +160,14 @@
     import DatabaseTopView from "./top/DatabaseTopView";
     import DatabaseCard from "./DatabaseCard";
     import NewCollection from "./collection/NewCollection";
+    import Command from "./database/Command";
+    import Execute from "./database/Execute";
+    import Transfer from "./database/Transfer";
+    import Import from "./database/Import";
+    import Profile from "./database/Profile";
+    import Repair from "./database/Repair";
+    import Authenticate from "./database/Authenticate";
+    import Drop from "./database/Drop";
 
     export default {
         /*
@@ -160,7 +176,15 @@
         components: {
             DatabaseTopView,
             DatabaseCard,
-            NewCollection
+            NewCollection,
+            Command,
+            Execute,
+            Transfer,
+            Import,
+            Profile,
+            Repair,
+            Authenticate,
+            Drop
         },
 
         /*
