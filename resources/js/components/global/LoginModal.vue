@@ -296,7 +296,7 @@
   <div id="login-modal" v-show="show" v-on:click="closeDialogOutside($event)">
     <div class="login-box" v-on:click.stop="">
 
-        <div class="login-label"><h3><span v-text="showLanguage('login', 'title')"></span><img v-on:click="closeThisDialog()" title="Close" alt="Close" src="/img/close-icon-white.svg"></h3></div>
+        <div class="login-label"><h3><span v-text="showLanguage('login', 'title')"></span><img v-on:click="closeThisDialog()" title="Close" alt="Close" src="img/close-icon-white.svg"></h3></div>
 
         <div class="login-content">
 
@@ -375,6 +375,8 @@
     Imports the event bus.
     */
     import { EventBus } from '../../event-bus.js';
+
+    import router from '../../routes';
 
     export default {
         /*
@@ -467,7 +469,8 @@
                     this.show = false;
                     EventBus.$emit('show-success', { notification: this.showLanguage('auth', 'login-success')});
                     setTimeout(function() {
-                        window.location="/";
+                        router.push( { name: 'admin' } );
+                     //   window.location = window.location;
                     }, 2000);
                 }
                 if (status === 3) {

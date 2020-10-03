@@ -42,7 +42,7 @@
 
 <template>
     <li ref="db" class="db-inner" v-show="show">
-        <img alt="Database icon" src="/img/icon/database.png" /> <span class="pma-link" v-on:click="showCollectionsList(db.db.name)">{{getDbName(db)}}</span> {{countCollections}}
+        <img alt="Database icon" src="img/icon/database.png" /> <span class="pma-link" v-on:click="showCollectionsList(db.db.name)">{{getDbName(db)}}</span> {{countCollections}}
         <ul ref="coll" class="collections hide-list">
             <collection-card @loadCollection="loadCollection" v-for="collection in db.collections" :key="(collection.id + 1)" v-bind:collection="collection"></collection-card>
         </ul>

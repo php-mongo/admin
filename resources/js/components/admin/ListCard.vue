@@ -76,7 +76,7 @@
             }
 
             .image-rating-container.over {
-                background: $white url("/img/thumbs-color-over.jpg") no-repeat scroll 0 0;
+                background: $white url("./img/thumbs-color-over.jpg") no-repeat scroll 0 0;
             }
         }
 

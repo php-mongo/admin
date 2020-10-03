@@ -59,5 +59,18 @@ export default {
                 names: names,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
             });
+    },
+
+    /*
+    *   Run a command against a database
+    *   POST  /api/v1/database/{database}/command
+    */
+    databaseCommand: ( data ) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/command',
+            {
+                database: data.database,
+                params: data.params,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
     }
 }

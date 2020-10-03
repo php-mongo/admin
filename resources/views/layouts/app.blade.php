@@ -9,6 +9,8 @@
 
     <title>{{ config('app.name', 'PHP Mongo Admin') }}</title>
 
+    <link rel="icon" href="./favicon-32x32.png">
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
@@ -16,7 +18,9 @@
     <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    {{--<link href="{{ asset('css/app.css') }}" rel="stylesheet">--}}
+    <link href="./css/app.css" rel="stylesheet">
+
 
     <script type="text/javascript">
         window.Laravel = <?php echo json_encode([
@@ -24,13 +28,14 @@
         ]); ?>;
     </script>
 
-    <script src="/js/lang.js" type="text/javascript"></script>
+    <script src="./js/lang.js" type="text/javascript"></script>
 </head>
 <body>
     <div id="app" class="off-canvas-wrapper" ref="app-container">
         <router-view></router-view>
     </div>
     <!-- Scripts -->
-    <script src="{{ mix('js/app.js') }}" defer></script>
+    {{--<script src="{{ mix('js/app.js') }}" defer></script>--}}
+    <script src="./js/app.js"></script>
 </body>
 </html>

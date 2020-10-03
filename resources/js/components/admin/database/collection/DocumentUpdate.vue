@@ -24,7 +24,7 @@
             <div class="panel-modal-inner">
                 <div class="modal-header">
                     <span class="u-pull-right" v-on:click="hideComponent">
-                        <img src="/img/icon/cross-red.png" />
+                        <img src="img/icon/cross-red.png" />
                     </span>
                 </div>
                 <h3 v-text="showLanguage('document', 'documentUpdate')"></h3>

@@ -38,7 +38,7 @@ Route::get('/welcome', function () {
 /*
 | Localization - customised to provide language files data to Vue
 */
-Route::get('/js/lang.js', function() {
+Route::get('js/lang.js', function() {
     $strings = Cache::rememberForever( 'lang.js', function() {
 
         // output container
@@ -71,7 +71,7 @@ Route::get('/js/lang.js', function() {
 /*
 | Localisation assistance - getting the accept language value from the browser
 */
-Route::get('/js/acceptLang.js', function() {
+Route::get('js/acceptLang.js', function() {
     //dd($_SERVER);
     header('Content-Type: text/javascript');
     $string = $_SERVER['HTTP_ACCEPT_LANGUAGE'];

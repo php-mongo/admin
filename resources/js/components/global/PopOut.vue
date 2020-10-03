@@ -81,7 +81,7 @@
   <div class="pop-out" v-show="showPopOut" v-on:click="hideNav()">
     <transition name="slide-in-right">
       <div class="pop-out-side-bar" v-show="showRightNav" v-on:click.stop>
-        <img src="/img/close-menu.svg" class="close-menu-icon" v-on:click="hideNav()"/>
+        <img src="img/close-menu.svg" class="close-menu-icon" v-on:click="hideNav()"/>
         <div class="side-bar-link">
           <router-link :to="{ name: 'cafes' }" v-on:click.native="hideNav()">
             Cafes
@@ -125,7 +125,7 @@
         <div class="ssu-container">
           <span class="ssu-built-on">Learn how this app was built on</span>
           <a href="https://serversideup.net/courses/api-driven-development-laravel-vuejs/" target="_blank">
-            <img src="/img/ssu-logo.png"/>
+            <img src="img/ssu-logo.png"/>
           </a>
         </div>
       </div>

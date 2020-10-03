@@ -134,7 +134,8 @@ class ServerController extends Controller
     {
         try {
             $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
-            $url      = $protocol . '://' . $_SERVER['HTTP_HOST'] . '/version.php';
+            //$url      = $protocol . '://' . $_SERVER['HTTP_HOST'] . '/version.php';
+            $url      =  './version.php'; // this handles a relative PATH
             // initialise curl
             $ch = curl_init();
 

@@ -407,6 +407,53 @@ class DatabasesController extends Controller implements Unserializable
     }
 
     /**
+     * Run command against a database
+     *
+     * URL:         /api/databases/{database}/command
+     * Method:      POST
+     * Description: Return the results of a database command
+     * ToDo: setup a method to analyse the result before returning
+     *
+     * @param  Request $request
+     * @param  $database
+     * @return mixed
+     *
+     * @throws MongoDB\Driver\Exception\Exception
+     */
+    public function databaseCommand(Request $request, $database)
+    {
+        try {
+            // primitive validation
+            if ($request->get('database') == $database) {
+                // create the database Todo: !! may not be required !!
+                //$db = $this->mongo->connectClientDb($database);
+
+                // connect the manager
+                $this->mongo->connectManager();
+                /** @var MongoDB\Driver\Manager $manager */
+                $manager = $this->mongo->getManager();
+                $params  = $request->get('params');
+                $command = json_decode($params['command'], true);
+
+                /** @var MongoDB\Collection $coll */
+                $command = new MongoDB\Driver\Command($command);
+
+                // ToDo !! analyse results and act accordingly !!
+                $results = $manager->executeCommand($database, $command);
+
+                // be good be good! - Johnny !!
+                return response()->success('success', array('results' => $results->toArray()[0] ));
+
+            } else {
+                return response()->error('failed', array('error' => 'database names mismatched'));
+            }
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+        }
+    }
+
+    /**
      *
      * @inheritDoc
      */

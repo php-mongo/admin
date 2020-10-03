@@ -57,7 +57,7 @@
     <transition name="slide-in-top">
         <div class="delete-notification-container" v-show="show">
             <div class="delete-notification">
-                <img src="/img/error.svg"/> {{ message }}
+                <img src="img/error.svg"/> {{ message }}
                 <button class="button warning" v-on:click="confirmDelete()">Confirm deletion</button>
                 <button class="button" v-on:click="cancelDelete()">Cancel</button>
             </div>

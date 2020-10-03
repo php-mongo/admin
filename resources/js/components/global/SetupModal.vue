@@ -258,7 +258,7 @@
     <div id="register-modal" v-show="show" v-on:click="closeDialogOutside($event)">
         <div class="register-box">
 
-            <div class="register-label"><h3><span v-text="showLanguage('rego', 'title')"></span><img title="Close" alt="Close" src="/img/close-icon-white.svg"></h3></div>
+            <div class="register-label"><h3><span v-text="showLanguage('rego', 'title')"></span><img title="Close" alt="Close" src="img/close-icon-white.svg"></h3></div>
 
             <div class="rego-content">
 

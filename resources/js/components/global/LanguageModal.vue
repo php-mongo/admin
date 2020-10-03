@@ -188,7 +188,7 @@
             <div class="language-label">
                 <h3>
                     <span v-text="showLanguage('lang', 'title')"></span>
-                    <img v-on:click="closeThisDialog()" :title="showLanguage('global', 'close')" :alt="showLanguage('global', 'close')" src="/img/close-icon-white.svg">
+                    <img v-on:click="closeThisDialog()" :title="showLanguage('global', 'close')" :alt="showLanguage('global', 'close')" src="img/close-icon-white.svg">
                 </h3>
             </div>
             <div class="language-content">
@@ -205,8 +205,8 @@
                     <p><strong class="title" v-text="showLanguage('lang', 'yourLanguage')"></strong>	<span class="data">{{ currentLanguageText }}</span></p>
                     <span class="button primary languageSelector" v-on:click="showLanguageSelector()" v-text="showLanguage('lang', 'changeLanguage')"></span>
                     <ul id="languageSelection" class="hidden" ref="languageSelection">
-                        <li :class="getCurrentClass('en')" v-on:click="setSelectedLanguage('en')"><span class="float-left" v-text="showLanguage('lang', 'english')"></span> <img :alt="showLanguage('lang', 'english')" src="/img/flags/au.gif" /></li>
-                        <li :class="getCurrentClass('zh')" v-on:click="setSelectedLanguage('zh')"><span class="float-left" v-text="showLanguage('lang', 'chinese')"></span> <img :alt="showLanguage('lang', 'chinese')" src="/img/flags/cn.gif" /></li>
+                        <li :class="getCurrentClass('en')" v-on:click="setSelectedLanguage('en')"><span class="float-left" v-text="showLanguage('lang', 'english')"></span> <img :alt="showLanguage('lang', 'english')" src="img/flags/au.gif" /></li>
+                        <li :class="getCurrentClass('zh')" v-on:click="setSelectedLanguage('zh')"><span class="float-left" v-text="showLanguage('lang', 'chinese')"></span> <img :alt="showLanguage('lang', 'chinese')" src="img/flags/cn.gif" /></li>
                     </ul>
                 </div>
             </div>

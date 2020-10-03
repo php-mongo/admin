@@ -106,7 +106,11 @@ if (currentLang) {
     locale = currentLang;
 }
 if (!currentLang) {
-    axios.get( MONGO_CONFIG.WEB_URL + '/js/acceptLang.js' )
+    /*axios.get( MONGO_CONFIG.WEB_URL + '/js/acceptLang.js' )
+    .then( (response) => {
+        locale = userLang === response.data ? userLang : response.data;
+    });*/
+    axios.get( 'js/acceptLang.js' )
     .then( (response) => {
         locale = userLang === response.data ? userLang : response.data;
     });

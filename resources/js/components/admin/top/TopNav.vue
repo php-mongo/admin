@@ -88,28 +88,28 @@
         <div class="text-left">
             <ul class="links">
                 <li v-bind:class="{active: getActivePanel('databases')}">
-                    <span v-on:click="loadPanel('databases', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'databasesTitle')" v-text="showLanguage('nav', 'databases')"></span></span>
+                    <span v-on:click="loadPanel('databases', $event)"><img src="img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'databasesTitle')" v-text="showLanguage('nav', 'databases')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('servers')}">
-                    <span v-on:click="loadPanel('servers', $event)"><img src="/img/icon/servers2.png" /> <span v-bind:title="showLanguage('title', 'serversTitle')" v-text="showLanguage('nav', 'servers')"></span></span>
+                    <span v-on:click="loadPanel('servers', $event)"><img src="img/icon/servers2.png" /> <span v-bind:title="showLanguage('title', 'serversTitle')" v-text="showLanguage('nav', 'servers')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('execute')}">
-                    <span class="hide" v-on:click="loadPanel('execute', $event)"><img src="/img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('nav', 'execute')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('execute', $event)"><img src="img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('nav', 'execute')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('status')}">
-                    <span class="hide" v-on:click="loadPanel('status', $event)"><img src="/img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'statusTitle')" v-text="showLanguage('nav', 'status')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('status', $event)"><img src="img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'statusTitle')" v-text="showLanguage('nav', 'status')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('processes')}">
-                    <span class="hide" v-on:click="loadPanel('processes', $event)"><img src="/img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'processesTitle')" v-text="showLanguage('nav', 'processes')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('processes', $event)"><img src="img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'processesTitle')" v-text="showLanguage('nav', 'processes')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('command')}">
-                    <span class="hide" v-on:click="loadPanel('command', $event)"><img src="/img/icon/s-icon.gif" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('nav', 'command')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('command', $event)"><img src="img/icon/s-icon.gif" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('nav', 'command')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('users')}">
-                    <span class="hide" v-on:click="loadPanel('users', $event)"><img src="/img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'usersTitle')" v-text="showLanguage('nav', 'users')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('users', $event)"><img src="img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'usersTitle')" v-text="showLanguage('nav', 'users')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('master')}">
-                    <span class="hide" v-on:click="loadPanel('master', $event)"><img src="/img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'masterTitle')" v-text="showLanguage('nav', 'master')"></span></span>
+                    <span class="hide" v-on:click="loadPanel('master', $event)"><img src="img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'masterTitle')" v-text="showLanguage('nav', 'master')"></span></span>
                 </li>
             </ul>
         </div>

@@ -38,10 +38,12 @@ export const database = {
     *   Defines the 'state' being monitored for the module
     */
     state: {
+        activeDatabase: null,
+        commandLoadStatus: 0,
+        commandResults: [],
         databases: [],
         databasesLoadStatus: 0,
         database: {},
-        activeDatabase: null,
         databaseLoadStatus: 0,
         displayDatabase: {},
         displayDatabaseStatus: 0,
@@ -59,12 +61,12 @@ export const database = {
         /*
         *   Loads the database from the API
         */
-        loadDatabases( { commit, rootState, dispatch } ) {
+        loadDatabases( { commit } ) {
             commit( 'setDatabasesLoadStatus', 1 );
 
             DatabaseApi.getDatabases()
                 .then( ( response ) => {
-                    if (response.data.success == true) {
+                    if (response.data.success === true) {
                         commit( 'setDatabases', response.data.data.databases );
                         commit( 'setDatabasesLoadStatus', 2 );
                     } else {
@@ -85,14 +87,12 @@ export const database = {
         /*
         *   Loads a database from the API
         */
-        loadDatabase( { commit, rootState, dispatch }, data ) {
+        loadDatabase( { commit, dispatch }, data ) {
             commit( 'setDatabaseLoadStatus', 1 );
-
             commit( 'setDatabase', {} );
 
             DatabaseApi.getDatabase( data )
                 .then( ( response ) => {
-                //    console.log("fetched db: " + data);
                     commit( 'setActiveDatabase', data );
                     commit( 'setDatabase', response.data.data.database );
                     commit( 'setDatabaseLoadStatus', 2 );
@@ -119,7 +119,7 @@ export const database = {
         /*
         *   Create a new database - add result to database array
         */
-        createDatabase( { commit, rootState, dispatch }, data ) {
+        createDatabase( { commit }, data ) {
             commit( 'setCreateDatabaseStatus', 1);
 
             DatabaseApi.createDatabase( data )
@@ -137,7 +137,7 @@ export const database = {
         /*
         *   Delete one or more databases - remove database from array
         */
-        deleteDatabase( { commit, rootState, dispatch }, data ) {
+        deleteDatabase( { commit }, data ) {
             commit( 'setDeleteDatabaseStatus', 1);
 
             DatabaseApi.deleteDatabase( data )
@@ -147,6 +147,28 @@ export const database = {
                 })
                 .catch( (error) => {
                     commit( 'setDeleteDatabaseStatus', 3 );
+                    commit( 'setErrorData', error);
+                    console.log(error);
+                });
+        },
+
+        databaseCommand( { commit }, data ) {
+            commit( 'setCommandLoadStatus', 1);
+
+            DatabaseApi.databaseCommand( data )
+                .then( ( response ) => {
+                    if (response.data.success === true) {
+                        commit( 'setCommandResults', response.data.data.results );
+                        commit( 'setCommandLoadStatus', 2 );
+
+                    } else {
+                        commit( 'setErrorData', response.data.errors);
+                        commit( 'setCommandLoadStatus', 3 );
+                    }
+                })
+                .catch( (error) => {
+                    commit( 'setCommandLoadStatus', 3 );
+                    commit( 'setCommandResults', [] );
                     commit( 'setErrorData', error);
                     console.log(error);
                 });
@@ -353,6 +375,14 @@ export const database = {
             } else {
                 state.dbCollectionStatus = 3;
             }
+        },
+
+        setCommandLoadStatus( state, status ) {
+            state.commandLoadStatus = status;
+        },
+
+        setCommandResults( state, results ) {
+            state.commandResults = results;
         }
     },
 
@@ -458,6 +488,14 @@ export const database = {
 
         getDbCollection( state ) {
             return state.dbCollection;
+        },
+
+        getCommandLoadStatus( state ) {
+            return state.commandLoadStatus;
+        },
+
+        getCommandResults( state ) {
+            return state.commandResults;
         }
     }
 };
