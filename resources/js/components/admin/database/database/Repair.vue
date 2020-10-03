@@ -16,13 +16,13 @@
   -->
 
 <style lang="scss">
-    @import '~@/abstracts/_variables.scss';
+    /* @import '~@/abstracts/_variables.scss'; */
 
 </style>
 
 <template>
-    <div id="pma-repair" class="pma-repair align-left" v-show="show">
-        <p>Profile</p>
+    <div id="pma-repair" class="pma-repair align-left" v-if="show">
+        <p>Repair</p>
     </div>
 </template>
 

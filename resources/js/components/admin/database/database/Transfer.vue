@@ -16,13 +16,21 @@
   -->
 
 <style lang="scss">
-    @import '~@/abstracts/_variables.scss';
+    /* @import '~@/abstracts/_variables.scss'; */
 
 </style>
 
 <template>
-    <div id="pma-transfer" class="pma-transfer align-left" v-show="show">
-        <p>Transfer</p>
+    <div id="pma-transfer" class="pma-transfer align-left" v-if="show">
+        <form class="command-form">
+            <button class="button" v-on:click="runTransfer" v-text="showLanguage('transfer', 'transfer')"></button>
+        </form>
+        <p v-show="errorMessage || message">
+            <span class="msg">
+                <span class="error">{{ errorMessage }}</span>
+                <span class="action">{{ message }}</span>
+            </span>
+        </p>
     </div>
 </template>
 
@@ -37,6 +45,25 @@
          */
         data() {
             return {
+                collections: [],
+                errorMessage: null,
+                form: {
+                    authenticate: null,
+                    collections: [],
+                    database: null,
+                    format: 'json',
+                    host: null,
+                    indexes: false,
+                    password: null,
+                    port: 27017,
+                    socket: null,
+                    username: null,
+                },
+                index: 0,
+                limit: 55,
+                message: null,
+                results: null,
+                key: null,
                 show: false
             }
         },
@@ -65,6 +92,10 @@
             hideComponent() {
                 this.show = false;
             },
+
+            runTransfer() {
+                console.log(this.form);
+            }
         },
 
         mounted() {

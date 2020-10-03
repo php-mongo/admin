@@ -16,12 +16,12 @@
   -->
 
 <style lang="scss">
-    @import '~@/abstracts/_variables.scss';
+    /* @import '~@/abstracts/_variables.scss'; */
 
 </style>
 
 <template>
-    <div id="pma-database-drop" class="pma-database-drop align-left" v-show="show">
+    <div id="pma-database-drop" class="pma-database-drop align-left" v-if="show">
         <p>Drop</p>
     </div>
 </template>

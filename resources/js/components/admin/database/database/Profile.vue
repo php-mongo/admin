@@ -16,12 +16,12 @@
   -->
 
 <style lang="scss">
-    @import '~@/abstracts/_variables.scss';
+    /* @import '~@/abstracts/_variables.scss'; */
 
 </style>
 
-<template id="pma-profile" class="pma-profile align-left" v-show="show">
-    <div>
+<template>
+    <div id="pma-profile" class="pma-profile align-left" v-if="show">
         <p>Profile</p>
     </div>
 </template>

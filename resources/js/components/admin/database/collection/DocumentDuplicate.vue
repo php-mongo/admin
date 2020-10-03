@@ -28,7 +28,7 @@
                         <span class="action">{{ actionMessage }}</span>
                     </span>
                     <span class="close u-pull-right" v-on:click="hideComponent">
-                        <img src="/img/icon/cross-red.png" />
+                        <img src="img/icon/cross-red.png" />
                     </span>
                 </div>
                 <h3 v-text="showLanguage('document','documentDuplicate')"></h3>

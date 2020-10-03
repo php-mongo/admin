@@ -16,12 +16,12 @@
   -->
 
 <style lang="scss">
-    @import '~@/abstracts/_variables.scss';
+    /* @import '~@/abstracts/_variables.scss'; */
 
 </style>
 
 <template>
-    <div id="pma-authentication" class="pma-authentication align-left" v-show="show">
+    <div id="pma-authentication" class="pma-authentication align-left" v-if="show">
         <p>Authentication</p>
     </div>
 </template>
@@ -87,7 +87,7 @@
             /*
             *    Show this component
             */
-            EventBus.$on('show-database-authenticate', () => {
+            EventBus.$on('show-database-authentication', () => {
                 this.showComponent();
 
             });

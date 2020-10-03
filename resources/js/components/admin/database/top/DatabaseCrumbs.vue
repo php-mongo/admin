@@ -117,25 +117,25 @@
         <nav class="crumb-navigation">
             <ul class="links">
                 <li class="crumb-link text-left">
-                    <img src="/img/icon/database.png" /> <span class="crumb pma-link" v-on:click="loadDatabase($event)">{{ databaseName }}</span>
+                    <img src="img/icon/database.png" /> <span class="crumb pma-link" v-on:click="loadDatabase($event)">{{ databaseName }}</span>
                 </li>
                 <li class="crumb-link text-left" v-if="showCollection">
-                    <span class="dbl-arr">>></span> <img src="/img/icon/collection.png" />
+                    <span class="dbl-arr">>></span> <img src="img/icon/collection.png" />
                     <span class="crumb pma-link" v-on:click="loadCrumb( collectionName )">{{ collectionName }}</span>
                 </li>
                 <li class="crumb-link text-left" v-if="crumbs[1].name !== null">
-                    <span class="dbl-arr">>></span> <img src="/img/icon/function.png" />
+                    <span class="dbl-arr">>></span> <img src="img/icon/function.png" />
                     <span class="pma-text">{{ getFunctionCrumbName }}</span>
                 </li>
             </ul>
             <ul class="links right">
                 <li class="li-filter" v-if="watchActiveCollection">
                     <input class="doc-filter" type="text" v-model="filter" v-on:keyup="filterCollection" placeholder="Document filter">
-                    <span v-on:click="clearFilter"><img src="/img/prev.png" alt="Clear filter" title="Clear filter"></span>
+                    <span v-on:click="clearFilter"><img src="img/prev.png" alt="Clear filter" title="Clear filter"></span>
                 </li>
                 <li class="nav-coll" v-on:click="collapseDb">
-                    <span class="nav-collapse" v-show="collapsed" :title="showLanguage('nav', 'collapse')"><img src="/img/sort-asc.svg" alt="Collapse nav" /> </span>
-                    <span class="nav-collapse" v-show="!collapsed" :title="showLanguage('nav', 'expand')"><img src="/img/sort-desc.svg" alt="Expand nav" /> </span>
+                    <span class="nav-collapse" v-show="collapsed" :title="showLanguage('nav', 'collapse')"><img src="img/sort-asc.svg" alt="Collapse nav" /> </span>
+                    <span class="nav-collapse" v-show="!collapsed" :title="showLanguage('nav', 'expand')"><img src="img/sort-desc.svg" alt="Expand nav" /> </span>
                 </li>
             </ul>
         </nav>

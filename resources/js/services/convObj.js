@@ -155,9 +155,10 @@ export default function makeConvObj() {
                  let i        = 0;  // indexing
                  let x        = null;
                  for (x in str) {
-                     let plus = (parseInt(x) + 1);
-
-                     if (str[x] === '{' || str[x] === '[') {
+                     if (str[x] === '~' || str[x] === '`') {
+                         divAreaH += str[x];
+                     }
+                     else if (str[x] === '{' || str[x] === '[') {
                          openB += 1;
                          divAreaH += '<span style="color: green">' + str[x] + '</span>' + '<br>';
                          for (i = 0; i < openB; i += 1) {
@@ -186,7 +187,7 @@ export default function makeConvObj() {
                          }
                      }
                      else if (str[x] === ':') {
-                         divAreaH += '<span class="colon" style="color: green">' + str[x] + '</span>';
+                         divAreaH += ' <span class="colon" style="color: green">' + str[x] + '</span> ';
                      }
                      else if (str[x] === '"') {
                          divAreaH += '<span style="color: #800000">' + str[x] + '</span>';
@@ -195,6 +196,9 @@ export default function makeConvObj() {
                          divAreaH += '<span style="color: red">' + str[x] + '</span>';
                      }
                  }
+
+                 divAreaH = divAreaH.replace('~', ' <span style="color: blue">false</span>');
+                 divAreaH = divAreaH.replace('`', ' <span style="color: blue">true</span>');
 
                  return divAreaH;
              },

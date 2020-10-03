@@ -51,7 +51,7 @@
                     <p class="paragraph" v-text="showLanguage('about','p5')"></p>
                 </div>
                 <div class="large-4 medium-4 hide-for-small-only right">
-                    <p><img class="img-responsive" :alt="showLanguage('about','aboutAlt')" src="/img/dashboard.jpg" /></p>
+                    <p><img class="img-responsive" :alt="showLanguage('about','aboutAlt')" src="img/dashboard.jpg" /></p>
                 </div>
             </div>
         </div>

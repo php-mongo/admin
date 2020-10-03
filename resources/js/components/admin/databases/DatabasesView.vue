@@ -137,7 +137,7 @@
                     <database-card v-for="(db, index) in getDatabases" :key="index" v-bind:db="db"></database-card>
                 </table>
                 <p class="drop">
-                    <img src="/img/arrow-ltr.png" />
+                    <img src="img/arrow-ltr.png" />
                     <label><input type="checkbox" v-model="deleteAll" /> <span class="pma-link" v-text="showLanguage('databases', 'checkAll')"></span></label>
                     <span v-text="showLanguage('databases', 'withSelected')"></span>
                     <button class="button" v-on:click="deleteDatabases($event)" v-text="showLanguage('databases', 'buttonDrop')"></button>

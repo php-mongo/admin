@@ -52,7 +52,7 @@
   <transition name="slide-in-top">
     <div class="success-notification-container" v-show="show">
       <div class="success-notification">
-        <img src="/img/progressring.gif"/> {{ successMessage }}
+        <img src="img/progressring.gif"/> {{ successMessage }}
       </div>
     </div>
   </transition>

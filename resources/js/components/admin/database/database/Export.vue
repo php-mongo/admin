@@ -16,12 +16,12 @@
   -->
 
 <style lang="scss">
-    @import '~@/abstracts/_variables.scss';
+    /* @import '~@/abstracts/_variables.scss'; */
 
 </style>
 
 <template>
-    <div id="pma-database-export" class="pma-database-export align-left" v-show="show">
+    <div id="pma-database-export" class="pma-database-export align-left" v-if="show">
         <p>Export</p>
     </div>
 </template>

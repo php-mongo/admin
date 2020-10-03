@@ -170,7 +170,7 @@
             </div>
             <div class="large-2 medium-2 hide-for-small-only cell text-center">
                 <span class="logo">
-                    <img :alt="siteName" :title="siteName" src="/img/logo-pma.png" />
+                    <img :alt="siteName" :title="siteName" src="img/logo-pma.png" />
                 </span>
             </div>
             <div class="large-5 medium-5 small-6 cell" style="position: relative;">

@@ -27,7 +27,7 @@
             left: 0;
             width: 100%;
             height: 80px;
-            background: url(/img/header-background-dark-blue.png) repeat-x 0 -22px;
+            background: url('/img/header-background-dark-blue.png') repeat-x 0 -22px;
             padding-top: 16px;
             z-index: 2;
 

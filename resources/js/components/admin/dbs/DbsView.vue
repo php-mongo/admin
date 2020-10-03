@@ -18,7 +18,7 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
     .pma-dbs-view {
-        background: url(/img/left-nav-bg.png) repeat-y right 0% $dbsBgColor;
+        background: url('/img/left-nav-bg.png') repeat-y right 0% $dbsBgColor;
         height: 100%;
         left: 0;
         position: fixed;

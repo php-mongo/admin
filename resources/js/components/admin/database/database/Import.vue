@@ -16,12 +16,12 @@
   -->
 
 <style lang="scss">
-    @import '~@/abstracts/_variables.scss';
+    /* @import '~@/abstracts/_variables.scss'; */
 
 </style>
 
-<template id="pma-database-import" class="pma-database-import align-left" v-show="show">
-    <div>
+<template>
+    <div id="pma-database-import" class="pma-database-import align-left" v-if="show">
         <p>Import</p>
     </div>
 </template>
@@ -78,7 +78,7 @@
             /*
             *    Hide this component
             */
-            EventBus.$on('hide-database-panels',() => {
+            EventBus.$on('hide-database-panels', () => {
                 this.hideComponent();
             });
 

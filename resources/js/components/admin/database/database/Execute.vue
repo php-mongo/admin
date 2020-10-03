@@ -16,13 +16,13 @@
   -->
 
 <style lang="scss">
-    @import '~@/abstracts/_variables.scss';
+    /* @import '~@/abstracts/_variables.scss'; */
 
 </style>
 
 <template>
-    <div id="pma-execute" class="pma-execute align-left" v-show="show">
-        <p>Execute</p>
+    <div id="pma-execute" class="pma-execute align-left" v-if="show">
+        <p>Executing JavaScript commands via PHP is now deprecated: PhpMongoAdmin is designed to use MongoDB drivers which no longer supports the use of eval() command.</p>
     </div>
 </template>
 
