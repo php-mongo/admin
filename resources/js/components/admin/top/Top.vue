@@ -142,7 +142,7 @@
         <nav class="top-navigation">
             <ul class="links">
                 <li class="host-link text-left">
-                    <img src="/img/icon/servers.png" /> <span class="pma-link" v-on:click="loadHome($event)">Localhost</span>
+                    <img src="img/icon/servers.png" /> <span class="pma-link" v-on:click="loadHome($event)">Localhost</span>
                 </li>
                 <li v-if="error !== null">
                     <span class="top-error" v-on:click="closeError">{{ getError }}</span> <span class="text-info" v-text="showLanguage('nav', 'close')"></span>
@@ -166,8 +166,8 @@
                     <span class="pma-link" v-on:click="runLogout($event)" v-bind:title="showLanguage('title', 'logoutTitle')" v-text="showLanguage('nav', 'logout')"></span>
                 </li>
                 <li v-on:click="collapseNav">
-                    <span class="nav-collapse" v-show="collapsed" :title="showLanguage('nav', 'collapse')"><img src="/img/sort-asc.svg" alt="Collapse nav" /> </span>
-                    <span class="nav-collapse" v-show="!collapsed" :title="showLanguage('nav', 'expand')"><img src="/img/sort-desc.svg" alt="Expand nav" /> </span>
+                    <span class="nav-collapse" v-show="collapsed" :title="showLanguage('nav', 'collapse')"><img src="img/sort-asc.svg" alt="Collapse nav" /> </span>
+                    <span class="nav-collapse" v-show="!collapsed" :title="showLanguage('nav', 'expand')"><img src="img/sort-desc.svg" alt="Expand nav" /> </span>
                 </li>
             </ul>
         </nav>
@@ -183,6 +183,8 @@
     *   Imports the event bus.
     */
     import { EventBus } from '../../../event-bus.js';
+
+    import router from '../../../routes';
 
     /*
     *   Imports filters.
@@ -309,7 +311,8 @@
             completeLogout() {
                 EventBus.$emit('show-success', { notification: this.showLanguage('auth', 'logout-success')});
                 setTimeout(function() {
-                    window.location = '/';
+                    router.push( { name: 'public' } );
+                    //window.location = ;
                 }, 2500);
             },
 

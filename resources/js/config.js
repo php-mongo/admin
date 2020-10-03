@@ -31,8 +31,8 @@ switch ( process.env.NODE_ENV )  {
     case 'development':
     case 'dev':
     case 'local':
-        api_url = '/api/v1';
-        web_url = '/';
+        api_url = './api/v1';
+        web_url = './';
         break;
 
     case 'staging':
@@ -46,8 +46,8 @@ switch ( process.env.NODE_ENV )  {
         break;
 
     case 'production':
-        api_url = '/api/v1';
-        web_url = '/';
+        api_url = './api/v1';
+        web_url = './';
         break;
 }
 

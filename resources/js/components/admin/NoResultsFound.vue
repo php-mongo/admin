@@ -53,7 +53,7 @@
     <transition name="slide-in-top">
         <div class="no-results-notification-container" v-show="show">
             <div class="noresult-notification">
-                <img src="/img/error.svg"/> {{ errorMessage }}
+                <img src="img/error.svg"/> {{ errorMessage }}
             </div>
         </div>
     </transition>

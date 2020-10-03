@@ -129,7 +129,7 @@
 
             .panel-modal-inner {
                 /* background: $white; */
-                background: $white url("/img/white-bg.jpg") repeat center center;
+                background: $white url('/img/white-bg.jpg') repeat center center;
                 background-size: cover;
                 box-shadow: 0 0 4px 0 rgba(0,0,0,0.12), 0 4px 4px 0 rgba(0,0,0,0.24);
                 border-left: 5px solid $orange;
@@ -378,13 +378,13 @@
             </tr>
         </table>
         <div ref="query-fields-list" class="fields-menu">
-            <span class="fields-control"><span class="pma-link" title="Click to close" v-on:click="closeQueryFields()"><img alt="Select" src="/img/icon/accept.png" /></span></span>
+            <span class="fields-control"><span class="pma-link" title="Click to close" v-on:click="closeQueryFields()"><img alt="Select" src="img/icon/accept.png" /></span></span>
             <ul>
                 <!-- to do fields list -->
             </ul>
         </div>
         <div ref="query-hints-list" class="fields-menu">
-            <span class="fields-control"><span class="pma-link" title="Click to close" v-on:click="closeQueryHints()"><img alt="Select" src="/img/icon/accept.png" /></span></span>
+            <span class="fields-control"><span class="pma-link" title="Click to close" v-on:click="closeQueryHints()"><img alt="Select" src="img/icon/accept.png" /></span></span>
             <ul>
                 <!-- to do hints list -->
             </ul>

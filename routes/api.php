@@ -116,6 +116,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     Route::get('/user/logout/{uid}', 'Auth\LoginController@logout');
 
     /*
+    * !! DEPRECATED !!
     * -------------------------------------------------------
     * Get all Dbs (private route) Summary only for Left NAV
     * -------------------------------------------------------
@@ -239,6 +240,17 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * Description: Deletes a new databases and returns s success status
     */
     Route::post('/databases/delete', 'Api\DatabasesController@deleteDatabase');
+
+    /*
+    * -------------------------------------------------------
+    * Run a command on a database
+    * -------------------------------------------------------
+    * URL:         /api/v1/databases/command
+    * Controller:  API/DatabasesController@databaseCommand
+    * Method:      POST
+    * Description: Deletes a new databases and returns s success status
+    */
+    Route::post('/databases/{database}/command', 'Api\DatabasesController@databaseCommand');
 
     /*
     * -------------------------------------------------------

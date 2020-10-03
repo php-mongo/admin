@@ -66,7 +66,6 @@
     import DatabaseCrumbs from "./DatabaseCrumbs";
     import DatabaseNav from "./DatabaseNav";
     import CollectionNav from "./CollectionNav";
-    import {EventBus} from "../../../../event-bus";
 
     export default {
         /*

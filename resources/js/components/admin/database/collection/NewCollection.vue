@@ -17,6 +17,7 @@
 
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
+
     .pma-new-collection {
         float: left;
         width: 84.5vw;
