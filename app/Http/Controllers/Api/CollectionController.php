@@ -558,7 +558,7 @@ class CollectionController extends Controller implements Unserializable
     /**
      * Import documents from one or more collections
      *
-     * URL:         /api/v1/collection/export
+     * URL:         /api/v1/collection/import
      * Method:      POST
      * Description: Import documents from one or ore collection(s) into the given database
      *
@@ -573,6 +573,7 @@ class CollectionController extends Controller implements Unserializable
             $type           = $request->get('type', 'admin');
             $gzip           = $request->get('gzip', false);
             $useCollection  = $request->get('useCurrentCollection', false);
+            $fileName       = $request->file('file')->getClientOriginalName();
 
             if (isset($database, $type)) {
                 // get the file
@@ -596,7 +597,7 @@ class CollectionController extends Controller implements Unserializable
                 // return the inserted count to the front-end
                 $inserted = 0;
 
-                // explode the body into an array - we'll use thus for both file formats
+                // explode the body into an array - we'll use this for both file formats
                 $arr = explode("\n", $body);
 
                 // this is for file exported from PhpMongoAdmin *.js
@@ -619,8 +620,12 @@ class CollectionController extends Controller implements Unserializable
 
                 } else {
                     // ToDo: !! for now - we accept the JSON file exported by PhpMongoAdmin and also JSON export from Compass
-                    $arr = $arr[0];
-                    $arr = json_decode($arr, true);
+                    if (strpos($fileName, ".json")) {
+                        $arr = json_decode(trim($body, '"'), true);
+                    } else {
+                        $arr = $arr[0];
+                        $arr = json_decode($arr, true);
+                    }
                     MongoHelper::handleBulkInsert($manager, $database, $arr, $collection, $useCollection, $inserted, true);
                 }
                 return response()->success('success', array('import' => $inserted ));
