@@ -611,8 +611,13 @@ class MongoHelper
                     }
                     // if the ObjectId has been included as $oid => 'blah blah blah'
                     $isOID = $insert['_id'] instanceof MongoDB\BSON\ObjectId;
+                    // this fits our local admin export
                     if (false == $isOID && isset($insert['_id']['oid'])) {
-                        $insert['_id'] = new MongoDB\BSON\ObjectId ($insert['_id']['oid'] );
+                        $insert['_id'] = new MongoDB\BSON\ObjectId ( $insert['_id']['oid'] );
+                    }
+                    // this fits the Compass JSON export
+                    if (isset($insert['_id']['$oid'])) {
+                        $insert['_id'] = new MongoDB\BSON\ObjectId ( $insert['_id']['$oid'] );
                     }
                     // expects an array
                     $bulk->insert($insert);
