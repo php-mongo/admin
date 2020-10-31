@@ -9909,6 +9909,83 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: "Transfer",
@@ -9920,13 +9997,13 @@ __webpack_require__.r(__webpack_exports__);
     return {
       collections: [],
       errorMessage: null,
+      data: null,
       form: {
-        authenticate: null,
+        authenticate: false,
         collections: [],
         database: null,
-        format: 'json',
         host: null,
-        indexes: false,
+        indexes: true,
         password: null,
         port: 27017,
         socket: null,
@@ -9965,7 +10042,17 @@ __webpack_require__.r(__webpack_exports__);
     hideComponent: function hideComponent() {
       this.show = false;
     },
-    runTransfer: function runTransfer() {
+    getDatabase: function getDatabase() {
+      this.data = this.$store.getters.getDatabase;
+
+      if (this.data) {
+        this.collections = this.data.collections;
+        this.form.database = this.data.db.databaseName; // console.log(this.data.db.name);
+      }
+    },
+    checkAll: function checkAll() {},
+    runTransfer: function runTransfer(event) {
+      event.preventDefault();
       console.log(this.form);
     }
   },
@@ -9987,11 +10074,14 @@ __webpack_require__.r(__webpack_exports__);
       _this.hideComponent();
     });
     /*
-    *    Show this component
+    *   Show this component
+    *   Fetch the active database
     */
 
     _event_bus__WEBPACK_IMPORTED_MODULE_0__["EventBus"].$on('show-database-transfer', function () {
       _this.showComponent();
+
+      _this.getDatabase();
     });
   }
 });
@@ -19922,7 +20012,7 @@ exports = module.exports = __webpack_require__(/*! ../../../../../../node_module
 
 
 // module
-exports.push([module.i, "/* @import '~@/abstracts/_variables.scss'; */", ""]);
+exports.push([module.i, "/*!\n * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)\n * @version      _variables.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $\n * @package      PhpMongoAdmin\\resources\n * @subpackage   _variables.scss\n * @link         https://github.com/php-mongo/admin PHP MongoDB Admin\n * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)\n * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.\n * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)\n *  php-mongo-admin - License conditions:\n *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions\n *  This web application is available as Free Software and has no implied warranty or guarantee of usability.\n *  See licence.txt for the complete licensing outline.\n *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0\n *  See COPYRIGHT.php for copyright notices and further details.\n */\n.command-form {\n  max-width: 40rem;\n}\n.command-form label {\n  display: inline-block;\n  padding-right: 0;\n}\n.command-form ul {\n  margin: 0;\n  list-style: none;\n}\n.command-form input[type=text] {\n  min-width: 100px;\n}\n.command-form input {\n  margin: 0;\n}\n.command-form .pl135 {\n  margin-left: 135px;\n}\n.command-form .msg .error {\n  color: #FF0000;\n}", ""]);
 
 // exports
 
@@ -75320,13 +75410,442 @@ var render = function() {
         },
         [
           _c("form", { staticClass: "command-form" }, [
-            _c("button", {
-              staticClass: "button",
-              domProps: {
-                textContent: _vm._s(_vm.showLanguage("transfer", "transfer"))
-              },
-              on: { click: _vm.runTransfer }
-            })
+            _c("div", { staticStyle: { "padding-top": "20px" } }, [
+              _c("h3", { staticClass: "collection-title" }, [
+                _c("span", {
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("transfer", "collections")
+                    )
+                  }
+                }),
+                _vm._v(" ["),
+                _c("label", [
+                  _c("span", {
+                    domProps: {
+                      textContent: _vm._s(_vm.showLanguage("transfer", "all"))
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("input", {
+                    attrs: { type: "checkbox" },
+                    on: {
+                      click: function($event) {
+                        return _vm.checkAll()
+                      }
+                    }
+                  })
+                ]),
+                _vm._v("]")
+              ]),
+              _vm._v(" "),
+              _c(
+                "ul",
+                { staticClass: "list" },
+                _vm._l(_vm.collections, function(coll, index) {
+                  return _c("li", { key: index, attrs: { coll: coll } }, [
+                    _c("label", [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.form.collections,
+                            expression: "form.collections"
+                          }
+                        ],
+                        staticClass: "check_collection",
+                        attrs: { type: "checkbox" },
+                        domProps: {
+                          value: coll.collection.name,
+                          checked: Array.isArray(_vm.form.collections)
+                            ? _vm._i(
+                                _vm.form.collections,
+                                coll.collection.name
+                              ) > -1
+                            : _vm.form.collections
+                        },
+                        on: {
+                          change: function($event) {
+                            var $$a = _vm.form.collections,
+                              $$el = $event.target,
+                              $$c = $$el.checked ? true : false
+                            if (Array.isArray($$a)) {
+                              var $$v = coll.collection.name,
+                                $$i = _vm._i($$a, $$v)
+                              if ($$el.checked) {
+                                $$i < 0 &&
+                                  _vm.$set(
+                                    _vm.form,
+                                    "collections",
+                                    $$a.concat([$$v])
+                                  )
+                              } else {
+                                $$i > -1 &&
+                                  _vm.$set(
+                                    _vm.form,
+                                    "collections",
+                                    $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                                  )
+                              }
+                            } else {
+                              _vm.$set(_vm.form, "collections", $$c)
+                            }
+                          }
+                        }
+                      }),
+                      _vm._v(" " + _vm._s(coll.collection.name))
+                    ])
+                  ])
+                }),
+                0
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "clear" })
+            ]),
+            _vm._v(" "),
+            _c("div", [
+              _c("h3", {
+                domProps: {
+                  textContent: _vm._s(_vm.showLanguage("transfer", "target"))
+                }
+              }),
+              _vm._v(" "),
+              _c("table", { staticClass: "table table-bordered" }, [
+                _c("tbody", [
+                  _c("tr", [
+                    _c("td", [
+                      _c("label", {
+                        attrs: { for: "target_socket" },
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.showLanguage("transfer", "socket")
+                          )
+                        }
+                      }),
+                      _vm._v(":")
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.form.socket,
+                            expression: "form.socket"
+                          }
+                        ],
+                        attrs: { type: "text", id: "target_socket" },
+                        domProps: { value: _vm.form.socket },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.form, "socket", $event.target.value)
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("tr", [
+                    _c("td", [
+                      _c("label", {
+                        attrs: { for: "target_host" },
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.showLanguage("transfer", "host")
+                          )
+                        }
+                      }),
+                      _vm._v(":")
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.form.host,
+                            expression: "form.host"
+                          }
+                        ],
+                        attrs: { type: "text", id: "target_host" },
+                        domProps: { value: _vm.form.host },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.form, "host", $event.target.value)
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("tr", [
+                    _c("td", [
+                      _c("label", {
+                        attrs: { for: "target_port" },
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.showLanguage("transfer", "port")
+                          )
+                        }
+                      }),
+                      _vm._v(":")
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.form.port,
+                            expression: "form.port"
+                          }
+                        ],
+                        attrs: { type: "text", id: "target_port" },
+                        domProps: { value: _vm.form.port },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.form, "port", $event.target.value)
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("tr", [
+                    _c("td", [
+                      _c("label", {
+                        attrs: { for: "target_auth" },
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.showLanguage("transfer", "authenticate")
+                          )
+                        }
+                      }),
+                      _vm._v("?")
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.form.authenticate,
+                            expression: "form.authenticate"
+                          }
+                        ],
+                        attrs: { type: "checkbox", id: "target_auth" },
+                        domProps: {
+                          checked: Array.isArray(_vm.form.authenticate)
+                            ? _vm._i(_vm.form.authenticate, null) > -1
+                            : _vm.form.authenticate
+                        },
+                        on: {
+                          change: function($event) {
+                            var $$a = _vm.form.authenticate,
+                              $$el = $event.target,
+                              $$c = $$el.checked ? true : false
+                            if (Array.isArray($$a)) {
+                              var $$v = null,
+                                $$i = _vm._i($$a, $$v)
+                              if ($$el.checked) {
+                                $$i < 0 &&
+                                  _vm.$set(
+                                    _vm.form,
+                                    "authenticate",
+                                    $$a.concat([$$v])
+                                  )
+                              } else {
+                                $$i > -1 &&
+                                  _vm.$set(
+                                    _vm.form,
+                                    "authenticate",
+                                    $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                                  )
+                              }
+                            } else {
+                              _vm.$set(_vm.form, "authenticate", $$c)
+                            }
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("tr", [
+                    _c("td", [
+                      _c("label", {
+                        attrs: { for: "target_username" },
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.showLanguage("transfer", "username")
+                          )
+                        }
+                      }),
+                      _vm._v(":")
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.form.username,
+                            expression: "form.username"
+                          }
+                        ],
+                        attrs: { type: "text", id: "target_username" },
+                        domProps: { value: _vm.form.username },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.form, "username", $event.target.value)
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("tr", [
+                    _c("td", [
+                      _c("label", {
+                        attrs: { for: "target_password" },
+                        domProps: {
+                          textContent: _vm._s(
+                            _vm.showLanguage("transfer", "password")
+                          )
+                        }
+                      }),
+                      _vm._v(":")
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.form.password,
+                            expression: "form.password"
+                          }
+                        ],
+                        attrs: { type: "password", id: "target_password" },
+                        domProps: { value: _vm.form.password },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.form, "password", $event.target.value)
+                          }
+                        }
+                      })
+                    ])
+                  ])
+                ])
+              ]),
+              _vm._v(" "),
+              _c("br")
+            ]),
+            _vm._v(" "),
+            _c("div", [
+              _c("h3", {
+                domProps: {
+                  textContent: _vm._s(_vm.showLanguage("transfer", "indexes"))
+                }
+              }),
+              _vm._v(" "),
+              _c("label", { attrs: { for: "target_indexes" } }, [
+                _c("span", {
+                  domProps: {
+                    textContent: _vm._s(
+                      _vm.showLanguage("transfer", "copyIndexes")
+                    )
+                  }
+                }),
+                _vm._v("? "),
+                _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.form.indexes,
+                      expression: "form.indexes"
+                    }
+                  ],
+                  attrs: { id: "target_indexes", type: "checkbox" },
+                  domProps: {
+                    checked: Array.isArray(_vm.form.indexes)
+                      ? _vm._i(_vm.form.indexes, null) > -1
+                      : _vm.form.indexes
+                  },
+                  on: {
+                    change: function($event) {
+                      var $$a = _vm.form.indexes,
+                        $$el = $event.target,
+                        $$c = $$el.checked ? true : false
+                      if (Array.isArray($$a)) {
+                        var $$v = null,
+                          $$i = _vm._i($$a, $$v)
+                        if ($$el.checked) {
+                          $$i < 0 &&
+                            _vm.$set(_vm.form, "indexes", $$a.concat([$$v]))
+                        } else {
+                          $$i > -1 &&
+                            _vm.$set(
+                              _vm.form,
+                              "indexes",
+                              $$a.slice(0, $$i).concat($$a.slice($$i + 1))
+                            )
+                        }
+                      } else {
+                        _vm.$set(_vm.form, "indexes", $$c)
+                      }
+                    }
+                  }
+                })
+              ]),
+              _vm._v(" "),
+              _c("br"),
+              _c("br")
+            ]),
+            _vm._v(" "),
+            _c("div", [
+              _c("h3", {
+                staticClass: "u-pull-left",
+                domProps: {
+                  textContent: _vm._s(_vm.showLanguage("transfer", "confirm"))
+                }
+              }),
+              _vm._v(" "),
+              _c("button", {
+                staticClass: "button pl135",
+                domProps: {
+                  textContent: _vm._s(_vm.showLanguage("transfer", "transfer"))
+                },
+                on: {
+                  click: function($event) {
+                    return _vm.runTransfer($event)
+                  }
+                }
+              })
+            ])
           ]),
           _vm._v(" "),
           _c(

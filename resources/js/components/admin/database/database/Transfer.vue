@@ -16,14 +16,91 @@
   -->
 
 <style lang="scss">
-    /* @import '~@/abstracts/_variables.scss'; */
+    @import '~@/abstracts/_variables.scss';
+    .command-form {
+        max-width: 40rem;
 
+        label {
+            display: inline-block;
+            padding-right: 0;
+        }
+
+        ul {
+            margin: 0;
+            list-style: none;
+        }
+
+        input[type="text"] {
+            min-width: 100px;
+        }
+
+        input {
+            margin: 0;
+        }
+
+        .pl135 {
+            margin-left: 135px;
+        }
+
+        .msg {
+            .error {
+                color: $errorBorder;
+            }
+        }
+    }
 </style>
 
 <template>
     <div id="pma-transfer" class="pma-transfer align-left" v-if="show">
         <form class="command-form">
-            <button class="button" v-on:click="runTransfer" v-text="showLanguage('transfer', 'transfer')"></button>
+            <div style="padding-top: 20px;">
+                <h3 class="collection-title"><span v-text="showLanguage('transfer', 'collections')"></span> [<label><span v-text="showLanguage('transfer', 'all')"></span> <input type="checkbox" v-on:click="checkAll()"></label>]</h3>
+                <ul class="list">
+                    <li v-for="(coll, index) in collections" :key="index" v-bind:coll="coll"><label><input type="checkbox" class="check_collection" v-model="form.collections" :value="coll.collection.name"> {{ coll.collection.name }}</label></li>
+                </ul>
+                <div class="clear"></div>
+            </div>
+            <div>
+                <h3 v-text="showLanguage('transfer', 'target')"></h3>
+                <table class="table table-bordered">
+                    <tbody>
+                        <tr>
+                            <td><label for="target_socket" v-text="showLanguage('transfer', 'socket')"></label>:</td>
+                            <td><input type="text" id="target_socket" v-model="form.socket"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="target_host" v-text="showLanguage('transfer', 'host')"></label>:</td>
+                            <td><input type="text" id="target_host" v-model="form.host"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="target_port" v-text="showLanguage('transfer', 'port')"></label>:</td>
+                            <td><input type="text" id="target_port" v-model="form.port"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="target_auth" v-text="showLanguage('transfer', 'authenticate')"></label>?</td>
+                            <td><input type="checkbox" id="target_auth" v-model="form.authenticate"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="target_username" v-text="showLanguage('transfer', 'username')"></label>:</td>
+                            <td><input type="text" id="target_username" v-model="form.username"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="target_password" v-text="showLanguage('transfer', 'password')"></label>:</td>
+                            <td><input type="password" id="target_password" v-model="form.password"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br>
+            </div>
+            <div>
+                <h3 v-text="showLanguage('transfer', 'indexes')"></h3>
+                <label for="target_indexes"><span v-text="showLanguage('transfer', 'copyIndexes')"></span>? <input id="target_indexes" type="checkbox" v-model="form.indexes"></label>
+                <br><br>
+            </div>
+            <div>
+                <h3 class="u-pull-left" v-text="showLanguage('transfer', 'confirm')"></h3>
+                <button class="button pl135" v-on:click="runTransfer($event)" v-text="showLanguage('transfer', 'transfer')"></button>
+            </div>
         </form>
         <p v-show="errorMessage || message">
             <span class="msg">
@@ -47,13 +124,13 @@
             return {
                 collections: [],
                 errorMessage: null,
+                data: null,
                 form: {
-                    authenticate: null,
+                    authenticate: false,
                     collections: [],
                     database: null,
-                    format: 'json',
                     host: null,
-                    indexes: false,
+                    indexes: true,
                     password: null,
                     port: 27017,
                     socket: null,
@@ -93,8 +170,43 @@
                 this.show = false;
             },
 
-            runTransfer() {
+            /*
+            *   The database will already be loaded, therefore we should be able to retrieve data when 'show' is triggered'
+            */
+            getDatabase() {
+                this.data = this.$store.getters.getDatabase;
+                if (this.data) {
+                    this.collections = this.data.collections;
+                    this.form.database = this.data.db.databaseName;
+                    // console.log(this.data.db.name);
+                }
+            },
+
+            checkAll() {
+
+            },
+
+            runTransfer(event) {
+                event.preventDefault();
                 console.log(this.form);
+                let data = {database: this.database,  params: this.form };
+                this.$store.dispatch('transferDatabase', data);
+                this.handleTransfer();
+            },
+
+            handleTransfer() {
+                let status = this.$store.getters.getTransferStatus;
+                if (status === 1) {
+                    setTimeout(() => {
+                        this.handleTransfer();
+                    }, 250);
+                }
+                if (status === 2) {
+                    // gtg
+                }
+                if (status === 3) {
+                    this.errorMessage = 'Unable to complete transfer - please check your settings';
+                }
             }
         },
 
@@ -116,11 +228,12 @@
             });
 
             /*
-            *    Show this component
+            *   Show this component
+            *   Fetch the active database
             */
             EventBus.$on('show-database-transfer', () => {
                 this.showComponent();
-
+                this.getDatabase();
             });
         },
     }

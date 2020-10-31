@@ -17,9 +17,9 @@
 
 /*
 * ----------------------------------------------------
-* VUEX modules/server.js
+* VUEX modules/database.js
 * ----------------------------------------------------
-* The Vuex data store for server component views
+* The Vuex data store for database(s) component views
 */
 
 /*
@@ -51,6 +51,7 @@ export const database = {
         dbCollectionStatus: 0,
         createDatabaseStatus: 0,
         deleteDatabaseStatus: 0,
+        transferDatabaseStatus: 0,
         errorData: {}
     },
 
@@ -169,6 +170,21 @@ export const database = {
                 .catch( (error) => {
                     commit( 'setCommandLoadStatus', 3 );
                     commit( 'setCommandResults', [] );
+                    commit( 'setErrorData', error);
+                    console.log(error);
+                });
+        },
+
+        transferDatabase( { commit }, data ) {
+            commit('setTransferStatus', 1);
+
+            DatabaseApi.transferDatabase(data)
+                .then((response) => {
+                    commit( 'setTransferStatus', 2 );
+                    console.log(response);
+                })
+                .catch( (error) => {
+                    commit( 'setTransferStatus', 3 );
                     commit( 'setErrorData', error);
                     console.log(error);
                 });
@@ -383,6 +399,10 @@ export const database = {
 
         setCommandResults( state, results ) {
             state.commandResults = results;
+        },
+
+        setTransferStatus(state, status) {
+            this.state.transferDatabaseStatus = status;
         }
     },
 
@@ -496,6 +516,10 @@ export const database = {
 
         getCommandResults( state ) {
             return state.commandResults;
+        },
+
+        getTransferStatus(state) {
+            return state.transferDatabaseStatus;
         }
     }
 };

@@ -31,7 +31,7 @@ export default {
 
     /*
     *   Get a single database
-    *   GET /api/vi/database/{name}
+    *   GET /api/vi/databases/{name}
     */
     getDatabase: ( name ) => {
         return axios.get( MONGO_CONFIG.API_URL + '/databases/' + name );
@@ -39,7 +39,7 @@ export default {
 
     /*
     *   Create a new Database
-    *   POST  /api/v1/database/create
+    *   POST  /api/v1/databases/create
     */
     createDatabase: ( name) => {
         return axios.post( MONGO_CONFIG.API_URL + '/databases/create',
@@ -51,7 +51,7 @@ export default {
 
     /*
     *   Delete one or more Database(s)
-    *   POST  /api/v1/database/delete
+    *   POST  /api/v1/databases/delete
     */
     deleteDatabase: ( names) => {
         return axios.post( MONGO_CONFIG.API_URL + '/databases/delete',
@@ -63,10 +63,23 @@ export default {
 
     /*
     *   Run a command against a database
-    *   POST  /api/v1/database/{database}/command
+    *   POST  /api/v1/databases/{database}/command
     */
     databaseCommand: ( data ) => {
         return axios.post( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/command',
+            {
+                database: data.database,
+                params: data.params,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Transfer a database to another server
+    *   POST  /api/v1/databases/{database}/transfer
+    */
+    transferDatabase: ( data ) => {
+        return axios.post( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/transfer',
             {
                 database: data.database,
                 params: data.params,
