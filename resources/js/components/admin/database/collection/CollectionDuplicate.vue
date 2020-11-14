@@ -120,7 +120,6 @@
             },
 
             saveDuplicate() {
-                console.log("save the duplicate..");
                 let data = { database: this.database, collection: this.collection, params: this.form };
                 this.$store.dispatch('duplicateCollection', data);
                 this.handleDuplicate();
@@ -128,7 +127,6 @@
 
             handleDuplicate() {
                 let status = this.$store.getters.getCollectionDuplicateStatus;
-                console.log("status: " + status);
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     let self = this;

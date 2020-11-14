@@ -494,8 +494,10 @@ class CollectionController extends Controller implements Unserializable
 
                 // handle some variations on the export theme
                 if (true == $params['json']) {
+                    // ensure 1st collection is not null
+                    $coll = $collections[0] ?: $collections[1];
                     // only available for a single collection
-                    $documents  = $database->selectCollection( $collections[0] )->find();
+                    $documents  = $database->selectCollection( $coll )->find();
                     $array  = [];
                     $fields = [];
                     foreach ($documents as $document) {
@@ -506,6 +508,9 @@ class CollectionController extends Controller implements Unserializable
                 else {
                     // handle indexes
                     foreach ($collections as $collectionName) {
+                        if (!$collectionName) {
+                            continue;
+                        }
                         /** @var MongoDB\Collection $collection */
                         $collection  = $database->selectCollection( $collectionName );
                         $information = $collection->listIndexes();
@@ -517,8 +522,11 @@ class CollectionController extends Controller implements Unserializable
                         }
                     }
 
-                    // handle data
+                    // handle datadata
                     foreach ($collections as $collectionName) {
+                        if (!$collectionName) {
+                            continue;
+                        }
                         $documents  = $database->selectCollection( $collectionName )->find();
                         $contents .= "\n/** " . $collectionName  . " records **/\n";
                         foreach ($documents as $document) {
@@ -856,7 +864,7 @@ class CollectionController extends Controller implements Unserializable
                 $options = [];
                 $db->createCollection( $duplicateName, $options );
 
-                // ToDo:  modify the getObjects() so that we can onlt have the 'objects' data returned
+                // ToDo:  modify the getObjects() so that we can only have the 'objects' data returned
                 $documents = MongoHelper::getObjects( $this->client, $database, $collection )['objects'];
 
                 // connect the manager

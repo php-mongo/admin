@@ -45,9 +45,8 @@ export default function makeConvObj() {
          // we basically want to deal with 'strings' here
          if (obj && type === 'object') {
              str = JSON.stringify( obj );
-             // ToDo !! this may be ovekill ?? !!
+             // ToDo !! this may be overkill ?? !!
              str = str.replace("\"_id\":null,", "");
-             // console.log("convObj str: " + str);
          }
          else if (obj) {
              // if the 'obj' is passed as a string, just pass it on
@@ -61,7 +60,6 @@ export default function makeConvObj() {
 
              jsonV: (string) => {
                  str = string ? string : str;
-                // console.log("jsonV input: " + str);
 
                  let openB   = 0;  // track open braces & brackets ( { & [ )
                  let i       = 0;  // indexing
@@ -69,8 +67,6 @@ export default function makeConvObj() {
                  let divArea = '';
                  let tab = "&nbsp;&nbsp;&nbsp;&nbsp;";
                  for (x in str) {
-                     let plus = (parseInt(x) + 1);
-
                      if (str[x] === '{' || str[x] === '[') {
                          openB += 1;
                          divArea += str[x] + '<br>';
@@ -105,7 +101,6 @@ export default function makeConvObj() {
 
              jsonT: (string) => {
                  str = string ? string : str;//
-                 // console.log("jsonT input: " + str);
 
                  let openB    = 0;  // track open braces & brackets ( { & [ )
                  let textArea = ''; // target for textarea output
@@ -146,7 +141,6 @@ export default function makeConvObj() {
 
              jsonH: (string) => {
                  str = string ? string : str;//
-                 // console.log("jsonT input: " + str);
 
                  let divAreaH = ''; // target for div area output
                  // divAreaH  = str.replace('ObjectId', )
@@ -211,7 +205,6 @@ export default function makeConvObj() {
 
              arrayV: (string) => {
                  str = string ? string : str;
-                 // console.log("arrayV input: " + str);
 
                  let openB    = 0;  // track open braces & brackets ( { & [ )
                  let i        = 0;  // indexing
@@ -256,7 +249,6 @@ export default function makeConvObj() {
 
              arrayT: (string) => {
                  str = string ? string : str;
-                 // console.log("arrayT input: " + str);
 
                  let openB     = 0;  // track open braces & brackets ( { & [ )
                  let textArray = '';
@@ -296,7 +288,6 @@ export default function makeConvObj() {
 
              arrayH: (string) => {
                  str = string ? string : str;//
-                 // console.log("jsonT input: " + str);
 
                  let openB     = 0;  // track open braces & brackets ( { & [ )
                  let divArrayH = '';
@@ -347,7 +338,6 @@ export default function makeConvObj() {
 
              arrayToJson: (string) => {
                  let input = string ? string : str;
-                 //   console.log(input);
                  str            = input.replace(/array/g, "");
                  str            = str.replace(/\(/g, "{");
                  str            = str.replace(/ => \(/g, ":{");
@@ -358,7 +348,6 @@ export default function makeConvObj() {
 
              minify: (string) => {
                  let input = string ? string : str;
-                 //   console.log(input);
                  let doc = input.replace(/\n/g, ""); // remove new line
                  doc = doc.replace(/\t/g, ""); // remove tabs
                  // doc = doc.replace(/\s/g, ""); // removing all space was a bad idea

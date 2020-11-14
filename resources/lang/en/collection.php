@@ -78,7 +78,7 @@ return [
     "documents" => "documents",
     "download" => "Download?",
     "drop" => "Drop",
-    "dropConfirm" => "Drop %s collection and all documents? This action cannot be reversed!",
+    "dropConfirm" => "Drop ( %s ) collection and all documents? This cannot be reversed!",
     "dropError" => "Error: the collection %s was not dropped!",
     "dropSuccess" => "Dropping %s collection was successfully completed",
     "duplicate" => "Duplicate",

@@ -54,6 +54,10 @@
                     cursor: pointer;
                     padding: 4px;
                 }
+
+                &:hover {
+                    background-color: inherit;
+                }
             }
 
             li.member-button {

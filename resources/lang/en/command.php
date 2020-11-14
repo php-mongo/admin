@@ -49,6 +49,7 @@ return [
     "save" => "Save",
     "string" => "String",
     "text" => "Text",
+    "title" => "Run Database Commands",
     "top" => "Top",
     "true" => "True",
     "type" => "Type of value",

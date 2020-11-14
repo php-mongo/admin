@@ -316,13 +316,8 @@ class DocumentController extends Controller implements Unserializable
             $document   = $request->get('document');
             $type       = $request->get('type', null);
 
-            //echo '<pre>'; var_dump(json_encode($document)); echo '</pre>';
-            //echo '<pre>'; var_dump(json_decode(json_encode($document), true)); echo '</pre>';
-
             // decode the document as we may need an array
             $document = json_decode($document, true);
-
-            //dd($document);
 
             // if type exists and matches, and we have field and value create the correct MongoDB data type
             if ($type && in_array($type, $this->types)) {

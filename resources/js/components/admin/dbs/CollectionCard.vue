@@ -21,6 +21,13 @@
     .collection-list-item {
         margin-top: 10px;
         position: relative;
+        border-bottom: 1px solid $regularGrey !important;
+
+        span {
+            &:hover {
+                color: $darkGreyColor;
+            }
+        }
 
         li:last-child {
             display: block;

@@ -21,7 +21,10 @@
 </style>
 
 <template>
-    <div id="pma-execute" class="pma-execute align-left" v-if="show">
+    <div id="pma-execute" class="database-inner align-left" v-if="show">
+        <div class="title">
+            <h3>Database Execute</h3>
+        </div>
         <p>Executing JavaScript commands via PHP is now deprecated: PhpMongoAdmin is designed to use MongoDB drivers which no longer supports the use of eval() command.</p>
     </div>
 </template>

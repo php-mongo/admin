@@ -26,7 +26,7 @@ export default {
     *   GET /api/v1/databases
     */
     getDatabases: () => {
-        return axios.get( MONGO_CONFIG.API_URL + '/databases' );
+        return window.axios.get( MONGO_CONFIG.API_URL + '/databases' );
     },
 
     /*
@@ -34,7 +34,7 @@ export default {
     *   GET /api/vi/databases/{name}
     */
     getDatabase: ( name ) => {
-        return axios.get( MONGO_CONFIG.API_URL + '/databases/' + name );
+        return window.axios.get( MONGO_CONFIG.API_URL + '/databases/' + name );
     },
 
     /*
@@ -42,10 +42,10 @@ export default {
     *   POST  /api/v1/databases/create
     */
     createDatabase: ( name) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/databases/create',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/databases/create',
             {
                 database: name,
-                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+                _token: window.window.axios.defaults.headers.common['X-CSRF-TOKEN']
             });
     },
 
@@ -54,7 +54,7 @@ export default {
     *   POST  /api/v1/databases/delete
     */
     deleteDatabase: ( names) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/databases/delete',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/databases/delete',
             {
                 names: names,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
@@ -66,7 +66,7 @@ export default {
     *   POST  /api/v1/databases/{database}/command
     */
     databaseCommand: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/command',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/command',
             {
                 database: data.database,
                 params: data.params,
@@ -79,11 +79,77 @@ export default {
     *   POST  /api/v1/databases/{database}/transfer
     */
     transferDatabase: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/transfer',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/databases/' + data.params.database + '/transfer',
+            {
+                database: data.params.database,
+                params: data.params,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Save a database logging profile
+    *   POST  /api/v1/databases/{database}/profile
+    */
+    saveProfile: ( data ) => {
+        return window.axios.post( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/profile',
+            {
+                params: data.params,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Fetch database profile logs
+    *   GET  /api/v1/databases/{database}/profile
+    */
+    getProfile: ( data ) => {
+        return window.axios.get( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/profile' );
+    },
+
+    /*
+    *   Repair a database
+    *   POST  /api/v1/databases/{database}/repair
+    */
+    repairDb: ( data ) => {
+        return window.axios.post( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/repair',
+            {
+                database: data.database,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
+
+    /*
+    *   Fetch database auth users
+    *   GET  /api/v1/databases/{database}/dbauth
+    */
+    getDbAuth: ( data ) => {
+        return window.axios.get( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/dbauth' );
+    },
+
+    /*
+    *   Save a database user
+    *   POST  /api/v1/databases/{database}/dbauth
+    */
+    saveDbUser: ( data ) => {
+        return window.axios.post( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/dbauth',
             {
                 database: data.database,
                 params: data.params,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
             });
-    }
+    },
+
+    /*
+    *   Delete a database user
+    *   POST  /api/v1/databases/{database}/dbauth/delete
+    */
+    deleteDbUser: ( data ) => {
+        return window.axios.post( MONGO_CONFIG.API_URL + '/databases/' + data.database + '/dbauth/delete',
+            {
+                database: data.database,
+                user: data.user,
+                _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
+            });
+    },
 }

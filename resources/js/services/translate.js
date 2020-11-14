@@ -47,7 +47,7 @@ export default function makeTrans( locale ) {
     */
     let language;
     store.dispatch('commitLanguage', locale)
-        .then(r => {
+        .then(() => {
             language = store.getters.getLanguageArray;
         });
 

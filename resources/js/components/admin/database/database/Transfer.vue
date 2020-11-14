@@ -16,47 +16,19 @@
   -->
 
 <style lang="scss">
-    @import '~@/abstracts/_variables.scss';
-    .command-form {
-        max-width: 40rem;
-
-        label {
-            display: inline-block;
-            padding-right: 0;
-        }
-
-        ul {
-            margin: 0;
-            list-style: none;
-        }
-
-        input[type="text"] {
-            min-width: 100px;
-        }
-
-        input {
-            margin: 0;
-        }
-
-        .pl135 {
-            margin-left: 135px;
-        }
-
-        .msg {
-            .error {
-                color: $errorBorder;
-            }
-        }
-    }
+    /* @import '~@/abstracts/_variables.scss'; */
 </style>
 
 <template>
-    <div id="pma-transfer" class="pma-transfer align-left" v-if="show">
-        <form class="command-form">
-            <div style="padding-top: 20px;">
-                <h3 class="collection-title"><span v-text="showLanguage('transfer', 'collections')"></span> [<label><span v-text="showLanguage('transfer', 'all')"></span> <input type="checkbox" v-on:click="checkAll()"></label>]</h3>
+    <div id="pma-transfer" class="database-inner align-left" v-if="show">
+        <div class="title">
+            <h3 v-text="showLanguage('transfer', 'title')"></h3>
+        </div>
+        <form class="panel-form">
+            <div style="padding-top: 20px;" ref="collection">
+                <h3 class="collection-title"><span v-text="showLanguage('transfer', 'collections')"></span> [<label><span v-text="showLanguage('transfer', 'all')"></span> <input type="checkbox" v-on:click="checkAll()" v-model="form.all"></label>]</h3>
                 <ul class="list">
-                    <li v-for="(coll, index) in collections" :key="index" v-bind:coll="coll"><label><input type="checkbox" class="check_collection" v-model="form.collections" :value="coll.collection.name"> {{ coll.collection.name }}</label></li>
+                    <li v-for="(coll, index) in collections" :key="index" v-bind:coll="coll"><label><input type="checkbox" @change="checkCollection" v-model="form.collections" :value="coll.collection.name"> {{ coll.collection.name }}</label></li>
                 </ul>
                 <div class="clear"></div>
             </div>
@@ -65,12 +37,33 @@
                 <table class="table table-bordered">
                     <tbody>
                         <tr>
-                            <td><label for="target_socket" v-text="showLanguage('transfer', 'socket')"></label>:</td>
-                            <td><input type="text" id="target_socket" v-model="form.socket"></td>
+                            <td><label for="target_atlas" v-text="showLanguage('transfer', 'atlas')"></label>?</td>
+                            <td><input type="checkbox" id="target_atlas" @change="setAtlas" v-model="form.atlas"></td>
                         </tr>
                         <tr>
-                            <td><label for="target_host" v-text="showLanguage('transfer', 'host')"></label>:</td>
-                            <td><input type="text" id="target_host" v-model="form.host"></td>
+                            <td><label for="target_dns" v-text="showLanguage('transfer', 'dns')"></label>?</td>
+                            <td><input type="checkbox" id="target_dns" v-model="form.dns"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="target_secure_tls" v-text="showLanguage('transfer', 'secure')"></label>:</td>
+                            <td>
+                                <label for="target_secure_none">
+                                    <input id="target_secure_none" type="radio" v-model="form.secure" value="none">
+                                    <span v-text="showLanguage('transfer', 'none')"></span>
+                                </label>
+                                <label for="target_secure_tls">
+                                    <input id="target_secure_tls" type="radio" v-model="form.secure" value="tls">
+                                    <span v-text="showLanguage('transfer', 'tls')"></span>
+                                </label>
+                                <label for="target_secure_ssl">
+                                    <input id="target_secure_ssl" type="radio" v-model="form.secure" value="ssl">
+                                    <span v-text="showLanguage('transfer', 'ssl')"></span>
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="target_host" ref="host" v-text="showLanguage('transfer', 'host')"></label>:</td>
+                            <td><input type="text" id="target_host" @change="checkHost" v-model="form.host"></td>
                         </tr>
                         <tr>
                             <td><label for="target_port" v-text="showLanguage('transfer', 'port')"></label>:</td>
@@ -81,12 +74,20 @@
                             <td><input type="checkbox" id="target_auth" v-model="form.authenticate"></td>
                         </tr>
                         <tr>
-                            <td><label for="target_username" v-text="showLanguage('transfer', 'username')"></label>:</td>
-                            <td><input type="text" id="target_username" v-model="form.username"></td>
+                            <td><label for="target_username" ref="username" v-text="showLanguage('transfer', 'username')"></label>:</td>
+                            <td><input type="text" id="target_username" @change="checkUsername" v-model="form.username"></td>
                         </tr>
                         <tr>
-                            <td><label for="target_password" v-text="showLanguage('transfer', 'password')"></label>:</td>
-                            <td><input type="password" id="target_password" v-model="form.password"></td>
+                            <td><label for="target_password" ref="password" v-text="showLanguage('transfer', 'password')"></label>:</td>
+                            <td><input type="password" id="target_password" @change="checkPassword" v-model="form.password"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="target_authdb" v-text="showLanguage('transfer', 'authDatabase')"></label>:</td>
+                            <td><input type="text" id="target_authdb" v-model="form.authDatabase"></td>
+                        </tr>
+                        <tr>
+                            <td><label for="target_remote" ref="database" v-text="showLanguage('transfer', 'remoteDatabase')"></label>:</td>
+                            <td><input type="text" id="target_remote" @change="checkRemoteDb" v-model="form.remoteDatabase"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -98,16 +99,17 @@
                 <br><br>
             </div>
             <div>
+                <p v-show="errorMessage || message">
+                    <span class="msg">
+                        <span class="error">{{ errorMessage }}</span>
+                        <span ref="success" class="action">{{ message }}</span>
+                    </span>
+                </p>
                 <h3 class="u-pull-left" v-text="showLanguage('transfer', 'confirm')"></h3>
                 <button class="button pl135" v-on:click="runTransfer($event)" v-text="showLanguage('transfer', 'transfer')"></button>
+                <p>&nbsp;</p>
             </div>
         </form>
-        <p v-show="errorMessage || message">
-            <span class="msg">
-                <span class="error">{{ errorMessage }}</span>
-                <span class="action">{{ message }}</span>
-            </span>
-        </p>
     </div>
 </template>
 
@@ -126,14 +128,18 @@
                 errorMessage: null,
                 data: null,
                 form: {
+                    atlas: false,
                     authenticate: false,
+                    authDatabase: null,
                     collections: [],
+                    dns: false,
                     database: null,
                     host: null,
                     indexes: true,
                     password: null,
                     port: 27017,
-                    socket: null,
+                    remoteDatabase: null,
+                    secure: 'none',
                     username: null,
                 },
                 index: 0,
@@ -178,20 +184,102 @@
                 if (this.data) {
                     this.collections = this.data.collections;
                     this.form.database = this.data.db.databaseName;
-                    // console.log(this.data.db.name);
                 }
             },
 
             checkAll() {
+                setTimeout( () => {
+                    if (this.form.all === false) {
+                        this.form.collections = [];
+                    }
+                    if (this.form.all === true) {
+                        this.form.json = false;
+                        this.form.collections = [];
+                        this.collections.forEach( (collection) => {
+                            this.form.collections.push(collection.collection.name);
+                        });
+                        this.checkCollection();
+                    }
+                }, 500);
+            },
 
+            setAtlas() {
+                if (this.form.atlas === true) {
+                    this.form.dns = true;
+                    this.form.authDatabase = 'admin';
+                    this.form.secure = 'tls';
+                    this.form.authenticate = true;
+                }
+            },
+
+            checkCollection() {
+                if (this.form.collections.length >= 1)  {
+                    this.$jqf(this.$refs.collection).replace(["has-error", "success"]);
+                    this.errorMessage = '';
+                }
+            },
+
+            checkHost() {
+                if (this.form.host)  {
+                    this.$jqf(this.$refs.host).replace(["has-error", "success"]);
+                    this.errorMessage = '';
+                }
+            },
+
+            checkUsername() {
+                if (this.form.username)  {
+                    this.$jqf(this.$refs.username).replace(["has-error", "success"]);
+                    this.errorMessage = '';
+                }
+            },
+
+            checkPassword() {
+                if (this.form.password)  {
+                    this.$jqf(this.$refs.password).replace(["has-error", "success"]);
+                    this.errorMessage = '';
+                }
+            },
+
+            checkRemoteDb() {
+                if (this.form.remoteDatabase)  {
+                    this.$jqf(this.$refs.database).replace(["has-error", "success"]);
+                    this.errorMessage = '';
+                }
             },
 
             runTransfer(event) {
                 event.preventDefault();
-                console.log(this.form);
-                let data = {database: this.database,  params: this.form };
-                this.$store.dispatch('transferDatabase', data);
-                this.handleTransfer();
+                if (this.form.collections.length === 0) {
+                    this.$jqf(this.$refs.collection).replace(["success", "has-error"]);
+                    this.errorMessage = this.showLanguage('transfer', 'collectionsError');
+                    return;
+                }
+                if (!this.form.host) {
+                    this.$jqf(this.$refs.host).replace(["success", "has-error"]);
+                    this.errorMessage = this.showLanguage('transfer', 'hostError');
+                    return;
+                }
+                if (this.form.authenticate === true) {
+                    if (!this.form.username) {
+                        this.$jqf(this.$refs.username).replace(["success", "has-error"]);
+                        this.errorMessage = this.showLanguage('transfer', 'usernameError');
+                        return;
+                    }
+                    if (!this.form.password) {
+                        this.$jqf(this.$refs.password).replace(["success", "has-error"]);
+                        this.errorMessage = this.showLanguage('transfer', 'passwordError');
+                        return;
+                    }
+                }
+                if (!this.form.remoteDatabase) {
+                    this.$jqf(this.$refs.database).replace(["success", "has-error"]);
+                    this.errorMessage = this.showLanguage('transfer', 'databaseError');
+                    return;
+                }
+                this.message = 'Sending transfer request...';
+                this.errorMessage = '';
+                this.$store.dispatch('transferDatabase', {params: this.form});
+                this.handleTransfer();s
             },
 
             handleTransfer() {
@@ -203,9 +291,13 @@
                 }
                 if (status === 2) {
                     // gtg
+                    let inserted = this.$store.getters.getInserted;
+                    this.$jqf(this.$refs.success).replace(["has-error", "success"]);
+                    this.message =  this.showLanguage('transfer', 'success', inserted);
                 }
                 if (status === 3) {
-                    this.errorMessage = 'Unable to complete transfer - please check your settings';
+                    this.message = '';
+                    this.errorMessage = this.showLanguage('transfer', 'error');
                 }
             }
         },
@@ -216,7 +308,6 @@
             */
             EventBus.$on('hide-panels', () => {
                 this.hideComponent();
-
             });
 
             /*
@@ -224,7 +315,6 @@
             */
             EventBus.$on('hide-database-panels',() => {
                 this.hideComponent();
-
             });
 
             /*

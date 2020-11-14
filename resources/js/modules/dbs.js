@@ -55,7 +55,7 @@ export const dbs = {
         /*
         *   Loads the dbs from the API
         */
-        loadDbs( { commit, rootState, dispatch } ) {
+        loadDbs( { commit } ) {
             commit( 'setDbsLoadStatus', 1 );
 
             DbsApi.getDbs()
@@ -78,7 +78,7 @@ export const dbs = {
         getDb( { commit }, data ) {
             commit( 'setDbStatus', 1);
 
-            DbsApi.getNewAd( data.id )
+            DbsApi.getDb( data.id )
                 .then( ( response ) => {
                     commit( 'setDb', response.data);
                     commit( 'setDbLoadStatus', 2);
@@ -112,7 +112,7 @@ export const dbs = {
             commit ( 'setDisplayDbStatus', data.id );
         },
 
-        clearDisplayedDb( { commit }, data) {
+        clearDisplayedDb( { commit }) {
             commit( 'setDisplayDb', {} );
             commit ( 'setDisplayDbStatus', 0 );
         }

@@ -16,29 +16,16 @@
   -->
 
 <style lang="scss">
-    @import '~@/abstracts/_variables.scss';
-    .top-link {
-        margin-top: 15px;
-    }
-    .command-form {
-        max-width: 40rem;
-
-        textarea {
-            min-height: 90px;
-        }
-
-        .msg {
-            .error {
-                color: $errorBorder;
-            }
-        }
-    }
+    /* @import '~@/abstracts/_variables.scss'; */
 </style>
 
 <template>
-    <div id="pma-command" class="pma-command align-left" v-if="show">
+    <div id="pma-command" class="database-inner align-left" v-if="show">
+        <div class="title">
+            <h3 v-text="showLanguage('command', 'title')"></h3>
+        </div>
         <p class="top-link"><a href="http://docs.mongodb.org/manual/reference/command/" target="_blank" v-text="showLanguage('command', 'reference')"></a></p>
-        <form class="command-form">
+        <form class="panel-form">
             <textarea v-model="form.command"></textarea>
             <select v-model="form.database">
                 <option v-for="(db, index) in getDatabases"  :key="index" v-bind:database="db" :value="db.db.name">{{ db.db.name }}</option>

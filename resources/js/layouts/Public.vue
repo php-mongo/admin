@@ -118,11 +118,6 @@
 
             getCountryFromStore() {
                 return this.$store.getters.getCountryName;
-            },
-
-            weAreScrolling(event) {
-             //   console.log(event.target.scrollHeight);
-              //  console.log(event.target.scrollTop);
             }
         },
 
@@ -137,7 +132,7 @@
             this.$store.dispatch( 'setDefaultLanguage' );
 
             this.$http.interceptors.response.use(undefined, function (err) {
-                return new Promise(function (resolve, reject) {
+                return new Promise(function () {
                     if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
                         this.$store.dispatch('logoutUser');
                     }

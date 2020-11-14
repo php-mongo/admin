@@ -455,11 +455,6 @@
                         this.$jqf(this.$refs.email).replace(['has-success', 'has-error']).focus();
 
                     } else {
-                        // if (this.$jqf(this.$refs.email).hasClass('has-success') && this.$jqf(this.$refs.emailInfo).hasClass('has-success')) {
-                        //     this.$refs.password.focus();
-                        //     console.log('they have the class: has-success');
-                        //     return true;
-                        // }
                         if (this.verifiedEmail === e) {
                             this.$refs.password.focus();
 
