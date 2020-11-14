@@ -81,7 +81,7 @@ export const collection = {
         /*
         *   Loads the collection from the API
         */
-        loadCollections( { commit, rootState, dispatch } ) {
+        loadCollections( { commit } ) {
             commit( 'setCollectionsLoadStatus', 1 );
 
             CollectionApi.getCollections()
@@ -100,7 +100,7 @@ export const collection = {
         /*
         *   Loads a collection from the API
         */
-        loadCollection( { commit, rootState, dispatch }, data ) {
+        loadCollection( { commit }, data ) {
             commit( 'setCollectionLoadStatus', 1 );
 
             CollectionApi.getCollection( data )
@@ -119,7 +119,7 @@ export const collection = {
         /*
         *   Create a new collection - add result to collection array
         */
-        createCollection( { commit, rootState, dispatch }, data ) {
+        createCollection( { commit, dispatch }, data ) {
             commit( 'setCreateCollectionStatus', 1);
 
             CollectionApi.createCollection( data )
@@ -138,7 +138,7 @@ export const collection = {
         /*
         *   Query a collection - add result to queryResults array
         */
-        queryCollection( { commit, rootState, dispatch }, data ) {
+        queryCollection( { commit }, data ) {
             commit( 'setQueryCollectionLoadStatus', 1);
 
             CollectionApi.queryCollection( data )
@@ -156,14 +156,13 @@ export const collection = {
         /*
         *   Delete one or more collections - remove collection from array
         */
-        deleteCollection( { commit, rootState, dispatch }, data ) {
+        deleteCollection( { commit, dispatch }, data ) {
             commit( 'setDeleteCollectionStatus', 1);
             commit( 'setDeletingCollection', data.collection );
 
             CollectionApi.deleteCollection( data )
-                .then( ( response ) => {
+                .then( () => {
                     dispatch('dropCollection', data);
-                //    commit( 'setDeletedCollection', data );
                     commit( 'setDeleteCollectionStatus', 2 );
                     commit( 'setDeletingCollection', null );
                 })
@@ -178,7 +177,7 @@ export const collection = {
         /*
         *   Clear all documents from one collection -  clear all cached doc objects
         */
-        clearCollection( { commit, rootState, dispatch }, data ) {
+        clearCollection( { commit }, data ) {
             commit( 'setClearCollectionStatus', 1);
 
             CollectionApi.clearCollection( data )
@@ -201,14 +200,11 @@ export const collection = {
                     .then( (response ) => {
                         if (response.data.success === false) {
                             commit( 'setErrorData', response.data.errors);
-                            console.log(response.data.errors);
                             commit( 'setExportCollectionStatus', 3 );
 
                         } else {
                             commit( 'setExportCollectionStatus', 2 );
                             let blob        = response.data;
-                        //    console.log(blob.size);
-                        //    console.log(blob);
                             let ext = 'js';
                             if (data.params.gzip === true) {
                                 ext = 'gz';
@@ -369,7 +365,7 @@ export const collection = {
                 });
         },
 
-        validateCollection( { commit, dispatch }, data) {
+        validateCollection( { commit }, data) {
             commit('setCollectionValidationStatus', 1);
 
             CollectionApi.validateCollection( data )
@@ -399,7 +395,6 @@ export const collection = {
         *   Set the active collection - used for collection tracking
         */
         setActiveCollection( { commit }, data ) {
-            console.log("setting active collection: " + data);
             commit( 'setActiveCollection', data );
         },
 
@@ -429,7 +424,6 @@ export const collection = {
 
             CollectionApi.getQueryExplain( data )
                 .then( ( response ) => {
-                    console.log("please explain: " + response.data.data);
                     commit( 'setQueryExplain', response.data.data.explain );
                     commit( 'setQueryExplainStatus', 2 );
                 })
@@ -450,7 +444,7 @@ export const collection = {
         /*
         *  Update a document within the collection
         */
-        updateDocument( { commit, rootStore, dispatch }, data ) {
+        updateDocument( { commit }, data ) {
             commit( 'setUpdateDocumentStatus', 1);
 
             CollectionApi.updateDocument( data )
@@ -474,7 +468,7 @@ export const collection = {
         *  Duplicate a document within the collection
         *  This method and 'createDocument' are basically synonymous
         */
-        duplicateDocument( { commit, rootStore, dispatch }, data ) {
+        duplicateDocument( { commit }, data ) {
             commit( 'setDuplicateDocumentStatus', 1);
 
             CollectionApi.duplicateDocument( data )
@@ -498,7 +492,7 @@ export const collection = {
         *  Create (insert) a document within the collection
         *  This method and 'duplicateDocument' are basically synonymous
         */
-        createDocument( { commit, rootStore, dispatch }, data ) {
+        createDocument( { commit }, data ) {
             commit( 'setCreateDocumentStatus', 1);
 
             CollectionApi.createDocument( data )
@@ -521,14 +515,13 @@ export const collection = {
         /*
         *   Delete one or more documents - remove document from array
         */
-        deleteDocument( { commit, rootState, dispatch }, data ) {
+        deleteDocument( { commit }, data ) {
             commit( 'setDeleteDocumentStatus', 1);
 
             CollectionApi.deleteDocument( data )
                 .then( ( response ) => {
                     // ToDo: we are just handling single doc delete today
                     if (response.data.message === 'success') {
-                        console.log("delete success..");
                         commit( 'setDeleteDocumentStatus', 2 );
                         commit( 'setDeletedDocument', [data._id] );
                     } else {
@@ -802,21 +795,18 @@ export const collection = {
         *   Set (remove) the deleted document(s) from the existing array
         */
         setDeletedDocument( state, documents ) {
-            console.log(documents);
             let objects = state.collection.objects.objects;
             let arr = [];
             if (documents.length >= 1) {
-                documents.forEach(function(value, index) {
-                    console.log("deleting doc:" + value);
-                    objects.forEach(function(doc, index) {
+                documents.forEach(function(value) {
+                    objects.forEach(function(doc) {
                         if (doc._id !== value) {
                             arr.push(doc);
                         }
                     });
                 });
             } else {
-                console.log("single doc?");
-                objects.forEach(function(doc, index) {
+                objects.forEach(function(doc) {
                     if (doc._id !== documents) {
                         arr.push(doc);
                     }

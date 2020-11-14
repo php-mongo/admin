@@ -62,9 +62,7 @@ export default function makeJqf() {
                 return this;
             },
             hasClass: function (c) {
-                console.log(list);
-                console.log(c);
-                return list.forEach(function(value, index) {
+                return list.forEach(function(value) {
                     if (value === c) {
                         return true;
                     }
@@ -93,6 +91,14 @@ export default function makeJqf() {
                     return element.value;
                 }
                 return element.options[element.selectedIndex].value;
+            },
+            readonly: function (s) {
+                if (s === true) {
+                    element.readonly = 'readonly';
+                }
+                else {
+                    element.readonly = false;
+                }
             }
         }
     }

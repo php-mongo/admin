@@ -27,7 +27,7 @@ export default {
     *   GET /api/v1/server
     */
     getServer: () => {
-        return axios.get( MONGO_CONFIG.API_URL + '/server' );
+        return window.axios.get( MONGO_CONFIG.API_URL + '/server' );
     },
 
     /*
@@ -35,7 +35,7 @@ export default {
     *   GET /api/v1/servers
     */
     getServers: () => {
-        return axios.get( MONGO_CONFIG.API_URL + '/servers' );
+        return window.axios.get( MONGO_CONFIG.API_URL + '/servers' );
     },
 
     /*
@@ -43,7 +43,7 @@ export default {
     *   GET /api/v1/servers
     */
     saveServer: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/servers',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/servers',
             {
                 id: data.id,
                 host: data.host,
@@ -61,7 +61,7 @@ export default {
     *   GET /api/v1/servers/activate
     */
     activateServer: (data) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/servers/activate',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/servers/activate',
             {
                 id: data,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
@@ -73,6 +73,6 @@ export default {
     *   GET /api/v1/servers/{id}
     */
     deleteServer: (data) => {
-        return axios.delete( MONGO_CONFIG.API_URL + '/servers/' + data );
+        return window.axios.delete( MONGO_CONFIG.API_URL + '/servers/' + data );
     }
 }

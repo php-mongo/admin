@@ -34,6 +34,8 @@
 
         <delete-confirmation></delete-confirmation>
 
+        <action-confirmation></action-confirmation>
+
         <router-view></router-view>
 
         <no-results-found></no-results-found>
@@ -51,8 +53,6 @@
     /*
     *   Import components
     */
-    import Navigation from '../components/admin/top/TopNav.vue';
-
     import SuccessNotification from "../components/global/SuccessNotification.vue";
 
     import ErrorNotification from "../components/global/ErrorNotification.vue";
@@ -61,11 +61,9 @@
 
     import DeleteConfirmation from "../components/global/DeleteConfirmation";
 
+    import ActionConfirmation from "../components/global/ActionConfirmation";
+
     import NoResultsFound from "../components/admin/NoResultsFound";
-
-    import SiteFooter from "../components/global/SiteFooter.vue";
-
-    import RegisterModal from "../components/global/RegisterModal.vue";
 
     import LoginModal from "../components/global/LoginModal.vue";
 
@@ -75,14 +73,12 @@
 
     export default {
         components: {
-            Navigation,
             SuccessNotification,
             ErrorNotification,
             MessageNotification,
             DeleteConfirmation,
+            ActionConfirmation,
             NoResultsFound,
-            SiteFooter,
-            RegisterModal,
             LoginModal,
             LanguageModal,
             SetupModal,
@@ -97,16 +93,15 @@
                 return this.$store.getters.getCountryName;
             },
 
-            weAreScrolling(event) {
+            /*weAreScrolling(event) {
             //    console.log(event.target.scrollHeight);
              //   console.log(event.target.scrollTop);
             },
-
             handleScroll() {
                 const viewportHeight = window.innerHeight;
                 const docHeight = document.body.offsetHeight;
                 const scrollTop = document.documentElement.scrollTop;
-            }
+            }*/
         },
 
         mounted() {
@@ -120,18 +115,15 @@
             this.$store.dispatch( 'setDefaultLanguage' );
 
             this.$http.interceptors.response.use(undefined, function (err) {
-                return new Promise(function (resolve, reject) {
+                return new Promise(function () {
                     if (err.status === 401 && err.config && !err.config.__isRetryRequest) {
                         this.$store.dispatch('logoutUser');
                     }
                     throw err;
                 });
             });
-
             this.$store.dispatch( 'loadUser' );
-
             window.addEventListener('scroll', this.weAreScrolling);
-
         },
 
         destroyed() {

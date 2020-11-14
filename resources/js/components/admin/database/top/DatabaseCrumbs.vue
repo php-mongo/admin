@@ -305,7 +305,6 @@
             filterCollection() {
                 if (this.filter.length >= 1) {
                     this.filtering = true;
-                    console.log("filtering: " + this.filter);
                     EventBus.$emit('run-document-filter', this.filter);
 
                 } else {

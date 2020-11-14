@@ -69,7 +69,7 @@ export const filters = {
         /*
           Resets the filters
         */
-        resetFilters( { commit }, data ){
+        resetFilters( { commit } ){
             commit( 'resetFilters' );
         }
     },

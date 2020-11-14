@@ -17,12 +17,12 @@
  */
 
 /**
- * its not 'MySpace' - maybe its Your Soace?
+ * its not 'MySpace' - maybe its YourSpace?
  */
 namespace App\Http\Classes;
 
 /**
- * We need User model to fethc the Server configurations (if any)
+ * We need User model to fetch the Server configurations (if any)
  * @uses
  */
 use App\Models\User;

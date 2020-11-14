@@ -311,7 +311,6 @@
                 let status = this.$store.getters.getClearCollectionStatus;
                 if (status === 1 && this.index < this.limit) {
                     this.index+=1;
-                    let self = this;
                     setTimeout(() => {
                         this.handleClearCollection();
                     }, 100);
@@ -326,7 +325,6 @@
             },
 
             dropCollection( data ) {
-                console.log("dropping collection: " + data);
                 if (data && data === this.collection) {
                     let data = { database: this.db, collection: this.collection };
                     if (this.$store.getters.getDeletingCollection !== data.collection) {
@@ -345,7 +343,6 @@
                 let status = this.$store.getters.getDeleteCollectionStatus;
                 if (status === 1 && this.index < this.limit) {
                     this.index+=1;
-                    let self = this;
                     setTimeout(() => {
                         this.handleDropCollection();
                     }, 100);

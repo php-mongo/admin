@@ -21,8 +21,16 @@
 </style>
 
 <template>
-    <div id="pma-repair" class="pma-repair align-left" v-if="show">
-        <p>Repair</p>
+    <div id="pma-repair" class="database-inner align-left" v-if="show">
+        <div class="title">
+            <h3 v-text="showLanguage('repair', 'title')"></h3>
+        </div>
+        <div class="header">
+            <p class="msg" v-show="errorMessage || actionMessage">
+                <span class="error">{{ errorMessage }}</span>
+                <span class="action">{{ actionMessage }}</span>
+            </p>
+        </div>
     </div>
 </template>
 
@@ -37,6 +45,11 @@
          */
         data() {
             return {
+                actionMessage: null,
+                database: 'n/a',
+                errorMessage: null,
+                index: 0,
+                limit: 75, // limit the status check iterations
                 show: false
             }
         },
@@ -50,6 +63,48 @@
                     return this.$store.getters.getLanguageString( context, key ).replace("%s", str);
                 }
                 return this.$store.getters.getLanguageString( context, key );
+            },
+
+            /*
+            *   The database will already be loaded, therefore we should be able to retrieve data when 'show' is triggered'
+            */
+            getDatabase() {
+                this.data = this.$store.getters.getDatabase;
+                if (this.data) {
+                    this.database = this.data.db.databaseName;
+                }
+            },
+
+            launchRepair() {
+                EventBus.$emit('action-confirmation', { notification: 'Run the repair process on ' + this.database + ' database?', element: 'repair' })
+            },
+
+            clear() {
+                this.actionMessage = '';
+                this.errorMessage  = '';
+            },
+
+            runRepair() {
+                this.clear();
+                this.$store.dispatch('repairDb', { database: this.database });
+                this.handleRepair();
+            },
+
+            handleRepair() {
+                let status = this.$store.getters.getRepairStatus;
+                if (status === 1 && this.index < this.limit) {
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.handleRepair();
+                    }, 250);
+                }
+                if (status === 2) {
+                    // gtg
+                    this.actionMessage = this.showLanguage('repair', 'success');
+                }
+                if (status === 3) {
+                    this.errorMessage = this.showLanguage('repair', 'error');
+                }
             },
 
             /*
@@ -73,7 +128,6 @@
             */
             EventBus.$on('hide-panels', () => {
                 this.hideComponent();
-
             });
 
             /*
@@ -81,7 +135,6 @@
             */
             EventBus.$on('hide-database-panels',() => {
                 this.hideComponent();
-
             });
 
             /*
@@ -89,8 +142,13 @@
             */
             EventBus.$on('show-database-repair', () => {
                 this.showComponent();
-
+                this.getDatabase();
+                this.launchRepair();
             });
+
+            EventBus.$on('confirm-action-repair', () => {
+                this.runRepair();
+            })
         },
     }
 </script>

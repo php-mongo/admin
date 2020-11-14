@@ -111,19 +111,14 @@
              */
             switchFormat(event) {
                 let value = this.$jqf(event.target).value();
-                console.log('value: ' + value);
                 if (value === 'array') {
-                    console.log('go to array...');
                     this.form.format   = 'array';
                     this.form.document = this.makeArray( this.form.document );
 
                 }  else if (value === 'json') {
-                    console.log('go to json...');
                     this.form.format   = 'json';
                     this.form.document = this.makeJson( this.form.document );
 
-                } else {
-                    console.log("ohh no!!! not you again!!");
                 }
             },
 
@@ -138,16 +133,12 @@
             /*
              *  This is our method that handles the insertDocument click
              */
-            insertDocument( action ) {
+            insertDocument() {
                 this.errorMessage = null;
-
-                console.log( "creating!" );
-
                 // check format
                 if (this.form.format === 'array') {
                     this.form.document = this.makeJson( this.form.document );
                 }
-
                 // save duplicate
                 this.saveDocument();
             },
@@ -188,9 +179,8 @@
             handleDuplicate() {
                 let status = this.$store.getters.getCreateDocumentStatus;
                 if (status === 1) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleDuplicate();
+                    setTimeout(() => {
+                        this.handleDuplicate();
                     }, 100);
                 }
                 if (status === 2) {
@@ -210,9 +200,8 @@
             handleAll() {
                 let status = this.$store.getters.getDuplicateDocumentStatus;
                 if (status === 1) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleAll();
+                    setTimeout(() => {
+                        this.handleAll();
                     }, 100);
                 }
                 if (status === 2) {
@@ -260,7 +249,6 @@
             EventBus.$on('show-document-new', ( data ) => {
                 this.form.database   = data.db;
                 this.form.collection = data.coll;
-            //    this.setDocument();
                 this.showComponent();
             });
         },

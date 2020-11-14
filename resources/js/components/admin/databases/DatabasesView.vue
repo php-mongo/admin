@@ -254,18 +254,18 @@
             deleteDatabases(event) {
                 event.preventDefault();
                 this.$store.dispatch( 'deleteDatabase', this.checked );
-                this.checkDeleteDatabase();
+                this.handleDeleteDatabase();
             },
 
             /*
             *   Handles the monitoring of the DB creation process
             */
-            checkDeleteDatabase() {
+            handleDeleteDatabase() {
                 let status = this.$store.getters.getDeleteDatabaseStatus;
                 if (status === 1) {
                     let self = this;
                     setTimeout(function() {
-                        self.checkDeleteDatabase();
+                        self.handleDeleteDatabase();
                     }, 100);
                 }
                 if (status === 2) {
@@ -293,7 +293,7 @@
             removeDbFromArray( db ) {
               let dbs = this.checked;
               let checked = [];
-              dbs.forEach(function(value, index) {
+              dbs.forEach(function(value) {
                   if (value !== db) {
                       checked.push(value);
                   }
@@ -320,15 +320,11 @@
         *    get on ur bikes and ride !!
         */
         mounted() {
-            // load al the default view server data
-        //    this.$store.dispatch( 'loadDatabases' );
-
             /*
             *    Hide this component
             */
             EventBus.$on('hide-panels', ( ) => {
                 this.hideComponent();
-
             });
 
             /*
@@ -336,7 +332,6 @@
             */
             EventBus.$on('show-databases', () => {
                 this.showComponent();
-
             });
 
             /*
@@ -344,7 +339,6 @@
             */
             EventBus.$on('track-checked-db', ( db ) => {
                 this.checked.push(db);
-
             });
 
             /*

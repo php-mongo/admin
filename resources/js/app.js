@@ -15,8 +15,6 @@
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
-import {MONGO_CONFIG} from "./config";
-
 /**
 *   First we will load all of this project's JavaScript dependencies which
 *   includes Vue and other libraries. It is a great starting point when
@@ -33,7 +31,9 @@ try {
 
     require('foundation-sites');
 
-} catch (e) {}
+} catch (e) {
+    console.error(e);
+}
 
 
 /**
@@ -110,7 +110,7 @@ if (!currentLang) {
     .then( (response) => {
         locale = userLang === response.data ? userLang : response.data;
     });*/
-    axios.get( 'js/acceptLang.js' )
+    window.axios.get( 'js/acceptLang.js' )
     .then( (response) => {
         locale = userLang === response.data ? userLang : response.data;
     });
@@ -118,7 +118,7 @@ if (!currentLang) {
 const trans = makeTrans( locale );
 
 import makeCountries from './services/countries.js';
-const countries = makeCountries();
+makeCountries();
 
 /**
  *   Load the JQF methods to mock jQuery methods

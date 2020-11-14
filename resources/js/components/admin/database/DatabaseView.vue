@@ -21,7 +21,79 @@
         float: left;
         width: 96%;
 
+        .msg {
+            padding: 7px;
+            .error {
+                color: $errorBorder;
+            }
+        }
+
         .database-inner, .new-collection-inner {
+            .title {
+                background-color: $tableHeaderBg;
+                border-bottom: 1px solid $cccColor;
+                color: $white;
+                margin: 0;
+                text-align: center;
+
+                h3 {
+                    font-size: 1.2rem;
+                    font-weight: 600;
+                    padding-top: 0.5rem;
+                }
+            }
+
+            .top-link {
+                margin-top: 15px;
+            }
+
+            .panel-form {
+                max-width: 40rem;
+
+                textarea {
+                    min-height: 90px;
+                }
+
+                textarea.export-data {
+                    min-height: 150px;
+                    width: 100%;
+                }
+
+                .has-error {
+                    border: 1px solid $red;
+                }
+
+                .success {
+                    border: 1px solid $green;
+                }
+
+                ul {
+                    margin: 0;
+                    list-style: none;
+
+                    label {
+                        padding: 2px 10px;
+                    }
+                }
+
+                label {
+                    display: inline-block;
+                    padding-right: 0;
+                }
+
+                input[type="text"] {
+                    min-width: 100px;
+                }
+
+                input {
+                    margin: 0;
+                }
+
+                .pl135 {
+                    margin-left: 135px;
+                }
+            }
+
             form {
                 margin-bottom: 10px;
             }
@@ -330,7 +402,6 @@
             */
             EventBus.$on('hide-panels', () => {
                 this.hideComponent();
-
             });
 
             /*
@@ -338,13 +409,14 @@
             */
             EventBus.$on('show-database', () =>{
                 this.showComponent();
-
             });
 
+            /*
+            *   Change panel behavior based on left panel size
+            */
             EventBus.$on('collapse-left-nav', () => {
                 this.watchLeftNav();
             });
-
             EventBus.$on('expand-left-nav', () => {
                 this.watchLeftNav();
             });

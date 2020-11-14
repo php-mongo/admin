@@ -51,13 +51,13 @@ export const users = {
         /*
          *  Register a user
          */
-        registerUser( { commit, state, dispatch }, data ) {
+        registerUser( { commit, dispatch }, data ) {
             commit( 'setUserRegisterStatus', 1 );
 
             UserAPI.postUser( data.data.name, data.data.email, data.data.password )
                 .then( (response) => {
                     const token = 'Bearer ' + response.data.token;
-                    axios.defaults.headers.common['Authorization'] = token;
+                    window.axios.defaults.headers.common['Authorization'] = token;
                     localStorage.setItem('token', JSON.stringify(token));
                     commit( 'setUserRegisterStatus', 2 );
                     commit( 'setUserToken', { token });
@@ -66,20 +66,21 @@ export const users = {
                 .catch( (error) => {
                     commit( 'setUserRegisterStatus', 3 );
                     localStorage.removeItem('token');
+                    console.log(error);
                 });
         },
 
         /*
          *   Login a user via the API
          */
-        loginUser( { commit, state, dispatch }, data ) {
+        loginUser( { commit, dispatch }, data ) {
           commit( 'setUserLoginStatus', 1);
 
           UserAPI.loginUser( data.data.user, data.data.password )
               .then( ( response ) => {
                   if (response.data.success === true && response.data.uid >= 1) {
                       const token = 'Bearer ' + response.data.token;
-                      axios.defaults.headers.common['Authorization'] = token;
+                      window.axios.defaults.headers.common['Authorization'] = token;
                       localStorage.setItem('token', JSON.stringify(token));
                       commit( 'setUserLoginStatus', 2);
                       commit( 'setUserAuthStatus', response.data.uid);
@@ -87,20 +88,20 @@ export const users = {
                       dispatch( 'loadUser' );
 
                   } else {
+                      commit( 'setUserLoginStatus', 3);
                       console.log("login error - secondary");
                       console.log(response.data.success);
-                      commit( 'setUserLoginStatus', 3);
                   }
               })
               .catch( (error) => {
-                  console.log("login error - primary");
-                  console.log(error);
                   commit( 'setUserLoginStatus', 3);
                   localStorage.removeItem('token');
+                  console.log("login error - primary");
+                  console.log(error);
                 }
               )
               .finally(() => {
-                  console.log("are we there yet?!");
+                  console.log("Login process completed");
               });
         },
 
@@ -127,22 +128,24 @@ export const users = {
                 .catch( (error) => {
                     commit( 'setUser', {} );
                     commit( 'setUserLoadStatus', 3 );
+                    console.log(error);
                 });
         },
 
         /*
          * Adds or Edits a user
          */
-        editUser( { commit, state, dispatch }, data ) {
+        editUser( { commit, dispatch }, data ) {
             commit( 'setUserUpdateStatus', 1 );
 
             UserAPI.putUpdateUser( data.name, data.email, data.password )
-                .then( (response) => {
+                .then(() => {
                     commit( 'setUserUpdateStatus', 2 );
                     dispatch( 'loadUser' );
                 })
                 .catch( (error) => {
                     commit( 'setUserUpdateStatus', 3 );
+                    console.log(error);
                 });
         },
 
@@ -166,13 +169,14 @@ export const users = {
                 })
                 .catch( (error) => {
                     commit( 'setUserLogoutStatus', 3 );
+                    console.log(error);
                 });
         },
 
         /*
          *   Check an email address for uniqueness and validity
          */
-        checkEmail( { commit, state }, data ) {
+        checkEmail( { commit }, data ) {
             commit( 'setEmailCheckStatus', 1);
 
             UserAPI.checkEmail( data.email )
@@ -183,6 +187,7 @@ export const users = {
                 .catch( (error) => {
                     commit('setEmailCheckStatus', 3);
                     commit('setEmailCheck', {});
+                    console.log(error);
                 });
         }
     },

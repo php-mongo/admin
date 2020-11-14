@@ -25,6 +25,7 @@ namespace App\Http\Controllers\Api;
  *  Defines the requests used by the controller.
  */
 use Illuminate\Http\Request;
+use App\Http\Requests\EditDbAuthRequest as DbAuthRequest;
 
 /**
  *  Defined controllers used by the controller
@@ -35,6 +36,7 @@ use App\Http\Controllers\Controller;
  *  Internal classes etc etc
  */
 use App\Http\Classes\MongoConnection as Mongo;
+use App\Helpers\MongoHelper;
 use App\Http\Classes\UnserialiseDocument;
 
 /**
@@ -85,14 +87,14 @@ class DatabasesController extends Controller implements Unserializable
     private $unserialised;
 
     /**
-     * @var string|array|null $errorMessage
+     * @var array|string|null $errorMessage
      */
-    private $errorMessage = null;
+    private $errorMessage;
 
     /**
-     * @return string|array|null
+     * @return array|string|null
      */
-    private function getErrorMessage(): ?mixed
+    private function getErrorMessage()
     {
         return $this->errorMessage;
     }
@@ -103,9 +105,14 @@ class DatabasesController extends Controller implements Unserializable
     private function setErrorMessage(?string $errorMessage): void
     {
         if ($this->errorMessage) {
-            $errorMessage = is_array($this->errorMessage) ? $this->errorMessage[] = $errorMessage : array(0 => $errorMessage);
+            if (is_array($this->errorMessage)) {
+                $this->errorMessage[] = $errorMessage;
+            } else {
+                $this->errorMessage = array(0 => $errorMessage);
+            }
+        } else {
+            $this->errorMessage = $errorMessage;
         }
-        $this->errorMessage = $errorMessage;
     }
 
     /**
@@ -157,7 +164,6 @@ class DatabasesController extends Controller implements Unserializable
                 $index = 0;
                 foreach ($this->client->listDatabases() as $db) {
                     $dbn        = $db->getName();
-                    //$database   = (new MongoDB\Client)->$dbn;
                     // Todo: need to verify which method is the best path
                     // 1) $this->mongo->connectClientDb($dbn)  =  (new MongpDB\Client())->database
                     // 2) $this->client->selectDatabase($dbn)  = (new MongpDB\Client())->selectDatabase('database')
@@ -253,7 +259,7 @@ class DatabasesController extends Controller implements Unserializable
      */
     private function setDeleteStatus(string $name, array $result)
     {
-        if (1 == $result['ok'] && $name == $result['dropped']) {
+        if (1 === $result['ok'] && $name === $result['dropped']) {
             return array($name => 'success');
         }
         return array($name => 'failed');
@@ -348,7 +354,7 @@ class DatabasesController extends Controller implements Unserializable
             // ToDo: their might be a better way to to this - something more efficient - haven't found it yet in the docs
             foreach ($this->client->listDatabases() as $mdb) {
                 $index++;
-                if ($db == $mdb->getName()) {
+                if ($db === $mdb->getName()) {
                     $dbn      = $mdb->getName();
                     $database = $this->mongo->connectClientDb( $dbn );
                 }
@@ -422,10 +428,7 @@ class DatabasesController extends Controller implements Unserializable
     {
         try {
             // primitive validation
-            if ($request->get('database') == $database) {
-                // create the database Todo: !! may not be required !!
-                //$db = $this->mongo->connectClientDb($database);
-
+            if ($request->get('database') === $database) {
                 // connect the manager
                 $this->mongo->connectManager();
                 /** @var MongoDB\Driver\Manager $manager */
@@ -447,6 +450,268 @@ class DatabasesController extends Controller implements Unserializable
             }
         }
         catch (\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Run command against a database
+     *
+     * URL:         /api/databases/{database}/transfer
+     * Method:      POST
+     * Description: Return the results of a database transfer
+     *
+     * @param  Request $request
+     * @param  $database
+     * @return mixed
+     */
+    public function databaseTransfer(Request $request, $database) {
+        try {
+            $params  = $request->get('params', false);
+            $db      = $params['database'];
+            if ($db === $database) {
+                /** @var MongoDB\Client $conn */
+                $conn = MongoHelper::remoteConnection($params);
+
+                /** @var MongoDB\Database $dbLink */
+                $dbLink = $conn->selectDatabase($params['remoteDatabase']);
+                $collections = $dbLink->listCollections();
+
+                $database    = $params['database'];
+                $collections = $params['collections'];
+                $inserted    = 0;
+                // get the manager connection
+                /** @var MongoDB\Driver\Manager $man */
+                $manager     = $dbLink->getManager();
+                foreach ($collections as $collection) {
+                    $documents =  MongoHelper::getObjects( $this->client, $database, $collection )['objects'];
+                    $inserted += count($documents);
+                    // ToDo: enforce the use of the provided remoteDatabase & collection name as the NameSpace for BulkWrite
+                    MongoHelper::remoteBulkWrite( $manager, $documents, MongoHelper::ns($params['remoteDatabase'], $collection), $inserted);
+                }
+                return response()->success('success', array('inserted' => $inserted ));
+            }
+            else {
+                return response()->error('failed', array('error' => 'database names mismatched'));
+            }
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Save a database logging profile
+     *
+     * URL:         /api/databases/{database}/profile
+     * Method:      POST
+     * Description: Save and return a database logging profile
+     *
+     * @param  Request $request
+     * @param  string  $database
+     * @return mixed
+     */
+    public function saveProfile(Request $request, $database)
+    {
+        try {
+            $params  = $request->get('params', false);
+            $db      = $params['database'];
+            // ToDo: !! if the $level in not an integer the update fails !!
+            $level   = (int) $params['level'];
+            $slowms  = (int) $params['milliseconds'];
+            if ($db === $database) {
+                // set the profiling level
+                $db     = $this->mongo->connectClientDb( $database );
+                $result = $db->command(array('profile' => $level, 'slowms' => $slowms ));
+
+                return response()->success('success', array('result' => $result->toArray()));
+            }
+            else {
+                return response()->error('failed', array('error' => 'database names mismatched'));
+            }
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Fetch a database logging profile
+     *
+     * URL:         /api/databases/{database}/profile
+     * Method:      GET
+     * Description: Fetch a database logging profile
+     *
+     * @param  Request $request
+     * @param  string  $database
+     * @return mixed
+     */
+    public function getProfile(Request $request, $database)
+    {
+        try {
+            if ($database) {
+                // get the current profiling level
+                $db    = $this->mongo->connectClientDb( $database );
+                $level = $db->command(array('profile' => -1))->toArray()[0];
+
+                // get profile data
+                $db         = $this->client->selectDatabase( $database );
+                $collection = $db->selectCollection('system.profile');
+                $documents  = $collection->find();
+
+                return response()->success('success', array('profile' => $documents->toArray(), 'level' => $level ));
+            }
+            else {
+                return response()->error('failed', array('error' => 'database name missing'));
+            }
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Repair a database
+     *
+     * URL:         /api/databases/{database}/repair
+     * Method:      POST
+     * Description: Repair a given database and return result
+     *
+     * @param Request $request
+     * @param $database
+     * @return mixed
+     */
+    public function repairDb(Request $request, $database)
+    {
+        try {
+            $db  = $request->get('database', false);
+            if ($db === $database) {
+                // get the current profiling level
+                $db    = $this->mongo->connectClientDb( $database );
+                $result = $db->command(array('repairDatabase' => 1))->toArray()[0];
+
+                return response()->success('success', array('result' => $result ));
+            }
+            else {
+                return response()->error('failed', array('error' => 'database name missing'));
+            }
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+        }
+    }
+
+    public function getDbAuth(Request $request, $database)
+    {
+        try {
+            if ($database) {
+                // get the db and system collection
+                $results = ($this->client)->admin->selectCollection('system.users')->find(['db' => $database]);
+
+                return response()->success('success', array('results' => $results->toArray()));
+            }
+            else {
+                return response()->error('failed', array('error' => 'database name missing'));
+            }
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+        }
+    }
+
+    public function saveDbAuth(DbAuthRequest $dbAuthRequest, $database)
+    {
+        try {
+            $data = $dbAuthRequest->validated();
+            $db   = $data['database'];
+            if ($db === $database) {
+                $username = $data['params']['username'];
+                $password = $data['params']['password'];
+                $readonly = $data['params']['readonly'];
+                $update   = $data['params']['update'];
+
+                $this->mongo->connectManager();
+                /** @var MongoDB\Driver\Manager $manager */
+                $manager = $this->mongo->getManager();
+
+                $roles = array(
+                    "role" => "readWrite",
+                    "db" => $database
+                );
+
+                if ($readonly === true) {
+                    $roles = array(
+                        "role" => "read",
+                        "db" => $database
+                    );
+                }
+
+                if ($update === true) {
+                    $command = array(
+                        "updateUser" => $username,
+                        "roles" => array(
+                            $roles
+                        )
+                    );
+
+                } else {
+                    $command = array(
+                        "createUser" => $username,
+                        "pwd" => $password,
+                        "roles" => array(
+                            $roles
+                        )
+                    );
+                }
+
+                $result = $manager->executeCommand(
+                    $database,
+                    new MongoDb\Driver\Command( $command )
+                );
+                return response()->success('success', array('results' => $result->toArray() ));
+            }
+            else {
+                return response()->error('failed', array('error' => 'database name missing'));
+            }
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+        }
+    }
+
+    public function deleteDbUser(Request $request, $database)
+    {
+        try {
+            $db  = $request->get('database', false);
+            if ($db === $database) {
+                $user = $request->get('user', false);
+                $arr = explode(".", $user);
+
+                // get connection manager
+                $this->mongo->connectManager();
+                /** @var MongoDB\Driver\Manager $manager */
+                $manager = $this->mongo->getManager();
+
+                $command = array(
+                    "dropUser" => $arr[1]
+                );
+                $result = $manager->executeCommand(
+                    $arr[0],
+                    new MongoDb\Driver\Command( $command )
+                );
+                return response()->success('success', array('results' => $result->toArray()));
+            }
+            else {
+                return response()->error('failed', array('error' => 'database name missing'));
+            }
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+
+        } catch (MongoDB\Driver\Exception\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
         }
     }

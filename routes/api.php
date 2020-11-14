@@ -245,12 +245,89 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * -------------------------------------------------------
     * Run a command on a database
     * -------------------------------------------------------
-    * URL:         /api/v1/databases/command
+    * URL:         /api/v1/databases/{database}/command
     * Controller:  API/DatabasesController@databaseCommand
     * Method:      POST
     * Description: Deletes a new databases and returns s success status
     */
     Route::post('/databases/{database}/command', 'Api\DatabasesController@databaseCommand');
+
+    /*
+    * -------------------------------------------------------
+    * Transfer a database to a remote server
+    * -------------------------------------------------------
+    * URL:         /api/v1/databases/{databases}/transfer
+    * Controller:  API/DatabasesController@databaseTransfer
+    * Method:      POST
+    * Description: Transfer a databases and returns s success status
+    */
+    Route::post('/databases/{database}/transfer', 'Api\DatabasesController@databaseTransfer');
+
+    /*
+    * -------------------------------------------------------
+    * Save a database logging profile
+    * -------------------------------------------------------
+    * URL:         /api/v1/databases/{databases}/profile
+    * Controller:  API/DatabasesController@saveProfile
+    * Method:      POST
+    * Description: Save a databases logging profile and return a copy
+    */
+    Route::post('/databases/{database}/profile', 'Api\DatabasesController@saveProfile');
+
+    /*
+    * -------------------------------------------------------
+    * Fetch database profile logs
+    * -------------------------------------------------------
+    * URL:         /api/v1/databases/{databases}/profile
+    * Controller:  API/DatabasesController@getProfile
+    * Method:      GET
+    * Description: Fetch database profile logs for the given database
+    */
+    Route::get('/databases/{database}/profile', 'Api\DatabasesController@getProfile');
+
+    /*
+    * -------------------------------------------------------
+    * Repair a database
+    * -------------------------------------------------------
+    * URL:         /api/v1/databases/{databases}/repair
+    * Controller:  API/DatabasesController@repairDb
+    * Method:      POST
+    * Description: Repair a database and return results
+    */
+    Route::post('/databases/{database}/repair', 'Api\DatabasesController@repairDb');
+
+    /*
+    * -------------------------------------------------------
+    * Fetch database auth users
+    * -------------------------------------------------------
+    * URL:         /api/v1/databases/{databases}/dbauth
+    * Controller:  API/DatabasesController@getDbAuth
+    * Method:      GET
+    * Description: Fetch users authorised for a given database
+    */
+    Route::get('/databases/{database}/dbauth', 'Api\DatabasesController@getDbAuth');
+
+    /*
+    * -------------------------------------------------------
+    * Save a database auth user
+    * -------------------------------------------------------
+    * URL:         /api/v1/databases/{databases}/dbauth
+    * Controller:  API/DatabasesController@saveDbAuth
+    * Method:      POST
+    * Description: Save a user authorised for a given database
+    */
+    Route::post('/databases/{database}/dbauth', 'Api\DatabasesController@saveDbAuth');
+
+    /*
+    * -------------------------------------------------------
+    * Delete a database auth user
+    * -------------------------------------------------------
+    * URL:         /api/v1/databases/{databases}/dbauth/delete
+    * Controller:  API/DatabasesController@deleteDbUser
+    * Method:      POST
+    * Description: Delete a database user for a given database
+    */
+    Route::post('/databases/{database}/dbauth/delete', 'Api\DatabasesController@deleteDbUser');
 
     /*
     * -------------------------------------------------------

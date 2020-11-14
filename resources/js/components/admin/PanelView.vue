@@ -45,14 +45,14 @@
             <databases-view></databases-view>
             <database-view></database-view>
             <collection-view></collection-view>
-            <servers-view></servers-view>
+            <servers-main></servers-main>
         </div>
     </div>
 </template>
 
 <script>
     /*
-     *  Impport the evant bus
+     *  Import the event bus
      */
     import { EventBus } from '../../event-bus';
 
@@ -64,7 +64,7 @@
     import DatabasesView from "./databases/DatabasesView";
     import DatabaseView from "./database/DatabaseView";
     import CollectionView from "./database/collection/CollectionView";
-    import ServersView from "./servers/ServersView";
+    import ServersMain from "./servers/ServersMain";
 
     export default {
         /*
@@ -76,7 +76,7 @@
             DatabasesView,
             DatabaseView,
             CollectionView,
-            ServersView
+            ServersMain
         },
 
         /*

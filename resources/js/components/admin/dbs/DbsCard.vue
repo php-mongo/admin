@@ -157,7 +157,6 @@
             },
 
             loadCollection( collection ) {
-                //console.log("loading collection from left nav: " + collection);
                 // send collection and db for tracking
                 this.$store.dispatch('setActiveDatabase', this.activeDb );
                 this.$store.dispatch('setActiveCollection', collection );

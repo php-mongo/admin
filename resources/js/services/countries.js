@@ -275,11 +275,9 @@ export default function makeCountries( ) {
         { code : "ZW", name : "Zimbabwe" }
     ];
 
-    // countries = JSON.parse(countries);
-
     store.dispatch('setCountries', countries)
-        .then(r => {
-            let countries = store.getters.getCountries;
+        .then(() => {
+            countries = store.getters.getCountries;
         });
 
     /**
