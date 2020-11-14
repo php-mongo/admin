@@ -24,9 +24,6 @@ let api_url = '',
 /*
 *   Set the API route during the build process
 */
-
-console.log(process.env.NODE_ENV);
-
 switch ( process.env.NODE_ENV )  {
     case 'development':
     case 'dev':

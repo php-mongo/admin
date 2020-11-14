@@ -67,6 +67,7 @@
                 </p>
                 <p>
                     <button class="button" v-text="showLanguage('collection', 'export')" v-on:click="runExport"></button>
+                    <button class="button warning" v-on:click="hideComponent" v-text="showLanguage('global', 'cancel')"></button>
                 </p>
                 <div v-if="exportData" style="margin-top: 20px;">
                     <textarea ref="export" v-model="exportData" class="export-data"></textarea>

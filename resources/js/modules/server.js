@@ -27,11 +27,6 @@
 */
 import ServerApi from '../api/server.js'
 
-/*
-*   Imports the Event Bus to pass events on tag updates
-*/
-import { EventBus } from '../event-bus.js';
-
 export const server = {
     /*
     *   Defines the 'state' being monitored for the module
@@ -56,12 +51,11 @@ export const server = {
         /*
         *   Loads the servers from the API
         */
-        loadServers( { commit, rootState, dispatch } ) {
+        loadServers( { commit } ) {
             commit( 'setServersLoadStatus', 1 );
 
             ServerApi.getServers()
                 .then( ( response ) => {
-                    console.log("found server configs: " + response.data.data.servers);
                     commit( 'setServers', response.data.data.servers );
                     commit( 'setServersLoadStatus', 2 );
                 })
@@ -76,7 +70,7 @@ export const server = {
         /*
         *   Loads the server from the API
         */
-        loadServer( { commit, rootState, dispatch } ) {
+        loadServer( { commit } ) {
             commit( 'setServerLoadStatus', 1 );
 
             ServerApi.getServer()
@@ -92,7 +86,7 @@ export const server = {
                 });
         },
 
-        saveServer( { commit, rootStore, dispatch }, data) {
+        saveServer( { commit }, data) {
             commit( 'setServerSaveStatus', 1 );
 
             ServerApi.saveServer(data)
@@ -108,7 +102,7 @@ export const server = {
                 });
         },
 
-        activateServer( { commit, rootStore, dispatch }, data) {
+        activateServer( { commit }, data) {
             commit( 'setServerActivateStatus', 1 );
 
             ServerApi.activateServer(data)
@@ -124,11 +118,11 @@ export const server = {
                 });
         },
 
-        deleteServer( { commit, rootStore, dispatch }, data)  {
+        deleteServer( { commit }, data)  {
             commit( 'setServerDeleteStatus', 1 );
 
             ServerApi.deleteServer(data)
-                .then( (response ) => {
+                .then( () => {
                     commit( 'setServerDelete', data );
                     commit( 'setServerDeleteStatus', 2 );
                 })
@@ -293,8 +287,7 @@ export const server = {
         *   Return a server configuration for editing
         */
         getServerConfiguration: ( state ) => (id) => {
-            let server = state.servers.find(server => server.id === id);
-            return server;
+            return state.servers.find(server => server.id === id);
         },
 
         getServerDeleteStatus( state ) {
@@ -330,7 +323,7 @@ export const server = {
         },
 
         /*
-         *  Return the local server infirmation
+         *  Return the local server information
          */
         getWebServer( state ) {
             return state.server.webserver;
@@ -354,15 +347,12 @@ export const server = {
         *   Return the display server
         */
         getDisplayServer: (state) => (id) => {
-            console.log("getDisplayServer: " + id);
             if (state.server && state.server.id !== '') {
-                console.log("server found!!");
                 return state.server;
 
             } else {
                 let server = state.server.find(server => server.id === id);
                 if (server) {
-                    console.log("setting display server state: " + id);
                     // this.store.commit('setDisplayAdStatus', id);
                     // this.store.commit('setDisplayAd', ad);
                     state.displayServerStatus = id;

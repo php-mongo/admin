@@ -17,9 +17,9 @@
 
 /*
 * ----------------------------------------------------
-* VUEX modules/server.js
+* VUEX modules/database.js
 * ----------------------------------------------------
-* The Vuex data store for server component views
+* The Vuex data store for database(s) component views
 */
 
 /*
@@ -31,7 +31,6 @@ import DatabaseApi from '../api/database.js'
 *   Imports the Event Bus to pass events on tag updates
 */
 import { EventBus } from '../event-bus.js';
-import CollectionApi from "../api/collection";
 
 export const database = {
     /*
@@ -51,6 +50,17 @@ export const database = {
         dbCollectionStatus: 0,
         createDatabaseStatus: 0,
         deleteDatabaseStatus: 0,
+        transferDatabaseStatus: 0,
+        inserted: 0,
+        saveProfileStatus: 0,
+        profileStatus: 0,
+        profile: [],
+        level: null,
+        repairStatus: 0,
+        dbAuthStatus: 0,
+        getDbAuth: [],
+        dbUserStatus: 0,
+        dbDeleteUserStatus: 0,
         errorData: {}
     },
 
@@ -141,7 +151,7 @@ export const database = {
             commit( 'setDeleteDatabaseStatus', 1);
 
             DatabaseApi.deleteDatabase( data )
-                .then( ( response ) => {
+                .then( () => {
                     commit( 'setDeletedDatabase', data );
                     commit( 'setDeleteDatabaseStatus', 2 );
                 })
@@ -170,6 +180,108 @@ export const database = {
                     commit( 'setCommandLoadStatus', 3 );
                     commit( 'setCommandResults', [] );
                     commit( 'setErrorData', error);
+                    console.log(error);
+                });
+        },
+
+        transferDatabase( { commit }, data ) {
+            commit('setTransferStatus', 1);
+
+            DatabaseApi.transferDatabase(data)
+                .then((response) => {
+                    commit( 'setTransferStatus', 2 );
+                    commit( 'setInserted', response.data.data.inserted );
+                })
+                .catch( (error) => {
+                    commit( 'setTransferStatus', 3 );
+                    commit( 'setErrorData', error );
+                    commit( 'setInserted', 0 );
+                    console.log(error);
+                });
+        },
+
+        saveDbProfile( { commit }, data ) {
+            commit('setSaveProfileStatus', 1);
+
+            DatabaseApi.saveProfile(data)
+                .then(() => {
+                    commit( 'setSaveProfileStatus', 2 );
+                    // ToDo: the result return does not contain the updated level
+                })
+                .catch( (error) => {
+                    commit( 'setSaveProfileStatus', 3 );
+                    commit( 'setErrorData', error );
+                    commit( 'setProfile', 0 );
+                    console.log(error);
+                });
+        },
+
+        getDbProfile( { commit }, data) {
+            commit('setProfileStatus', 1);
+
+            DatabaseApi.getProfile(data)
+                .then((response) => {
+                    commit( 'setProfileStatus', 2 );
+                    commit( 'setProfile', response.data.data.profile );
+                    commit( 'setLevel', response.data.data.level );
+                })
+                .catch( (error) => {
+                    commit( 'setProfileStatus', 3 );
+                    commit( 'setErrorData', error );
+                    commit( 'setProfile', 0 );
+                    console.log(error);
+                });
+        },
+
+        repairDb( { commit }, data) {
+            commit('setRepairStatus', 1);
+
+            DatabaseApi.repairDb(data)
+                .then(() => {
+                    commit( 'setRepairStatus', 2 );
+                })
+                .catch( (error) => {
+                    commit( 'setRepairStatus', 3 );
+                    console.log(error);
+                });
+        },
+
+        getDatabaseAuth( { commit }, data) {
+            commit('setDbAuthStatus', 1);
+
+            DatabaseApi.getDbAuth(data)
+                .then((response) => {
+                    commit( 'setDbAuth', response.data.data.results);
+                    commit( 'setDbAuthStatus', 2 );
+                })
+                .catch( (error) => {
+                    commit( 'setDbAuthStatus', 3 );
+                    console.log(error);
+                });
+        },
+
+        saveDbUser( { commit }, data) {
+            commit('setDbUserStatus', 1);
+
+            DatabaseApi.saveDbUser(data)
+                .then(() => {
+                    commit( 'setDbUserStatus', 2 );
+                })
+                .catch( (error) => {
+                    commit( 'setDbUserStatus', 3 );
+                    console.log(error);
+                });
+        },
+
+        deleteDbUser( {commit}, data) {
+            commit('setDeleteDbUserStatus', 1);
+
+            DatabaseApi.deleteDbUser(data)
+                .then(() => {
+                    commit( 'setDeleteDbUserStatus', 2 );
+                })
+                .catch( (error) => {
+                    commit( 'setDeleteDbUserStatus', 3 );
                     console.log(error);
                 });
         },
@@ -237,7 +349,7 @@ export const database = {
         /*
         * Clears the DB so that its data wont show on initial component rendering
         */
-        clearDatabaseObject( state, empty ) {
+        clearDatabaseObject( state ) {
             state.database = {};
         },
 
@@ -280,17 +392,18 @@ export const database = {
         *   Set (remove) the deleted database(s) from the existing array
         */
         setDeletedDatabase( state, databases ) {
-            databases.forEach( (value, index) => {
-                let arr = [];
-                state.databases = state.databases.map( db => {
+            let arr;
+            databases.forEach( (value) => {
+                /*state.databases = state.databases.map( db => {
                     return db.db.name !== value;
-                });
-                /*state.databases.forEach( (db, index) => {
+                });*/
+                arr = [];
+                state.databases.forEach( (db) => {
                     if (db.db.name !== value) {
                         arr.push(db);
                     }
-                });*/
-                //state.databases = arr;
+                });
+                state.databases = arr;
             });
         },
 
@@ -332,14 +445,11 @@ export const database = {
          */
         setDropCollectionFromDatabase(state, data) {
             let db   = data.database;
-            console.log("sdcfd db: " + db);
             let coll = data.collection;
-            console.log("sdcfd coll: " + coll);
-
             let arr = [];
             // handle the single database object
             let collections = state.database.collections;
-            collections.forEach( (collection, index) => {
+            collections.forEach( (collection) => {
                 if (collection.collection.name !== coll && collection.collection.collectionName !== coll) {
                     arr.push(collection);
                 }
@@ -351,7 +461,7 @@ export const database = {
                 if (database.db.name === db) {
                     collections = database.collections;
                     arr = [];
-                    collections.forEach( (collection, index) => {
+                    collections.forEach( (collection) => {
                         if (collection.collection.name !== coll && collection.collection.collectionName !== coll) {
                             arr.push(collection);
                         }
@@ -383,6 +493,50 @@ export const database = {
 
         setCommandResults( state, results ) {
             state.commandResults = results;
+        },
+
+        setTransferStatus( state, status ) {
+            state.transferDatabaseStatus = status;
+        },
+
+        setInserted( state, inserted) {
+            state.inserted = inserted;
+        },
+
+        setSaveProfileStatus( state, status) {
+            state.saveProfileStatus = status;
+        },
+
+        setProfileStatus( state, status) {
+            state.profileStatus = status;
+        },
+
+        setProfile( state, profile) {
+            state.profile = profile;
+        },
+
+        setLevel( state, level) {
+            state.level = level;
+        },
+
+        setRepairStatus( state, status ) {
+            state.repairStatus = status;
+        },
+
+        setDbAuthStatus( state, status ) {
+            state.dbAuthStatus = status;
+        },
+
+        setDbAuth( state, auth ) {
+            state.getDbAuth = auth;
+        },
+
+        setDbUserStatus( state, status ) {
+            state.dbUserStatus = status;
+        },
+
+        setDeleteDbUserStatus( state, status ) {
+            state.dbDeleteUserStatus = status;
         }
     },
 
@@ -429,15 +583,12 @@ export const database = {
         *   Return the display database
         */
         getDisplayDatabase: (state) => (id) => {
-            console.log("getDisplayDatabase: " + id);
             if (state.database && state.database.id !== '') {
-                console.log("database found!!");
                 return state.database;
 
             } else {
                 let database = state.database.find(database => database.id === id);
                 if (database) {
-                    console.log("setting display database state: " + id);
                     state.displayDatabaseStatus = id;
                     state.displayDatabase = database;
                     return database;
@@ -496,6 +647,46 @@ export const database = {
 
         getCommandResults( state ) {
             return state.commandResults;
+        },
+
+        getTransferStatus(state) {
+            return state.transferDatabaseStatus;
+        },
+
+        getInserted( state ) {
+            return state.inserted;
+        },
+
+        getSaveProfileStatus( state ) {
+           return state.saveProfileStatus;
+        },
+
+        getProfileStatus( state ) {
+            return state.profileStatus;
+        },
+
+        getProfile( state ) {
+            return state.profile;
+        },
+
+        getLevel( state ) {
+            return state.level;
+        },
+
+        getRepairStatus( state ) {
+            return state.repairStatus;
+        },
+
+        getDbAuthStatus( state ) {
+            return state.dbAuthStatus;
+        },
+
+        getDbAuth( state ) {
+            return state.getDbAuth;
+        },
+
+        getDbUserStatus( state ) {
+            return state.dbUserStatus;
         }
     }
 };

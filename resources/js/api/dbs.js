@@ -26,7 +26,7 @@ export default {
     *   GET /api/v1/dbs
     */
     getDbs: function() {
-        return axios.get( MONGO_CONFIG.API_URL + '/dbs' );
+        return window.axios.get( MONGO_CONFIG.API_URL + '/dbs' );
     },
 
     /*
@@ -34,6 +34,6 @@ export default {
     *   GET /api/vi/dbs/{id}
     */
     getDb: function( id ) {
-        return axios.get( MONGO_CONFIG.API_URL + '/dbs/' + id );
+        return window.axios.get( MONGO_CONFIG.API_URL + '/dbs/' + id );
     }
 }

@@ -16,83 +16,11 @@
   -->
 
 <style lang="scss">
-    @import '~@/abstracts/_variables.scss';
-    .pma-servers-view {
-        float: left;
-        height: 100vh;
-        width: auto;
-
-        .servers-inner {
-            table {
-                border: 1px solid $infoColor;
-                border-radius: 5px;
-                box-shadow: 2px 2px 5px $cccColor;
-            }
-            table th {
-                background-color: $tableHeaderBg;
-                color: $white;
-                font-size: 1.2rem;
-                padding: 4px;
-            }
-            table .server-info {
-                background-color: $infoBgColor;
-                padding: 4px;
-                text-align: center;
-            }
-            table.bordered th.bb {
-                border-bottom: 1px solid $infoColor;
-            }
-            table.bordered th.rb {
-                border-right: 1px solid $infoColor;
-            }
-            table.bordered td {
-                border-bottom: 1px solid $infoColor;
-                min-width: 100px;
-                padding-left: 20px;
-                text-align: left;
-            }
-            table.bordered td.w50 {
-                min-width: 49.9%;
-                text-align: right;
-            }
-            table.bordered td.title {
-               width: 15rem;
-            }
-            table.bordered td.bb {
-                border-bottom: 1px solid $infoColor;
-            }
-            .activate-checkbox {
-                padding-left: 2rem;
-
-                input {
-                    margin: 0;
-                }
-            }
-            p.field {
-                text-align: right;
-                width: 350px;
-
-                .input {
-                    border-radius: 5px;
-                    padding: 5px;
-                    width: 100%;
-
-                    input {
-                        margin: 0 0 0 auto;
-                        max-width: 266px !important;
-                    }
-                }
-            }
-            .checkbox {
-                margin: 0 0 0 30px !important;
-                width: 1rem;
-            }
-        }
-    }
+    /* @import '~@/abstracts/_variables.scss'; */
 </style>
 
 <template>
-    <div id="pma-servers-view" class="pma-servers-view align-left" v-show="show">
+    <div id="pma-servers-view" class="pma-servers-panel align-left" v-show="show">
         <div class="servers-inner">
             <div class="servers-head">
                 <h3 v-text="showLanguage('servers', 'title')"></h3>

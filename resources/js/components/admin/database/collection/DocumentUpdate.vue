@@ -164,8 +164,6 @@
                     this.fields      = this.makeFields();
                     this.form.edit   = 'fields';
 
-                } else {
-                    console.log("ohh no!!! not you again!!");
                 }
             },
 
@@ -181,7 +179,7 @@
                 // create the top level array
                 let rows = Object.entries( this.document );
 
-                return rows.map( function( value, index, array) {
+                return rows.map( function( value ) {
                     // we dont want the _id key
                     if (value[0] != '_id') {
                         // If the value is an object - we need to drill deeper
@@ -201,7 +199,6 @@
             },
 
             saveUpdate() {
-                //console.log("saving: " + this.form);
                 if (this.form.format === 'json') {
                     this.sendJson();
                 }
@@ -217,7 +214,6 @@
                 // cleanup
                 let doc = this.form.document;
                 doc     = this.$convObj().minify(doc);
-                // console.log(doc);
 
                 // restore
                 this.form.document = doc;
@@ -232,7 +228,6 @@
             sendArray() {
                 let data = this.form.document;
                 data = this.$convObj().arrayToJson(data);
-                //console.log(data);
                 data = this.$convObj().minify(data);
 
                 // restore
@@ -247,15 +242,13 @@
 
             sendFields() {
                 let data = this.form.document;
-                console.log(data);
             },
 
             handleUpdate() {
                 let status = this.$store.getters.getUpdateDocumentStatus;
                 if (status === 1) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleUpdate();
+                    setTimeout(() => {
+                        this.handleUpdate();
                     }, 100);
                 }
                 if (status === 2) {

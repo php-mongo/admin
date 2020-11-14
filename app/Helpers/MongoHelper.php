@@ -69,7 +69,7 @@ class MongoHelper
      *
      * @return  string  utf-8 string
      */
-    public static function json_unicode_to_utf8( $json )
+    public static function json_unicode_to_utf8( $json ) : string
     {
         $json = preg_replace_callback("/\\\\u([0-9a-f]{4})/", function($match) {
                 $val = intval($match[1], 16);
@@ -115,7 +115,7 @@ class MongoHelper
      * @param   string  $json   JSON to format
      * @return  string
      */
-    public static function json_format($json)
+    public static function json_format($json) : string
     {
         $tab            = "  ";
         $new_json       = "";
@@ -203,7 +203,7 @@ class MongoHelper
      * @param string $json JSON to format
      * @return string
      */
-    public static function json_format_html($json)
+    public static function json_format_html($json) : string
     {
         $json         = self::json_unicode_to_utf8($json);
         $tab          = "&nbsp;&nbsp;";
@@ -310,7 +310,7 @@ class MongoHelper
      *
      * @return string
      */
-    public static function id_string($id)
+    public static function id_string($id) : string
     {
         if (is_object($id) && $id instanceof MongoId) {
             return "rid_object:" . $id->__toString();
@@ -325,11 +325,13 @@ class MongoHelper
     }
 
     /**
+     * ToDo: we want to build a dedicated Class to better handle this
+     *
      * @param $document
      * @param $documentArr
      * @param $fields
      */
-    public static function prepareDocument( $document, & $documentArr, & $fields )
+    public static function prepareDocument( $document, & $documentArr, & $fields ) : void
     {
         $arr    = [];
         $level  = 0;
@@ -382,6 +384,8 @@ class MongoHelper
     }
 
     /**
+     * ToDo: we want to build a dedicated Class to better handle this
+     *
      * @param $array
      * @param $level
      * @param $key
@@ -389,7 +393,7 @@ class MongoHelper
      *
      * @return array
      */
-    public static function iterateObject( $array, $level, $key, & $fields )
+    public static function iterateObject( $array, $level, $key, & $fields ) : array
     {
         $arr = [];
         foreach ($array as $k => $v) {
@@ -422,6 +426,7 @@ class MongoHelper
     /**
      * Extract the document into an array
      * Here we attempt to track the field keys that are found
+     * ToDo: we want to build a dedicated Class to better handle this
      *
      * @param $document
      * @param array $fields
@@ -429,7 +434,7 @@ class MongoHelper
      *
      * @return array
      */
-    public static function extractDocument( $document, &$fields = [], $OID = false )
+    public static function extractDocument( $document, &$fields = [], $OID = false ) : array
     {
         $arr    = [];
         $level  = 0;
@@ -481,6 +486,8 @@ class MongoHelper
     }
 
     /**
+     * ToDo: we want to build a dedicated Class to better handle this
+     *
      * @param $array
      * @param $level
      * @param $key
@@ -488,7 +495,7 @@ class MongoHelper
      *
      * @return array
      */
-    public static function iterateDocument( array $array, int $level )
+    public static function iterateDocument( array $array, int $level ) : array
     {
         $arr = [];
         foreach ($array as $k => $v) {
@@ -521,7 +528,7 @@ class MongoHelper
      * @param   string         $collection      string Collection name
      * @return  array
      */
-    public static function getObjects($client, $db, $collection)
+    public static function getObjects($client, $db, $collection) : array
     {
         // no errors this way
         $arr = array(
@@ -587,7 +594,7 @@ class MongoHelper
      * @param integer                $inserted
      * @param boolean                $isJson         Enforces use of the provided $collection value
      */
-    public static function handleBulkInsert( $manager, $database, $array, $collection, $useCollection, &$inserted, $isJson = false )
+    public static function handleBulkInsert( $manager, $database, $array, $collection, $useCollection, &$inserted, $isJson = false ) : void
     {
         foreach ($array as $coll => $inserts) {
             // renew for each collection insert
@@ -615,8 +622,8 @@ class MongoHelper
                     if (false == $isOID && isset($insert['_id']['oid'])) {
                         $insert['_id'] = new MongoDB\BSON\ObjectId ( $insert['_id']['oid'] );
                     }
-                    // this fits the Compass JSON export
-                    if (isset($insert['_id']['$oid'])) {
+                    elseif (is_array($insert['_id']) && isset($insert['_id']['$oid'])) {
+                        // this fits the Compass JSON export
                         $insert['_id'] = new MongoDB\BSON\ObjectId ( $insert['_id']['$oid'] );
                     }
                     // expects an array
@@ -640,7 +647,7 @@ class MongoHelper
      */
     public static function validateCollectionProperties( array $properties, &$errors )
     {
-        if (true == $properties['capped']) {
+        if (true === $properties['capped']) {
             // validate the params
             // size must be set if collection is capped
             if (!empty($properties['size']) && is_numeric($properties['size']) && $properties['size'] >= 1) {
@@ -676,9 +683,9 @@ class MongoHelper
      *
      * @since 1.0.0
      */
-    public static function readHumanBytes($bytes, $precision = 2)
+    public static function readHumanBytes($bytes, $precision = 2): string
     {
-        if (0 == $bytes) {
+        if (0 === $bytes) {
             return 0;
         }
         if ($bytes < 1024) {
@@ -694,5 +701,120 @@ class MongoHelper
             return round($bytes/1024/1024/1024, $precision) . "g";
         }
         return $bytes;
+    }
+
+    /**
+     * Handle creating the remote connections
+     *
+     * @param  array            $params Connection parameters array
+     * @return MongoDB\Client
+     */
+    public static function remoteConnection( $params ) : MongoDB\Client
+    {
+        $params['replicaSet'] = 'Cluster0-shard-0';
+        $prefix = true === $params['dns'] ? 'mongodb+srv' : 'mongodb';
+        $options= [];
+        if (true === $params['atlas']) {
+            // MongoDB Atlas server sets
+            $uri = $prefix . '://' . $params['host'] . '/';
+            $options['retryWrites'] = true;
+            $options['replicaSet'] = $params['replicaSet'];
+            // ToDo: for now we will enforce this value to alleviate errors
+            $options['authSource'] = 'admin';
+            $options['username'] = $params['username'];
+            $options['password'] = $params['password'];
+        }
+        else {
+            // All other servers
+            $uri = $prefix . '://' . $params['host'] . ':' . $params['port'];
+            if (true === $params['authenticate'] && !empty($params['username']) && !empty($params['password'])) {
+                $options['username'] = $params['username'];
+                $options['password'] = $params['password'];
+            }
+            if (true === $params['tls']) {
+                $options['tls'] = true;
+            }
+            if (true === $params['ssl']) {
+                $options['ssl'] = true;
+            }
+        }
+
+        // A single connection call should handle all cases
+        return new MongoDB\Client( $uri,
+            $options
+        );
+
+        /*$client = new MongoDB\Client(
+            'mongodb+srv://<username>:<password>@cluster0.kwrrj.mongodb.net/<dbname>?retryWrites=true&w=majority');
+        $db = $client->test;*/
+    }
+
+    /**
+     * Handle remote manager connections
+     * ToDo: in most cases we will use - $dbLink->getManager() - instead
+     *
+     * @param $params
+     * @return MongoDB\Driver\Manager
+     * @throws Exception
+     */
+    public static function remoteManager( $params ) : ?MongoDB\Driver\Manager
+    {
+        $prefix = true === $params['dns'] ? 'mongodb' : 'mongodb+srv';
+        // create the URI
+        if (true === $params['atlas']) {
+            if (empty($params['username']) || empty($params['password'])|| empty($params['remoteDatabase'])) {
+                throw new Exception('Cannot connect to Mongo Atlas without a username, password and database reference');
+            }
+            $uri = $prefix . '://' . $params['username'] . ':' . $params['password'] . '@' . $params['host'] . '/' . $params['remoteDatabase'] . '?retryWrites=true&w=majority';
+            return new MongoDB\Driver\Manager( $uri );
+
+        } else {
+            $uri = $prefix . '://' . $params['host'] . ':' . $params['port'];
+            $options = [];
+            if (true === $params['authenticate'] && !empty($params['username']) && !empty($params['password'])) {
+                $options['username'] = $params['username'];
+                $options['password'] = $params['password'];
+            }
+            if (true === $params['tls']) {
+                $options['tls'] = true;
+            }
+            if (true === $params['ssl']) {
+                $options['ssl'] = true;
+            }
+            return new MongoDB\Driver\Manager( $uri, $options);
+        }
+    }
+
+    /**
+     * Handle remote bulk write actions
+     *
+     * @param MongoDB\Driver\Manager $conn
+     * @param $documents
+     * @param $ns
+     * @param $inserted
+     */
+    public static function remoteBulkWrite($conn, $documents, $ns, &$inserted) : void
+    {
+        $bulk = new MongoDB\Driver\BulkWrite();
+        foreach ($documents as $insert) {
+            $inserted++;
+            if (is_string($insert)) {
+                // decode the insert only is its a string
+                $insert = json_decode($insert, true);
+            }
+            // if the ObjectId has been included as $oid => 'blah blah blah'
+            $isOID = $insert['_id'] instanceof MongoDB\BSON\ObjectId;
+            // this fits our local admin export
+            if (false == $isOID && isset($insert['_id']['oid'])) {
+                $insert['_id'] = new MongoDB\BSON\ObjectId ( $insert['_id']['oid'] );
+            }
+            elseif (is_array($insert['_id']) && isset($insert['_id']['$oid'])) {
+                // this fits the Compass JSON export
+                $insert['_id'] = new MongoDB\BSON\ObjectId ( $insert['_id']['$oid'] );
+            }
+            // expects an array
+            $bulk->insert($insert);
+        }
+        $conn->executeBulkWrite( $ns, $bulk );
     }
 }

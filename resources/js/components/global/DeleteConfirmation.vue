@@ -101,7 +101,7 @@
                     self.element = null;
                     self.id      = null;
                     self.show    = false;
-                }, 1000);
+                }, 500);
             }
         },
 

@@ -58,7 +58,7 @@ export const application = {
         /*
         *   This method is run from the Language modal for changing the current language
         */
-        setLanguage( { commit, state, dispatch }, data) {
+        setLanguage( { commit, state }, data) {
             commit( 'setLanguageStatus', 0);
 
             console.log("language passed to set: " + data);
@@ -80,7 +80,7 @@ export const application = {
         /*
         *   Commit the language
         */
-        commitLanguage( { commit, dispatch }, data) {
+        commitLanguage( { commit }, data) {
             commit( 'setLanguageStatus', 0);
             commit( 'setLanguage', data);
             commit( 'setLanguageArray' );
@@ -90,7 +90,7 @@ export const application = {
         /*
         *   Set the default language - uses predefined config
         */
-        setDefaultLanguage( { commit, state }, data) {
+        setDefaultLanguage( { commit } ) {
             commit( 'setLanguageStatus', 0);
             commit( 'setLanguageArray' );
             commit( 'setLanguageStatus', 2);
@@ -99,7 +99,7 @@ export const application = {
         /*
         *   Get the user's location from IPINFO
         */
-        getLocation( { commit, state, dispatch }) {
+        getLocation( { commit, dispatch }) {
             commit( 'setLocationStatus', 1 );
 
             if (sessionStorage.getItem('location')) {
@@ -146,7 +146,7 @@ export const application = {
         /*
         *   Apply the detected location
         */
-        applyCurrentLocation( { commit, state }, data ) {
+        applyCurrentLocation( { commit }, data ) {
             if (data.location) {
                 let current = {};
                 current.city        = data.location.city;
@@ -194,7 +194,6 @@ export const application = {
         *   ToDo: this allows clearing the activeNav value for the main navigation panel - until a better way surfaces
         */
         setActiveNav( { commit }, data ) {
-            console.log("setting active nav: " + data);
             commit( 'setActiveNav', data );
         }
 
@@ -362,7 +361,7 @@ export const application = {
         /*
         *   Get the active navigation panel
         */
-        getActiveNav(state, panel) {
+        getActiveNav( state ) {
             return state.activeNav;
         }
     }

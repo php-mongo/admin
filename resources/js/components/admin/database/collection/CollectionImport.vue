@@ -61,6 +61,7 @@
                 </p>
                 <p>
                     <button class="button" v-text="showLanguage('collection', 'import')" v-on:click="runImport"></button>
+                    <button class="button warning" v-on:click="hideComponent" v-text="showLanguage('global', 'cancel')"></button>
                 </p>
             </div>
         </div>

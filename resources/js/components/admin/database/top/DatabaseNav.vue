@@ -88,7 +88,7 @@
         <div class="text-left">
             <ul class="links">
                 <li v-bind:class="{active: getActivePanel('database')}">
-                    <span v-on:click="showDatabase(getActiveDb)"><img src="img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'statisticsTitle')" v-text="showLanguage('database', 'statistics')"></span></span>
+                    <span v-on:click="showDatabase"><img src="img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'statisticsTitle')" v-text="showLanguage('database', 'statistics')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('new-collection')}">
                     <span v-on:click="loadPanel('new-collection')"><img src="img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'newCollectionTitle')" v-text="showLanguage('database', 'newCollection')"></span></span>
@@ -183,7 +183,8 @@
                 return this.$store.getters.getLanguageString( context, key );
             },
 
-            showDatabase(db) {
+            showDatabase() {
+                let db = this.getActiveDb();
                 this.activePanel = 'database';
                 EventBus.$emit('hide-database-panels');
                 if (db) {
@@ -209,6 +210,10 @@
                 return this.activePanel === panel;
             },
 
+            setActivePanel(panel) {
+                this.activePanel = panel;
+            },
+
             getActiveDb() {
                 this.activeDb = this.$store.getters.getActiveDatabase
             },
@@ -229,17 +234,18 @@
              EventBus.$on('show-database-nav', () => {
                  this.getActiveDb();
                  this.showNavigation();
-
              });
+
+            EventBus.$on('show-database', () => {
+                this.setActivePanel('database');
+            });
 
             EventBus.$on('show-collection-nav', () => {
                 this.hideNavigation();
-
             });
 
             EventBus.$on('collapse-db', (collapse) => {
                 this.collapsed = collapse;
-
             });
 
             EventBus.$on('load-database-panel', (data) => {

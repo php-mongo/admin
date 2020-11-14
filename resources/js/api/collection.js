@@ -27,7 +27,7 @@ export default {
     *   GET /api/vi/collection/{name}
     */
     getCollection: ( data ) => {
-        return axios.get( MONGO_CONFIG.API_URL + '/collection/' + data.database + '/' + data.collection );
+        return window.axios.get( MONGO_CONFIG.API_URL + '/collection/' + data.database + '/' + data.collection );
     },
 
     /*
@@ -35,7 +35,7 @@ export default {
     *   POST  /api/v1/collection/create
     */
     createCollection: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/collection/create',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/collection/create',
             {
                 name: data.name,
                 capped: data.capped,
@@ -51,7 +51,7 @@ export default {
     *   POST  /api/v1/collection/delete
     */
     deleteCollection: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/collection/delete',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/collection/delete',
             {
                 database: data.database,
                 collection: data.collection,
@@ -64,7 +64,7 @@ export default {
     *   POST  /api/v1/collection/clear
     */
     clearCollection: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/collection/clear',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/collection/clear',
             {
                 database: data.database,
                 collection: data.collection,
@@ -77,7 +77,7 @@ export default {
     *   POST  /api/v1/collection/export
     */
     exportCollectionDownload: ( data ) => {
-        return axios({
+        return window.axios({
             url: MONGO_CONFIG.API_URL + '/collection/export',
             method: 'POST',
             responseType: 'blob',
@@ -95,7 +95,7 @@ export default {
     *   POST  /api/v1/collection/exports
     */
     exportCollectionView: (data) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/collection/export',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/collection/export',
             {
                 database: data.database,
                 params: data.params,
@@ -104,7 +104,7 @@ export default {
     },
 
     /*
-    *  Import one or more collections (download version)
+    *  Import one or more collections (upload version)
     *  POST  /api/v1/collection/import
     */
     importCollection: ( data ) => {
@@ -114,9 +114,11 @@ export default {
         formData.append('file', data.params.file);
         formData.append('type', data.params.selected);
         formData.append('gzip', data.params.gzip);
+        formData.append('replace', data.params.replace);
         formData.append('useCurrentCollection', data.params.useCurrentCollection);
+        formData.append('useCurrentDatabase', data.params.useCurrentDatabase);
         formData.append('_token',  window.axios.defaults.headers.common['X-CSRF-TOKEN']);
-        return axios.post(MONGO_CONFIG.API_URL + '/collection/import',
+        return window.axios.post(MONGO_CONFIG.API_URL + '/collection/import',
             formData,
             {
                 headers: {
@@ -140,7 +142,7 @@ export default {
     *   POST  /api/v1/collection/properties
     */
     saveProperties: (data) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/collection/properties',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/collection/properties',
             {
                 database: data.database,
                 collection: data.collection,
@@ -154,7 +156,7 @@ export default {
     *   POST  /api/v1/collection/index
     */
     saveIndex: (data) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/collection/index',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/collection/index',
             {
                 database: data.database,
                 collection: data.collection,
@@ -168,7 +170,7 @@ export default {
     *   POST  /api/v1/collection/rename
     */
     renameCollection: (data) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/collection/rename',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/collection/rename',
             {
                 database: data.database,
                 collection: data.collection,
@@ -182,7 +184,7 @@ export default {
     *   POST  /api/v1/collection/duplicate
     */
     duplicateCollection: (data) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/collection/duplicate',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/collection/duplicate',
             {
                 database: data.database,
                 collection: data.collection,
@@ -196,7 +198,7 @@ export default {
     *   POST  /api/v1/collection/validate
     */
     validateCollection: (data) => {
-        return axios.get( MONGO_CONFIG.API_URL + '/collection/validate/' + data.database + '/' + data.collection);
+        return window.axios.get( MONGO_CONFIG.API_URL + '/collection/validate/' + data.database + '/' + data.collection);
     },
 
     /*
@@ -204,7 +206,7 @@ export default {
     *   POST /api/v1/collection/query
     */
     queryCollection: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/collection/query',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/collection/query',
             {
                 params: data.params,
                 format: data.format,
@@ -219,7 +221,7 @@ export default {
     *   GET  /api/v1/collection/query/logs/{database}/{collection}
     */
     getQueryLogs: ( data ) => {
-        return axios.get( MONGO_CONFIG.API_URL + '/collection/query/logs/' + data.database + '/' + data.collection );
+        return window.axios.get( MONGO_CONFIG.API_URL + '/collection/query/logs/' + data.database + '/' + data.collection );
     },
 
     /*
@@ -227,7 +229,7 @@ export default {
     *   GET  /api/v1/collection/query/explain
     */
     getQueryExplain: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/collection/query/explain',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/collection/query/explain',
             {
                 database: data.database,
                 collection: data.collection,
@@ -242,7 +244,7 @@ export default {
     *   POST /api/v1/document/create
     */
     createDocument: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/document/create',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/document/create',
             {
                 document: data.document,
                 format: data.format,
@@ -257,7 +259,7 @@ export default {
     *   POST /api/v1/document/duplicate
     */
     duplicateDocument: ( data ) => {
-        return axios.post( MONGO_CONFIG.API_URL + '/document/duplicate',
+        return window.axios.post( MONGO_CONFIG.API_URL + '/document/duplicate',
             {
                 document: data.document,
                 format: data.format,
@@ -272,7 +274,7 @@ export default {
     *   POST /api/v1/document/update
     */
     updateDocument: ( data ) => {
-        return axios.put( MONGO_CONFIG.API_URL + '/document/update/' + data._id,
+        return window.axios.put( MONGO_CONFIG.API_URL + '/document/update/' + data._id,
             {
                 _id: data._id,
                 index: parseInt(data.index, 10),
@@ -291,6 +293,6 @@ export default {
     *   POST /api/v1/document/update
     */
     deleteDocument: ( data ) => {
-        return axios.delete( MONGO_CONFIG.API_URL + '/document/' + data.db + '/' + data.collection + '/' + data._id );
+        return window.axios.delete( MONGO_CONFIG.API_URL + '/document/' + data.db + '/' + data.collection + '/' + data._id );
     }
 }

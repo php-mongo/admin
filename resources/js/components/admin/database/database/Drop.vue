@@ -21,8 +21,16 @@
 </style>
 
 <template>
-    <div id="pma-database-drop" class="pma-database-drop align-left" v-if="show">
-        <p>Drop</p>
+    <div id="pma-database-drop" class="database-inner align-left" v-if="show">
+        <div class="title">
+            <h3 v-text="showLanguage('dropdb', 'title')"></h3>
+        </div>
+        <div class="header">
+            <p class="msg" v-show="errorMessage || actionMessage">
+                <span class="error">{{ errorMessage }}</span>
+                <span class="action">{{ actionMessage }}</span>
+            </p>
+        </div>
     </div>
 </template>
 
@@ -37,7 +45,12 @@
          */
         data() {
             return {
-                show: false
+                show: false,
+                actionMessage: null,
+                errorMessage: null,
+                database: null,
+                index: 0,
+                limit: 55
             }
         },
 
@@ -50,6 +63,46 @@
                     return this.$store.getters.getLanguageString( context, key ).replace("%s", str);
                 }
                 return this.$store.getters.getLanguageString( context, key );
+            },
+
+            /*
+            *   The database will already be loaded, therefore we should be able to retrieve data when 'show' is triggered'
+            */
+            getDatabase() {
+                this.data = this.$store.getters.getDatabase;
+                if (this.data) {
+                    this.database = this.data.db.databaseName;
+                }
+            },
+
+            dropDatabase() {
+                EventBus.$emit('delete-confirmation', { notification: this.showLanguage('dropdb', 'confirmDelete', this.database), id: this.database, element: 'dropdb' });
+            },
+
+            runDrop(db) {
+                if (db === this.database) {
+                    this.$store.dispatch('deleteDatabase', [this.database]);
+                    this.handleDropDb();
+                }
+            },
+
+            handleDropDb() {
+                let status = this.$store.getters.getDeleteDatabaseStatus;
+                if (status === 1 && this.index < this.limit) {
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.handleDropDb();
+                    }, 250);
+                }
+                if (status === 2) {
+                    // gtg
+                    EventBus.$emit('show-success', { notification: this.showLanguage('dropdb', 'success', this.database ) });
+                    EventBus.$emit('hide-panels');
+                    EventBus.$emit('show-databases');
+                }
+                if (status === 3) {
+                    this.errorMessage = this.showLanguage('dropdb', 'error');
+                }
             },
 
             /*
@@ -73,7 +126,6 @@
             */
             EventBus.$on('hide-panels', () => {
                 this.hideComponent();
-
             });
 
             /*
@@ -81,7 +133,10 @@
             */
             EventBus.$on('hide-database-panels',() => {
                 this.hideComponent();
+            });
 
+            EventBus.$on('confirm-delete-dropdb',(db) => {
+                this.runDrop(db);
             });
 
             /*
@@ -89,7 +144,8 @@
             */
             EventBus.$on('show-database-drop', () => {
                 this.showComponent();
-
+                this.getDatabase();
+                this.dropDatabase();
             });
         },
     }

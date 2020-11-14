@@ -67,6 +67,7 @@
                 <p>
                     <button class="button" v-on:click="handleForm('index')" v-text="showLanguage('collection', 'addIndex')"></button>
                     <button class="button" v-on:click="handleForm('2d')" v-text="showLanguage('collection', 'add2dIndex')"></button>
+                    <button class="button warning" v-on:click="hideComponent" v-text="showLanguage('global', 'close')"></button>
                 </p>
                 <div v-if="showIndexForm === true">
                     <form>
@@ -99,7 +100,7 @@
                         </label>
                         <p>
                             <button class="button" v-on:click="saveIndex" v-text="showLanguage('collection', 'createIndex')"></button>
-                            <button class="button warning" v-on:click="handleForm('index')" v-text="showLanguage('collection', 'cancel')"></button>
+                            <button class="button warning" v-on:click="handleForm('index')" v-text="showLanguage('global', 'cancel')"></button>
                         </p>
                     </form>
                 </div>
