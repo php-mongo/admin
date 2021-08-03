@@ -16,13 +16,77 @@
   -->
 
 <style lang="scss">
-    /* @import '~@/abstracts/_variables.scss'; */
+    @import '~@/abstracts/_variables.scss';
+    #pma-processes-view {
+        table {
+            max-width: 97%;
+
+            thead {
+                .title {
+                    font-weight: 800;
+                    background-color: $cccColor;
+                }
+                .trbg {
+                   background-color: $tableRowBg;
+                }
+            }
+            tbody {
+                .tdrb {
+                    td {
+                        border-right: 1px solid $cccColor;
+                    }
+                }
+            }
+        }
+    }
 </style>
 
 <template>
     <div id="pma-processes-view" class="pma-servers-panel align-left" v-show="show">
         <div class="servers-inner">
-            <p>Processes view</p>
+            <div>
+                <div v-if="errorMessage">{{ errorMessage }}</div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th colspan="11" class="title"><span v-text="showLanguage('server', 'processList')"></span> (db.$cmd.sys.inprog.find({$all:1}))</th>
+                        </tr>
+                        <tr class="trbg">
+                            <td v-text="showLanguage('server', 'processId')"></td>
+                            <td v-text="showLanguage('server', 'processThreadId')"></td>
+                            <td v-text="showLanguage('server', 'processNameSpace')"></td>
+                            <td v-text="showLanguage('server', 'processDescription')"></td>
+                            <td v-text="showLanguage('server', 'processClient')"></td>
+                            <td v-text="showLanguage('server', 'processActive')"></td>
+                            <td v-text="showLanguage('server', 'processLockType')"></td>
+                            <td v-text="showLanguage('server', 'processWaiting')"></td>
+                            <td v-text="showLanguage('server', 'processSeconds')"></td>
+                            <td v-text="showLanguage('server', 'processOperation')"></td>
+                            <td v-text="showLanguage('server', 'processClientMetadata')"></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-if="!processes">
+                            <td colspan="11">
+                                <span v-text="showLanguage('server', 'processesNone')"></span>
+                            </td>
+                        </tr>
+                        <tr class="tdrb" v-for="(process, index) in processes" :key="index" v-bind:process="process">
+                            <td v-html="getString(process.connectionId)"></td>
+                            <td v-html="getString(process.threadId)"></td>
+                            <td v-html="getString(process.ns)"></td>
+                            <td v-html="getString(process.desc)"></td>
+                            <td v-html="getString(process.client)"></td>
+                            <td v-html="getString(process.active)"></td>
+                            <td v-html="getString(process.locks)"></td>
+                            <td v-html="getString(process.waitingForLock)"></td>
+                            <td v-html="getString(process.secs_running)"></td>
+                            <td v-html="getString(process.opid)"></td>
+                            <td v-html="getString(process.clientMetadata)"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </template>
@@ -34,35 +98,18 @@
     import { EventBus } from '../../../event-bus.js';
 
     export default {
+        name: "ProcessesView",
+
         /*
          *   Data required for this component
          */
         data() {
             return {
                 show: false,
-                server: {},
-                form: {
-                    host: null,
-                    port: 27017,
-                    username: null,
-                    password: null,
-                    password2: null,
-                    active: null
-                },
-                message: null,
-                error: null
-            }
-        },
-
-        /*
-         *   Defines the computed properties on the component.
-         */
-        computed: {
-            /*
-             *  Get the server configs for the current user
-             */
-            getServers() {
-                return this.$store.getters.getServers;
+                processes: [],
+                errorMessage: null,
+                index: 0,
+                limit: 55
             }
         },
 
@@ -77,12 +124,36 @@
                 return this.$store.getters.getLanguageString( context, key );
             },
 
+            getString(object) {
+                return this.$convObj().jsonH(JSON.stringify(object));
+            },
+
+            getProcesses() {
+                this.$store.dispatch('getServerProcesses');
+                this.handleProcesses();
+            },
+
+            handleProcesses() {
+                let status = this.$store.getters.getLoadServerProcesses;
+                if (status === 1 && this.index < this.limit) {
+                    this.index+=1;
+                    setTimeout(() => {
+                        this.handleProcesses();
+                    }, 200);
+                }
+                if (status === 2) {
+                    console.log("status: " + status);
+                    this.processes = this.$store.getters.getServerProcesses;
+                }
+                if (status === 3) {
+                    this.errorMessage = this.showLanguage('server', 'processError')
+                }
+            },
+
             /*
              *   Show component
              */
             showComponent() {
-                // load all servers allocated to the current user
-                this.$store.dispatch( 'loadServers' );
                 this.show = true;
             },
 
@@ -110,6 +181,7 @@
             */
             EventBus.$on('show-processes', () => {
                 this.showComponent();
+                this.getProcesses();
             });
         }
     }

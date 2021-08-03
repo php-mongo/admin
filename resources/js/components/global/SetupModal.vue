@@ -353,12 +353,14 @@
         */
         data() {
             return {
+                credentials: {},
+                formStatus: 0,
+                index: 0,
+                limit: 55,
                 show: false,
                 verifiedName: null,
                 verifiedEmail: null,
                 verifiedPassword: null,
-                credentials: {},
-                formStatus: 0
             }
         },
 
@@ -448,7 +450,7 @@
              *   Verify the email address
              */
             checkEmail() {
-                let e = this.credentials.email || false, self = this;
+                let e = this.credentials.email || false;
                 if (e.length >= 7) {
                     if (e.indexOf('@') === -1 || e.indexOf('.') === -1) {
                         this.$jqf(this.$refs.emailInfo).replace(['has-success', 'has-error']).text('Your email address appears invalid!');
@@ -460,7 +462,7 @@
 
                         } else {
                             this.$store.dispatch('checkEmail', { email: e});
-                            setTimeout(function() { self.checkEmailResult(e); }, 500);
+                            setTimeout(() => { this.checkEmailResult(e); }, 500);
                         }
                     }
                 }
@@ -468,9 +470,12 @@
 
             checkEmailResult(e) {
                 let  status = this.$store.getters.getEmailCheckStatus;
-                let result = false, self = this;
-                if (status === 1) {
-                    self.checkEmailResult();
+                let result = false;
+                if (status === 1  && this.index < this.limit) {
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.checkEmailResult();
+                    }, 150);
                 }
                 result = this.$store.getters.getEmailCheck;
                 if (status === 2) {

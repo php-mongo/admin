@@ -34,6 +34,8 @@
     import { EventBus } from '../../../event-bus.js';
 
     export default {
+        name: "MasterView",
+
         /*
          *   Data required for this component
          */

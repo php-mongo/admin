@@ -31,9 +31,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 Route::group(['prefix' => 'v1'], function() {
-
     /*
     |-------------------------------------------------------------------------------
     | Get User
@@ -92,21 +90,31 @@ Route::group(['prefix' => 'v1'], function() {
 });
 
 Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
-
     /*
     |-------------------------------------------------------------------------------
-    | Updates a User's Profile
+    | Create a User's Profile
     |-------------------------------------------------------------------------------
     | URL:            /api/v1/user
-    | Controller:     Api\UsersController@putUpdateUser
-    | Method:         PUT
-    | Description:    Updates the authenticated user's profile
+    | Controller:     Api\UsersController@postUser
+    | Method:         POST
+    | Description:    Create a new user's profile - login and or database
     */
-    Route::put('/user', 'Api\UsersController@putUpdateUser');
+    Route::post('/user', 'Api\UsersController@postUser');
 
     /*
     |-------------------------------------------------------------------------------
-    | Logout (GET) a User
+    | (GET) all Users
+    |-------------------------------------------------------------------------------
+    | URL:            /api/v1/user/all
+    | Controller:     Api\UsersController@getUsers
+    | Method:         GET
+    | Description:    Get all application users (limited to an admin user)
+    */
+    Route::get('/user/all','Api\UsersController@getUsers');
+
+    /*
+    |-------------------------------------------------------------------------------
+    | Logout a User
     |-------------------------------------------------------------------------------
     | URL:            /api/v1/user/logout/{uid}
     | Controller:     Auth\LoginController@logout
@@ -188,6 +196,28 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
 
     /*
     * -------------------------------------------------------
+    * Get a Server's active processes (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/server/processes
+    * Controller:  API/ServerController@getServerProcesses
+    * Method:      GET
+    * Description: Gets all of the current Server's active processes information
+    */
+    Route::get('/server/processes', 'Api\ServerController@getServerProcesses');
+
+    /*
+    * -------------------------------------------------------
+    * Get a Server's full status (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/server/{database}/status
+    * Controller:  API/ServerController@getServerStatus
+    * Method:      GET
+    * Description: Gets all of the current Server status & information
+    */
+    Route::get('/server/{database}/status', 'Api\ServerController@getServerStatus');
+
+    /*
+    * -------------------------------------------------------
     * Get all Databases (private route)
     * -------------------------------------------------------
     * URL:         /api/v1/databases
@@ -256,7 +286,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * -------------------------------------------------------
     * Transfer a database to a remote server
     * -------------------------------------------------------
-    * URL:         /api/v1/databases/{databases}/transfer
+    * URL:         /api/v1/databases/{database}/transfer
     * Controller:  API/DatabasesController@databaseTransfer
     * Method:      POST
     * Description: Transfer a databases and returns s success status
@@ -267,7 +297,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * -------------------------------------------------------
     * Save a database logging profile
     * -------------------------------------------------------
-    * URL:         /api/v1/databases/{databases}/profile
+    * URL:         /api/v1/databases/{database}/profile
     * Controller:  API/DatabasesController@saveProfile
     * Method:      POST
     * Description: Save a databases logging profile and return a copy
@@ -278,7 +308,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * -------------------------------------------------------
     * Fetch database profile logs
     * -------------------------------------------------------
-    * URL:         /api/v1/databases/{databases}/profile
+    * URL:         /api/v1/databases/{database}/profile
     * Controller:  API/DatabasesController@getProfile
     * Method:      GET
     * Description: Fetch database profile logs for the given database
@@ -289,7 +319,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * -------------------------------------------------------
     * Repair a database
     * -------------------------------------------------------
-    * URL:         /api/v1/databases/{databases}/repair
+    * URL:         /api/v1/databases/{database}/repair
     * Controller:  API/DatabasesController@repairDb
     * Method:      POST
     * Description: Repair a database and return results
@@ -300,7 +330,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * -------------------------------------------------------
     * Fetch database auth users
     * -------------------------------------------------------
-    * URL:         /api/v1/databases/{databases}/dbauth
+    * URL:         /api/v1/databases/{database}/dbauth
     * Controller:  API/DatabasesController@getDbAuth
     * Method:      GET
     * Description: Fetch users authorised for a given database
@@ -311,7 +341,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * -------------------------------------------------------
     * Save a database auth user
     * -------------------------------------------------------
-    * URL:         /api/v1/databases/{databases}/dbauth
+    * URL:         /api/v1/databases/{database}/dbauth
     * Controller:  API/DatabasesController@saveDbAuth
     * Method:      POST
     * Description: Save a user authorised for a given database
@@ -322,7 +352,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * -------------------------------------------------------
     * Delete a database auth user
     * -------------------------------------------------------
-    * URL:         /api/v1/databases/{databases}/dbauth/delete
+    * URL:         /api/v1/databases/{database}/dbauth/delete
     * Controller:  API/DatabasesController@deleteDbUser
     * Method:      POST
     * Description: Delete a database user for a given database
@@ -487,7 +517,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * -------------------------------------------------------
     * Validate a Collection (private route)
     * -------------------------------------------------------
-    * URL:         /api/v1/collection/validate
+    * URL:         /api/v1/collection/validate/{database}/{collection}
     * Controller:  API/CollectionController@validateCollection
     * Method:      GET
     * Description: Validate a collection and return the result
@@ -520,7 +550,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * -------------------------------------------------------
     * Update a Document (private route)
     * -------------------------------------------------------
-    * URL:         /api/v1/document/update
+    * URL:         /api/v1/document/update/{id}
     * Controller:  API/DocumentController@updateDocument
     * Method:      PUT
     * Description: Updates a document and returns the document data

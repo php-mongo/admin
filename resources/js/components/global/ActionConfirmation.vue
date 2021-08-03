@@ -96,11 +96,10 @@
             },
 
             close() {
-                let self = this;
                 setTimeout(() => {
-                    self.element = null;
-                    self.id      = null;
-                    self.show    = false;
+                    this.element = null;
+                    this.id      = null;
+                    this.show    = false;
                 }, 1000);
             }
         },

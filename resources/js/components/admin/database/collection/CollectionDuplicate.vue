@@ -1,8 +1,8 @@
 <!--
   - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      DocumentDuplicate.vue 1001 8/8/20, 10:23 pm  Gilbert Rehling $
+  - @version      CollectionDuplicate.vue 1002 2/08/21, 12:23 pm  Gilbert Rehling $
   - @package      PhpMongoAdmin\resources
-  - @subpackage   DocumentDuplicate.vue
+  - @subpackage   CollectionDuplicate.vue
   - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
   - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
   - @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
@@ -20,7 +20,7 @@
 
 <template>
     <transition name="slide-in-top">
-        <div class="panel-modal" v-if="show">
+        <div id="panel-modal-duplicate" class="panel-modal" v-if="show" v-on:click="closeDialogOutside($event)">
             <div class="panel-modal-inner">
                 <div class="modal-header">
                     <span class="msg" v-show="errorMessage || actionMessage">
@@ -89,7 +89,7 @@
                     indexes: false
                 },
                 index: 0,
-                limit: 75, // limit the status check iterations
+                limit: 55, // limit the status check iterations
                 show: false,
                 statistics: {}
             }
@@ -129,9 +129,8 @@
                 let status = this.$store.getters.getCollectionDuplicateStatus;
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleDuplicate();
+                    setTimeout(() => {
+                        this.handleDuplicate();
                     }, 100);
                 }
                 else if (status === 2) {
@@ -160,6 +159,15 @@
              */
             hideComponent() {
                 this.show = false;
+            },
+
+            /*
+             * Close on click outside panel modal
+             */
+            closeDialogOutside( event ) {
+                if ($(event.target).is('#panel-modal-duplicate')) {
+                    this.hideComponent();
+                }
             }
         },
 

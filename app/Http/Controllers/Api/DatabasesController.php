@@ -28,6 +28,11 @@ use Illuminate\Http\Request;
 use App\Http\Requests\EditDbAuthRequest as DbAuthRequest;
 
 /**
+ *  Defines our response object
+ */
+use Illuminate\Http\Response;
+
+/**
  *  Defined controllers used by the controller
  */
 use App\Http\Controllers\Controller;
@@ -117,20 +122,21 @@ class DatabasesController extends Controller implements Unserializable
 
     /**
      * We need a global method to monitor which database can be read for stats etc
-     * For now its just fr the demo website
+     * For now its just for the demo website
      * ToDo: !! this can be extended and implemented further later on !!
      *
      * @param   string  $dbn
      * @return  bool
      */
-    private function handleExclusions( $dbn ) {
+    private function handleExclusions($dbn): bool
+    {
         $env = env('APP_ENV');
         if  ('demo' !== $env) {
             // we  are only checking on the demo site
             return true;
         }
         // still here??
-        if (!in_array( $dbn, $this->excluded)) {
+        if (!in_array($dbn, $this->excluded, true)) {
             return true;
         }
         return false;
@@ -142,7 +148,7 @@ class DatabasesController extends Controller implements Unserializable
      * @param   $name
      * @return  array
      */
-    private function getAllDatabases($name = false)
+    private function getAllDatabases($name = false): ?array
     {
         try {
             // only one DB by name
@@ -164,7 +170,7 @@ class DatabasesController extends Controller implements Unserializable
                 $index = 0;
                 foreach ($this->client->listDatabases() as $db) {
                     $dbn        = $db->getName();
-                    // Todo: need to verify which method is the best path
+                    // Todo: need to verify which connection method is the best path for future usage - going with 1) for now
                     // 1) $this->mongo->connectClientDb($dbn)  =  (new MongpDB\Client())->database
                     // 2) $this->client->selectDatabase($dbn)  = (new MongpDB\Client())->selectDatabase('database')
                     $database   = $this->mongo->connectClientDb($dbn);
@@ -199,7 +205,7 @@ class DatabasesController extends Controller implements Unserializable
      * @param   bool      $getObjects
      * @return  array
      */
-    private function getCollections($db, $getObjects = false)
+    private function getCollections($db, $getObjects = false): ?array
     {
         try {
             if (!$this->handleExclusions( $db )) {
@@ -211,11 +217,12 @@ class DatabasesController extends Controller implements Unserializable
             $database = $this->client->selectDatabase( $db );
             /** @var MongoDB\Model\CollectionInfo $collection */
             foreach ($database->listCollections() as $collection) {
-                // we only need to get objects when its database view
+                // we only need to get full objects when its database view
                 if ($getObjects) {
                     $arr[] = array("id" => $index, "collection" => $collection->__debugInfo(), "objects" => $this->getObjects($db, $collection->getName()));
                 } else {
-                    $arr[] = array("id" => $index, "collection" => $collection->__debugInfo());
+                    // for the DB's load we still would like the object count :)
+                    $arr[] = array("id" => $index, "collection" => $collection->__debugInfo(), "objects" => $this->getObjectsCount($db, $collection->getName()));
                 }
                 $index++;
             }
@@ -234,7 +241,7 @@ class DatabasesController extends Controller implements Unserializable
      * @param   string  $collection     string Collection name
      * @return  array
      */
-    private function getObjects(string $db, string $collection)
+    private function getObjects(string $db, string $collection): ?array
     {
         try {
             $arr     = [];
@@ -251,13 +258,35 @@ class DatabasesController extends Controller implements Unserializable
     }
 
     /**
+     * Returns the objects for the given collection
+     *
+     * @param   string  $db             string DB Name
+     * @param   string  $collection     string Collection name
+     * @return  array
+     */
+    private function getObjectsCount(string $db, string $collection): ?array
+    {
+        try {
+            $arr     = [];
+            $cursor  = $this->mongo->connectClientDb($db)->selectCollection($collection);
+            $objects = $cursor->find();
+            $arr['count']   = count($objects->toArray());
+            return $arr;
+        }
+        catch (\Exception $e) {
+            $this->setErrorMessage($e->getMessage());
+            return [];
+        }
+    }
+
+    /**
      * Used to confirm that a database has been dropped
      *
      * @param string $name
      * @param array $result
      * @return array
      */
-    private function setDeleteStatus(string $name, array $result)
+    private function setDeleteStatus(string $name, array $result): array
     {
         if (1 === $result['ok'] && $name === $result['dropped']) {
             return array($name => 'success');
@@ -286,9 +315,9 @@ class DatabasesController extends Controller implements Unserializable
      * Method:      GET
      * Description: Fetches all databases with full stats
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
-    public function getDatabases()
+    public function getDatabases() :Response
     {
         // get the databases
         $databases = $this->getAllDatabases();
@@ -296,10 +325,9 @@ class DatabasesController extends Controller implements Unserializable
         if ($error = $this->getErrorMessage()) {
             // this can occur if there is no Server config
             return response()->error('failed', array('error' => $error));
-
-        } else {
-            return response()->success('success', array('databases' => $databases));
         }
+
+        return response()->success('success', array('databases' => $databases));
     }
 
     /**
@@ -312,9 +340,9 @@ class DatabasesController extends Controller implements Unserializable
      * @param Request $request
      * @param $name
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
-    public function getDatabase(Request $request, $name)
+    public function getDatabase(Request $request, $name) :Response
     {
         // get the databases
         $database = $this->getAllDatabases($name);
@@ -322,10 +350,9 @@ class DatabasesController extends Controller implements Unserializable
         if ($error = $this->getErrorMessage()) {
             // this can occur if there is no Server config
             return response()->error('failed', array('error' => $error));
-
-        } else {
-            return response()->success('success', array('database' => $database));
         }
+
+        return response()->success('success', array('database' => $database));
     }
 
     /**
@@ -337,9 +364,9 @@ class DatabasesController extends Controller implements Unserializable
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
-    public function createDatabase(Request $request)
+    public function createDatabase(Request $request) :Response
     {
         $db = $request->get('database');
         try {
@@ -385,9 +412,9 @@ class DatabasesController extends Controller implements Unserializable
      * Description: Delete the database matching the given name
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
-    public function deleteDatabase(Request $request)
+    public function deleteDatabase(Request $request) :Response
     {
         $names  = $request->get('names', false);
         try {
@@ -413,18 +440,18 @@ class DatabasesController extends Controller implements Unserializable
     /**
      * Run command against a database
      *
-     * URL:         /api/databases/{database}/command
+     * URL:         /api/v1/databases/{database}/command
      * Method:      POST
      * Description: Return the results of a database command
      * ToDo: setup a method to analyse the result before returning
      *
      * @param  Request $request
      * @param  $database
-     * @return mixed
+     * @return Response
      *
      * @throws MongoDB\Driver\Exception\Exception
      */
-    public function databaseCommand(Request $request, $database)
+    public function databaseCommand(Request $request, $database) :Response
     {
         try {
             // primitive validation
@@ -444,10 +471,9 @@ class DatabasesController extends Controller implements Unserializable
 
                 // be good be good! - Johnny !!
                 return response()->success('success', array('results' => $results->toArray()[0] ));
-
-            } else {
-                return response()->error('failed', array('error' => 'database names mismatched'));
             }
+
+            return response()->error('failed', array('error' => 'database names mismatched'));
         }
         catch (\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
@@ -457,15 +483,16 @@ class DatabasesController extends Controller implements Unserializable
     /**
      * Run command against a database
      *
-     * URL:         /api/databases/{database}/transfer
+     * URL:         /api/v1/databases/{database}/transfer
      * Method:      POST
      * Description: Return the results of a database transfer
      *
      * @param  Request $request
      * @param  $database
-     * @return mixed
+     * @return Response
      */
-    public function databaseTransfer(Request $request, $database) {
+    public function databaseTransfer(Request $request, $database) :Response
+    {
         try {
             $params  = $request->get('params', false);
             $db      = $params['database'];
@@ -491,9 +518,8 @@ class DatabasesController extends Controller implements Unserializable
                 }
                 return response()->success('success', array('inserted' => $inserted ));
             }
-            else {
-                return response()->error('failed', array('error' => 'database names mismatched'));
-            }
+
+            return response()->error('failed', array('error' => 'database names mismatched'));
         }
         catch (\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
@@ -503,15 +529,15 @@ class DatabasesController extends Controller implements Unserializable
     /**
      * Save a database logging profile
      *
-     * URL:         /api/databases/{database}/profile
+     * URL:         /api/v1/databases/{database}/profile
      * Method:      POST
      * Description: Save and return a database logging profile
      *
      * @param  Request $request
      * @param  string  $database
-     * @return mixed
+     * @return Response
      */
-    public function saveProfile(Request $request, $database)
+    public function saveProfile(Request $request, $database) :Response
     {
         try {
             $params  = $request->get('params', false);
@@ -526,9 +552,8 @@ class DatabasesController extends Controller implements Unserializable
 
                 return response()->success('success', array('result' => $result->toArray()));
             }
-            else {
-                return response()->error('failed', array('error' => 'database names mismatched'));
-            }
+
+            return response()->error('failed', array('error' => 'database names mismatched'));
         }
         catch (\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
@@ -538,15 +563,15 @@ class DatabasesController extends Controller implements Unserializable
     /**
      * Fetch a database logging profile
      *
-     * URL:         /api/databases/{database}/profile
+     * URL:         /api/v1/databases/{database}/profile
      * Method:      GET
      * Description: Fetch a database logging profile
      *
      * @param  Request $request
      * @param  string  $database
-     * @return mixed
+     * @return Response
      */
-    public function getProfile(Request $request, $database)
+    public function getProfile(Request $request, $database) :Response
     {
         try {
             if ($database) {
@@ -561,9 +586,8 @@ class DatabasesController extends Controller implements Unserializable
 
                 return response()->success('success', array('profile' => $documents->toArray(), 'level' => $level ));
             }
-            else {
-                return response()->error('failed', array('error' => 'database name missing'));
-            }
+
+            return response()->error('failed', array('error' => 'database name missing'));
         }
         catch (\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
@@ -573,15 +597,15 @@ class DatabasesController extends Controller implements Unserializable
     /**
      * Repair a database
      *
-     * URL:         /api/databases/{database}/repair
+     * URL:         /api/v1/databases/{database}/repair
      * Method:      POST
      * Description: Repair a given database and return result
      *
      * @param Request $request
      * @param $database
-     * @return mixed
+     * @return Response
      */
-    public function repairDb(Request $request, $database)
+    public function repairDb(Request $request, $database) :Response
     {
         try {
             $db  = $request->get('database', false);
@@ -592,16 +616,26 @@ class DatabasesController extends Controller implements Unserializable
 
                 return response()->success('success', array('result' => $result ));
             }
-            else {
-                return response()->error('failed', array('error' => 'database name missing'));
-            }
+
+            return response()->error('failed', array('error' => 'database name missing'));
         }
         catch (\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
         }
     }
 
-    public function getDbAuth(Request $request, $database)
+    /**
+     * Fetch database auth users
+     *
+     * URL:         /api/v1/databases/{database}/dbauth
+     * Method:      GET
+     * Description: Fetch users authorised for a given database
+     *
+     * @param Request $request
+     * @param $database
+     * @return Response
+     */
+    public function getDbAuth(Request $request, $database) :Response
     {
         try {
             if ($database) {
@@ -610,16 +644,26 @@ class DatabasesController extends Controller implements Unserializable
 
                 return response()->success('success', array('results' => $results->toArray()));
             }
-            else {
-                return response()->error('failed', array('error' => 'database name missing'));
-            }
+
+            return response()->error('failed', array('error' => 'database name missing'));
         }
         catch (\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
         }
     }
 
-    public function saveDbAuth(DbAuthRequest $dbAuthRequest, $database)
+    /**
+     * Save a database auth user
+     *
+     * URL:         /api/v1/databases/{database}/dbauth
+     * Method:      POST
+     * Description: Save a user authorised for a given database
+     *
+     * @param DbAuthRequest $dbAuthRequest
+     * @param $database
+     * @return Response
+     */
+    public function saveDbAuth(DbAuthRequest $dbAuthRequest, $database) :Response
     {
         try {
             $data = $dbAuthRequest->validated();
@@ -670,9 +714,8 @@ class DatabasesController extends Controller implements Unserializable
                 );
                 return response()->success('success', array('results' => $result->toArray() ));
             }
-            else {
-                return response()->error('failed', array('error' => 'database name missing'));
-            }
+
+            return response()->error('failed', array('error' => 'database name missing'));
         }
         catch (\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
@@ -682,7 +725,18 @@ class DatabasesController extends Controller implements Unserializable
         }
     }
 
-    public function deleteDbUser(Request $request, $database)
+    /**
+     * Delete a database auth user
+     *
+     * URL:         /api/v1/databases/{database}/dbauth/delete
+     * METHOD:      POST
+     * Description: Delete a database user for a given database
+     *
+     * @param Request $request
+     * @param $database
+     * @return Response
+     */
+    public function deleteDbUser(Request $request, $database) :Response
     {
         try {
             $db  = $request->get('database', false);
@@ -704,15 +758,15 @@ class DatabasesController extends Controller implements Unserializable
                 );
                 return response()->success('success', array('results' => $result->toArray()));
             }
-            else {
-                return response()->error('failed', array('error' => 'database name missing'));
-            }
+
+            return response()->error('failed', array('error' => 'database name missing'));
+        }
+         catch (MongoDB\Driver\Exception\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
         }
         catch (\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
 
-        } catch (MongoDB\Driver\Exception\Exception $e) {
-            return response()->error('failed', array('error' => $e->getMessage()));
         }
     }
 

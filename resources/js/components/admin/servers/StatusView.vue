@@ -22,7 +22,9 @@
 <template>
     <div id="pma-status-view" class="pma-servers-panel align-left" v-show="show">
         <div class="servers-inner">
-            <p>Status view</p>
+            <h3 v-text="showLanguage('server', 'titleStatus')"></h3>
+            <div v-if="errorMessage">{{ errorMessage }}</div>
+            <div v-html="getString(status)"></div>
         </div>
     </div>
 </template>
@@ -34,13 +36,17 @@
     import { EventBus } from '../../../event-bus.js';
 
     export default {
+        name: "StatusView",
+
         /*
          *   Data required for this component
          */
         data() {
             return {
+                index: 0,
+                limit: 55,
                 show: false,
-                server: {},
+                status: {},
                 form: {
                     host: null,
                     port: 27017,
@@ -49,20 +55,8 @@
                     password2: null,
                     active: null
                 },
-                message: null,
+                errorMessage: null,
                 error: null
-            }
-        },
-
-        /*
-         *   Defines the computed properties on the component.
-         */
-        computed: {
-            /*
-             *  Get the server configs for the current user
-             */
-            getServers() {
-                return this.$store.getters.getServers;
             }
         },
 
@@ -77,12 +71,35 @@
                 return this.$store.getters.getLanguageString( context, key );
             },
 
+            getString(object) {
+                return this.$convObj().jsonH(JSON.stringify(object));
+            },
+
+            getStatus() {
+                this.$store.dispatch('getServerStatus', 'admin');
+                this.handleStatus();
+            },
+
+            handleStatus() {
+                let status = this.$store.getters.getLoadServerStatus;
+                if (status === 1 && this.index < this.limit) {
+                    this.index+=1;
+                    setTimeout(() => {
+                        this.handleStatus();
+                    }, 200);
+                }
+                if (status === 2) {
+                    this.status = this.$store.getters.getServerStatus;
+                }
+                if (status === 3) {
+                    this.errorMessage = this.showLanguage('server', 'statusError');
+                }
+            },
+
             /*
              *   Show component
              */
             showComponent() {
-                // load all servers allocated to the current user
-                this.$store.dispatch( 'loadServers' );
                 this.show = true;
             },
 
@@ -110,6 +127,7 @@
             */
             EventBus.$on('show-status', () => {
                 this.showComponent();
+                this.getStatus();
             });
         }
     }

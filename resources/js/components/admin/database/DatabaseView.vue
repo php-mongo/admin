@@ -320,11 +320,11 @@
             */
             checkNewDatabase() {
                 let status = this.$store.getters.getCreateDatabaseStatus;
-                if (status === 1) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.checkNewDatabase();
-                    }, 100);
+                if (status === 1  && this.index < this.limit) {
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.checkNewDatabase();
+                    }, 150);
                 }
                 if (status === 2) {
                     this.newDb = null;
@@ -350,10 +350,10 @@
             */
             checkDeleteDatabase() {
                 let status = this.$store.getters.getDeleteDatabaseStatus;
-                if (status === 1) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.checkDeleteDatabase();
+                if (status === 1 && this.index < this.limit) {
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.checkDeleteDatabase();
                     }, 100);
                 }
                 if (status === 2) {

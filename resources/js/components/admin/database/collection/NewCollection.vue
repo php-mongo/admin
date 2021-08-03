@@ -208,14 +208,13 @@
              */
             handleCreateStatus() {
                 let status = this.$store.getters.getCreateCollectionStatus;
-                this.indexes+=1;
                 if (status === 0) {
                     this.error = 'Error: collection create status = 0';
                 }
-                if (status === 1 && this.indexes < 100) {
+                if (status === 1 && this.indexes < 55) {
+                    this.indexes += 1;
                     setTimeout(() => {
-                        let self = this;
-                        self.handleCreateStatus();
+                        this.handleCreateStatus();
                     }, 50);
                 }
                 else if (status === 2) {

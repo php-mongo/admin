@@ -23,7 +23,7 @@
     <div id="pma-servers-view" class="pma-servers-panel align-left" v-show="show">
         <div class="servers-inner">
             <div class="servers-head">
-                <h3>Servers Configuration Panel</h3>
+                <h3 v-text="showLanguage('servers', 'title')"></h3>
                 <p v-show="getServersCount">
                     <span v-text="showLanguage('servers', 'none')"></span>
                     <span class="pma-link" v-on:click="setupServer" v-text="showLanguage('servers', 'createFirst')"></span>
@@ -87,6 +87,8 @@
     import ServerConfig from "./ServerConfig";
 
     export default {
+        name: "ServersView",
+
         /*
          *   Register the components to be used by the home page.
          */
@@ -99,12 +101,14 @@
          */
         data() {
             return {
-                show: false,
-                hostConfigs: [],
-                server: {},
                 createNew: false,
                 editing: false,
                 deleteId: null,
+                hostConfigs: [],
+                index: 0,
+                limit: 55,
+                show: false,
+                server: {},
                 form: {
                     host: null,
                     port: 27017,
@@ -206,9 +210,12 @@
              *  Handle the aftermath of the new server addition
              */
             completeCreateServer() {
-                let status = this.$store.getters.getSaveServerStatus;
-                if (status == 1) {
-                    this.completeCreateServer();
+                let status = this.$store.getters.getServerSaveStatus;
+                if (status === 1 && this.index < this.limit) {
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.completeCreateServer();
+                    }, 200);
                 }
                 if (status === 2) {
                     EventBus.$emit('show-success', { notification: this.showLanguage('servers', 'success'), timer: 5000 });

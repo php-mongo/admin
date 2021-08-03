@@ -56,6 +56,7 @@ return [
     "share" => "Share Server",
     "statistics" => "Server Statistics",
     "success" => "Server configuration created successfully",
+    "title" => "Servers Configuration Panel",
     "updateButton" => "Update",
     "username" => "Username",
     "view" => "View Server"

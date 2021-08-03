@@ -171,12 +171,14 @@
         */
         data() {
             return {
-                show: false,
-                newDb: null,
-                deleteAll: null,
+                checked: [],
                 createField: false,
+                deleteAll: null,
                 errorText: false,
-                checked: []
+                index: 0,
+                limit: 55,
+                newDb: null,
+                show: false,
             }
         },
 
@@ -223,6 +225,7 @@
                 if (this.newDb) {
                     let db = this.newDb;
                     this.$store.dispatch( 'createDatabase', db );
+                    this.index = 0;
                     this.checkNewDatabase();
                 }
             },
@@ -232,10 +235,10 @@
             */
             checkNewDatabase() {
                 let status = this.$store.getters.getCreateDatabaseStatus;
-                if (status === 1) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.checkNewDatabase();
+                if (status === 1 && this.index < this.limit) {
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.checkNewDatabase();
                     }, 100);
                 }
                 if (status === 2) {
@@ -254,6 +257,7 @@
             deleteDatabases(event) {
                 event.preventDefault();
                 this.$store.dispatch( 'deleteDatabase', this.checked );
+                this.index = 0;
                 this.handleDeleteDatabase();
             },
 
@@ -262,10 +266,9 @@
             */
             handleDeleteDatabase() {
                 let status = this.$store.getters.getDeleteDatabaseStatus;
-                if (status === 1) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleDeleteDatabase();
+                if (status === 1 && this.index < this.limit) {
+                    setTimeout(() => {
+                        this.handleDeleteDatabase();
                     }, 100);
                 }
                 if (status === 2) {

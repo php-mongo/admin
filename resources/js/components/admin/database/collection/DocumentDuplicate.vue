@@ -20,7 +20,7 @@
 
 <template>
     <transition name="slide-in-top">
-        <div class="panel-modal" v-show="show">
+        <div id="panel-modal-duplicate" class="panel-modal" v-show="show" v-on:click="closeDialogOutside($event)">
             <div class="panel-modal-inner">
                 <div class="modal-header">
                     <span class="msg" v-show="errorMessage || actionMessage">
@@ -180,6 +180,7 @@
 
                     // used to monitor send success/fail
                     if (this.handleAll()) {
+                        this.index = 0;
                         // notify doc duplicate success
                         this.duplicated += 1;
                         this.actionMessage = this.showLanguage('document', 'duplicated', this.duplicated);
@@ -192,6 +193,7 @@
                 }
 
                 // complete
+                this.index = 0;
                 this.handleDuplicate();
             },
 
@@ -200,11 +202,11 @@
              */
             handleDuplicate() {
                 let status = this.$store.getters.getDuplicateDocumentStatus;
-                if (status === 1) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleDuplicate();
-                    }, 100);
+                if (status === 1 && this.index < this.limit) {
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.handleDuplicate();
+                    }, 150);
                 }
                 if (status === 2) {
                     EventBus.$emit('show-success', { notification: this.showLanguage('document', 'duplicateSuccess', this.duplicated) });
@@ -221,11 +223,11 @@
              */
             handleAll() {
                 let status = this.$store.getters.getDuplicateDocumentStatus;
-                if (status === 1) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleAll();
-                    }, 100);
+                if (status === 1 && this.index < this.limit) {
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.handleAll();
+                    }, 150);
                 }
                 if (status === 2) {
                     return true;
@@ -259,6 +261,15 @@
              */
             hideComponent() {
                 this.show = false;
+            },
+
+            /*
+             * Close on click outside panel modal
+             */
+            closeDialogOutside( event ) {
+                if ($(event.target).is('#panel-modal-duplicate')) {
+                    this.hideComponent();
+                }
             }
         },
 

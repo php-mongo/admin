@@ -29,6 +29,7 @@ return [
 
     "aboutPhpMongoAdminTitle" => "About PHP Mongo Admin Application",
     "activateServerTitle" => "Check to activate this server",
+    "activateUserTitle" => "Check to activate this user",
     "authenticationTitle" => "Manage authentication for this database",
     "changeLanguageTitle" => "Click to change current language",
     "clearTitle" => "Clear this data",

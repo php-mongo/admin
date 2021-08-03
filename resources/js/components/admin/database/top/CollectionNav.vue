@@ -180,7 +180,7 @@
                 db: null,
                 index: 0,
                 lastPanel: null,
-                limit: 75,
+                limit: 55,
                 show: false,
             }
         },

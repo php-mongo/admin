@@ -24,81 +24,34 @@ namespace App\Http\Controllers\Api;
 /*
   Uses the controller interface.
 */
-use App\Http\Controllers\Auth\RegisterController;
+
+use App\Helpers\UserHelper;
 
 /*
   Defines the requests used by the controller.
 */
 use Illuminate\Http\Request;
 use App\Http\Requests\EditUserRequest;
-//use App\Http\Requests\RegisterUserRequest;
 
 /*
   Defines the models used by the controller.
 */
 use App\Models\User;
-use App\Models\State;
-use App\Models\Postcode;
 
 /*
   Defines the facades etc used by the controller.
 */
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Session;
 
 use Illuminate\Validation\ValidationException;
-use ipinfo\ipinfo\IPinfo;
-use ipinfo\ipinfo\IPinfoException;
 use Mockery\Exception;
 
 /**
  * The user controller handles all API requests that manage user data.
  */
-class UsersController extends RegisterController
+class UsersController
 {
-    /**
-     * @param   Request     $request
-     *
-     * @return  bool|\ipinfo\ipinfo\Details|mixed
-     */
-    private function getIPInfo(Request $request)
-    {
-        try {
-            $ipInfo = Session::get('ipInfo');
-            if ($ipInfo) {
-                return $ipInfo;
-            }
-            $ip = config('ipinfo_address');
-            $access_token = 'e5f368ed86097c';
-            /** @var IPinfo $client */
-            $client       = new IPinfo($access_token);
-            /** @var Object $ipInfo */
-            $ipInfo       = $client->getDetails($ip);
-            if ($ipInfo) {
-                Session::put('ipInfo', $ipInfo);
-                $country  = $ipInfo->country_name;
-                $llct     = time()+60*60*24*180;
-                Cookie::queue('my-country', $country, $llct, false, false, false, false);
-                return $ipInfo;
-            }
-            return false;
-
-        } catch(IPinfoException $e) {
-            throw new $e;
-        }
-    }
-
-    /**
-     * UsersController constructor.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
     /*
     |------------------------------------------------- ------------------------------
     | Get User
@@ -140,39 +93,48 @@ class UsersController extends RegisterController
     public function getUsers(Request $request)
     {
         try {
+            /**
+             * The current use must be an Admin
+             * ToDo: create a reusable AUTHORIZATION service to handle these tasks
+             */
             /** @var User $user */
             $user = auth('api')->user();
             $attributes = $user->getAttributes();
-            if (isset($attributes['id'])) {
+
+            //dd($user);
+           // dd($attributes);s
+            //dd($attributes['admin_user']);
+
+            if (isset($attributes['admin_user']) && (int) $attributes['admin_user'] === 1) {
                 $query = $request->get('search');
-                $users = User::where('name', 'LIKE', '%'.$query.'%')
-                    ->orWhere('email', 'LIKE', '%'.$query.'%')
-                    ->get();
-                return response()->json( $users );
+                $loginUsers = User::all();
+                return response()->success('success', array('users' => array('loginUsers' =>  $loginUsers )));
             }
-            return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
+            return response()->error('failed', array('error' => 'Forbidden'), 403);
         }
         catch (\Exception $e) {
-            return response()->json( );
+            return response()->error('failed', array('error' => $e->getMessage()));
         }
     }
 
     /*
     |-------------------------------------------------------------------------------
-    | Registers a User's Profile
+    | Create a User's Profile
     |-------------------------------------------------------------------------------
-    | URL:            /api/v1/user
-    | Method:         POST
-    | Description:    Updates the authenticated user's profile
+    | URL:              /api/v1/user
+    | Method:           POST
+    | Description:      Create a new login/database user's profile
     | @param  Request   $request
     | @return \Illuminate\Http\JsonResponse
     */
-    public function postRegisterUser( Request $request )
+    public function postUser( Request $request )
     {
         try {
+            $params = $request->get('params', []);
             // validate
-            $result = $this->validate( $request, array(
+            $result = $this->validate( $params, array(
                 'name' => 'required',
+                'username' => 'required',
                 'email' => 'required|email',
                 'password' => 'required'
             ));
@@ -198,7 +160,6 @@ class UsersController extends RegisterController
         }
         catch (ValidationException $e) {
             return response()->json(array());
-
         }
         catch( Exception $e) {
             return response()->json(array());
@@ -215,7 +176,7 @@ class UsersController extends RegisterController
     | @param  EditUserRequest   $request
     | @return \Illuminate\Http\JsonResponse
     */
-    public function putUpdateUser( EditUserRequest $request )
+    public function updateUser( EditUserRequest $request )
     {
         try {
             /** @var User $user */
@@ -229,7 +190,7 @@ class UsersController extends RegisterController
                 */
                 return response()->json( ['user_updated' => true], 201 );
             }
-            return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
+            return response()->json(['success',false, 'error' => 'Unauthorized'], 401);
         }
         catch (\Exception $e) {
             return response()->json(array());
@@ -256,7 +217,7 @@ class UsersController extends RegisterController
                 } else {
                     $result = array("success" => true, "record" => array("email" => array("notFound" => 1, "valid" => $this->validEmail($email))));
                 }
-                return response()->json( $result );
+                return response()->success('success', array('result' => $result));
             }
             return response()->json(array());
         }
@@ -272,8 +233,8 @@ class UsersController extends RegisterController
     public function getUserLocation(Request $request)
     {
         try {
-            $location = $this->getIPInfo($request);
-            return response()->json( $location->all );
+            $location = UserHelper::getIPInfo($request);
+            return response()->success('success', array('location' => $location->all));
         }
         catch(\Exception $e) {
             return response()->json(array());
@@ -281,261 +242,21 @@ class UsersController extends RegisterController
     }
 
     /**
-     * @param Request $request
      * @param $country
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getUserStates(Request $request, $country)
+    public function getUserStates($country)
     {
-        // $country = $request->get('country');
-
-        /*$states = State::where('country_code', '=', $country)
-        ->get();
-
-        if (count($states)) {
-            $result = array("success" => true, "states" => $states);
-
-        } else {
-            $result = array("success" => true, "states" => array());
-        }*/
-
         try {
-            // ToDo: !! temporary measure !!
-            $states = array(
-                "AU" => array(
-                    array("id" => 0, "code" => "ACT", "name" => "Australia Capitol Territory"),
-                    array("id" => 1, "code" => "NSW", "name" => "New South Wales"),
-                    array("id" => 3, "code" => "NT", "name" => "Northern Territory"),
-                    array("id" => 3, "code" => "QLD", "name" => "Queensland"),
-                    array("id" => 4, "code" => "SA", "name" => "South Australia"),
-                    array("id" => 5 , "code"=> "TAS", "name" => "Tasmania"),
-                    array("id" => 6, "code" => "VIC", "name" => "Victoria"),
-                    array("id" => 7, "code" => "WA", "name" => "Western Australia")
-                )
-            );
-
-            if (isset($states[strtoupper($country)])) {
-                return response()->json( $states[strtoupper($country)] );
+            $states = UserHelper::getUserStates($country);
+            if ($states) {
+                return response()->success('success', array('states' => $states[strtoupper($country)]));
             }
             return response()->json( );
         }
         catch(\Exception $e) {
-
-        }
-    }
-
-    /**
-     * @param Request $request
-     * @param $country
-     * @param $state
-     * @param $suburb
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getUserPostcode(Request $request, $country, $state, $suburb)
-    {
-        try {
-            $postcode = Postcode::where('country_code', '=', $country)
-                ->where('state_code', '=', $state)
-                ->where('suburb', '=', $suburb)
-                ->get();
-
-            if (count($postcode)) {
-                $result = array("success" => true, "postcode" => $postcode);
-
-            } else {
-                $result = array("success" => true, "postcode" => false);
-            }
-            return response()->json( $result );
-        }
-        catch(\Exception $e) {
+            //dd($e->getMessage());
             return response()->json(array());
         }
-    }
-
-    /**
-     * @param Request $request
-     * @param $country
-     * @param $state
-     * @param $postcode
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getUserSuburb(Request $request, $country, $state, $postcode)
-    {
-        try {
-            $suburb = Postcode::where('country_code', '=', $country)
-                ->where('state_code', '=', $state)
-                ->where('postcode', '=', $postcode)
-                ->get();
-
-            if (count($suburb)) {
-                return response()->json( array("success" => true, "suburb" => $suburb) );
-
-            } else {
-                return response()->json( array("success" => true, "suburb" => false) );
-            }
-        }
-        catch(\Exception $e) {
-            return response()->json(array());
-        }
-    }
-
-    /**
-     * @param Request $request
-     * @param $country
-     * @param $state
-     * @param $value
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getUserArea(Request $request, $country, $state, $value)
-    {
-        try {
-            if (is_numeric($value)) {
-                // use postcode as reference //  LEFT JOIN states s ON (s.code = p.state_code)
-                if ($state) {
-                    // use state
-                    $result = Postcode::where('country_code', '=', $country)
-                        ->where('state_code', '=', $state)
-                        ->where('postcode', 'LIKE', $value .'%')
-                        ->orderBy('suburb')
-                        ->offset(0)
-                        ->limit(25)
-                        ->get();
-
-                } else {
-                    // no state
-                    $result = Postcode::where('country_code', '=', $country)
-                        ->where('postcode', 'LIKE', $value .'%')
-                        ->orderBy('suburb')
-                        ->offset(0)
-                        ->limit(25)
-                        ->get();
-                }
-
-                if (isset($result)) {
-                    // result found
-                    $output = array();
-                    foreach ($result as $row) {
-                        $arr = array(
-                            'postcode'  => $row->postcode,
-                            'suburb'    => ucwords(strtolower($row->suburb))
-                        );
-                        $output[] = $arr;
-                    }
-
-                    return response()->json( array('success' => true, 'records' => $output) );
-
-                } else {
-                    // no previous result
-                    if ($state) {
-                        // try without the state reference
-                        $result = Postcode::where('country_code', '=', $country)
-                            ->where('postcode', 'LIKE', $value .'%')
-                            ->orderBy('suburb')
-                            ->offset(0)
-                            ->limit(25)
-                            ->get();
-
-                        if (isset($result)) {
-
-                            $output = array();
-                            foreach ($result as $row) {
-                                $arr = array(
-                                    'postcode'  => $row->postcode,
-                                    'suburb'    => ucwords(strtolower($row->suburb))
-                                );
-                                $output[] = $arr;
-                            }
-                            return response()->json( array('success' => true, 'records' => $output) );
-
-                        } else {
-                            return response()->json( array('success' => true, 'records' => false) );
-                        }
-
-                    } else {
-                        return response()->json( array('success' => true, 'records' => false) );
-                    }
-                }
-
-            } else {
-                // use suburb as reference
-                if ($state) {
-                    // use state
-                    $result = Postcode::where('country_code', '=', $country)
-                        ->where('state_code', '=', $state)
-                        ->where('suburb', 'LIKE', $value .'%')
-                        ->orderBy('suburb')
-                        ->offset(0)
-                        ->limit(25)
-                        ->get();
-
-                } else {
-                    // no state
-                    $result = Postcode::where('country_code', '=', $country)
-                        ->where('suburb', 'LIKE', $value .'%')
-                        ->orderBy('suburb')
-                        ->offset(0)
-                        ->limit(25)
-                        ->get();
-                }
-
-                if (isset($result)) {
-
-                    $output = array();
-                    foreach ($result as $row) {
-                        $arr = array(
-                            'postcode'  => $row->postcode,
-                            'suburb'    => ucwords(strtolower($row->suburb))
-                        );
-                        $output[] = $arr;
-                    }
-                    return response()->json( array('success' => true, 'records' => $output) );
-
-                } else {
-                    if ($state) {
-                        // try without the state reference
-                        //$query = "SELECT * FROM `postcode` WHERE `suburb` LIKE ? AND `country_code` = ? ORDER BY `suburb` ASC LIMIT 25";
-                        //$result = DB::select( $query, [$value.'%', $cid] );
-                        $result = Postcode::where('country_code', '=', $country)
-                            ->where('suburb', 'LIKE', $value .'%')
-                            ->orderBy('suburb')
-                            ->offset(0)
-                            ->limit(25)
-                            ->get();
-
-                        if (isset($result)) {
-
-                            $output = array();
-                            foreach ($result as $row) {
-                                $arr = array(
-                                    'postcode'  => $row->postcode,
-                                    'suburb'    => ucwords(strtolower($row->suburb))
-                                );
-                                $output[] = $arr;
-
-                            }
-                            return response()->json( array('success' => true, 'records' => $output) );
-
-                        } else {
-                            return response()->json( array('success' => true, 'records' => false) );
-                        }
-
-                    } else {
-                        return response()->json( array('success' => true, 'records' => false) );
-                    }
-                }
-            }
-        }
-        catch(\Exception $e) {
-            return response()->json(array());
-        }
-    }
-
-    /**
-     * @param $email
-     * @return bool
-     */
-    private function validEmail( $email) {
-        return 1;
     }
 }
