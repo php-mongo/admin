@@ -47,27 +47,27 @@ class JsonServiceProvider extends ServiceProvider
         /*
          * Handle success responses
          */
-        $factory->macro('success', function( $message = '', $data = null ) use ($factory) {
+        $factory->macro('success', function( $message = '', $data = null, $status = 200 ) use ($factory) {
             $format = [
                 'status' => 'ok',
                 'success' => true,
                 'message' => $message,
                 'data' => $data
             ];
-            return $factory->make($format);
+            return $factory->make($format, $status);
         });
 
         /*
          * Handle errors
          */
-        $factory->macro('error', function( $message = '', $errors = [] ) use ($factory) {
+        $factory->macro('error', function( $message = '', $errors = [], $status = 400 ) use ($factory) {
             $format = [
                 'status' => 'ok',
                 'success' => false,
                 'message' => $message,
                 'errors' => $errors
             ];
-            return $factory->make($format);
+            return $factory->make($format, $status);
         });
     }
 

@@ -42,9 +42,9 @@
 
 <template>
     <li ref="db" class="db-inner" v-show="show">
-        <img alt="Database icon" src="img/icon/database.png" /> <span class="pma-link" v-on:click="showCollectionsList(db.db.name)">{{getDbName(db)}}</span> {{countCollections}}
+        <img alt="Database icon" src="img/icon/database.png" /> <span class="pma-link" v-on:click="showCollectionsList(getDbName(db))">{{getDbName(db)}}</span> {{countCollections}}
         <ul ref="coll" class="collections hide-list">
-            <collection-card @loadCollection="loadCollection" v-for="collection in db.collections" :key="(collection.id + 1)" v-bind:collection="collection"></collection-card>
+            <collection-card @loadDbsCollection="loadDbsCollection" v-for="collection in db.collections" :key="(collection.id + 1)" v-bind:collection="collection"></collection-card>
         </ul>
     </li>
 </template>
@@ -140,6 +140,8 @@
             *   Show the collections for a db
             */
             showCollectionsList( db ) {
+                // load the selected DB from our cache
+                this.$store.dispatch('loadCachedDatabase', db );
                 // hide all that are showing
                 EventBus.$emit('hide-collection-lists', {});
                 this.activeDb = db;
@@ -156,12 +158,12 @@
                 }
             },
 
-            loadCollection( collection ) {
+            loadDbsCollection( collection ) {
                 // send collection and db for tracking
                 this.$store.dispatch('setActiveDatabase', this.activeDb );
                 this.$store.dispatch('setActiveCollection', collection );
                 // load
-                let data = {database: this.activeDb, collection: collection };
+                let data = { database: this.activeDb, collection: collection };
                 this.$store.dispatch('loadCollection', data );
                 // event to hide panels
                 EventBus.$emit('hide-panels');

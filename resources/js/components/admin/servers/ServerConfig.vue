@@ -36,7 +36,7 @@
             <tr>
                 <th class="bb" v-text="showLanguage('servers', 'active')"></th>
                 <td>{{ showBool(server.active) }}
-                <span class="activate-checkbox" v-show="server.active == 0" :title="showLanguage('title' , 'activeServerTitle')">
+                <span class="activate-checkbox" v-show="server.active === 0" :title="showLanguage('title' , 'activateServerTitle')">
                     <input @change="activateServer(server.id)" v-model="activate" type="checkbox" /> <span v-text="showLanguage('servers', 'check')"></span>
                 </span>
                 </td>
@@ -59,6 +59,8 @@
     //import { EventBus } from '../../../event-bus.js';
 
     export default {
+        name: "ServerConfig",
+
         /*
          *  One prop is better than none!
          */
@@ -99,7 +101,7 @@
              */
             activateServer(id) {
                 if (this.activate === true) {
-                    this.$emit('activateServer', id);
+                    this.$emit('activate-server', id);
                 }
             }
         }

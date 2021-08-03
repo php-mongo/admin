@@ -36,6 +36,7 @@
             </select>
             <br>
             <button class="button" v-on:click="sendCommand" v-text="showLanguage('command', 'execute')"></button>
+            <button class="button warning" v-on:click="clear" v-text="showLanguage('global', 'clear')"></button>
         </form>
         <p v-show="errorMessage || message">
             <span class="msg">
@@ -103,6 +104,12 @@
                 this.form.database = this.$store.getters.getActiveDatabase;
             },
 
+            clear() {
+                this.errorMessage = '';
+                this.form.database = null;
+                this.results = null;
+            },
+
             sendCommand() {
                 if (this.form.command) {
                     let command = this.$convObj().minify( this.form.command );
@@ -120,12 +127,11 @@
             },
 
             handleCommand() {
-                let status = this.$store.getters.getCommandLoadStatus,
-                    self = this;
+                let status = this.$store.getters.getCommandLoadStatus;
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
-                    setTimeout(function(){
-                        self.handleCommand();
+                    setTimeout(() => {
+                        this.handleCommand();
                     }, 250);
                 }
                 if (status === 2) {

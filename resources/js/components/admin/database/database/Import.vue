@@ -90,7 +90,7 @@
                 errorMessage: null,
                 exportData: null,
                 index: 0,
-                limit: 75, // limit the status check iterations
+                limit: 55, // limit the status check iterations
                 show: false,
                 form: {
                     file: null,
@@ -160,9 +160,8 @@
             handleImport() {
                 let status = this.$store.getters.getImportCollectionStatus;
                 if (status === 1 && this.index < this.limit) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleImport();
+                    setTimeout(() => {
+                        this.handleImport();
                     },100);
                 }
                 else if (status === 2) {

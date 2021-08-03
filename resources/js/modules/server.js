@@ -41,7 +41,11 @@ export const server = {
         serverActivateStatus: 0,
         serverDeleteStatus: 0,
         displayServer: {},
-        displayServerStatus: 0
+        displayServerStatus: 0,
+        loadServerStatus: 0,
+        serverStatus: {},
+        loadServerProcesses: 0,
+        serverProcesses: []
     },
 
     /*
@@ -63,7 +67,6 @@ export const server = {
                     commit( 'setServers', [] );
                     commit( 'setServersLoadStatus', 3 );
                     console.log(error);
-                    //EventBus.$emit('no-servers-found', { notification: 'No servers were returned from the api - please try again later' });
                 });
         },
 
@@ -82,10 +85,12 @@ export const server = {
                     commit( 'setServer', {} );
                     commit( 'setServerLoadStatus', 3 );
                     console.log(error);
-                    //EventBus.$emit('no-results-found', { notification: 'No server was returned from the api - please try again later' });
                 });
         },
 
+        /*
+         * Save a server configuration
+         */
         saveServer( { commit }, data) {
             commit( 'setServerSaveStatus', 1 );
 
@@ -98,10 +103,12 @@ export const server = {
                     commit( 'setServerConfig', {} );
                     commit( 'setServerSaveStatus', 3 );
                     console.log(error);
-                    //EventBus.$emit('server-not-created', { notification: 'The server configuration could not be created' });
                 });
         },
 
+        /*
+         * Activate a server configuration
+         */
         activateServer( { commit }, data) {
             commit( 'setServerActivateStatus', 1 );
 
@@ -114,10 +121,12 @@ export const server = {
                     commit( 'setServerConfig', {} );
                     commit( 'setServerActivateStatus', 3 );
                     console.log(error);
-                    //EventBus.$emit('server-not-activated', { notification: 'The server configuration could not be activated' });
                 });
         },
 
+        /*
+         * Delete a server configuration
+         */
         deleteServer( { commit }, data)  {
             commit( 'setServerDeleteStatus', 1 );
 
@@ -130,9 +139,49 @@ export const server = {
                     commit( 'setServerDelete', {} );
                     commit( 'setServerDeleteStatus', 3 );
                     console.log(error);
-                    //EventBus.$emit('server-not-deleted', { notification: 'The server configuration could not be deleted' });
                 });
-        }
+        },
+
+        /*
+        *   Loads the server status from the API
+        */
+        getServerStatus( { commit }, database ) {
+            commit( 'setLoadServerStatus', 1 );
+
+            ServerApi.getServerStatus(database)
+                .then( ( response ) => {
+                    commit( 'setServerStatus', response.data.data.status );
+                    commit( 'setLoadServerStatus', 2 );
+                })
+                .catch( (error) => {
+                    commit( 'setServerStatus', {} );
+                    commit( 'setLoadServerStatus', 3 );
+                    console.log(error);
+                });
+        },
+
+        /*
+        *   Loads the server processes from the API
+        */
+        getServerProcesses( { commit } ) {
+            commit( 'setLoadServerProcesses', 1 );
+
+            ServerApi.getServerProcesses()
+                .then( ( response ) => {
+                    if (response.data.data.processes) {
+                        if (response.data.data.processes.inprog) {
+                            console.log("inprog:" + response.data.data.processes.inprog);
+                            commit( 'setServerProcesses', response.data.data.processes.inprog );
+                        }
+                    }
+                    commit( 'setLoadServerProcesses', 2 );
+                })
+                .catch( (error) => {
+                    commit( 'setServerProcesses', [] );
+                    commit( 'setLoadServerProcesses', 3 );
+                    console.log(error);
+                });
+        },
     },
 
     /*
@@ -217,6 +266,34 @@ export const server = {
         */
         setDisplayServerStatus( state, status) {
             state.displayServerStatus = status;
+        },
+
+        /*
+        *   Set the load server status
+        */
+        setLoadServerStatus( state, status) {
+            state.loadServerStatus = status;
+        },
+
+        /*
+        *   Set the server status
+        */
+        setServerStatus( state, status) {
+            state.serverStatus = status;
+        },
+
+        /*
+        *   Set the load server processes status
+        */
+        setLoadServerProcesses( state, status) {
+            state.loadServerProcesses = status;
+        },
+
+        /*
+        *   Set the server processes
+        */
+        setServerProcesses( state, processes ) {
+            state.serverProcesses = processes;
         }
     },
 
@@ -360,6 +437,34 @@ export const server = {
                     return server;
                 }
             }
+        },
+
+        /*
+        *   Get the load server's status status
+        */
+        getLoadServerStatus( state ) {
+            return state.loadServerStatus;
+        },
+
+        /*
+        *   Get the server's status
+        */
+        getServerStatus( state ) {
+            return state.serverStatus;
+        },
+
+        /*
+        *   Set the load server processes status
+        */
+        getLoadServerProcesses( state ) {
+            return state.loadServerProcesses;
+        },
+
+        /*
+        *   Get the server processes
+        */
+        getServerProcesses( state ) {
+            return state.serverProcesses;
         }
     }
 };

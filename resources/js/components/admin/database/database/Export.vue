@@ -89,7 +89,7 @@
                 errorMessage: null,
                 exportData: null,
                 index: 0,
-                limit: 75, // limit the status check iterations
+                limit: 55, // limit the status check iterations
                 show: false,
                 form: {
                     all: false,
@@ -211,9 +211,8 @@
             handleExport() {
                 let status = this.$store.getters.getExportCollectionStatus;
                 if (status === 1 && this.index < this.limit) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleExport();
+                    setTimeout(() => {
+                        this.handleExport();
                     },100);
                 }
                 else if(status === 2) {
@@ -226,9 +225,8 @@
                         let arr    = this.exportData.split('\n');
                         let rows   = parseInt(arr.length + 4);
                         let height = parseInt(rows * 25);
-                        let self = this;
-                        setTimeout(function() {
-                            self.$jqf(self.$refs.export).css('height', height + 'px');
+                        setTimeout(() => {
+                            this.$jqf(this.$refs.export).css('height', height + 'px');
                         }, 250);
                     }
                 }

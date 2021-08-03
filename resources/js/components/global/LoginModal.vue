@@ -384,6 +384,7 @@
         */
         data() {
             return {
+                limit: 55,
                 show: false,
                 verifiedHost: true,
                 verifiedUser: true,
@@ -453,22 +454,24 @@
 
             loginUser( event ) {
                 event.preventDefault();
-                let self = this;
                 this.$store.dispatch( 'loginUser', { data: this.credentials } );
-                setTimeout(function() {
-                    self.completeLogin();
+                setTimeout(() => {
+                    this.completeLogin();
                     }, 500);
             },
 
             completeLogin() {
-                let status = this.$store.getters.getUserLoginStatus, self = this;
-                if (status === 1) {
-                    self.completeLogin();
+                let status = this.$store.getters.getUserLoginStatuss;
+                if (status === 1 && this.index < this.limit) {
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.completeLogin();
+                    }, 200);
                 }
                 if (status === 2) {
                     this.show = false;
                     EventBus.$emit('show-success', { notification: this.showLanguage('auth', 'login-success')});
-                    setTimeout(function() {
+                    setTimeout(() => {
                         router.push( { name: 'admin' } );
                      //   window.location = window.location;
                     }, 2000);
@@ -479,10 +482,11 @@
             },
 
             showLoginError() {
-                let text = this.showLanguage('auth', 'login-failed'),
-                    self = this;
+                let text = this.showLanguage('auth', 'login-failed');
                 this.$jqf(this.$refs.loginError).remove('hidden-content').text(text);
-                setTimeout(function() { self.$jqf(self.$refs.loginError).add('hidden-content'); }, 10000);
+                setTimeout(() => {
+                    this.$jqf(this.$refs.loginError).add('hidden-content');
+                }, 10000);
             },
 
             resetPassword() {

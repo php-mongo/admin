@@ -1,6 +1,6 @@
 <!--
   - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      DocumentUpdate.vue 1001 8/8/20, 10:23 pm  Gilbert Rehling $
+  - @version      DocumentUpdate.vue 1002 3/8/21, 12:23 pm  Gilbert Rehling $
   - @package      PhpMongoAdmin\resources
   - @subpackage   DocumentUpdate.vue
   - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
@@ -20,7 +20,7 @@
 
 <template>
     <transition name="slide-in-top">
-        <div class="panel-modal" v-show="show">
+        <div id="panel-modal-update" class="panel-modal" v-show="show" v-on:click="closeDialogOutside($event)">
             <div class="panel-modal-inner">
                 <div class="modal-header">
                     <span class="u-pull-right" v-on:click="hideComponent">
@@ -284,6 +284,15 @@
             */
             hideComponent() {
                 this.show = false;
+            },
+
+            /*
+             * Close on click outside panel modal
+             */
+            closeDialogOutside( event ) {
+                if ($(event.target).is('#panel-modal-update')) {
+                    this.hideComponent();
+                }
             }
         },
 

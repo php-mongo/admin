@@ -131,7 +131,6 @@
         data() {
             return {
                 display: false,
-                index: 0,
                 collapsed: false
             }
         },

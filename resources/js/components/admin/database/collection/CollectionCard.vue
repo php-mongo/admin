@@ -571,7 +571,7 @@
                 },
                 message: null,
                 index: 0,
-                limit: 75
+                limit: 55
             }
         },
 
@@ -586,14 +586,13 @@
             getTotal() {
                 if (this.collection && this.collection.objects) {
                     if (this.collection.objects || this.allObjects) {
-                        if (this.collection.objects.count == 0) {
+                        if (this.collection.objects.count === 0) {
                             this.page.find.message = this.showLanguage('collection', 'empty', this.collection.collection.collectionName);
                             this.clearValues();
 
                         } else {
                             this.page.find.message = null;
                         }
-                        //return this.collection.objects.count;
                         return this.allObjects.length;
                     }
                 }
@@ -740,7 +739,7 @@
                     this.form.criteria.array = array;
                 }
                 // tests completed - send query to DB
-                let data = {params: this.form, format: this.format, database: this.getDatabaseName(), collection: this.getCollectionName()};
+                let data = { params: this.form, format: this.format, database: this.getDatabaseName(), collection: this.getCollectionName() };
                 this.$store.dispatch('queryCollection', data);
                 this.handleQuery();
             },
@@ -748,9 +747,9 @@
             handleQuery() {
                 let status = this.$store.getters.getQueryCollectionLoadStatus;
                 if (status === 1 && this.index < this.limit) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleQuery();
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.handleQuery();
                     }, 100);
                 }
                 else if (status === 2) {

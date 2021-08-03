@@ -31,6 +31,24 @@ export default {
     },
 
     /*
+    *   Get the server processes details displayed on the dashboard
+    *   !! This is handled by a specific ServerController !!
+    *   GET /api/v1/server/processes
+    */
+    getServerProcesses: () => {
+        return window.axios.get( MONGO_CONFIG.API_URL + '/server/processes' );
+    },
+
+    /*
+    *   Get the server status details displayed on the dashboard
+    *   !! This is handled by a specific ServerController !!
+    *   GET /api/v1/server/{database}/status
+    */
+    getServerStatus: (database) => {
+        return window.axios.get( MONGO_CONFIG.API_URL + '/server/' + database + '/status' );
+    },
+
+    /*
     *   Get the servers setup by current user
     *   GET /api/v1/servers
     */

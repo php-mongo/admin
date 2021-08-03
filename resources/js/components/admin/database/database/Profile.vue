@@ -116,7 +116,7 @@
                 currentLevel: JSON.parse(sessionStorage.getItem('level')) || 0,
                 errorMessage: null,
                 index: 0,
-                limit: 75, // limit the status check iterations
+                limit: 55, // limit the status check iterations
                 show: false,
                 form: {
                     database: null,

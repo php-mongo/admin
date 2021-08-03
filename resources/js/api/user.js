@@ -29,6 +29,13 @@ export default {
     },
 
     /*
+    *   GET  /api/v1/user/fetch/{uid} - get the current authenticated user
+    */
+    getUsers: () => {
+        return window.axios.get( MONGO_CONFIG.API_URL + '/user/all' );
+    },
+
+    /*
     *  PUT  /api/v1/user - create or update a user
     */
     putUpdateUser: ( name, email, password ) => {
@@ -43,12 +50,10 @@ export default {
     /*
     *  POST  /api/v1/user - register a new user
     */
-    postUser: ( name, email, password ) => {
+    postUser: ( data ) => {
         return window.axios.post( MONGO_CONFIG.API_URL + '/user',
             {
-                name: name,
-                email: email,
-                password: password,
+               data,
                 _token: window.axios.defaults.headers.common['X-CSRF-TOKEN']
             });
     },

@@ -112,7 +112,7 @@
                     update: false
                 },
                 index: 0,
-                limit: 75, // limit the status check iterations
+                limit: 55, // limit the status check iterations
                 show: false
             }
         },

@@ -353,15 +353,15 @@ class ServerController extends Controller
         }
 
         // ToDo: for now just use the config value = these need to be reading the 'current server' once we implement server configs
-        // ToDo: Server configs implemented - keeping this here for prosperity...
+        // ToDo: Server configs implemented - keeping this here for prosperity.. and reminiscence...
         //$uri = "mongodb://" . config('mongo.servers.0.host') . ":" . config('mongo.servers.0.port');
         //$this->manager = new MongoDB\Driver\Manager($uri);
         //$this->database = (new MongoDB\Client)->admin;
     }
 
     /**
-     * Fetches all available Server and diagnistic data
-     * Limitatiionn exist for user without 'admin' DB access
+     * Fetches all available Server and diagnostic data
+     * Limitations exist for user without 'root' MongoDB access
      *
      * URL:         /api/v1/server
      * Method:      GET
@@ -400,6 +400,93 @@ class ServerController extends Controller
         $arr['composer']    = $this->composer;
         $arr['errors']      = $this->getErrorMessage();
 
-        return response()->success('success',  array('server' => $arr));
+        return response()->success('success', array('server' => $arr));
+    }
+
+    /**
+     * Fetches all available Server status data
+     * Limitations exist for user without 'root' MongoDB access
+     *
+     * URL:         /api/v1/server/{database}/status
+     * Method:      GET
+     * Description: Returns all available server status data
+     *
+     * @param  Request $request
+     * @param  $database
+     * @return mixed
+     */
+    public function getServerStatus(Request $request, $database)
+    {
+        try {
+            if ($database) {
+                // get connection manager
+                $this->mongo->connectManager();
+                /** @var MongoDB\Driver\Manager $manager */
+                $manager = $this->mongo->getManager();
+
+                $command = array(
+                    "serverStatus" => 1
+                );
+                $results = $manager->executeCommand(
+                    $database,
+                    new MongoDb\Driver\Command( $command )
+                );
+
+                //dd($results->toArray()[0]);
+
+                return response()->success('success', array('status' => $results->toArray()[0]));
+            }
+            else {
+                return response()->error('failed', array('error' => 'database name missing'));
+            }
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+        }
+
+    }
+
+    /**
+     * Fetches all active Server processes data
+     * Limitations exist for users without 'root' MongoDB access
+     *
+     * URL:         /api/v1/server/processes
+     * Method:      GET`
+     * Description: Returns information on all active (currently running) server processes
+     *
+     * @param  Request $request
+     * @return mixed
+     */
+    public function getServerProcesses(Request $request)
+    {
+        try {
+            $database = 'admin';
+            // get connection manager
+            $this->mongo->connectManager();
+            /** @var MongoDB\Driver\Manager $manager */
+            $manager = $this->mongo->getManager();
+
+            $command = array(
+                "currentOp" => 1
+            );
+            $results = $manager->executeCommand(
+                $database,
+                new MongoDb\Driver\Command( $command )
+            );
+
+            $results = $results->toArray()[0];
+            //dd($results->inprog[0]);
+
+            return response()->success('success', array('processes' => array("inprog" => $results->inprog, "ok" => $results->ok)));
+        }
+        catch (\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+        }
     }
 }

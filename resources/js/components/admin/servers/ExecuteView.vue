@@ -22,7 +22,7 @@
 <template>
     <div id="pma-execute-view" class="pma-servers-panel align-left" v-show="show">
         <div class="servers-inner">
-            <p>Execute view</p>
+            <p>Executing JavaScript commands via PHP is now deprecated: PhpMongoAdmin is designed to use MongoDB drivers which no longer supports the use of eval() command.</p>
         </div>
     </div>
 </template>
@@ -34,6 +34,8 @@
     import { EventBus } from '../../../event-bus.js';
 
     export default {
+        name: "ExecuteView",
+
         /*
          *   Data required for this component
          */

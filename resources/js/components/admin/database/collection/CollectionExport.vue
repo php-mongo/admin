@@ -1,8 +1,8 @@
 <!--
   - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      DocumentDuplicate.vue 1001 8/8/20, 10:23 pm  Gilbert Rehling $
+  - @version      CollectionExport.vue 1002 2/8/21, 12:23 pm  Gilbert Rehling $
   - @package      PhpMongoAdmin\resources
-  - @subpackage   DocumentDuplicate.vue
+  - @subpackage   CollectionExport.vue
   - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
   - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
   - @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
@@ -20,7 +20,7 @@
 
 <template>
     <transition name="slide-in-top">
-        <div class="panel-modal" v-if="show">
+        <div id="panel-modal-export" class="panel-modal" v-if="show" v-on:click="closeDialogOutside($event)">
             <div class="panel-modal-inner">
                 <div class="modal-header">
                     <span class="msg" v-show="errorMessage || actionMessage">
@@ -96,7 +96,7 @@
                 errorMessage: null,
                 exportData: null,
                 index: 0,
-                limit: 75, // limit the status check iterations
+                limit: 55, // limit the status check iterations
                 show: false,
                 form: {
                     all: false,
@@ -169,7 +169,7 @@
              *  Send to API
              */
             runExport() {
-                let data = {database: this.database, params: this.form };
+                let data = { database: this.database, params: this.form };
                 this.$store .dispatch('exportCollection', data);
                 this.handleExport();
             },
@@ -177,9 +177,8 @@
             handleExport() {
                 let status = this.$store.getters.getExportCollectionStatus;
                 if (status === 1 && this.index < this.limit) {
-                    let self = this;
-                    setTimeout(function() {
-                        self.handleExport();
+                    setTimeout(() => {
+                        this.handleExport();
                     },100);
                 }
                 else if(status === 2) {
@@ -192,9 +191,8 @@
                         let arr    = this.exportData.split('\n');
                         let rows   = parseInt(arr.length + 4);
                         let height = parseInt(rows * 25);
-                        let self = this;
-                        setTimeout(function() {
-                            self.$jqf(self.$refs.export).css('height', height + 'px');
+                        setTimeout(() => {
+                            this.$jqf(this.$refs.export).css('height', height + 'px');
                         }, 250);
                     }
                 }
@@ -215,6 +213,15 @@
              */
             hideComponent() {
                 this.show = false;
+            },
+
+            /*
+             * Close on click outside panel modal
+             */
+            closeDialogOutside( event ) {
+                if ($(event.target).is('#panel-modal-export')) {
+                    this.hideComponent();
+                }
             }
         },
 

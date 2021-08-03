@@ -33,9 +33,10 @@ export const users = {
      */
     state: {
         user: {},
+        users: [],
         userLoadStatus: 0,
-        userUpdateStatus: 0,
-        userRegisterStatus: 0,
+        usersLoadStatus: 0,
+        userSaveStatus: 0,
         userLoginStatus: 0,
         userLogoutStatus: 0,
         userAuthStatus: 0,
@@ -49,23 +50,18 @@ export const users = {
      */
     actions: {
         /*
-         *  Register a user
+         *  Create a user
          */
-        registerUser( { commit, dispatch }, data ) {
-            commit( 'setUserRegisterStatus', 1 );
+        createUser( { commit, dispatch }, data ) {
+            commit( 'setUserSaveStatus', 1 );
 
-            UserAPI.postUser( data.data.name, data.data.email, data.data.password )
+            UserAPI.postUser( data )
                 .then( (response) => {
-                    const token = 'Bearer ' + response.data.token;
-                    window.axios.defaults.headers.common['Authorization'] = token;
-                    localStorage.setItem('token', JSON.stringify(token));
-                    commit( 'setUserRegisterStatus', 2 );
-                    commit( 'setUserToken', { token });
-                    dispatch( 'loadUser' );
+                    commit( 'setUserSaveStatus', 2 );
+                    dispatch( 'setInUsers', [data, response.data.data.user] );
                 })
                 .catch( (error) => {
-                    commit( 'setUserRegisterStatus', 3 );
-                    localStorage.removeItem('token');
+                    commit( 'setUserSaveStatus', 3 );
                     console.log(error);
                 });
         },
@@ -128,6 +124,24 @@ export const users = {
                 .catch( (error) => {
                     commit( 'setUser', {} );
                     commit( 'setUserLoadStatus', 3 );
+                    console.log(error);
+                });
+        },
+
+        /*
+         * Load the all the users
+         */
+        loadUsers( { commit } ) {
+            commit( 'setUsersLoadStatus', 1 );
+
+            UserAPI.getUsers()
+                .then( (response) => {
+                    commit( 'setUsers', response.data.data.users );
+                    commit( 'setUsersLoadStatus', 2 );
+                })
+                .catch( (error) => {
+                    commit( 'setUsers', [] );
+                    commit( 'setUsersLoadStatus', 3 );
                     console.log(error);
                 });
         },
@@ -204,31 +218,52 @@ export const users = {
         },
 
         /*
+         * Sets the users load status
+         */
+        setUsersLoadStatus( state, status ) {
+            state.usersLoadStatus = status;
+        },
+
+        /*
          * Sets the user
          */
-        setUser( state, { user } ) {
+        setUser( state, user ) {
             state.user = user;
+        },
+
+        /*
+         * Sets the users array
+         */
+        setUsers( state, users ) {
+            state.users = users;
+        },
+
+        /*
+         * Sets the user into the users array
+         */
+        setInUsers( state, arr ) {
+            let post = arr[0];
+            if (post.type === 'login') {
+                state.users.loginUsers.push(arr[1]);
+            }
+            if (post.type === 'database') {
+                state.users.databaseUsers.push(arr[1]);
+            }
+            state.users.push(arr[1]);
         },
 
         /*
          * Sets the user token
          */
-        setUserToken( state, { token } ) {
+        setUserToken( state, token ) {
             state.token = token;
-        },
-
-        /*
-         * Sets the user update status
-         */
-        setUserUpdateStatus( state, status ) {
-            state.userUpdateStatus = status;
         },
 
         /*
          * Sets the user POST status
          */
-        setUserRegisterStatus( state, status ) {
-            state.userRegisterStatus = status;
+        setUserSaveStatus( state, status ) {
+            state.userSaveStatus = status;
         },
 
         /*
@@ -280,10 +315,24 @@ export const users = {
         },
 
         /*
+         *   Returns the users load status.
+         */
+        getUsersLoadStatus( state ) {
+            return state.usersLoadStatus;
+        },
+
+        /*
          *   Returns the user.
          */
         getUser( state ) {
             return state.user;
+        },
+
+        /*
+         *   Returns the users array.
+         */
+        getUsers( state ) {
+            return state.users;
         },
 
         /*
@@ -294,17 +343,10 @@ export const users = {
         },
 
         /*
-         *   Gets the user update status
+         *   Gets the user save status
          */
-        getUserUpdateStatus( state ) {
-            return state.userUpdateStatus;
-        },
-
-        /*
-         *   Gets the user Register status
-         */
-        getUserRegisterStatus( state ) {
-            return state.userRegisterStatus;
+        getUserSaveStatus( state ) {
+            return state.userSaveStatus;
         },
 
         /*

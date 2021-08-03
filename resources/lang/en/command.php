@@ -47,6 +47,7 @@ return [
     "reference" => "MongoDB Database Command Reference",
     "refresh" => "Refresh",
     "save" => "Save",
+    "selectDb" => "Please select a database first",
     "string" => "String",
     "text" => "Text",
     "title" => "Run Database Commands",

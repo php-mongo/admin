@@ -119,6 +119,11 @@ export const database = {
                 });
         },
 
+        loadCachedDatabase( { commit }, db) {
+            commit( 'setCachedDatabase', db);
+            commit( 'setActiveDatabase', db);
+        },
+
         /*
         *   Because we set the 'admin' database on site - we can clear the stored DB before rendering the single DB view
         */
@@ -306,7 +311,7 @@ export const database = {
         *   Set the active database - useful for database tracking
         *   ToDo: this also gets set when the DB is fetched - this may be redundant
         */
-        setActiveDatabase( { commit }, data ) {
+        setActiveDatabase( { commit }, data) {
             commit( 'setActiveDatabase', data );
         }
     },
@@ -330,6 +335,11 @@ export const database = {
         setDatabases( state, databases ) {
             state.databases = databases;
             state.database  = databases.find(db => db.db.name === 'admin');
+        },
+
+        setCachedDatabase( state, database ) {
+            let databases = state.databases;
+            state.database  = databases.find(db => db.db.name === database);
         },
 
         /*

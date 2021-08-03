@@ -1,8 +1,8 @@
 <!--
   - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      DocumentDuplicate.vue 1001 8/8/20, 10:23 pm  Gilbert Rehling $
+  - @version      QueryExplain.vue 1002 3/8/21, 12:23 pm  Gilbert Rehling $
   - @package      PhpMongoAdmin\resources
-  - @subpackage   DocumentDuplicate.vue
+  - @subpackage   QueryExplain.vue
   - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
   - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
   - @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
@@ -31,7 +31,7 @@
 
 <template>
     <transition name="slide-in-top">
-        <div class="panel-modal" v-if="show">
+        <div id="panel-modal-explain" class="panel-modal" v-if="show" v-on:click="closeDialogOutside($event)">
             <div class="panel-modal-inner">
                 <div class="modal-header">
                     <span class="msg" v-show="errorMessage || actionMessage">
@@ -67,7 +67,7 @@
                 database: null,
                 errorMessage: null,
                 index: 0,
-                limit: 75, // limit the status check iterations
+                limit: 55, // limit the status check iterations
                 show: false,
                 explain: null
             }
@@ -125,6 +125,15 @@
              */
             hideComponent() {
                 this.show = false;
+            },
+
+            /*
+             * Close on click outside panel modal
+             */
+            closeDialogOutside( event ) {
+                if ($(event.target).is('#panel-modal-explain')) {
+                    this.hideComponent();
+                }
             }
         },
 
