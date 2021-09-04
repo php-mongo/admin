@@ -29,14 +29,38 @@
 
 <template>
     <p class="role-selector" v-if="show">
-        <select v-model="role" @change="$emit('updateRole', role)">
+        <select
+            v-model="role"
+            @change="$emit('updateRole', role)"
+        >
             <option value="" v-text="showLanguage('users', 'roleSelect')"></option>
-            <option value="readAnyDatabase" v-text="showLanguage('users', 'roleReadonly')"></option>
-            <option value="readWriteAnyDatabase" v-text="showLanguage('users', 'roleReadWrite')"></option>
-            <option value="userAdminAnyDatabase" v-text="showLanguage('users', 'roleUserAdmin')"></option>
+            <option
+                value="readAnyDatabase"
+                v-text="showLanguage('users', 'roleReadonly')"
+            ></option>
+            <option
+                value="readWriteAnyDatabase"
+                v-text="showLanguage('users', 'roleReadWrite')"
+            ></option>
+            <option
+                value="dbAdminAnyDatabase"
+                v-text="showLanguage('users', 'roleDbAdmin')"
+            ></option>
+            <option
+                value="userAdminAnyDatabase"
+                v-text="showLanguage('users', 'roleUserAdmin')"
+            ></option>
         </select>
-        <button class="button tiny" v-text="showLanguage('users', 'roleAdd')" @click="$emit('addRole')"></button>
-        <button class="button alert tiny" v-text="showLanguage('users', 'roleRemove')" @click="$emit('removeRole', role); clear"></button>
+        <button
+            class="button tiny"
+            v-text="showLanguage('users', 'roleAdd')"
+            @click="$emit('addRole')"
+        ></button>
+        <button
+            class="button alert tiny"
+            v-text="showLanguage('users', 'roleRemove')"
+            @click="$emit('removeRole', role)"
+        ></button>
     </p>
 </template>
 
@@ -44,14 +68,10 @@
     export default {
         name: "RoleSelector",
 
-        props: [
-            'roles'
-        ],
-
         data() {
             return {
-                role: '',
-                show: true
+                role: null,
+                show: false
             }
         },
 
@@ -67,8 +87,12 @@
             },
 
             clear() {
-                this.role = '';
+                this.role = null;
             }
-        }
+        },
+
+        mounted() {
+            this.show = true;
+        },
     }
 </script>

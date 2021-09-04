@@ -19,13 +19,20 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use DateTime;
+use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
 {
+    //use AuthenticatesUsers;
+    use ThrottlesLogins;
+
     /*
     |--------------------------------------------------------------------------
     | Login Controller
@@ -36,8 +43,6 @@ class LoginController extends Controller
     | to conveniently provide its functionality to your applications.
     |
     */
-
-    use AuthenticatesUsers;
 
     /**
      * Where to redirect users after login.
@@ -65,20 +70,54 @@ class LoginController extends Controller
     }
 
     /**
-     * Hanldes our loging via API request
+     * @param Request $request
+     * @return array
+     */
+    public function credentials(Request $request): array
+    {
+        return [
+            'user'      => $request->user,
+            'password'  => $request->password,
+            'active'    => '1'
+        ];
+    }
+
+    /**
+     * Handles our logging via API request
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function login(Request $request)
     {
+        $this->validate($request, [
+            'user' => 'required|string',
+            'password' => 'required|string|min:5',
+            'active' => 'required|numeric|size:1'
+        ]);
+
+        //dd(new DateTime('now'));
 
         // get the creds
-        //$credentials = $request->only([$this->getUser(), 'password']);
-        $credentials = array("user" => "admin", "password" => "Welcome2020");
+        // $credentials = $request->only([$this->getUser(), 'password', 'active']);
+        $credentials = array("user" => "admin", "password" => "Welcome2020", "active" => "1");
+
+        // ensure the active value has not been forged
+        if ($credentials['active'] !== "1") {
+            Log::channel('auth')->info('Bad login attempted: ', ['request' => json_encode($request)]);
+            return response()->json(['success' => false, 'error' => 'Bad-Request'], 400);
+        }
 
         // check the creds
         if (!$token = auth()->attempt($credentials)) {
+            $user = User::where('user', $credentials['user'])->get();
+            $user = isset($user[0]) > 0 ? $user[0]->getAttributes() : array('active' => null);
+            if ($user['active'] === "0") {
+                Log::channel('auth')->info('Login attempted on inactive account: ', ['user' => $credentials['user']]);
+                return response()->json(['success' => false, 'error' => 'Inactive'], 401);
+            }
+            Log::channel('auth')->alert('Failed login attempt: ', ['user' => $credentials['user']]);
             return response()->json(['success' => false, 'error' => 'Unauthorized'], 401);
         }
 
@@ -89,14 +128,20 @@ class LoginController extends Controller
         $token = $user->createToken('PHPMongoAdmin')->accessToken;
 
         // login the user
-        Auth::login( $user );
+        Auth::login($user);
 
         // check to see if they still have their 'app-member' cookie
         $appMember = $request->cookie('phpmongoapp-member');
         if (empty($appMember)) {
             // set the account member cookie
-            $llct     = time()+60*60*24*180; // 180 days should be enough !!
+            $llct     = time() + 60 * 60 * 24 * 180; // 180 days should be enough !!
             Cookie::queue('phpmongoapp-member', $user->id, $llct, false, false, false, false);
+        }
+
+        // check the 'remember' flag
+        if ($request->input('remember', null) === true) {
+            $llct     = time() + 60 * 60 * 24 * 365; // 365 days should be enough !!
+            Cookie::queue('pma-member', $credentials['user'], $llct, false, false, false, false);
         }
 
         return $this->respondWithToken($token);
@@ -111,7 +156,7 @@ class LoginController extends Controller
      */
     public function logout(Request $request, $uid)
     {
-        $user = auth()->user();// Auth::user();
+        $user = auth()->user();
         if ($uid == $user->id) {
             auth('web')->logout();
             return response()->json(['success' => true, 'message'=>'success']);
@@ -119,15 +164,9 @@ class LoginController extends Controller
         return response()->json(['success' => false, 'error' => 'failed'], 200);
     }
 
-    /**
-     * Returns an authenticated user
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getAuthUser(Request $request)
+    public function showLoginForm()
     {
-        return response()->json(auth()->user());
+        return view('public.welcome');
     }
 
     /**
@@ -148,11 +187,5 @@ class LoginController extends Controller
             'token_type' => 'bearer',
             'expires_in' => time() + $days
         ]);
-//        return response()->json([
-//            'success' => true,
-//            'access_token' => $token,
-//            'token_type' => 'bearer',
-//            'expires_in' => auth()->factory()->getTTL() * 60
-//        ]);
     }
 }

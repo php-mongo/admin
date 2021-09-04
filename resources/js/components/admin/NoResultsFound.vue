@@ -18,13 +18,7 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
 
-    div.no-results-notification-container{
-        position: fixed;
-        z-index: 999999;
-        left: 12rem;
-        right: 0;
-        top: 0;
-        text-align: center;
+    div.notification-container{
 
         div.noresult-notification{
             background: $white;
@@ -51,7 +45,7 @@
 
 <template>
     <transition name="slide-in-top">
-        <div class="no-results-notification-container" v-show="show">
+        <div class="notification-container" v-show="show">
             <div class="noresult-notification">
                 <img src="img/error.svg"/> {{ errorMessage }}
             </div>

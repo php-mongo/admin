@@ -16,37 +16,68 @@
   -->
 
 <style lang="scss">
-    /* nothing to see here! */
+    .users {
+        .to-lower {
+            text-transform: lowercase;
+        }
+        .user-collapse {
+            cursor: pointer;
+        }
+        th.bb {
+            width: 130px;
+        }
+    }
 </style>
 <template>
     <div>
-        <table class="bordered">
+        <p class="form-error" v-show="hasMessage">{{ user.message }}</p>
+        <table class="bordered users">
             <tr>
-                <th class="bb" v-text="showLanguage('users', 'host')"></th><td>{{ user.host }}</td>
+                <th class="bb" v-text="showLanguage('users', 'id')"></th>
+                <td v-on:click="collapseUser">
+                    {{ user._id }}
+                    <span class="user-collapse u-pull-right" v-show="collapsed" :title="showLanguage('users', 'collapse')"><img src="img/sort-asc-dark.svg" alt="Collapse user" /> </span>
+                    <span class="user-collapse u-pull-right" v-show="!collapsed" :title="showLanguage('users', 'expand')"><img src="img/sort-desc-dark.svg" alt="Expand user" /> </span>
+                </td>
+            </tr>
+            <tr v-show="!collapsed">
+                <th class="bb" v-text="showLanguage('users', 'userId')"></th><td>{{ user.userId }}</td>
             </tr>
             <tr>
-                <th class="bb" v-text="showLanguage('users', 'port')"></th><td>{{ user.port }}</td>
+                <th class="bb" v-text="showLanguage('users', 'username')"></th><td>{{ user.user }}</td>
             </tr>
-            <tr>
-                <th class="bb" v-text="showLanguage('users', 'username')"></th><td>{{ user.username }}</td>
+            <tr v-for="(role, index) in user.roles" :key="index" v-bind:role="role" v-show="!collapsed">
+                <th class="bb" v-text="showLanguage('users', 'role')"></th>
+                <td class="text-center">
+                    <span class="to-lower" v-text="showLanguage('database', 'db')"></span>: {{ role.db }},
+                    <span class="to-lower" v-text="showLanguage('users', 'role')"></span>: {{ role.role }}</td>
             </tr>
-            <tr>
-                <th class="bb" v-text="showLanguage('users', 'created')"></th><td>{{ user.created_at}}</td>
-            </tr>
-            <tr>
-                <th class="bb" v-text="showLanguage('users', 'actions')"></th><td>
-                <span class="pma-link" @click="$emit('edit-db-user', [user.id, 'db'])" v-text="showLanguage('global', 'edit')"></span> |
-                <span class="pma-link-danger" @click="$emit('remove-db-user', [user.id, 'db'])" v-text="showLanguage('global', 'delete')"></span></td>
+            <tr v-show="!hasRootRole" >
+                <th class="bb" v-text="showLanguage('users', 'actions')"></th>
+                <td>
+                    <span
+                        class="pma-link"
+                        @click="$emit('edit-user', [user._id, 'database', user._id])"
+                        v-text="showLanguage('global', 'edit')"
+                    ></span> |
+                    <span
+                        class="pma-link-danger"
+                        @click="$emit('delete-user', [user._id, 'database', user._id])"
+                        v-text="showLanguage('global', 'delete')"
+                    ></span>
+                    <span class="doc-right-to-top">
+                        <span
+                            class="pma-link"
+                            v-text="showLanguage('document', 'top')"
+                            @click="$emit('pma-main-panel-scroll', {})"
+                        ></span>
+                    </span>
+                </td>
             </tr>
         </table>
     </div>
 </template>
 <script>
-    /*
-     * Import the Event bus - not being used...
-     */
-    //import { EventBus } from '../../../event-bus.js';
-
     export default {
         name: "DatabaseUser",
 
@@ -60,7 +91,18 @@
          */
         data() {
             return {
-                activate: null
+                activate: null,
+                collapsed: true,
+            }
+        },
+
+        computed: {
+            hasRootRole() {
+                return this.user.roles.find(role => role.role === 'root')
+            },
+
+            hasMessage() {
+                return (this.user.message)
             }
         },
 
@@ -75,6 +117,10 @@
                 return this.$store.getters.getLanguageString( context, key );
             },
 
+            collapseUser() {
+                this.collapsed = !this.collapsed
+            },
+
             /*
              *  Display a readable value
              */
@@ -84,15 +130,6 @@
                 }
                 return 'False';
             },
-
-            /*
-             *  Send the 'activate user' event
-             */
-            activateUser(id) {
-                if (this.activate === true) {
-                    this.$emit('activate-user', id);
-                }
-            }
-        }
+        },
     }
 </script>

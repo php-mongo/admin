@@ -31,6 +31,8 @@ return [
     "authentication" => "Authentication",
     "clearAll" => "Clear all",
     "database" => "Database (%s)",
+    "dataBase" => "Database",
+    "db" => "DB",
     "dataSize" => "Data size",
     "drop" => "Drop",
     "dropAll" => "Drop all",

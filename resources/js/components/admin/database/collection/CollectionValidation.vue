@@ -109,7 +109,7 @@
                     this.validation  = this.$convObj().jsonH(validation);
                 }
                 else if (status === 3) {
-                    this.errorMessage = this.showLanguage('collection', 'validateError');
+                    this.errorMessage = this.showLanguage('errors', 'collection.validateError');
                 }
             },
 

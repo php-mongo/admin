@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      ServerController.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -25,6 +26,16 @@ namespace App\Http\Controllers\Api;
  *   Defines the requests used by the controller.
  */
 use Illuminate\Http\Request;
+
+/**
+ * Response object
+ */
+use Illuminate\Http\Response;
+
+/**
+ * Models
+ */
+use App\Models\User;
 
 /**
  *   Defined controllers used by the controller
@@ -118,14 +129,19 @@ class ServerController extends Controller
     private $composer;
 
     /**
-     * @var     string|null $errorMessage
+     * @var     string|array|null $errorMessage
      */
     private $errorMessage = null;
 
     /**
+     * @var User|null
+     */
+    private $user;
+
+    /**
      * @return string|array|null
      */
-    public function getErrorMessage(): ?mixed
+    public function getErrorMessage()
     {
         return $this->errorMessage;
     }
@@ -302,7 +318,7 @@ class ServerController extends Controller
         try {
             $reader                  = new ConfigurationReader;
             $composer                = base_path('composer.json');
-            $data                    = $reader->read( $composer );
+            $data                    = $reader->read($composer);
             $obj                     = $data->rawData();
             $composer                = [];
             $composer['name']        = $data->name();
@@ -343,17 +359,18 @@ class ServerController extends Controller
      */
     public function __construct()
     {
-        /** @var \App\Models\User $user */
-        // Set the default DB (admin wont work for non ROOT users)
+        /** @var User $user */
+        // Set the default DB
+        // ToDo: admin wont work for non ROOT users
         $this->db    = 'admin';
-        $user        = auth()->guard('api')->user();
-        $this->mongo = new Mongo($user);
+        $this->user  = auth()->guard('api')->user();
+        $this->mongo = new Mongo($this->user);
         if ($this->mongo->checkConfig()) {
-            $this->database = $this->mongo->connectClientDb( $this->db );
+            $this->database = $this->mongo->connectClientDb($this->db);
         }
 
         // ToDo: for now just use the config value = these need to be reading the 'current server' once we implement server configs
-        // ToDo: Server configs implemented - keeping this here for prosperity.. and reminiscence...
+        // ToDo: Server configs implemented - keeping these here for reference...
         //$uri = "mongodb://" . config('mongo.servers.0.host') . ":" . config('mongo.servers.0.port');
         //$this->manager = new MongoDB\Driver\Manager($uri);
         //$this->database = (new MongoDB\Client)->admin;
@@ -367,9 +384,9 @@ class ServerController extends Controller
      * Method:      GET
      * Description: Web and DB server data
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return Response
      */
-    public function getServer()
+    public function getServer(): Response
     {
         // get the server data
         $arr = [];
@@ -429,7 +446,7 @@ class ServerController extends Controller
                 );
                 $results = $manager->executeCommand(
                     $database,
-                    new MongoDb\Driver\Command( $command )
+                    new MongoDb\Driver\Command($command)
                 );
 
                 //dd($results->toArray()[0]);
@@ -474,7 +491,7 @@ class ServerController extends Controller
             );
             $results = $manager->executeCommand(
                 $database,
-                new MongoDb\Driver\Command( $command )
+                new MongoDb\Driver\Command($command)
             );
 
             $results = $results->toArray()[0];

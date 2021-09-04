@@ -73,7 +73,7 @@ import Vue from 'vue';
 /**
  * Load & use the Vue cookie monster
  */
-import VueCookies from 'vue-cookie';
+import VueCookies from 'vue-cookies';
 Vue.use(VueCookies);
 
 /**

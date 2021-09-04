@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      MongoConnection.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -17,7 +18,7 @@
  */
 
 /**
- * its not 'MySpace' - maybe its YourSpace?
+ * It's not 'MySpace' - maybe its YourSpace?
  */
 namespace App\Http\Classes;
 
@@ -25,8 +26,12 @@ namespace App\Http\Classes;
  * We need User model to fetch the Server configurations (if any)
  * @uses
  */
+
+use App\Exceptions\UnableToConnectMongoDbException;
+use App\Http\Traits\PrivilegesTrait;
 use App\Models\User;
 use App\Models\Server;
+use Illuminate\Support\Facades\Crypt;
 use MongoDB;
 
 /**
@@ -35,14 +40,89 @@ use MongoDB;
  */
 class MongoConnection
 {
+    use PrivilegesTrait;
+
+    /**
+     * Built in read capable roles
+     *
+     * @var string[]
+     */
+    private $readRoles = [
+        'root',
+        'dbOwner',
+        'read',
+        'readWrite',
+        'readAnyDatabase',
+        'readWriteAnyDatabase',
+    ];
+
+    /**
+     * Built in write capable roles
+     *
+     * @var string[]
+     */
+    private $writeRoles = [
+        'root',
+        'dbOwner',
+        'readWrite',
+        'readWriteAnyDatabase'
+    ];
+
+    /**
+     * Built in user admin capable roles
+     *
+     * @var string[]
+     */
+    private $userAdminRoles = [
+        'root',
+        'dbOwner',
+        'userAdmin',
+        'userAdminAnyDatabase'
+    ];
+
+    /**
+     * Built in db admin capable roles
+     *
+     * @var string[]
+     */
+    private $dbAdminRoles = [
+        'dbAdmin',
+        'dbAdminAnyDatabase'
+    ];
+
+    /**
+     * Roles with find capability
+     *
+     * @var string[]
+     */
+    private $findPrivilegeOnCollection = [
+        array('backup' => '*'),
+        array('dbOwner' => '*'),
+        array('dbAdmin' => 'system.profile'),
+        array('read' => '*'),
+        array('readWrite' => '*'),
+        array('readAnyDatabase' => '*'),
+        array('readWriteAnyDatabase' => '*'),
+        array('dbAdminAnyDatabase' => 'system.profile'),
+    ];
+
     /** @var MongoDB\Client */
     private $client;
 
     /** @var MongoDB\Driver\Manager */
     private $manager;
 
-    /** @var Server */
+    /** @var array */
     private $server;
+
+    /** @var string */
+    private $userName;
+
+    /** @var string $userDb This defines the scope of the current users privileges */
+    private $userDb;
+
+    /** @var array */
+    private $userRoles;
 
     /**
      * @return MongoDB\Client
@@ -77,19 +157,76 @@ class MongoConnection
     }
 
     /**
-     * @return Server
+     * @return array
      */
-    public function getServer(): array
+    public function getServer(): ?array
     {
         return $this->server;
     }
 
     /**
+     * This array is derived either from the Server attributes or manually created
+     *
      * @param array $server
      */
     public function setServer(array $server): void
     {
         $this->server = $server;
+    }
+
+    public function getServerId()
+    {
+        return $this->server['id'];
+    }
+
+    /**
+     * @return array
+     */
+    public function getUserRoles(): array
+    {
+        return $this->userRoles ?? array('roles' => []);
+    }
+
+    /**
+     * Sets the user roles array - mostly used for handling permissions
+     *
+     * @param array $userRoles
+     * @return void
+     */
+    public function setUserRoles(array $userRoles): void
+    {
+        $this->userRoles = $userRoles;
+    }
+
+    /**
+     * Sets the user primary database
+     *
+     * @param   string $userDb
+     * @return  void
+     */
+    public function setUserDb(string $userDb): void
+    {
+        $this->userDb = $userDb;
+    }
+
+    /**
+     * @param   string|null $db
+     * @return  string
+     */
+    public function getUserDb(string $db = null): string
+    {
+        return $this->userDb ?? $db;
+    }
+
+    /**
+     * We need to store this for reference
+     * Need to track the DB username used by the current login user
+     *
+     * @return  string
+     */
+    public function getUserName(): string
+    {
+        return $this->userName;
     }
 
     /**
@@ -98,7 +235,7 @@ class MongoConnection
      *
      * @return array
      */
-    private function prepareConnection()
+    private function prepareConnection(): array
     {
         $server = $this->getServer();
         $prefix = false !== strpos($server['host'], 'localhost') ? 'mongodb' : 'mongodb+srv';
@@ -113,20 +250,97 @@ class MongoConnection
     }
 
     /**
+     * Method sets up the current local application user
+     * Stores current user roles for permission checks
+     * ToDo: update to also fetch the users privileges and use those for verification
+     */
+    private function prepareLocalUser(): void
+    {
+        try {
+            $this->connectManager();
+            $manager = $this->getManager();
+            $command = array(
+                'usersInfo' => array(
+                    'user' => $this->getUserName(),
+                    'db' => 'admin'
+                )
+            );
+            $cursor = $manager->executeCommand(
+                'admin',
+                new MongoDb\Driver\Command($command)
+            );
+
+            $user = $cursor->toArray()[0];
+            if ($user->ok == 1) {
+                $this->setUserDb($user->users[0]->db);
+                $roles = $user->users[0]->roles;
+                $arr = array(
+                    'dbs' => null,
+                    'roles' => null,
+                    'hasRoot' => false
+                );
+                foreach ($roles as $role) {
+                    $arr['roles'][] = array(
+                        'db' => $role->db,
+                        'role' => $role->role
+                    );
+                    $arr['dbs'][] = $role->db;
+                    if ($role->role === 'root') {
+                        $arr['hasRoot'] = true;
+                    }
+                }
+                $this->setUserRoles($arr);
+            }
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            // todo: implement some logging for all of these cases
+        }
+    }
+
+    /**
      * MongoConnection constructor.
      *
-     * @param User $user
+     * @param User|null $user
      */
-    public function __construct(User $user)
+    public function __construct(?User $user)
     {
-        $server = $user->servers()->where('active', 1)->get();
-        // this ensures we still connect with basic settings if there is NO server configuration
-        $server = isset($server[0]) ? $server[0]->getAttributes() : array('host' => 'localhost', 'port' => 27017, 'username' => false, 'password' => false);
+        if (!$user) {
+            return false;
+        }
+
+        /** @var Server $server */
+        $servers = $user->servers()->where('active', 1)->get();
+
+        if (isset($servers[0])) {
+            $server = $servers[0];
+            $server->setAttribute('is_current', 1);
+            $server->save();
+            $server         = $server->getAttributes();
+            $this->userName = $server['username'];
+        }
+        // When there is no Server associated with the user, we assume that the user has been created using 'both' login and database
+        // ToDo: if the user has 'NO' server and 'NO' mongo DB cred - they wont have may usable options
+        if (empty($servers[0])) {
+            $server = array(
+                'id' => 0,
+                'host' => 'localhost',
+                'port' => 27017,
+                'username' => $user->getAttribute('user'),
+                'password' => $user->getAttribute('encrypted_password') ?
+                    Crypt::decryptString($user->getAttribute('encrypted_password')) :
+                    null
+            );
+
+            // save the username
+            $this->userName = $user->getAttribute('user');
+        }
+
         if ('demo' == env('APP_ENV')) {
             // demo site only
-            $server = array('host' => 'localhost', 'port' => 27017, 'username' =>  config('app.dbUser') , 'password' => config('app.dbPasswd'));
+            $server = array('host' => 'localhost',
+                'port' => 27017, 'username' =>  config('app.dbUser') , 'password' => config('app.dbPasswd'));
         }
-        $this->setServer( $server );
+
+        $this->setServer($server);
     }
 
     /**
@@ -134,7 +348,7 @@ class MongoConnection
      *
      * @return bool
      */
-    public function checkConfig()
+    public function checkConfig(): bool
     {
         $config = $this->getServer();
         return (isset($config['host'], $config['port'], $config['username'], $config['password']));
@@ -142,12 +356,29 @@ class MongoConnection
 
     /**
      * Create a client connection and save locally
-     * @param boolean|string $db
      */
-    public function connectClient()
+    public function connectClient(): void
     {
-        $prep = $this->prepareConnection();
-        $this->client = new MongoDB\Client( $prep['uri'], $prep['options']);
+        if (!$this->client instanceof MongoDB\Client) {
+            $prep = $this->prepareConnection();
+            $this->client = new MongoDB\Client($prep['uri'], $prep['options']);
+        }
+
+        // prepare the local user permissions data
+        $this->prepareLocalUser();
+    }
+
+    /**
+     * @return MongoDB\Client
+     * @throws UnableToConnectMongoDbException
+     */
+    public function connectAndGetClient(): MongoDB\Client
+    {
+        if ($this->checkConfig()) {
+            $this->connectClient();
+            return $this->getClient();
+        }
+        throw new UnableToConnectMongoDbException('Unable to connect with the MongoDb server');
     }
 
     /**
@@ -156,10 +387,10 @@ class MongoConnection
      * @param string $db
      * @return MongoDB\Database
      */
-    public function connectClientDb( string $db )
+    public function connectClientDb(string $db): MongoDB\Database
     {
         $prep = $this->prepareConnection();
-        return (new MongoDB\Client( $prep['uri'], $prep['options']))->$db;
+        return (new MongoDB\Client($prep['uri'], $prep['options']))->$db;
     }
 
     /**
@@ -169,19 +400,21 @@ class MongoConnection
      * @param string $collection
      * @return MongoDB\Collection
      */
-    public function connectClientCollection( string $db, string $collection )
+    public function connectClientCollection(string $db, string $collection): MongoDB\Collection
     {
         $prep = $this->prepareConnection();
-        return (new MongoDB\Client( $prep['uri'], $prep['options']))->$db->$collection;
+        return (new MongoDB\Client($prep['uri'], $prep['options']))->$db->$collection;
     }
 
     /**
      * Create a manager connection and save locally
      */
-    public function connectManager()
+    public function connectManager(): void
     {
-        $prep = $this->prepareConnection();
-        $this->manager = new MongoDB\Driver\Manager( $prep['uri'], $prep['options']);
+        if (!$this->manager instanceof MongoDB\Driver\Manager) {
+            $prep = $this->prepareConnection();
+            $this->manager = new MongoDB\Driver\Manager($prep['uri'], $prep['options']);
+        }
     }
 
     /**
@@ -198,12 +431,13 @@ class MongoConnection
     {
         if ($this->manager) {
             try {
-                $command = new MongoDB\Driver\Command( $command );
-                return $this->manager->executeCommand( $db, $command );
-            }
-            catch (\Exception $e) {
+                $command = new MongoDB\Driver\Command($command);
+                return $this->manager->executeCommand($db, $command);
+            } catch (\Exception $e) {
                 return $e->getMessage();
             }
         }
+
+        return '{}';
     }
 }

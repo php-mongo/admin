@@ -42,7 +42,7 @@ class ConfirmSetup
     public function handle($request, Closure $next)
     {
         $users = User::all();
-        if (!$this->checkUsers( $users )) {
+        if (!$this->checkUsers($users)) {
             return redirect()->route('setup');
         }
         return $next($request);

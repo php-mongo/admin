@@ -136,6 +136,7 @@
                         font-style: italic;
                         max-width: 500px;
                         margin: 0 auto 10px auto;
+                        padding: 7px;
                     }
                 }
 
@@ -246,6 +247,13 @@
                         margin: 0 auto;
                     }
                 }
+
+                .actions {
+                    a {
+                        display: inline-block;
+                        margin: 0 0 7px 0;
+                    }
+                }
             }
         }
     }
@@ -296,7 +304,12 @@
   <div id="login-modal" v-show="show" v-on:click="closeDialogOutside($event)">
     <div class="login-box" v-on:click.stop="">
 
-        <div class="login-label"><h3><span v-text="showLanguage('login', 'title')"></span><img v-on:click="closeThisDialog()" title="Close" alt="Close" src="img/close-icon-white.svg"></h3></div>
+        <div class="login-label">
+            <h3>
+                <span v-text="showLanguage('login', 'title')"></span>
+                <img v-on:click="closeThisDialog()" title="Close" alt="Close" src="img/close-icon-white.svg">
+            </h3>
+        </div>
 
         <div class="login-content">
 
@@ -304,11 +317,50 @@
 
                 <p>&nbsp;</p>
 
-                <p class="intro-message"><span class="has-info" id="introMessage" v-text="showLanguage('login', 'intro')"></span></p>
-
                 <p class="login-error has-error hidden-content" ref="loginError"></p>
 
                 <p>
+                    <span class="fieldBlock">
+                        <label for="user" class="col-md-4 col-form-label text-md-right" v-text="showLanguage('login', 'username')"></label>
+<<<<<<< HEAD
+                        <input readonly="readonly" id="user" type="text" class="form-control" ref="user" name="user" v-model="credentials.user" required autocomplete="user" v-on:blur="checkUser()">
+=======
+                        <input
+                            id="user"
+                            type="text"
+                            class="form-control"
+                            ref="user"
+                            name="user"
+                            required autocomplete="user"
+                            v-model="credentials.user"
+                            v-on:blur="checkUser()"
+                        >
+>>>>>>> master
+                    </span>
+                    <span class="help-block" id="userInfo" ref="userInfo"></span>
+                </p>
+
+                <p>
+                    <span class="fieldBlock">
+                        <label for="password" class="col-md-4 col-form-label text-md-right" v-text="showLanguage('login', 'password')"></label>
+                        <input
+                            id="password"
+                            type="password"
+                            class="form-control"
+                            ref="password"
+                            name="password"
+                            required autocomplete="current-password"
+                            v-model="credentials.password"
+                            v-on:focus="verifyUser"
+                            v-on:keyup="countPassword"
+                            v-on:change="countPassword"
+                        >
+                    </span>
+                    <span class="help-block" id="passwordInfo" ref="passwordInfo"></span>
+                </p>
+
+                <p v-if="hasServers">
+                    <span class="intro-message"><span class="has-info" id="introMessage" v-text="showLanguage('login', 'selectServer')"></span></span>
                     <span class="fieldBlock">
                         <label for="host" class="col-md-4 col-form-label text-md-right" v-text="showLanguage('login', 'host')"></label>
                         <select id="host" class="form-control" ref="host" name="host" v-model="credentials.host" required autofocus v-on:blur="checkHost()">
@@ -318,28 +370,7 @@
                     <span class="help-block" id="hostInfo" ref="hostInfo"></span>
                 </p>
 
-                <p>
-                    <span class="fieldBlock">
-                        <label for="user" class="col-md-4 col-form-label text-md-right" v-text="showLanguage('login', 'username')"></label>
-                        <input readonly="readonly" id="user" type="text" class="form-control" ref="user" name="user" v-model="credentials.user" required autocomplete="user" v-on:blur="checkUser()">
-                    </span>
-                    <span class="help-block" id="userInfo" ref="userInfo"></span>
-                </p>
-
-                <p>
-                    <span class="fieldBlock">
-                        <label for="password" class="col-md-4 col-form-label text-md-right" v-text="showLanguage('login', 'password')"></label>
-                        <input id="password" type="password" class="form-control" ref="password" name="password" required autocomplete="current-password"
-                               v-model="credentials.password"
-                               v-on:focus="verifyUser"
-                               v-on:keyup="countPassword"
-                               v-on:change="countPassword"
-                        >
-                    </span>
-                    <span class="help-block" id="passwordInfo" ref="passwordInfo"></span>
-                </p>
-
-                <p>
+                <p v-if="hasDatabases">
                     <span class="fieldBlock">
                         <label for="db" class="db-select-label col-md-4 col-form-label text-md-right" v-text="showLanguage('login', 'selectDatabase')"></label>
                         <input readonly="readonly" id="db" type="text" class="form-control" ref="db" name="db" v-model="credentials.db" autocomplete="db" v-on:blur="checkDb()">
@@ -350,18 +381,25 @@
                 <p>
                     <span class="col-md-6 offset-md-4">
                         <span class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="remember"
+                                v-model="credentials.remember"
+                            >
                             <label class="form-check-label" for="remember" v-text="showLanguage('login', 'remember')"></label>
                         </span>
                     </span>
                 </p>
 
-                <div class="col-md-8 offset-md-4">
+                <div class="actions col-md-8 offset-md-4">
                     <button type="submit" :class="'button ' + submitButtonClass" :disabled="enableSubmit" v-bind:aria-disabled="submitButtonStatus" v-text="showLanguage('login', 'button')"></button>
                     <button class="button warning" v-on:click="closeThisDialog()" v-text="showLanguage('global', 'close')"></button>
-                    <br />
-                    <a class="btn btn-link" ref="resetPassword" v-on:click="resetPassword()" href="#" v-text="showLanguage('login', 'resetPassword')"></a>
-                    <a class="btn btn-link" ref="forgotUsername" v-on:click="forgotUsername()" href="#" v-text="showLanguage('login', 'forgotUsername')"></a>
+                    <br>
+                    <a class="btn btn-link" v-on:click="resetPassword()" href="#" v-text="showLanguage('login', 'resetPassword')"></a>
+                    <br>
+                    <a class="btn btn-link" v-on:click="forgetUsername()" href="#" v-text="showLanguage('login', 'forgetUsername')"></a>
+                    <p v-text="showLanguage('login', 'cookieCleared')" v-show="cookieCleared"></p>
                 </div>
 
             </form>
@@ -384,6 +422,19 @@
         */
         data() {
             return {
+                cookieCleared: false,
+                credentials: {
+                    active: "1", // ensures that only active users can login
+                    host: 'localhost',
+                    user: 'admin',
+                    password: 'good-guess',
+                    db: null,
+                },
+                errorData: null,
+                formStatus: 1,
+                hasServers: null,
+                hasDatabases: null,
+                index: 0,
                 limit: 55,
                 show: false,
                 verifiedHost: true,
@@ -391,27 +442,7 @@
                 verifiedEmail: true,
                 verifiedPassword: true,
                 verifiedDb: null,
-                credentials: {
-                    host: 'localhost',
-                    user: 'admin',
-                    password: 'good-guess',
-                    db: null
-                },
-                formStatus: 1
             }
-        },
-
-        /*
-        Sets up the component on the mounted lifecycle hook.
-        */
-        mounted() {
-            /*
-            When prompted for login, show the component.
-            */
-            EventBus.$on('prompt-login', () => {
-                this.show = true;
-
-            });
         },
 
         /*
@@ -419,15 +450,15 @@
          */
         computed: {
             submitButtonClass() {
-                return this.formStatus === 0 ? 'secondary' : 'success';
+                return this.formStatus === 0 ? 'secondary' : 'success'
             },
 
             submitButtonStatus() {
-                return this.formStatus === 0 ? 'true' : 'false';
+                return this.formStatus === 0 ? 'true' : 'false'
             },
 
             enableSubmit() {
-                return !(this.formStatus === 1);
+                return !(this.formStatus === 1)
             }
         },
 
@@ -439,88 +470,91 @@
             * Calls the Translation and Language service
             */
             showLanguage(context, key) {
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$jqf().nl2br(this.$store.getters.getLanguageString( context, key ))
             },
 
             closeThisDialog() {
-                this.show = false;
+                this.show = false
             },
 
             closeDialogOutside( event ) {
                 if ($(event.target).is('#login-modal')) {
-                    this.closeThisDialog();
+                    this.closeThisDialog()
                 }
             },
 
             loginUser( event ) {
                 event.preventDefault();
-                this.$store.dispatch( 'loginUser', { data: this.credentials } );
+                this.$store.dispatch( 'loginUser', this.credentials );
                 setTimeout(() => {
-                    this.completeLogin();
-                    }, 500);
+                    this.completeLogin()
+                    }, 500)
             },
 
             completeLogin() {
-                let status = this.$store.getters.getUserLoginStatuss;
+                let status = this.$store.getters.getUserLoginStatus;
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     setTimeout(() => {
-                        this.completeLogin();
-                    }, 200);
+                        this.completeLogin()
+                    }, 200)
                 }
                 if (status === 2) {
                     this.show = false;
                     EventBus.$emit('show-success', { notification: this.showLanguage('auth', 'login-success')});
                     setTimeout(() => {
                         router.push( { name: 'admin' } );
-                     //   window.location = window.location;
-                    }, 2000);
+                        this.show = false
+                    }, 2000)
                 }
                 if (status === 3) {
-                    this.showLoginError();
+                    this.showLoginError()
                 }
             },
 
             showLoginError() {
-                let text = this.showLanguage('auth', 'login-failed');
-                this.$jqf(this.$refs.loginError).remove('hidden-content').text(text);
+                this.errorData = this.$store.getters.getUserErrorData;
+                let text = this.errorData.data && this.errorData.data.error ?
+                    this.showLanguage('auth', this.errorData.data.error) :
+                    this.showLanguage('auth', 'unknown');
+                this.$jqf(this.$refs.loginError).remove('hidden-content').html(text);
                 setTimeout(() => {
-                    this.$jqf(this.$refs.loginError).add('hidden-content');
-                }, 10000);
+                    this.$jqf(this.$refs.loginError).add('hidden-content')
+                }, 10000)
             },
 
             resetPassword() {
-                console.log("lets reset the password!!");
+                window.location = '/setup'
             },
 
             forgotUsername() {
-                console.log("lets get the username!!");
+                console.log("lets get the username!!")
             },
 
             /*
             * Check host placeholder
             */
             checkHost() {
-                this.verifiedHost = true;
+                this.verifiedHost = true
             },
 
             /*
              * Check host placeholder
              */
             checkDb() {
-                this.verifiedDb = true;
+                this.verifiedDb = true
             },
 
             checkUser() {
-                let e = this.credentials.user || false, self = this;
-                if (e.length <= 4) {
-                    this.$jqf(this.$refs.userInfo).replace(['has-success', 'has-error']).text('Invalid username - minimum 5 characters!');
-                    this.$jqf(this.$refs.user).replace(['has-success', 'has-error']).focus();
-
-                } else {
+                let e = this.credentials.user || false;
+                if (e.length >= 5) {
                     this.verifiedUser = e;
                     this.$jqf(this.$refs.userInfo).replace(['has-error', 'has-success']).text('Username verified');
-                    this.$jqf(this.$refs.user).replace(['has-error', 'has-success']);
+                    this.$jqf(this.$refs.user).replace(['has-error', 'has-success'])
+
+                } else {
+                    this.$jqf(this.$refs.userInfo).replace(['has-success', 'has-error']).text('Invalid username - minimum 5 characters!');
+                    this.$jqf(this.$refs.user).replace(['has-success', 'has-error']).focus()
                 }
             },
 
@@ -528,16 +562,16 @@
              *   Verify the email address
              */
             checkEmail() {
-                let e = this.credentials.email || false, self = this;
+                let e = this.credentials.email || false;
                 if (e.length >= 5) {
                     if (e.indexOf('@') === -1 || e.indexOf('.') === -1) {
                         this.$jqf(this.$refs.emailInfo).replace(['has-success', 'has-error']).text('Your email address appears invalid!');
-                        this.$jqf(this.$refs.email).replace(['has-success', 'has-error']).focus();
+                        this.$jqf(this.$refs.email).replace(['has-success', 'has-error']).focus()
 
                     } else {
                         this.verifiedEmail = e;
                         this.$jqf(this.$refs.emailInfo).replace(['has-error', 'has-success']).text('Email address verified');
-                        this.$jqf(this.$refs.email).replace(['has-error', 'has-success']);
+                        this.$jqf(this.$refs.email).replace(['has-error', 'has-success'])
                     }
                 }
             },
@@ -547,13 +581,12 @@
                 if (e && e !== false) {
                     if (e.indexOf('@') === -1 || e.indexOf('.') === -1 || e !== this.verifiedEmail) {
                         this.$jqf(this.$refs.emailInfo).replace(['has-success', 'has-error']).text('Your email address appears invalid!');
-                        this.$jqf(this.$refs.email).replace(['has-success', 'has-error']).focus();
+                        this.$jqf(this.$refs.email).replace(['has-success', 'has-error']).focus()
                     }
 
                 } else {
                     this.$jqf(this.$refs.emailInfo).replace(['has-success', 'has-error']).text('Please enter your email address first!');
-                    this.$jqf(this.$refs.email).replace(['has-success', 'has-error']).focus();
-
+                    this.$jqf(this.$refs.email).replace(['has-success', 'has-error']).focus()
                 }
             },
 
@@ -562,13 +595,12 @@
                 if (e && e !== false) {
                     if (e.length < 5 || e !== this.verifiedUser) {
                         this.$jqf(this.$refs.userInfo).replace(['has-success', 'has-error']).text('Your username appears invalid!');
-                        this.$jqf(this.$refs.user).replace(['has-success', 'has-error']).focus();
+                        this.$jqf(this.$refs.user).replace(['has-success', 'has-error']).focus()
                     }
 
                 } else {
                     this.$jqf(this.$refs.userInfo).replace(['has-success', 'has-error']).text('Please enter your username first!');
-                    this.$jqf(this.$refs.user).replace(['has-success', 'has-error']).focus();
-
+                    this.$jqf(this.$refs.user).replace(['has-success', 'has-error']).focus()
                 }
             },
 
@@ -577,16 +609,42 @@
                 if (p !== undefined) {
                     if (p.length < 8) {
                         this.$jqf(this.$refs.passwordInfo).replace(['has-success', 'has-error']).text('Password length = ' + p.length +'.  Min 8 characters required');
-                        this.$jqf(this.$refs.password).replace(['has-success', 'has-error']);
+                        this.$jqf(this.$refs.password).replace(['has-success', 'has-error'])
                     }
                     if (p.length >= 8) {
                         this.$jqf(this.$refs.passwordInfo).replace(['has-error', 'has-success']).text('Password length validated');
                         this.$jqf(this.$refs.password).replace(['has-error', 'has-success']);
                         this.verifiedPassword = true;
-                        this.formStatus = 1;
+                        this.formStatus = 1
                     }
                 }
             },
-        }
+
+            handleRememberMe() {
+                this.cookieCleared = false;
+                this.credentials.user = this.$cookies.get('pma-member');
+                this.checkUser()
+            },
+
+            forgetUsername() {
+                this.$cookies.set('pma-member', '', '-60');
+                this.cookieCleared = true
+            },
+        },
+
+        /*
+        Sets up the component on the mounted lifecycle hook.
+        */
+        mounted() {
+            /*
+            When prompted for login, show the component.
+            */
+            EventBus.$on('prompt-login', () => {
+                this.show = true
+            });
+
+            this.handleRememberMe()
+        },
+
     }
 </script>

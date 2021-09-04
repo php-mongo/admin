@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      Controller.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -24,6 +25,9 @@ namespace App\Http\Controllers;
 /**
  * @uses
  */
+
+use App\Http\Classes\MongoConnection;
+use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -35,5 +39,102 @@ use Illuminate\Routing\Controller as BaseController;
  */
 class Controller extends BaseController
 {
-    use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    use AuthorizesRequests;
+    use DispatchesJobs;
+    use ValidatesRequests;
+
+    /**
+     * @var MongoConnection
+     */
+    private $mongo;
+
+    /**
+     * @var User
+     */
+    private $user;
+
+    /**
+     * @return array
+     */
+    private function getAttributes(): array
+    {
+        return $this->user->toArray();
+    }
+
+    /**
+     * @param User|null $user
+     * @param MongoConnection|null $mongo
+     */
+    public function __construct(?User $user, ?MongoConnection $mongo)
+    {
+        $this->mongo = $mongo;
+        $this->user = $user;
+    }
+
+    /**
+     * Control user, all admin users or user with correct role(s)
+     *
+     * @param string|null $database
+     * @return  bool
+     */
+    protected function canAdministerUsers(?string $database = 'admin'): bool
+    {
+        $attr = $this->getAttributes();
+        //dd($attr);
+        return ((int)$attr['control_user'] === 1 ||
+            (int)$attr['admin_user'] === 1 ||
+            $this->mongo->hasRootRole() ||
+            $this->mongo->hasUserAdminRoleOnDatabase($database));
+    }
+
+    /**
+     * Control user, all admin users or user with correct role(s)
+     *
+     * @param string|null $database
+     * @return  bool
+     */
+    protected function canAdministerDatabases(?string $database = 'admin'): bool
+    {
+        $attr = $this->getAttributes();
+        return (int)$attr['control_user'] === 1 ||
+            (int)$attr['admin_user'] === 1 ||
+            $this->mongo->hasRootRole() ||
+            $this->mongo->hasAdminRoleOnDatabase($database);
+    }
+
+    /**
+     *  Control user, all admin users or user with correct role(s)
+     */
+    protected function canReadDatabases(?string $database = 'admin'): bool
+    {
+        $attr = $this->getAttributes();
+        return (int)$attr['control_user'] === 1 ||
+            (int)$attr['admin_user'] === 1 ||
+            $this->mongo->hasRootRole() ||
+            $this->mongo->hasReadRoleOnDatabase($database);
+    }
+
+    /**
+     *  Control user, all admin users or user with correct role(s)
+     */
+    protected function canLoadDatabases(?string $database = 'admin'): bool
+    {
+        $attr = $this->getAttributes();
+        return (int)$attr['control_user'] === 1 ||
+            (int)$attr['admin_user'] === 1 ||
+            $this->mongo->hasRootRole() ||
+            $this->mongo->hasReadRoleOnDatabase($database) ||
+            $this->mongo->hasAdminRoleOnDatabase($database);
+    }
+
+    /**
+     *  Control user or user with correct role(s)
+     */
+    protected function canWriteDatabases(?string $database = 'admin'): bool
+    {
+        $attr = $this->getAttributes();
+        return (int)$attr['control_user'] === 1 ||
+            $this->mongo->hasRootRole() ||
+            $this->mongo->hasReadRoleOnDatabase($database);
+    }
 }

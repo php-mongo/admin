@@ -16,44 +16,87 @@
   -->
 
 <style lang="scss">
-    /* nothing to see here! */
+    users {
+        .user-collapse {
+            cursor: pointer;
+        }
+        th.bb {
+            width: 130px;
+        }
+    }
 </style>
 <template>
     <div>
-        <table class="bordered">
+        <p class="form-error" v-show="hasMessage">{{ hasMessage }}</p>
+        <p class="text-info" v-show="hasMessage">{{ hasSuccess }}</p>
+        <table class="bordered users">
             <tr>
-                <th class="bb" v-text="showLanguage('users', 'name')"></th><td>{{ user.name }}</td>
+                <th class="bb" v-text="showLanguage('users', 'name')"></th>
+                <td v-on:click="collapseUser">
+                    {{ user.name }}
+                    <span class="user-collapse u-pull-right" v-show="collapsed" :title="showLanguage('users', 'collapse')">
+                        <img src="img/sort-asc-dark.svg" alt="Collapse user" />
+                    </span>
+                    <span class="user-collapse u-pull-right" v-show="!collapsed" :title="showLanguage('users', 'expand')">
+                        <img src="img/sort-desc-dark.svg" alt="Expand user" />
+                    </span>
+                </td>
+            </tr>
+            <tr v-show="!collapsed">
+                <th class="bb" v-text="showLanguage('users', 'email')"></th>
+                <td>{{ user.email }}</td>
             </tr>
             <tr>
-                <th class="bb" v-text="showLanguage('users', 'email')"></th><td>{{ user.email }}</td>
+                <th class="bb" v-text="showLanguage('users', 'username')"></th>
+                <td>{{ user.user }}</td>
             </tr>
-            <tr>
-                <th class="bb" v-text="showLanguage('users', 'username')"></th><td>{{ user.user }}</td>
+            <tr v-show="!collapsed">
+                <th class="bb" v-text="showLanguage('users', 'adminUser')"></th>
+                <td>{{ showBool(user.admin_user) }}</td>
             </tr>
-            <tr>
-                <th class="bb" v-text="showLanguage('users', 'adminUser')"></th><td>{{ showBool(user.admin_user) }}</td>
-            </tr>
-            <tr>
-                <th class="bb" v-text="showLanguage('users', 'controlUser')"></th><td>{{ showBool(user.control_user) }}</td>
+            <tr v-show="!collapsed">
+                <th class="bb" v-text="showLanguage('users', 'controlUser')"></th>
+                <td>{{ showBool(user.control_user) }}</td>
             </tr>
             <tr>
                 <th class="bb" v-text="showLanguage('users', 'active')"></th>
-                <td>{{ showBool(user.active) }}
-                <span class="activate-checkbox" v-show="user.active === 0" :title="showLanguage('title' , 'activateUserTitle')">
-                    <input @change="activateUser(user.id)" v-model="activate" type="checkbox" /> <span v-text="showLanguage('users', 'check')"></span>
-                </span>
+                <td>
+                    {{ showBool(user.active) }}
+                    <span class="activate-checkbox" v-show="showActivate" :title="showLanguage('title' , 'activateUserTitle')">
+                        <input @change="$emit('activate', [user.id, 'login', user.user, user.active])" type="checkbox">
+                        <span v-text="showLanguage('users', 'check')"></span>
+                    </span>
                 </td>
             </tr>
-            <tr>
-                <th class="bb" v-text="showLanguage('users', 'created')"></th><td>{{ user.created_at}}</td>
+            <tr v-show="!collapsed">
+                <th class="bb" v-text="showLanguage('users', 'created')"></th>
+                <td>{{ user.created_at}}</td>
+            </tr>
+            <tr v-show="!collapsed">
+                <th class="bb" v-text="showLanguage('users', 'updated')"></th>
+                <td>{{ user.updated_at}}</td>
             </tr>
             <tr>
-                <th class="bb" v-text="showLanguage('users', 'updated')"></th><td>{{ user.updated_at}}</td>
-            </tr>
-            <tr>
-                <th class="bb" v-text="showLanguage('users', 'actions')"></th><td>
-                <span class="pma-link" @click="$emit('edit', user.id)" v-text="showLanguage('global', 'edit')"></span> |
-                <span class="pma-link-danger" @click="$emit('remove-user', user.id)" v-text="showLanguage('global', 'delete')"></span></td>
+                <th class="bb" v-text="showLanguage('users', 'actions')"></th>
+                <td>
+                    <span class="pma-link"
+                          @click="$emit('edit-user', [user.id, 'login', user.user])"
+                          v-text="showLanguage('global', 'edit')"
+                    ></span> |
+                    <span
+                        v-if="user.id !== account.id"
+                        class="pma-link-danger"
+                        @click="$emit('delete-user', [user.id, 'login', user.user])"
+                        v-text="showLanguage('global', 'delete')"
+                    ></span>
+                    <span class="doc-right-to-top">
+                        <span
+                            class="pma-link"
+                            v-text="showLanguage('document', 'top')"
+                            @click="$emit('pma-main-panel-scroll', {})"
+                        ></span>
+                    </span>
+                </td>
             </tr>
         </table>
     </div>
@@ -65,15 +108,30 @@
         /*
          *  One prop is better than none!
          */
-        props: ['user'],
+        props: ['user','account'],
 
-        /*
-         *  The lonely data element
-         */
         data() {
             return {
-                activate: null
+                collapsed: true
             }
+        },
+
+        computed: {
+            hasMessage() {
+                return (this.user.message)
+            },
+
+            setMessage() {
+                return this.user.message && this.user.message.indexOf('Success:') === -1 ? this.user.message : '';
+            },
+
+            hasSuccess() {
+                return this.user.message && this.user.message.indexOf('Success:') === -1 ? '' : this.user.message;
+            },
+
+            showActivate() {
+                return this.user.active === "0"
+            },
         },
 
         /*
@@ -87,6 +145,10 @@
                 return this.$store.getters.getLanguageString( context, key );
             },
 
+            collapseUser() {
+                this.collapsed = !this.collapsed
+            },
+
             /*
              *  Display a readable value
              */
@@ -96,15 +158,6 @@
                 }
                 return 'False';
             },
-
-            /*
-             *  Send the 'activate user' event
-             */
-            activateUser(id) {
-                if (this.activate === true) {
-                    this.$emit('activate-user', id);
-                }
-            }
         }
     }
 </script>

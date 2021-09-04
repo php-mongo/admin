@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      EditUserRequest.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -27,7 +28,7 @@ class EditUserRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -37,10 +38,20 @@ class EditUserRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-          'profile_visibility' => 'sometimes|boolean'
+            'active'    => 'sometimes|boolean',
+            'database'  => 'sometimes|string',
+            'email'     => 'sometimes|email|nullable',
+            'id'        => 'required|string_or_int',
+            'isAdmin'   => 'sometimes|boolean',
+            'name'      => 'sometimes|string|max:200|nullable',
+            'password'  => 'sometimes|string|min:5|nullable',
+            'roles'     => 'sometimes|array',
+            'type'      => 'required|string',
+            'user'      => 'required|string|min:3|max:100|nullable',
+            'updated'   => 'sometimes|array'
         ];
     }
 
@@ -52,7 +63,17 @@ class EditUserRequest extends FormRequest
     public function messages()
     {
         return [
-          'profile_visibility.boolean' => 'The profile visibility flag needs to be a boolean'
+            'active' => 'Please ensure users Active state has been selected',
+            'email' => 'Please enter a valid email address',
+            'isAdmin' => 'The Is Admin value is invalid',
+            'name' => 'Please enter a valid name',
+            'password' => 'Your password must contain at least 5 characters',
+            'password2' => 'Your password did not match',
+            'profile_visibility.boolean' => 'The profile visibility flag needs to be a boolean',
+            'roles' => 'Roles must be provided for database users',
+            'type' => 'User type is not valid',
+            'user' => 'Please provide a valid user name',
+            'user.unique' => 'The user-name provided already exists as an application user',
         ];
     }
 }

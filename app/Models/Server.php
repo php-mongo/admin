@@ -28,7 +28,7 @@ class Server extends Model
      * @var array
      */
     protected $fillable = [
-        'host', 'port', 'username', 'password', 'user_id',
+        'host', 'port', 'username', 'password', 'user_id', 'is_current',
     ];
 
     /**

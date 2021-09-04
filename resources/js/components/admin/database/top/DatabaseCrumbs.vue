@@ -337,7 +337,7 @@
                 this.activeColl = this.activeCollection = collectionName;
             });
 
-            EventBus.$on('show-databases', (db) => {
+            EventBus.$on('show-databases', () => {
                 this.clearData();
             });
 

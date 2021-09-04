@@ -35,6 +35,7 @@ return [
     "dbName" => "Database name",
     "databases" => "Databases",
     "dataSize" => "Data size",
+    "isEmpty" => "Is empty",
     "indexSize" => "Index size",
     "messageCreateSuccess" => "Database created successfully",
     "messageDeleteSuccess" => "Selected database(s) %s deleted successfully",
@@ -42,6 +43,7 @@ return [
     "name" => "Name",
     "objects" => "Objects",
     "size" => "Size",
+    "sizeOnDisk" => "Size on disk",
     "storageSize" => "Storage size",
     "withSelected" => "With selected:"
 

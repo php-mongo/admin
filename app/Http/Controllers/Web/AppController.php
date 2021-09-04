@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      AppController.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -38,10 +39,6 @@ class AppController extends Controller
     {
         return view('public.login');
     }
-
-    /*public function getLoginForm() {
-        return view('public.login');
-    }*/
 
     public function getLogout()
     {

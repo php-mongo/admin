@@ -55,7 +55,7 @@ class DocumentHelper
      * @param   string $mixed This should be a JSON string
      * @return  string|bool
      */
-    public static function varEval( $mixed )
+    public static function varEval($mixed)
     {
         if ($mixed) {
             // there should be an equal number of opposite braces and square brackets
@@ -127,7 +127,7 @@ class DocumentHelper
                 // ToDo: !! as the 'eval' method is being deprecated - lets opt for something simpler and more PHP oriented !!
                 /*$eval = new VarEval($value, $format, $database);
                 $realValue = $eval->execute();*/
-                $realValue = self::varEval( $value );
+                $realValue = self::varEval($value);
                 if (false === $realValue) {
                     throw new Exception("Unable to parse mixed value, check your syntax!");
                 }
@@ -164,10 +164,10 @@ class DocumentHelper
         {
             // handle each char
             $char = $json[ $c ];
-            switch ( $char ) {
+            switch ($char) {
                 case '{':
                 case '[':
-                    if ( !$in_string ) {
+                    if ( !$in_string) {
                         $string .= $char . "\n" . str_repeat($tab, $indent_level+1);
                         $indent_level++;
                     }
@@ -178,7 +178,7 @@ class DocumentHelper
 
                 case '}':
                 case ']':
-                    if ( !$in_string ) {
+                    if ( !$in_string) {
                         $indent_level--;
                         $string .= "\n" . str_repeat($tab, $indent_level) . $char;
                     }

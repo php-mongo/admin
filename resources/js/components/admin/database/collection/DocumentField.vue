@@ -238,7 +238,7 @@
                     this.hideComponent();
                 }
                 if (status === 3) {
-                    EventBus.$emit('show-error', { notification: this.showLanguage('document', 'createError', this.errors) });
+                    EventBus.$emit('show-error', { notification: this.showLanguage('errors', 'document.createError', this.errors) });
                 }
             },
 
@@ -350,7 +350,7 @@
                         else {
                             // track errors
                             this.errors += 1;
-                            this.errorMessage = this.showLanguage('document', 'errors', this.errors);
+                            this.errorMessage = this.showLanguage('errors', 'document.errors', this.errors);
                         }
                     }
                     // track total number
@@ -381,7 +381,7 @@
                     this.hideComponent();
                 }
                 if (status === 3) {
-                    EventBus.$emit('show-error', { notification: this.showLanguage('document', 'updateError', this.form._id) });
+                    EventBus.$emit('show-error', { notification: this.showLanguage('errors', 'document.updateError', this.form._id) });
                 }
             },
 
@@ -432,10 +432,9 @@
             checkDocumentCount() {
                 this.newDocument = false;
                 this.documents   = this.$store.getters.getDocuments;
-             // this.$jqf().isEmpty(this.documents)
                 if (this.documents.length === 0) {
-                    // this infirm the user that a NEW document will have to be created in order to add a field
-                    this.errorMessage = this.showLanguage('document', 'noDocuments');
+                    // this informs the user that a NEW document will have to be created in order to add a field
+                    this.errorMessage = this.showLanguage('errors', 'document.noDocuments');
                     this.newDocument  = true;
                 }
             },

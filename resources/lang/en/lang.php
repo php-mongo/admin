@@ -28,8 +28,8 @@
 return [
 
     "title" => "Your Geo Location and Language Data",
-    "intro" => "The following information was retrieved using your IP address. We use Geo Location data to match you with 'Classified Ads' closest to your location. Ads are also displayed using a 'priority rating' ad booster technology",
-    "intro2" => "The following Language has been selected for use @ PHP Mongo Admin. Click on 'Change Language' to select a different language",
+    "intro" => "We use Geo Location data to track all application users. If you are using this application offline the service may still track you location",
+    "intro2" => "The following Language has been selected for use @ PHPMongoAdmin. Click on 'Change Language' to select a different language",
     "yourCountry" => "Your Country:",
     "yourState" => "Your State:",
     "yourCity" => "Your City / Suburb:",

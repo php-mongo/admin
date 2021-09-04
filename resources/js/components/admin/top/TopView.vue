@@ -56,8 +56,8 @@
 
 <template>
     <div ref="pmaTopPanel" class="pma-top-panel">
-        <top @collapseNav="collapseNav($event)" v-bind:error="error"></top>
-        <top-nav v-bind:collapsed="collapsed"></top-nav>
+        <top @collapseNav="collapseNav($event)" @clearError="clearError" v-bind:error="error" v-bind:user="user"></top>
+        <top-nav v-bind:collapsed="collapsed" v-bind:user="user"></top-nav>
     </div>
 </template>
 <script>
@@ -84,7 +84,8 @@
             return {
                 error: null,
                 expanded: false,
-                collapsed: false
+                collapsed: false,
+                user: {}
             }
         },
 
@@ -93,59 +94,105 @@
              *  Simple error monitor
              */
             watchError() {
-                return this.$store.getters.getErrorData;
-            }
+                return this.$store.getters.getAppErrorData
+            },
         },
 
         /*
          *   Defined methods for the component
          */
         methods: {
+            showLanguage( context, key ) {
+                return this.$store.getters.getLanguageString( context, key )
+            },
+
             watchLeftNav() {
                 this.expanded = !this.expanded;
                 if (this.expanded === true) {
                     this.$jqf(this.$refs.pmaTopPanel).css('margin-left', '5px');
-                    this.$jqf(this.$refs.pmaTopPanel).css('width', '99vw');
+                    this.$jqf(this.$refs.pmaTopPanel).css('width', '99vw')
                 }
                 if (this.expanded === false) {
                     this.$jqf(this.$refs.pmaTopPanel).css('margin-left', '245px');
-                    this.$jqf(this.$refs.pmaTopPanel).css('width', 'calc(100vw - 262px)');
+                    this.$jqf(this.$refs.pmaTopPanel).css('width', 'calc(100vw - 262px)')
                 }
             },
 
+            /*
+             *  Collapsing this component via events
+             */
             collapseNav( status ) {
-                this.collapsed = status;
+                this.collapsed = status
             },
 
             /*
              *  Simple implementation - expect error to be:  error.error
              */
-            setError() {
-                this.error = this.$store.getters.getErrorData;
-            }
+            setError(error) {
+                if (error) {
+                    this.error = { error: error};
+                    return
+                }
+                let errorData = this.$store.getters.getAppErrorData
+                this.error = errorData.errors ?
+                    errorData.errors :
+                    { error: 'Unhandled errors occurred' }
+            },
+
+            setPermissionError() {
+                if (this.$store.getters.getCanUserReadDatabase === false && this.$store.getters.getCanUserWriteDatabase === false) {
+                    this.setError(this.showLanguage('errors', 'noDatabaseRole'))
+                }
+            },
+
+            /*
+             *  Handle event from child component
+             */
+            clearError() {
+                this.$store.dispatch( 'clearAppErrorData' );
+                this.error = null
+            },
+
+            /*
+            *   Retrieves the User from Vuex
+            */
+            getUser() {
+                this.user = this.$store.getters.getUser
+            },
         },
 
         /*
          * get on ur bikes and ride !!
          */
         mounted() {
+            // we pass the user to child components as props
+            setTimeout(() => {
+                this.getUser();
+                this.setPermissionError()
+            }, 500)
+
             EventBus.$on('collapse-left-nav', () => {
-                this.watchLeftNav();
+                this.watchLeftNav()
             });
 
             EventBus.$on('expand-left-nav', () => {
-                this.watchLeftNav();
+                this.watchLeftNav()
             });
 
             EventBus.$on('collapse-nav', (status) => {
-                this.collapseNav(status);
+                this.collapseNav(status)
             });
+
+            setTimeout(() => {
+                this.setPermissionError()
+            }, 500)
+
         },
 
         watch: {
             watchError() {
-                this.setError();
-            }
+                this.setError()
+            },
         }
     }
 </script>

@@ -8164,6 +8164,14 @@ body .pma-link-danger {
   cursor: pointer;
 }
 
+body .notification-container {
+  position: fixed;
+  z-index: 999999;
+  left: 12rem;
+  right: 0;
+  top: 20px;
+}
+
 /*!
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      _page.scss 1001 6/8/20, 8:58 pm  Gilbert Rehling $

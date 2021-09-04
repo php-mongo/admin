@@ -29,9 +29,23 @@
 
 return [
 
-    'failed' => 'These credentials do not match our records.',
-    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
-    'login-success' => 'You have successfully logged in - please wait to be redirected to PhpMongoAdmin',
-    'logout-success' => 'You have successfully logged out - please wait to be redirected'
+    "Bad-Request" => "Your request cannot be processed",
+    "Unauthorized" => "Invalid login attempt. Please try again",
+    "failed" => "These credentials do not match our records.",
+    "Inactive" => "This account is inactive.\r\nPlease contact your application administrator for assistance",
+    "invalidTokenTitle" => "Invalid Password Reset Token",
+    "invalidTokenDetail" => "The token provides has expired or it is invalid.<br>Please select an option below to continue.",
+    "throttle" => "Too many login attempts. Please try again in :seconds seconds.",
+    "login-success" => "You have successfully logged in - please wait for redirection to PhpMongoAdmin",
+    "logout-success" => "You have successfully logged out - please wait to be redirected",
+    "resetFormInfo" => "Please enter your new password and password confirmation. Click the Reset Password button to submit the form.",
+    "resetInfo" => "To enhance the security of this application, only the original Control-User may reset their password.<br> All other users must make a password reset request.",
+    "resetTitle" => "Password Reset",
+    "resetToken" => "Control User: <a href=\"/setup\">return to setup page</a>",
+    "requestToken" => "All other users: <a href=\"/password/reset\">request reset token</a>",
+    "unknown" => "The last action failed due to an unhandled error",
+    "verifyEmailTitle" => "Please verify you email address",
+    "verifyInfo" => "Only the control user must verify their email address",
+    "verifyTitle" => "Please click below to continue",
 
 ];

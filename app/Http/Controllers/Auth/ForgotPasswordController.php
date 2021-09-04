@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      ForgotPasswordController.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -19,10 +20,14 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
+use Illuminate\Http\Request;
 
 class ForgotPasswordController extends Controller
 {
+    use SendsPasswordResetEmails;
+
     /*
     |--------------------------------------------------------------------------
     | Password Reset Controller
@@ -34,5 +39,36 @@ class ForgotPasswordController extends Controller
     |
     */
 
-    use SendsPasswordResetEmails;
+    /**
+     * Get the needed authentication credentials from the request.
+     *
+     * @param Request $request
+     * @return array
+     */
+    protected function credentials(Request $request): array
+    {
+        return $request->only('email', 'user', 'active');
+    }
+
+    /**
+     * Validate the email for the given request.
+     *
+     * @param Request $request
+     * @return void
+     */
+    protected function validateEmail(Request $request)
+    {
+        $request->validate(
+            [
+                'email' => 'required|email',
+                'user' => 'required|string',
+                'active' => 'required|boolean'
+            ]
+        );
+    }
+
+    public function showLinkRequestForm(Request $request)
+    {
+        return view('public.password');
+    }
 }

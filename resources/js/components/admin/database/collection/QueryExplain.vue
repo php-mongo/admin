@@ -109,7 +109,7 @@
                     this.explain = this.$convObj().jsonH(explain);
                 }
                 else if (status === 3) {
-                    this.errorMessage = this.showLanguage('collection', 'explainError');
+                    this.errorMessage = this.showLanguage('errors', 'collection.explainError');
                 }
             },
 

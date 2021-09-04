@@ -191,26 +191,26 @@
         computed: {
             // Dr Smith! It does not compute!
             checkCollection() {
-                return this.$store.getters.getActiveCollection;
+                return this.$store.getters.getActiveCollection
             },
 
             checkDb() {
-                return this.$store.getters.getActiveDatabase;
+                return this.$store.getters.getActiveDatabase
             },
 
             isFormatJson() {
-                return (this.activeFormat === 'json') ? 'underline' : '';
+                return (this.activeFormat === 'json') ? 'underline' : ''
             },
 
             isFormatArray() {
-                return (this.activeFormat === 'array') ? 'underline' : '';
+                return (this.activeFormat === 'array') ? 'underline' : ''
             },
 
             /*
              *  Secondary collapse handler
              */
             showHide() {
-                return (this.show && !this.collapsed);
+                return (this.show && !this.collapsed)
             }
         },
 
@@ -224,9 +224,9 @@
             showLanguage( context, key, str ) {
                 if (str) {
                     let string = this.$store.getters.getLanguageString( context, key );
-                    return string.replace("%s", str);
+                    return string.replace("%s", str)
                 }
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             /*
@@ -237,12 +237,12 @@
                 this.lastPanel   = this.activePanel;
                 this.activePanel = item;
                 EventBus.$emit('hide-collection-panels');
-                EventBus.$emit('show-collection-' + item);
+                EventBus.$emit('show-collection-' + item)
             },
 
             loadModal( panel ) {
                 let data = { document: null, db: this.db, coll: this.collection, index: null };
-                EventBus.$emit('show-document-' + panel, data );
+                EventBus.$emit('show-document-' + panel, data )
             },
 
             runCommand( command ) {
@@ -252,26 +252,26 @@
                         data = { database: this.db, collection: this.collection };
                         this.$store.dispatch('loadCollection', data);
                         setTimeout(function() {
-                            EventBus.$emit('document-insert' );
-                        }, 500);
-                        break;
+                            EventBus.$emit('document-inserted' )
+                        }, 500)
+                        break
 
                     case command === 'clear':
                         this.lastPanel   = this.activePanel;
                         this.activePanel = 'clear';
                         data = { notification: this.showLanguage('collection', 'clearConfirm', this.collection), element: 'clear-collection', id: this.collection };
                         EventBus.$emit('delete-confirmation', data);
-                        break;
+                        break
 
                     case command === 'drop':
                         this.lastPanel   = this.activePanel;
                         this.activePanel = 'drop';
                         data = { notification: this.showLanguage('collection', 'dropConfirm', this.collection), element: 'drop-collection', id: this.collection };
                         EventBus.$emit('delete-confirmation', data);
-                        break;
+                        break
 
                     default:
-                        console.log("commanding: " + command);
+                        console.log("commanding: " + command)
                 }
             },
 
@@ -279,7 +279,7 @@
             *   Get the active panel
             */
             getActivePanel (panel ) {
-                return this.activePanel === panel;
+                return this.activePanel === panel
             },
 
             /*
@@ -287,15 +287,15 @@
              */
             setFormat( format ) {
                 this.activeFormat = format;
-                this.$store.dispatch('setCurrentFormat', format);
+                this.$store.dispatch('setCurrentFormat', format)
             },
 
             getCollection() {
-                this.collection = this.$store.getters.getActiveCollection;
+                this.collection = this.$store.getters.getActiveCollection
             },
 
             getDb() {
-                this.db = this.$store.getters.getActiveDatabase;
+                this.db = this.$store.getters.getActiveDatabase
             },
 
             clearCollection( data ) {
@@ -303,7 +303,7 @@
                     let data = { database: this.db, collection: this.collection };
                     this.$store.dispatch('clearCollection', data );
                     this.index = 0;
-                    this.handleClearCollection();
+                    this.handleClearCollection()
                 }
             },
 
@@ -312,15 +312,15 @@
                 if (status === 1 && this.index < this.limit) {
                     this.index+=1;
                     setTimeout(() => {
-                        this.handleClearCollection();
-                    }, 100);
+                        this.handleClearCollection()
+                    }, 100)
                 }
                 else if (status === 2) {
-                    EventBus.$emit('show-success', { notification: this.showLanguage('collection', 'clearSuccess', this.collection), timer: 5000 });
+                    EventBus.$emit('show-success', { notification: this.showLanguage('collection', 'clearSuccess', this.collection), timer: 5000 })
                     this.activePanel = this.lastPanel;
                 }
                 else if (status === 3) {
-                    EventBus.$emit('show-success', { notification: this.showLanguage('collection', 'clearError', this.collection), timer: 5000 });
+                    EventBus.$emit('show-success', { notification: this.showLanguage('errors', 'collection.clearError', this.collection), timer: 5000 })
                 }
             },
 
@@ -329,13 +329,13 @@
                     let data = { database: this.db, collection: this.collection };
                     if (this.$store.getters.getDeletingCollection !== data.collection) {
                         // ToDo: !! this prevents an error causing double delete initialisation !!
-                        this.$store.dispatch('deleteCollection', data );
+                        this.$store.dispatch('deleteCollection', data )
                     }
                     this.index = 0;
-                    this.handleDropCollection();
+                    this.handleDropCollection()
 
                 } else {
-                    this.activePanel = this.lastPanel;
+                    this.activePanel = this.lastPanel
                 }
             },
 
@@ -344,17 +344,17 @@
                 if (status === 1 && this.index < this.limit) {
                     this.index+=1;
                     setTimeout(() => {
-                        this.handleDropCollection();
-                    }, 100);
+                        this.handleDropCollection()
+                    }, 100)
                 }
                 else if (status === 2) {
                     this.activePanel = this.lastPanel;
                     EventBus.$emit('show-database');
-                    EventBus.$emit('show-success', { notification: this.showLanguage('collection', 'dropSuccess', this.collection), timer: 5000 });
+                    EventBus.$emit('show-success', { notification: this.showLanguage('collection', 'dropSuccess', this.collection), timer: 5000 })
 
                 }
                 else if (status === 3) {
-                    EventBus.$emit('show-error', { notification: this.showLanguage('collection', 'dropError', this.collection), timer: 5000 });
+                    EventBus.$emit('show-error', { notification: this.showLanguage('errors', 'collection.dropError', this.collection), timer: 5000 })
                 }
             },
 
@@ -362,58 +362,58 @@
             *   We only show this navigation when we have an active collection and blah blah
             */
             showNavigation() {
-                this.show = true;
+                this.show = true
             },
 
             /*
              * Hide and seek
              */
             hideNavigation() {
-                this.show = false;
+                this.show = false
             }
         },
 
         mounted() {
             EventBus.$on('show-collection-nav', () => {
-                this.showNavigation();
+                this.showNavigation()
             });
 
             EventBus.$on('show-database-nav', () => {
-                this.hideNavigation();
+                this.hideNavigation()
             });
 
             EventBus.$on('collapse-db', (collapse) => {
-                this.collapsed = collapse;
+                this.collapsed = collapse
             });
 
             EventBus.$on('default-query-format', ( format ) => {
-                this.activeFormat = format;
+                this.activeFormat = format
             });
 
             EventBus.$on('confirm-delete-clear-collection', (data) => {
-                this.clearCollection(data);
+                this.clearCollection(data)
             });
 
             EventBus.$on('cancel-delete-clear-collection', () => {
-                this.clearCollection();
+                this.clearCollection()
             });
 
             EventBus.$on('confirm-delete-drop-collection', (data) => {
-                this.dropCollection(data);
+                this.dropCollection(data)
             });
 
             EventBus.$on('cancel-delete-drop-collection', () => {
-                this.dropCollection();
+                this.dropCollection()
             });
         },
 
         watch: {
             checkCollection() {
-                this.getCollection();
+                this.getCollection()
             },
 
             checkDb() {
-                this.getDb();
+                this.getDb()
             }
         }
     }

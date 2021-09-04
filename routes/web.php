@@ -15,7 +15,9 @@
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\VerifiesEmails;
 
 /*
 |--------------------------------------------------------------------------
@@ -80,29 +82,18 @@ Route::get('js/acceptLang.js', function() {
 });
 
 /*
-| Default route - always require authentication - no public pages
+| Default routes - always require setup to be completed - default public page with notification
 */
 Route::get('/', 'Web\AppController@getApp')->name('public')
     ->middleware('setup');
-    //->middleware('auth');
+
 
 Route::get('/admin', 'Web\AppController@getApp')
     ->middleware('setup');
-    //->middleware('auth');
 
 /*
-| Public, Logins and outs
+| Public, Login and logout
 */
-/*Route::get('/public', function () {
-    return view('public/login');
-})->name('public');*/
-
-/*Route::post('/public/login', 'Auth\LoginController@login')->name('login')
-    ->middleware('guest');*/
-
-/*Route::get('/login', 'Web\AppController@getLogin')->name('login')
-    ->middleware('guest');*/
-
 Route::get('/logout', 'Web\AppController@getLogout')
     ->name('logout');
 
@@ -118,6 +109,12 @@ Route::post('/setup', 'Web\SetupController@saveSetup')
 /*
 | Auth routes
 */
+//Auth::routes(['verify' => true]);
 Auth::routes();
 
-
+/*
+ * Laravel 8
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+*/

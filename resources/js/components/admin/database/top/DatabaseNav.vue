@@ -88,7 +88,7 @@
         <div class="text-left">
             <ul class="links">
                 <li v-bind:class="{active: getActivePanel('database')}">
-                    <span v-on:click="showDatabase"><img src="img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'statisticsTitle')" v-text="showLanguage('database', 'statistics')"></span></span>
+                    <span v-on:click="showDatabase(false)"><img src="img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'statisticsTitle')" v-text="showLanguage('database', 'statistics')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('new-collection')}">
                     <span v-on:click="loadPanel('new-collection')"><img src="img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'newCollectionTitle')" v-text="showLanguage('database', 'newCollection')"></span></span>
@@ -156,19 +156,19 @@
         computed: {
             // Dr Smith! It does not compute!
             checkDatabase() {
-                return this.$store.getters.getActiveDatabase;
+                return this.$store.getters.getActiveDatabase
             },
 
             // Dr Smith! It does not compute!
             checkCollection() {
-                return !this.$store.getters.getActiveCollection;
+                return !this.$store.getters.getActiveCollection
             },
 
             /*
              *  Secondary collapse handler
              */
             showHide() {
-                return (this.show && !this.collapsed);
+                return (this.show && !this.collapsed)
             }
         },
 
@@ -180,18 +180,24 @@
             *   Calls the Translation and Language service
             */
             showLanguage( context, key ) {
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
-            showDatabase() {
-                let db = this.getActiveDb();
+            showDatabase(db) {
                 this.activePanel = 'database';
                 EventBus.$emit('hide-database-panels');
                 if (db) {
-                    EventBus.$emit('show-database', db);
+                    EventBus.$emit('show-database', db)
+                } else if (this.checkActiveDb()) {
+                    EventBus.$emit('show-database-panel', this.activeDb)
                 } else {
-                    EventBus.$emit('show-database', this.activeDb);
+                    this.getActiveDb();
+                    EventBus.$emit('show-database', this.activeDb)
                 }
+            },
+
+            checkActiveDb() {
+                return this.activeDb === this.$store.getters.getActiveDatabase
             },
 
             /*
@@ -200,57 +206,57 @@
             loadPanel( item ) {
                 this.activePanel = item;
                 EventBus.$emit('hide-database-panels');
-                EventBus.$emit('show-database-' + item);
+                EventBus.$emit('show-database-' + item)
             },
 
             /*
             *   Get the active panel
             */
             getActivePanel(panel) {
-                return this.activePanel === panel;
+                return this.activePanel === panel
             },
 
             setActivePanel(panel) {
-                this.activePanel = panel;
+                this.activePanel = panel
             },
 
             getActiveDb() {
-                this.activeDb = this.$store.getters.getActiveDatabase
+                this.activeDb = this.$store.getters.getActiveDatabase;
             },
 
             /*
              *  Show or hide this nav -  we have the same for the collections nav
              */
             showNavigation() {
-                this.show = true;
+                this.show = true
             },
 
             hideNavigation() {
-                this.show = false;
+                this.show = false
             }
         },
 
         mounted() {
              EventBus.$on('show-database-nav', () => {
                  this.getActiveDb();
-                 this.showNavigation();
+                 this.showNavigation()
              });
 
             EventBus.$on('show-database', () => {
-                this.setActivePanel('database');
+                this.setActivePanel('database')
             });
 
             EventBus.$on('show-collection-nav', () => {
-                this.hideNavigation();
+                this.hideNavigation()
             });
 
             EventBus.$on('collapse-db', (collapse) => {
-                this.collapsed = collapse;
+                this.collapsed = collapse
             });
 
             EventBus.$on('load-database-panel', (data) => {
                 if (data.panel === 'database') {
-                    this.showDatabase(data.value);
+                    this.showDatabase(data.value)
                 }
             });
         }

@@ -1,9 +1,10 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
- * @version      ad.php 1001 6/8/20, 8:58 pm  Gilbert Rehling $
- * @package      PhpMongoAdmin\resources
- * @subpackage   ad.php
+ * @version      PmaAuthProvider.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
+ * @package      PhpMongoAdmin\App
+ * @subpackage   Providers
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
  * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
  * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
@@ -16,28 +17,34 @@
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
-/*
-|--------------------------------------------------------------------------
-| Ads language Lines
-|--------------------------------------------------------------------------
-|
-| The following language lines are used during ad display process.
-|
-*/
+namespace App\Providers;
 
-return [
+use App\Library\PmaUserProvider;
+use App\Models\User;
+use Illuminate\Auth\DatabaseUserProvider;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\ServiceProvider;
 
-    'activeTitle' => 'Latest Ad Listings',
-    'adLink' => 'Ad Direct Link:',
-    'advertiserAge' => 'Advertisers Age:',
-    'adCreated' => 'Created:',
-    'advertiserRating' => 'Advertiser Rating:',
-    'country' => 'Country:',
-    'imagesVerified' => 'Images Verified:',
-    'language' => 'Language:',
-    'phone' => 'Phone:',
-    'region' => 'Region:',
-    'suburb' => 'Suburb:',
-    'state' => 'State:',
-    'website' => 'Website:'
-];
+class PmaAuthProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+    /**
+     * Register any authentication / authorization services.
+     *
+     * @return void
+     */
+    /*public function boot()
+    {
+        DatabaseUserProvider::provider('pmauser', function () {
+            return new PmaUserProvider();
+        });
+    }*/
+}

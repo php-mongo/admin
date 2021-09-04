@@ -86,27 +86,17 @@
 
         method: {
             getCountryFromCookie() {
-                return this.$cookie.get('my-country');
+                return this.$cookies.get('my-country');
             },
 
             getCountryFromStore() {
                 return this.$store.getters.getCountryName;
             },
-
-            /*weAreScrolling(event) {
-            //    console.log(event.target.scrollHeight);
-             //   console.log(event.target.scrollTop);
-            },
-            handleScroll() {
-                const viewportHeight = window.innerHeight;
-                const docHeight = document.body.offsetHeight;
-                const scrollTop = document.documentElement.scrollTop;
-            }*/
         },
 
         mounted() {
             if (this.getCountryFromCookie !== this.getCountryFromStore)  {
-                this.$store.dispatch('setCountryNameFromCookie', this.$cookie.get('my-country'));
+                this.$store.dispatch('setCountryNameFromCookie', this.$cookies.get('my-country'));
             }
         },
 
@@ -123,11 +113,6 @@
                 });
             });
             this.$store.dispatch( 'loadUser' );
-            window.addEventListener('scroll', this.weAreScrolling);
         },
-
-        destroyed() {
-            window.removeEventListener('scroll', this.weAreScrolling);
-        }
     }
 </script>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      ServersController.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -30,36 +31,60 @@ use Illuminate\Http\Request;
 use App\Http\Requests\EditServerRequest;
 
 /**
+ * Response
+ */
+use Illuminate\Http\Response;
+
+/**
  * Models
  */
 use App\Models\Server;
 use App\Models\User;
 
+/**
+ * MongoDB connection
+ */
+use App\Http\Classes\MongoConnection as Mongo;
+
+
 class ServersController extends Controller
 {
     /**
+     * @var User|null
+     */
+    private $user;
+
+    /**
+     * ServersController Constructor
+     */
+    public function __construct()
+    {
+        /** @var User $user */
+        $this->user = auth()->guard('api')->user();
+
+        parent::__construct($this->user, new Mongo($this->user));
+    }
+
+    /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
-    public function index()
+    public function index(): Response
     {
         $servers = Server::all();
-        return response()->success('success', array('servers' => $servers ));
+        return response()->success('success', array('servers' => $servers));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\EditServerRequest  $request
-     * @return \Illuminate\Http\Response
+     * @param   EditServerRequest $request
+     * @return  Response
      */
-    public function store(EditServerRequest $request)
+    public function store(EditServerRequest $request): Response
     {
         $data = $request->validated();
-
-        /** @var User $user */
-        $user = auth('api')->user();
 
         if (empty($data['id'])) {
             // new server
@@ -77,17 +102,17 @@ class ServersController extends Controller
             $server->password   = $data['password'];
         }
         $server->active     = $data['active'];
-        $server->user_id    = $user->id;
+        $server->user_id    = $this->user->getAttribute('id');
         $server->save();
 
-        return response()->success( 'success', array( 'server' => $server ) );
+        return response()->success('success', array( 'server' => $server));
     }
 
     /**
      * Activate a server - deactive any active server
      *
-     * @param  \App\Http\Requests\EditServerRequest  $request
-     * @return \Illuminate\Http\Response
+     * @param   EditServerRequest $request
+     * @return  Response
      */
     public function activate(Request $request)
     {
@@ -97,8 +122,8 @@ class ServersController extends Controller
         foreach ($servers as $server) {
             if (1 == $server->active && $id != $server->id) {
                 /** @var Server $update */
-                $update         = Server::where('id', $server->id )->get();
-                $update->active = 0;
+                $update         = Server::where('id', $server->id)->get();
+                $update->setAttribute('active', 0);
                 $update->save();
             }
             if ($id == $server->id) {
@@ -106,18 +131,18 @@ class ServersController extends Controller
                 $updateServer = $server;
             }
         }
-        $updateServer->active = 1;
+        $updateServer->setAttribute('active', 1);
         $updateServer->save();
-        return response()->success( 'success', array( 'server' => $updateServer ) );
+        return response()->success('success', array('server' => $updateServer));
     }
 
     /**
-     * @todo We are handling updates with the store method
+     * @ToDo We are handling updates with the store method
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Server  $server
-     * @return \Illuminate\Http\Response
+     * @param   Request $request
+     * @param   Server $server
+     * @return  void
      */
     public function update(Request $request, Server $server)
     {
@@ -127,15 +152,16 @@ class ServersController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Server  $server
-     * @return \Illuminate\Http\Response
+     * @param   Server $server
+     * @param   int $id
+     * @return  Response
      */
-    public function destroy(Server $server, $id)
+    public function destroy(Server $server, int $id): Response
     {
         $result = 'failed';
         if ($id) {
             $result = Server::where('id', $id)->delete();
         }
-        return response()->success( 'success', array( 'deleted' => $result ) );
+        return response()->success('success', array('deleted' => $result));
     }
 }

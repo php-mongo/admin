@@ -317,7 +317,7 @@
                     form = this.index2dForm;
                 }
                 if (form.fields[0].field === null) {
-                    this.errorMessage = this.showLanguage('collection', 'indexError');
+                    this.errorMessage = this.showLanguage('errors', 'collection.indexError');
                     return;
                 }
                 let data = { database: this.database, collection: this.collection, params: form };
@@ -338,7 +338,7 @@
                     this.actionMessage = this.showLanguage('collection', 'indexSuccess', this.$store.getters.getCollectionIndex);
                 }
                 else if (status === 3) {
-                    this.errorMessage = this.showLanguage('collection', 'indexError');
+                    this.errorMessage = this.showLanguage('errors', 'collection.indexError');
                 }
             },
 

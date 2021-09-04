@@ -47,7 +47,7 @@ class JsonServiceProvider extends ServiceProvider
         /*
          * Handle success responses
          */
-        $factory->macro('success', function( $message = '', $data = null, $status = 200 ) use ($factory) {
+        $factory->macro('success', function($message = '', $data = null, $status = 200) use ($factory) {
             $format = [
                 'status' => 'ok',
                 'success' => true,
@@ -60,7 +60,7 @@ class JsonServiceProvider extends ServiceProvider
         /*
          * Handle errors
          */
-        $factory->macro('error', function( $message = '', $errors = [], $status = 400 ) use ($factory) {
+        $factory->macro('error', function($message = '', $errors = [], $status = 400) use ($factory) {
             $format = [
                 'status' => 'ok',
                 'success' => false,

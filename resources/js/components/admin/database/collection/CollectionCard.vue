@@ -291,7 +291,7 @@
 </style>
 
 <template>
-    <div class="collection-inner" v-show="show && collection">
+    <div class="collection-inner" v-if="show && collection">
         <table v-show="!collapsed">
             <tr>
                 <td class="v-top">
@@ -401,7 +401,17 @@
                     v-bind:current-page="getCurrentPage"
                     ></pagination>
             </div>
-            <document v-for="(document, index) in getDocuments" :key="index" v-bind:index="index" v-bind:document="document" v-bind:collection="getCollection" v-bind:format="currentFormat"></document>
+            <document
+                v-for="(document, index) in getDocuments"
+                :key="index"
+                v-bind:index="index"
+                v-bind:document="document"
+                v-bind:collection="getCollection"
+                v-bind:format="currentFormat"
+                @pma-main-panel-scroll="scrollToTop"
+            ></document>
+            <p>&nbsp;</p>
+            <p class="text-info" v-show="dbAdminCheck" v-html="showLanguage('collection', 'dbAdminMessage')"></p>
         </div>
         <document-update></document-update>
         <document-field></document-field>
@@ -474,7 +484,7 @@
         /*
          *   The component accepts one db as a property
          */
-        props: ['collection'],
+        props: ['collection','user'],
 
         /*
          *   Data housing for our collections
@@ -579,81 +589,79 @@
          * Defines the computed properties on the component.
          */
         computed: {
-            totalPages() {
-                return Math.ceil(this.count / this.pageSizeDefault);
+            currentFormat() {
+                return this.format
+            },
+
+            dbAdminCheck() {
+                return this.collection.collection &&
+                    this.collection.objects.count === 0 &&
+                    this.collection.stats.count >= 1 &&
+                    this.user && this.user.user_role.roles.find((role) => role.role.indexOf('dbAdmin'))
             },
 
             getTotal() {
                 if (this.collection && this.collection.objects) {
                     if (this.collection.objects || this.allObjects) {
-                        if (this.collection.objects.count === 0) {
-                            this.page.find.message = this.showLanguage('collection', 'empty', this.collection.collection.collectionName);
-                            this.clearValues();
-
-                        } else {
-                            this.page.find.message = null;
-                        }
-                        return this.allObjects.length;
+                        return this.allObjects.length
                     }
                 }
-                return 0;
+                return 0
             },
 
             getCount() {
-                return this.count;
+                return this.count
             },
 
             getCurrentPage() {
-               return this.current;
+               return this.current
             },
 
-            getLimit() {
-                return this.pageSizeDefault;
-            },
-
-            getMaxButtons() {
-                return this.maxPageButtonDisplay;
-            },
-
-            currentFormat() {
-                return this.format;
+            getCollection() {
+                return this.collection.collection
             },
 
             getCurrentFormat() {
-                return this.$store.getters.getCurrentFormat;
-            },
-
-            queryFieldsCount() {
-                return this.queryFields.length;
-            },
-
-            queryHintsCount() {
-                return this.queryHints.length;
+                return this.$store.getters.getCurrentFormat
             },
 
             getDocuments() {
                 if (this.visibleObjects && this.visibleObjects.length >= 1) {
-                    return this.visibleObjects;
+                    return this.visibleObjects
                 }
-                return [];
+                return []
             },
 
-            getCollection() {
-                return this.collection.collection;
+            queryFieldsCount() {
+                return this.queryFields.length
+            },
+
+            getLimit() {
+                return this.pageSizeDefault
+            },
+
+            getMaxButtons() {
+                return this.maxPageButtonDisplay
             },
 
             getObjects() {
-                if (this.collection && this.collection.objects) {
-                    return this.collection.objects;
-                }
+                return this.collection && this.collection.objects ? this.collection.objects.count : 0
+            },
+
+            queryHintsCount() {
+                return this.queryHints.length
             },
 
             roundCost: function() {
-                return Math.round(this.cost);
+                return Math.round(this.cost)
+            },
+
+            totalPages() {
+                return Math.ceil(this.count / this.pageSizeDefault)
             },
 
             watchScroll() {
-                return this.lockPagination === true ? 'fixed' : '';
+                return this.lockPagination === true ? 'fixed' : ''
             }
         },
 
@@ -667,9 +675,9 @@
             showLanguage( context, key, str ) {
                 if (str) {
                     let string = this.$store.getters.getLanguageString( context, key );
-                    return string.replace("%s", str);
+                    return string.replace("%s", str)
                 }
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             /*
@@ -677,19 +685,19 @@
              */
             humanReadable(bytes, precision) {
                 if (bytes === 0) {
-                    return 0;
+                    return 0
                 }
                 if (bytes < 1024) {
-                    return bytes + "B";
+                    return bytes + "B"
                 }
                 if (bytes < 1024 * 1024) {
-                    return Math.round(bytes/1024, precision) + "k";
+                    return Math.round(bytes/1024, precision) + "k"
                 }
                 if (bytes < 1024 * 1024 * 1024) {
-                    return Math.round(bytes/1024/1024, precision) + "m";
+                    return Math.round(bytes/1024/1024, precision) + "m"
                 }
                 if (bytes < 1024 * 1024 * 1024 * 1024) {
-                    return Math.round(bytes/1024/1024/1024, precision) + "g";
+                    return Math.round(bytes/1024/1024/1024, precision) + "g"
                 }
                 return bytes;
             },
@@ -700,48 +708,48 @@
             setFormat() {
                 let format = this.$store.getters.getCurrentFormat;
                 if (format !== this.format) {
-                    this.format = format;
+                    this.format = format
                 }
             },
 
             getDatabaseName() {
-                return this.collection.collection.databaseName;
+                return this.collection.collection.databaseName
             },
 
             getCollectionName() {
-                return this.collection.collection.collectionName;
+                return this.collection.collection.collectionName
             },
 
             submitQuery() {
                 this.message = null;
                 if (this.collection.objects.count === 0) {
                     this.message = this.showLanguage('collection', 'msgNoDocs');
-                    return;
+                    return
                 }
                 if (this.collection.objects.count <= this.pageSizeDefault) {
                     this.message = this.showLanguage('collection', 'msgTooFew');
-                    return;
+                    return
                 }
                 if (this.format === 'json') {
                     let json = this.$convObj().minify(this.form.criteria.json);
                     if (json === '{}') {
                         this.message = this.showLanguage('collection', 'msgEmptyQuery');
-                        return;
+                        return
                     }
-                    this.form.criteria.json = json;
+                    this.form.criteria.json = json
                 }
                 if (this.format === 'array') {
                     let array = this.$convObj().minify(this.form.criteria.array);
                     if (array === '()') {
                         this.message = this.showLanguage('collection', 'msgEmptyQuery');
-                        return;
+                        return
                     }
-                    this.form.criteria.array = array;
+                    this.form.criteria.array = array
                 }
                 // tests completed - send query to DB
                 let data = { params: this.form, format: this.format, database: this.getDatabaseName(), collection: this.getCollectionName() };
                 this.$store.dispatch('queryCollection', data);
-                this.handleQuery();
+                this.handleQuery()
             },
 
             handleQuery() {
@@ -749,8 +757,8 @@
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     setTimeout(() => {
-                        this.handleQuery();
-                    }, 100);
+                        this.handleQuery()
+                    }, 100)
                 }
                 else if (status === 2) {
                     this.allObjects = this.$store.getters.getQueryCollection;
@@ -760,31 +768,31 @@
                         let x = 0;
                         for (x = this.start; x  < this.pageSizeDefault; x += 1) {
                             if (this.allObjects[x]) {
-                                this.visibleObjects.push(this.allObjects[x]);
+                                this.visibleObjects.push(this.allObjects[x])
                             }
                         }
                     } else {
-                        this.message = this.showLanguage('collection', 'msgEmptyResult');
+                        this.message = this.showLanguage('collection', 'msgEmptyResult')
                     }
                 }
                 else if (status === 3) {
-                    this.message = this.showLanguage('collection', 'msgQueryError');
+                    this.message = this.showLanguage('errors', 'collection.msgQueryError')
                 }
             },
 
             showQueryFields( event ) {
                 console.log("query fields...");
-                console.log(event);
+                console.log(event)
             },
 
             showQueryHints( event ) {
                 console.log("query hints..");
-                console.log(event);
+                console.log(event)
             },
 
             changeCommand( event ) {
                 console.log("change command...");
-                console.log(event);
+                console.log(event)
             },
 
             explainQuery() {
@@ -793,19 +801,19 @@
                     query = this.$convObj(this.form.criteria.json).minify();
                     if (query === '{}') {
                         this.message = this.showLanguage('collection', 'msgEmptyQuery');
-                        return;
+                        return
                     }
                 }
                 if (this.format === 'array') {
                     query = this.$convObj(this.form.criteria.array).minify();
                     if (query === '()') {
                         this.message = this.showLanguage('collection', 'msgEmptyQuery');
-                        return;
+                        return
                     }
-                    query = this.$convObj(query).arrayToJson();
+                    query = this.$convObj(query).arrayToJson()
                 }
                 let data = { query: query, format: this.format, database: this.getDatabaseName(), collection: this.getCollectionName() };
-                EventBus.$emit('show-query-explain', data);
+                EventBus.$emit('show-query-explain', data)
             },
 
             clearForm() {
@@ -839,15 +847,27 @@
                     pageSize: 10,
                     command: 'findAll'
                 };
-                this.handlePageLoad();
+                this.handlePageLoad()
             },
 
             closeQueryFields() {
-                console.log("close query fields");
+                console.log("close query fields")
             },
 
             closeQueryHints() {
-                console.log("close query hints");
+                console.log("close query hints")
+            },
+
+            /*
+            *   Handle total value changes and clear/set messages and cache
+            */
+            handleTotalMessage() {
+                if (this.collection.objects && this.collection.objects.count === 0) {
+                    this.page.find.message = this.showLanguage('collection', 'empty', this.collection.collection.collectionName);
+                    this.clearValues()
+                } else {
+                    this.page.find.message = null
+                }
             },
 
             /*
@@ -860,7 +880,7 @@
                 if (format) {
                     this.format = format;
                     // send to store in case other components need to access this value
-                    this.$store.dispatch('setCurrentFormat', format);
+                    this.$store.dispatch('setCurrentFormat', format)
                 }
             },
 
@@ -878,7 +898,7 @@
                 this.end = page * this.pageSizeDefault; // not really using this
                 for (x = this.start; x  < this.pageSizeDefault * page; x += 1) {
                     if (this.allObjects[x]) {
-                        this.visibleObjects.push(this.allObjects[x]);
+                        this.visibleObjects.push(this.allObjects[x])
                     }
                 }
             },
@@ -895,9 +915,9 @@
                     this.count = this.collection.objects.count;
                     this.allObjects = this.collection.objects.objects;
                     this.filterObjects = this.allObjects;
-                    for (x = this.start; x  < this.pageSizeDefault; x += 1) {
+                    for (x = this.start; x < this.pageSizeDefault; x += 1) {
                         if (this.allObjects[x]) {
-                            this.visibleObjects.push(this.allObjects[x]);
+                            this.visibleObjects.push(this.allObjects[x])
                         }
                     }
                 }
@@ -915,7 +935,7 @@
                 this.message        = null;
                 this.start          = 0;
                 this.showing        = 0;
-                this.visibleObjects = [];
+                this.visibleObjects = []
             },
 
             /*
@@ -925,22 +945,23 @@
                 if (data) {
                     let obj = JSON.parse(data.document);
                     if (this.visibleObjects[data.index]) {
-                        this.visibleObjects[ data.index ].raw = obj;
+                        this.visibleObjects[ data.index ].raw = obj
                     }
 
+                    let t, d;
                     // Done!! these conversion will be based on the current FORMAT setting
                     if (this.format === 'json') {
-                        let t = this.$convObj( obj ).jsonT( data.document );
-                        let d = this.$convObj( obj ).jsonH( data.document );
+                        t = this.$convObj( obj ).jsonT( data.document );
+                        d = this.$convObj( obj ).jsonH( data.document )
                     }
                     if (this.format === 'array') {
-                        let t = this.$convObj( obj ).arrayT( data.document );
-                        let d = this.$convObj( obj ).arrayH( data.document );
+                        t = this.$convObj( obj ).arrayT( data.document );
+                        d = this.$convObj( obj ).arrayH( data.document )
                     }
 
                     this.visibleObjects[ data.index ].text = t;
                     this.visibleObjects[ data.index ].data = d;
-                    this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } );
+                    this.$store.dispatch( 'setDocument', {  text: t, data: d, index: data.index } )
                 }
             },
 
@@ -948,7 +969,7 @@
              *  When a document is inserted via the New Document modal we want to refresh this panel
              */
             fetchData() {
-                this.handlePageLoad();
+                this.handlePageLoad()
             },
 
             /*
@@ -956,7 +977,7 @@
              */
             sendQuery(query) {
                 this.form.criteria[this.format] = query;
-                this.submitQuery();
+                this.submitQuery()
             },
 
             /*
@@ -966,11 +987,11 @@
                 this.lockPagination = status; //!this.lockPagination;
                 if (status === true && this.expanded === true) {
                     this.$jqf(this.$refs.recordsHeader).css('left', '5px');
-                    this.$jqf(this.$refs.recordsHeader).css('width', '98vw');
+                    this.$jqf(this.$refs.recordsHeader).css('width', '98vw')
                 }
                 if (status === true && this.expanded === false) {
                     this.$jqf(this.$refs.recordsHeader).css('left', '245px');
-                    this.$jqf(this.$refs.recordsHeader).css('width', 'calc(97vw - 260px)');
+                    this.$jqf(this.$refs.recordsHeader).css('width', 'calc(97vw - 260px)')
                 }
             },
 
@@ -986,23 +1007,33 @@
                     this.filterObjects.forEach((object, index) => {
                         raw = JSON.stringify(object.raw);
                         if (raw.indexOf(filter) !== -1) {
-                            this.allObjects.push(object);
+                            this.allObjects.push(object)
                         }
                     });
                     this.count = this.allObjects.length;
                     for (x = this.start; x  < this.pageSizeDefault; x += 1) {
                         if (this.allObjects[x]) {
-                            this.visibleObjects.push(this.allObjects[x]);
+                            this.visibleObjects.push(this.allObjects[x])
                         }
                     }
 
                 } else {
-                    this.handlePageLoad();
+                    this.handlePageLoad()
                 }
             },
 
+            /*
+             *  Watch left nav collapse / expand
+             */
             watchLeftNav() {
-                this.expanded = !this.expanded;
+                this.expanded = !this.expanded
+            },
+
+            /*
+             *  Scroll event to Panel View
+             */
+            scrollToTop() {
+                EventBus.$emit('pma-main-panel-scroll', {})
             }
         },
 
@@ -1011,43 +1042,42 @@
          */
         mounted() {
             EventBus.$on('show-collection', () => {
-                this.show = true;
+                this.show = true
             });
 
             EventBus.$on('collapse-db', (collapse) => {
-                this.collapsed = collapse;
             });
 
             EventBus.$on('document-updated', (data) => {
-                this.updateDocument( data );
+                this.updateDocument( data )
             });
 
             EventBus.$on('document-inserted', () => {
-                this.fetchData();
+                this.fetchData()
             });
 
             EventBus.$on('send-query', (query) => {
-                this.sendQuery(query);
+                this.sendQuery(query)
             });
 
             EventBus.$on('lockCollectionPagination', (status) => {
-                this.handleScroll(status);
+                this.handleScroll(status)
             });
 
             EventBus.$on('run-document-filter', (filter) => {
-                this.handleFilter(filter);
+                this.handleFilter(filter)
             });
 
             EventBus.$on('clear-document-filter', () => {
-                this.handleFilter();
+                this.handleFilter()
             });
 
             EventBus.$on('collapse-left-nav', () => {
-                this.watchLeftNav();
+                this.watchLeftNav()
             });
 
             EventBus.$on('expand-left-nav', () => {
-                this.watchLeftNav();
+                this.watchLeftNav()
             });
         },
 
@@ -1055,7 +1085,7 @@
          *  In case of imminent destruction
          */
         destroyed() {
-            this.clearValues();
+            this.clearValues()
         },
 
         /*
@@ -1063,11 +1093,15 @@
          */
         watch: {
             getCurrentFormat() {
-                this.setFormat();
+                this.setFormat()
             },
 
             getObjects() {
-                this.handlePageLoad();
+                this.handlePageLoad()
+            },
+
+            getTotal() {
+                this.handleTotalMessage()
             }
         }
     }

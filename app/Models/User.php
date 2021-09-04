@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      User.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -19,13 +20,15 @@
 namespace App\Models;
 
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasApiTokens;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -33,7 +36,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'user', 'email', 'password',
+        'name', 'user', 'email', 'password', 'has_both',
     ];
 
     /**
@@ -42,7 +45,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'encrypted_password'
     ];
 
     /**
@@ -55,7 +58,25 @@ class User extends Authenticatable
     ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return bool
+     */
+    public function isControlUser(): bool
+    {
+        return $this->getAttribute('control_user') === "1";
+    }
+
+    /**
+     * Use this to flag if the user has matching/synced login AND mongodb accounts
+     *
+     * @return bool
+     */
+    public function hasBoth(): bool
+    {
+        return $this->getAttribute('has_both') === "1";
+    }
+
+    /**
+     * @return HasMany
      */
     public function servers()
     {

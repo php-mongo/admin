@@ -35,7 +35,7 @@
                         <span class="logo"><img src="/img/logo-pma.png" /> </span>
                     </a>
 
-                    <div class="right">
+                    <div class="u-pull-right">
                         <span class="country-flag ng-scope">
                         <img src="/img/flags/icons/Australia.ico" alt="{{ __('title.countryIsTitle') }} " title="{{ __('title.countryIsTitle') }}  Australia" style="">
                     </span>
@@ -43,6 +43,7 @@
                 </nav>
             </header>
             <div class="content-container text-center">
+                @if (!$completed)
                 <div class="row justify-content-center grid-container">
                     <div class="column">
                         <div class="card">
@@ -144,15 +145,104 @@
                         </div>
                     </div>
                 </div>
-                <div class="row justify-content-left grid-container">
-                    <div class="grid-x small-up-2 medium-up-3 large-up-4 ">
+                @else
+                <div class="row justify-content-center grid-container">
+                    <div class="column">
                         <div class="card">
-                            <div class="card-body" style="padding-top: 12px;">
-                                <p>@lang('global.copyright')</p>
-                            </div>
+                            <p>&nbsp;</p>
+                            <H2>{{ __('setup.titleComplete') }}</H2>
+                            <p>
+                                <strong>{{ __('setup.p1Completed') }}</strong>
+                            </p>
+                            <p>
+                                {!!  __('setup.p2Completed') !!}
+                            </p>
+                            <p>&nbsp;</p>
                         </div>
                     </div>
                 </div>
+                <div class="row justify-content-center grid-container">
+                    <div class="grid-x small-up-2 medium-up-3 large-up-4 ">
+                        <div class="card">
+                            @if (!$success)
+                                <div class="card-header">
+                                    <p>&nbsp;</p>
+                                    <h3>{{ __('setup.recoveryTitle') }}</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="grid-x small-up-1 medium-up-2 large-up-3">
+                                        <div class="cell"></div>
+                                        <div class="cell">
+                                            <form method="POST" action="{{ route('password.email') }}">
+                                                @csrf
+
+                                                <h5>{{ __('setup.recoveryControlUser') }}</h5>
+                                                <p>{!! __('setup.recoveryControlDetails') !!}</p>
+
+                                                <div class="form-group row">
+                                                    <label for="user" class="col-md-4 col-form-label text-md-right">{{ __('setup.controlUserUser') }}</label>
+
+                                                    <div class="col-md-8">
+                                                        <input id="user" type="text" class="form-control @error('user') is-invalid @enderror" name="user" value="{{ old('user') }}" placeholder="{{__('setup.usernamePlaceholder')}}" required autocomplete="user" autofocus>
+
+                                                        @error('user')
+                                                        <span class="invalid-feedback" role="alert">
+                                                            <strong>{{ $message }}</strong>
+                                                        </span>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('setup.controlUserEmail') }}</label>
+
+                                                    <div class="col-md-6">
+                                                        <input id="email" type="text" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" placeholder="{{__('setup.emailPlaceholder')}}" required autocomplete="email" autofocus>
+
+                                                        @error('email')
+                                                        <span class="invalid-feedback" role="alert">
+                                                            <strong>{{ $message }}</strong>
+                                                        </span>
+                                                        <p style="margin-bottom: 0;">&nbsp;</p>
+                                                        @enderror
+                                                    </div>
+                                                </div>
+
+                                                <input type="hidden" name="active" value="1">
+
+                                                <div class="form-group row mb-0">
+                                                    <div class="col-md-8 offset-md-4">
+                                                        <button type="submit" class="button">
+                                                            {{ __('setup.submit') }}
+                                                        </button>
+                                                    </div>
+                                                    <div><p>&nbsp;</p></div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="card-header">
+                                    <p>&nbsp;</p>
+                                    <h3>{{ __('setup.success') }}</h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="grid-x small-up-1 medium-up-2 large-up-3">
+                                        <div class="cell"></div>
+                                        <div class="cell">
+                                            <div>
+                                                <p>{!! $success !!}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+                @endif
+                @include('public.footer')
             </div>
         </div>
     </div>

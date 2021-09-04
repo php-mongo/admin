@@ -1,9 +1,10 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      AppServiceProvider.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
  * @package      PhpMongoAdmin\App
- * @subpackage   AppServiceProvider.php
+ * @subpackage   Providers
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
  * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
  * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
@@ -18,6 +19,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -39,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Validator::extend('string_or_int', function ($attribute, $value, $parameters, $validator) {
+            return is_string($value) || is_int($value);
+        });
     }
 }

@@ -42,7 +42,7 @@
 </style>
 
 <template>
-    <div id="pma-processes-view" class="pma-servers-panel align-left" v-show="show">
+    <div id="pma-processes-view" class="pma-servers-panel align-left" v-if="show">
         <div class="servers-inner">
             <div>
                 <div v-if="errorMessage">{{ errorMessage }}</div>
@@ -121,16 +121,16 @@
             *   Calls the Translation and Language service
             */
             showLanguage( context, key ) {
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             getString(object) {
-                return this.$convObj().jsonH(JSON.stringify(object));
+                return this.$convObj().jsonH(JSON.stringify(object))
             },
 
             getProcesses() {
                 this.$store.dispatch('getServerProcesses');
-                this.handleProcesses();
+                this.handleProcesses()
             },
 
             handleProcesses() {
@@ -139,14 +139,14 @@
                     this.index+=1;
                     setTimeout(() => {
                         this.handleProcesses();
-                    }, 200);
+                    }, 200)
                 }
                 if (status === 2) {
                     console.log("status: " + status);
-                    this.processes = this.$store.getters.getServerProcesses;
+                    this.processes = this.$store.getters.getServerProcesses
                 }
                 if (status === 3) {
-                    this.errorMessage = this.showLanguage('server', 'processError')
+                    this.errorMessage = this.showLanguage('errors', 'processing')
                 }
             },
 
@@ -154,14 +154,14 @@
              *   Show component
              */
             showComponent() {
-                this.show = true;
+                this.show = true
             },
 
             /*
              *   Hide component
              */
             hideComponent() {
-                this.show = false;
+                this.show = false
             }
         },
 

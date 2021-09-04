@@ -116,8 +116,8 @@
 
 <template>
     <div id="pma-collection-view" class="pma-collection-view align-left" v-show="show">
-        <database-top-view></database-top-view>
-        <collection-card v-bind:collection="getCollection"></collection-card>
+        <database-top-view v-bind:user="user"></database-top-view>
+        <collection-card v-bind:collection="getCollection" v-bind:user="user"></collection-card>
     </div>
 </template>
 
@@ -147,8 +147,9 @@
         */
         data() {
             return {
+                collection: null,
                 show: false,
-                collection: {}
+                user: {}
             }
         },
 
@@ -160,7 +161,7 @@
             *  fetch the databases for iteration in the template
             */
             getCollection() {
-                return this.$store.getters.getCollection;
+                return this.$store.getters.getCollection
             }
         },
 
@@ -172,23 +173,32 @@
             *   Calls the Translation and Language service
             */
             showLanguage( context, key ) {
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
+            },
+
+            /*
+            *   Retrieves the User from Vuex
+            */
+            getUser() {
+                this.user = this.$store.getters.getUser
             },
 
             /*
             *   Show component
             */
             showComponent(collection) {
-                EventBus.$emit('show-collection-nav', collection );
-                this.collection = this.$store.getters.getCollection;
                 this.show = true;
+                EventBus.$emit('show-collection-nav', collection );
+                setTimeout(() => {
+                    this.collection = this.$store.getters.getCollection
+                }, 555)
             },
 
             /*
             *   Hide component
             */
             hideComponent() {
-                this.show = false;
+                this.show = false
             }
         },
 
@@ -196,20 +206,22 @@
         *    get on ur bikes and ride !!
         */
         mounted() {
+            setTimeout(() => {
+                this.getUser();
+            }, 500)
+
             /*
             *    Hide this component
             */
             EventBus.$on('hide-panels', ( ) => {
-                this.hideComponent();
-
+                this.hideComponent()
             });
 
             /*
             *    Show this component
             */
             EventBus.$on('show-collection', (collection) => {
-                this.showComponent(collection);
-
+                this.showComponent(collection)
             });
         }
     }

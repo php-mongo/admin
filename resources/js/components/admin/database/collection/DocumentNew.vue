@@ -74,6 +74,7 @@
                 actionMessage: null,
                 created: 0,
                 document: {},
+                error: null,
                 errorMessage: null,
                 errors: 0,
                 form: {
@@ -101,9 +102,9 @@
             showLanguage( context, key, str ) {
                 if (str) {
                     let string = this.$store.getters.getLanguageString( context, key );
-                    return string.replace("%s", str);
+                    return string.replace("%s", str)
                 }
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             /*
@@ -113,21 +114,20 @@
                 let value = this.$jqf(event.target).value();
                 if (value === 'array') {
                     this.form.format   = 'array';
-                    this.form.document = this.makeArray( this.form.document );
+                    this.form.document = this.makeArray( this.form.document )
 
                 }  else if (value === 'json') {
                     this.form.format   = 'json';
-                    this.form.document = this.makeJson( this.form.document );
-
+                    this.form.document = this.makeJson( this.form.document )
                 }
             },
 
             makeJson( document ) {
-                return this.$convObj( document ).jsonT();
+                return this.$convObj( document ).jsonT()
             },
 
             makeArray( document ) {
-                return this.$convObj( document ).arrayT();
+                return this.$convObj( document ).arrayT()
             },
 
             /*
@@ -137,10 +137,10 @@
                 this.errorMessage = null;
                 // check format
                 if (this.form.format === 'array') {
-                    this.form.document = this.makeJson( this.form.document );
+                    this.form.document = this.makeJson( this.form.document )
                 }
                 // save duplicate
-                this.saveDocument();
+                this.saveDocument()
             },
 
             /*
@@ -160,17 +160,18 @@
                     if (this.handleAll()) {
                         // notify doc duplicate success
                         this.created += 1;
-                        this.actionMessage = this.showLanguage('document', 'created', this.duplicated);
+                        this.actionMessage = this.showLanguage('document', 'created', this.duplicated)
                     }
                     else {
                         // track errors
                         this.errors += 1;
-                        this.errorMessage = this.showLanguage('document', 'errorsCreate', this.errors);
+                        this.errorMessage =  this.showLanguage('errors', 'document.errorsCreate', this.errors)
                     }
                 }
 
                 // complete
-                this.handleDuplicate();
+                this.index = 0;
+                this.handleDuplicate()
             },
 
             /*
@@ -180,17 +181,22 @@
                 let status = this.$store.getters.getCreateDocumentStatus;
                 if (status === 1) {
                     setTimeout(() => {
-                        this.handleDuplicate();
-                    }, 100);
+                        this.handleDuplicate()
+                    }, 100)
                 }
                 if (status === 2) {
                     EventBus.$emit('show-success', { notification: this.showLanguage('document', 'createSuccess', this.created) });
                     EventBus.$emit('document-inserted');
                     this.clearData();
-                    this.hideComponent();
+                    this.hideComponent()
                 }
                 if (status === 3) {
-                    EventBus.$emit('show-error', { notification: this.showLanguage('document', 'createError', this.errors) });
+                    let errors = this.$store.getters.getCollectionErrorData;
+                    this.error =
+                        errors ?
+                            errors :
+                            this.showLanguage('errors', 'document.createError', this.errors);
+                    EventBus.$emit('show-error', { notification: this.error })
                 }
             },
 
@@ -198,17 +204,17 @@
              *  use this when iterating through the full document array to monitor progress
              */
             handleAll() {
-                let status = this.$store.getters.getDuplicateDocumentStatus;
+                let status = this.$store.getters.getCreateDocumentStatus;
                 if (status === 1) {
                     setTimeout(() => {
-                        this.handleAll();
-                    }, 100);
+                        this.handleAll()
+                    }, 100)
                 }
                 if (status === 2) {
-                    return true;
+                    return true
                 }
                 if (status === 3) {
-                    return false;
+                    return false
                 }
             },
 
@@ -221,21 +227,21 @@
                 this.errorMessage = null;
                 this.errors = 0;
                 this.form = this.skel;
-                this.updated = 0;
+                this.updated = 0
             },
 
             /*
              *   Show component
              */
             showComponent() {
-                this.show = true;
+                this.show = true
             },
 
             /*
              *   Hide component
              */
             hideComponent() {
-                this.show = false;
+                this.show = false
             },
 
             /*
@@ -243,7 +249,7 @@
              */
             closeDialogOutside( event ) {
                 if ($(event.target).is('#panel-modal-new')) {
-                    this.hideComponent();
+                    this.hideComponent()
                 }
             }
         },
@@ -258,12 +264,12 @@
             EventBus.$on('show-document-new', ( data ) => {
                 this.form.database   = data.db;
                 this.form.collection = data.coll;
-                this.showComponent();
-            });
+                this.showComponent()
+            })
         },
 
         destroyed() {
-            this.clearData();
+            this.clearData()
         }
     }
 </script>

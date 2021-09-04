@@ -20,6 +20,7 @@
 | VUEX modules/filters.js
 |-------------------------------------------------------------------------------
 | The Vuex data store for the filters state
+| This is a placeholder for future work
 */
 export const filters = {
     /*
@@ -51,7 +52,7 @@ export const filters = {
         },
 
         /*
-          Updates the order by setting and sorts the cafes.
+          Updates the order by setting and sorts the list data.
         */
         updateOrderBy( { commit, state, dispatch }, data ){
             commit( 'setOrderBy', data );
@@ -59,7 +60,7 @@ export const filters = {
         },
 
         /*
-          Updates the order direction and sorts the cafes.
+          Updates the order direction and sorts the list data.
         */
         updateOrderDirection( { commit, state, dispatch }, data ){
             commit( 'setOrderDirection', data );

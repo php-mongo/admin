@@ -57,7 +57,7 @@ class EditDbAuthRequest extends FormRequest
     public function messages()
     {
         return [
-            'username' => 'Please enter a valide username',
+            'username' => 'Please enter a valid username',
             'password' => 'Your password must contain at least 5 characters',
             'database' => 'Please ensure the database value is provided',
             'readonly' => 'A valid readonly value should be provided'

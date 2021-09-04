@@ -17,6 +17,23 @@
 
 /*
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      application.js 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+ * @package      PhpMongoAdmin\resources
+ * @subpackage   application.js
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      config.js 1001 6/8/20, 8:58 pm  Gilbert Rehling $
  * @package      PhpMongoAdmin\resources
  * @subpackage   config.js
@@ -117,6 +134,23 @@
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
+/*
+ * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+ * @version      user.js 1002 8/8/21, 2:58 pm  Gilbert Rehling $
+ * @package      PhpMongoAdmin\resources
+ * @subpackage   user.js
+ * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+ * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
+ * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+ *  php-mongo-admin - License conditions:
+ *  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
+ *  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+ *  See licence.txt for the complete licensing outline.
+ *  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
+ *  See COPYRIGHT.php for copyright notices and further details.
+ */
+
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
@@ -154,12 +188,6 @@
  * https://jquery.org/license
  *
  * Date: 2020-05-04T22:49Z
- */
-
-/*!
- * tiny-cookie - A tiny cookie manipulation plugin
- * https://github.com/Alex1990/tiny-cookie
- * Under the MIT license | (c) Alex Chao
  */
 
 /*!

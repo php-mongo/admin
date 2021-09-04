@@ -59,6 +59,14 @@
             button {
                 margin: 0 10px 0 0;
             }
+
+            .m-right {
+                margin-right: 185px;
+            }
+
+            .set-w {
+                max-width: 123px;
+            }
         }
     }
 
@@ -85,27 +93,27 @@
                     <th class="title bb" colspan="2" v-text="showLanguage('collection', 'create')"></th>
                 </tr>
                 <tr>
-                    <th v-text="showLanguage('collection', 'name')"></th>
+                    <th class="set-w" v-text="showLanguage('collection', 'name')"></th>
                     <td><input type="text" v-model="form.name" autofocus="autofocus" :placeholder="showLanguage('collection', 'placeholderName')"></td>
                 </tr>
                 <tr>
                     <td class="row" colspan="2">
-                        <strong v-text="showLanguage('collection', 'options')"></strong>
                         <span class="coll-help-link u-pull-right">
+                            <strong class="m-right" v-text="showLanguage('collection', 'options')"></strong>
                             <a target="_blank" href="https://docs.mongodb.com/php-library/v1.2/reference/method/MongoDBDatabase-createCollection/">docs.mongodb.com/php-library/v1.2/reference/method/MongoDBDatabase-createCollection/</a>
                         </span>
                     </td>
                 </tr>
                 <tr>
-                    <th class="bb" v-text="showLanguage('collection', 'capped')"></th>
+                    <th class="bb set-w" v-text="showLanguage('collection', 'capped')"></th>
                     <td><input type="checkbox" v-model="form.capped" > <span class="coll-capped-help" v-text="showLanguage('collection', 'cappedHelp')"></span></td>
                 </tr>
                 <tr>
-                    <th class="bb" v-text="showLanguage('collection', 'size')"></th>
+                    <th class="bb set-w" v-text="showLanguage('collection', 'size')"></th>
                     <td><input type="text" v-model="form.size" :placeholder="showLanguage('collection', 'placeholderSize')"> <span v-text="showLanguage('collection', 'bytes')"></span></td>
                 </tr>
                 <tr>
-                    <th v-text="showLanguage('collection', 'count')"></th>
+                    <th class="set-w" v-text="showLanguage('collection', 'count')"></th>
                     <td><input type="text" v-model="form.count" :placeholder="showLanguage('collection', 'placeholderCount')"> <span v-text="showLanguage('collection', 'documents')"></span></td>
                 </tr>
                 <tr>
@@ -156,11 +164,12 @@
 
             getClass() {
                 if (this.error) {
-                    return 'warning callout';
+                    return 'warning callout'
                 }
                 if (this.message) {
                     return 'primary callout'
                 }
+                return ''
             }
         },
 
@@ -170,9 +179,9 @@
             */
             showLanguage( context, key, str ) {
                 if (str) {
-                    return this.$store.getters.getLanguageString( context, key ).replace("%s", str);
+                    return this.$store.getters.getLanguageString( context, key ).replace("%s", str)
                 }
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             /*
@@ -180,14 +189,14 @@
             */
             showComponent() {
                 this.setActiveDatabase();
-                this.show = true;
+                this.show = true
             },
 
             /*
             *   Hide component
             */
             hideComponent() {
-                this.show = false;
+                this.show = false
             },
 
             /*
@@ -196,10 +205,10 @@
             createCollection() {
                 if (this.form.name) {
                     this.$store.dispatch('createCollection', this.form );
-                    this.handleCreateStatus();
+                    this.handleCreateStatus()
 
                 } else {
-                    this.error = this.showLanguage('collection', 'error');
+                    this.error = this.showLanguage('collection', 'error')
                 }
             },
 
@@ -209,13 +218,13 @@
             handleCreateStatus() {
                 let status = this.$store.getters.getCreateCollectionStatus;
                 if (status === 0) {
-                    this.error = 'Error: collection create status = 0';
+                    this.error = 'Error: collection create status = 0'
                 }
                 if (status === 1 && this.indexes < 55) {
                     this.indexes += 1;
                     setTimeout(() => {
-                        this.handleCreateStatus();
-                    }, 50);
+                        this.handleCreateStatus()
+                    }, 50)
                 }
                 else if (status === 2) {
                     // all good
@@ -224,18 +233,18 @@
                     this.form = this.skel;
                     setTimeout( () => {
                         this.show = false;
-                        EventBus.$emit('load-database-panel', { panel: 'database', value: db });
-                    }, 1000);
+                        EventBus.$emit('load-database-panel', { panel: 'database', value: db })
+                    }, 1000)
                 }
                 else if (status === 3) {
-                    // opps
-                    EventBus.$emit('show-error', { notification: this.showLanguage('collection', 'createError', this.form.name) });
-                    this.error = 'An error has occurred...';
+                    // opps a lot!
+                    EventBus.$emit('show-error', { notification: this.showLanguage('errors', 'collection.createError', this.form.name) });
+                    this.error = 'An error has occurred...'
                 }
             },
 
             setActiveDatabase() {
-                this.form.db = this.$store.getters.getActiveDatabase;
+                this.form.db = this.$store.getters.getActiveDatabase
             }
         },
 
@@ -244,7 +253,7 @@
             *    Hide this component
             */
             EventBus.$on('hide-panels', () => {
-                this.hideComponent();
+                this.hideComponent()
 
             });
 
@@ -252,7 +261,7 @@
             *    Hide this component
             */
             EventBus.$on('hide-database-panels',() => {
-                this.hideComponent();
+                this.hideComponent()
 
             });
 
@@ -260,14 +269,14 @@
             *    Show this component
             */
             EventBus.$on('show-database-new-collection', () => {
-                this.showComponent();
+                this.showComponent()
 
             });
         },
 
         watch: {
             getActiveDatabase() {
-                this.setActiveDatabase();
+                this.setActiveDatabase()
             }
         }
     }

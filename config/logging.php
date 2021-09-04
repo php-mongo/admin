@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      logging.php 1001 6/8/20, 1:01 am  Gilbert Rehling $
@@ -18,6 +19,7 @@
 use Monolog\Handler\NullHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
+use App\Logging\AuthLogger;
 
 return [
 
@@ -53,6 +55,7 @@ return [
         'stack' => [
             'driver' => 'stack',
             'channels' => ['single'],
+            'name' => env('APP_ENV'),
             'ignore_exceptions' => false,
         ],
 
@@ -113,6 +116,16 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'auth' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/laravel.auth.log'),
+        ],
+
+        'emails' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/laravel.email.log'),
         ],
     ],
 

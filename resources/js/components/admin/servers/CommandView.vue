@@ -25,7 +25,7 @@
 </style>
 
 <template>
-    <div id="pma-command-view" class="pma-servers-panel align-left" v-show="show">
+    <div id="pma-command-view" class="pma-servers-panel align-left" v-if="show">
         <div class="servers-inner">
             <h3 v-text="showLanguage('command', 'title')"></h3>
             <p class="top-link"><a href="http://docs.mongodb.org/manual/reference/command/" target="_blank" v-text="showLanguage('command', 'reference')"></a></p>

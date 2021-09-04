@@ -28,6 +28,7 @@
                     </span>
                 </div>
                 <h3 v-text="showLanguage('document', 'documentUpdate')"></h3>
+                <p class="form-error" v-if="error"></p>
                 <form>
                     <label>
                         <span v-text="showLanguage('document', 'format')"></span>:
@@ -71,7 +72,9 @@
          */
         data() {
             return {
+                cache: {},
                 document: null,
+                error: null,
                 fields: [],
                 fieldsData: {},
                 form: {
@@ -110,9 +113,9 @@
             showLanguage( context, key, str ) {
                 if (str) {
                     let string = this.$store.getters.getLanguageString( context, key );
-                    return string.replace("%s", str);
+                    return string.replace("%s", str)
                 }
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             /*
@@ -120,7 +123,7 @@
              */
             getDocument() {
                 this.form.document = this.$store.getters.getDocument( this.id );
-                this.form._id      = this.document.id;
+                this.form._id      = this.document.id
             },
 
             /*
@@ -138,10 +141,10 @@
                 this.document        = data.document;
 
                 // clear the _id from the data and save a copy
-                //let str = this.$convObj( document ).json();
-                //this.document = str.replace("\"_id\":null,", "");
+                let str = this.$convObj( data.document ).json();
+                this.cache = str.replace("\"_id\":null,", "");
 
-                this.form.document = this.makeJson( data.document );
+                this.form.document = this.makeJson( data.document )
             },
 
             /*
@@ -152,27 +155,27 @@
                 if (value === 'array') {
                     this.form.format   = 'array';
                     this.form.edit     = 'text';
-                    this.form.document = this.makeArray();
+                    this.form.document = this.makeArray()
 
                 }  else if (value === 'json') {
                     this.form.format   = 'json';
                     this.form.edit     = 'text';
-                    this.form.document = this.makeJson();
+                    this.form.document = this.makeJson()
 
                 } else if (value === 'fields') {
                     this.form.format = 'fields';
                     this.fields      = this.makeFields();
-                    this.form.edit   = 'fields';
+                    this.form.edit   = 'fields'
 
                 }
             },
 
             makeJson() {
-                return this.$convObj( this.document ).jsonT();
+                return this.$convObj( this.document ).jsonT()
             },
 
             makeArray() {
-                return this.$convObj( this.document ).arrayT();
+                return this.$convObj( this.document ).arrayT()
             },
 
             makeFields() {
@@ -187,26 +190,29 @@
                         if (typeof value[1] == 'object') {
                             let arr = Object.entries( value[1] );
                             let output = arr.map( function( v, i, a) {
-                                return '<label>' + v[0] + '<textarea v-model="fieldsData.' + value[0] + '.' + v[0] + '">' + v[1] + '</textarea></label>';
+                                return '<label>' + v[0] + '<textarea v-model="fieldsData.' + value[0] + '.' + v[0] + '">' + v[1] + '</textarea></label>'
                             });
-                            return '<label class="padd-left"><strong>' + value[0] + '</strong>' + output + '</label>';
+                            return '<label class="padd-left"><strong>' + value[0] + '</strong>' + output + '</label>'
 
                         } else {
-                            return '<label>' + value[0] + '<textarea v-model="fieldsData.' + value[0] + '">' + value[1] + '</textarea></label>';
+                            return '<label>' + value[0] + '<textarea v-model="fieldsData.' + value[0] + '">' + value[1] + '</textarea></label>'
                         }
                     }
                 });
             },
 
             saveUpdate() {
+                if (this.form.document === this.cache) {
+                    this.error = this.showLanguage('error', 'document.noChange' )
+                }
                 if (this.form.format === 'json') {
-                    this.sendJson();
+                    this.sendJson()
                 }
                 if (this.form.format === 'array') {
-                    this.sendArray();
+                    this.sendArray()
                 }
                 if (this.form.format === 'fields') {
-                    this.sendJson();
+                    this.sendJson()
                 }
             },
 
@@ -222,7 +228,7 @@
                 this.$store.dispatch( 'updateDocument', this.form );
 
                 // result
-                this.handleUpdate();
+                this.handleUpdate()
             },
 
             sendArray() {
@@ -237,19 +243,19 @@
                 this.$store.dispatch( 'updateDocument', this.form );
 
                 // result
-                this.handleUpdate();
+                this.handleUpdate()
             },
 
             sendFields() {
-                let data = this.form.document;
+                let data = this.form.document
             },
 
             handleUpdate() {
                 let status = this.$store.getters.getUpdateDocumentStatus;
                 if (status === 1) {
                     setTimeout(() => {
-                        this.handleUpdate();
-                    }, 100);
+                        this.handleUpdate()
+                    }, 100)
                 }
                 if (status === 2) {
                     EventBus.$emit('show-success', { notification: this.showLanguage('document', 'updateSuccess', this.form._id) });
@@ -258,10 +264,10 @@
                     document['_id'] = this.id;
                     EventBus.$emit('document-updated', { index: this.form.index, document: JSON.stringify(document) });
                     this.clearData();
-                    this.hideComponent();
+                    this.hideComponent()
                 }
                 if (status === 3) {
-                    EventBus.$emit('show-error', { notification: this.showLanguage('document', 'updateError', this.form._id) });
+                    EventBus.$emit('show-error', { notification: this.showLanguage('error', 'document.updateError', this.form._id) })
                 }
             },
 
@@ -270,20 +276,22 @@
                 this.fields = [];
                 this.fieldsData = {};
                 this.form = this.skel;
+                this.cache = {};
+                this.id = null
             },
 
             /*
             *   Show component
             */
             showComponent() {
-                this.show = true;
+                this.show = true
             },
 
             /*
             *   Hide component
             */
             hideComponent() {
-                this.show = false;
+                this.show = false
             },
 
             /*
@@ -291,7 +299,7 @@
              */
             closeDialogOutside( event ) {
                 if ($(event.target).is('#panel-modal-update')) {
-                    this.hideComponent();
+                    this.hideComponent()
                 }
             }
         },
@@ -305,7 +313,7 @@
             */
             EventBus.$on('show-document-update', ( data ) => {
                 this.setDocument( data );
-                this.showComponent();
+                this.showComponent()
             });
         }
     }

@@ -200,7 +200,7 @@ class VarEval
 
         date_default_timezone_set($timezone);
 
-        if ( $ret["ok"] ) {
+        if ($ret["ok"] ) {
             return $ret["retval"];
         }
         return json_decode($this->_source, true);

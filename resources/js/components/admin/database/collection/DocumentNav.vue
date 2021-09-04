@@ -27,7 +27,7 @@
         <span v-if="document.can_add_field"><span class="pma-link" @click="newField" v-text="showLanguage('document', 'newField')"></span></span>
         <span v-if="!document.can_add_field"><span class="disabled-link" v-text="showLanguage('document', 'newField')"></span></span> |
         <span v-if="document.can_duplicate"><span class="pma-link" @click="duplicate" v-text="showLanguage('document', 'duplicate')"></span> |</span>
-        <span v-if="document.can_refresh"><span class="pma-link" @click="refresh" v-text="showLanguage('document', 'refresh')"></span> |</span>
+        <span v-if="document.can_refresh"><span class="pma-link" @click="$emit('refresh')" v-text="showLanguage('document', 'refresh')"></span> |</span>
         <span class="pma-link" @click="$emit('text', $event.target)" v-text="showLanguage('document', 'text')"></span> |
         <span class="pma-link" @click="$emit('expand', $event.target)" v-text="showLanguage('document', 'expand')"></span>
     </div>
@@ -49,40 +49,50 @@
             /*
              *   Calls the Translation and Language service
              */
-            showLanguage( context, key, str ) {
+            showLanguage(context, key, str) {
                 if (str) {
-                    let string = this.$store.getters.getLanguageString( context, key );
+                    let string = this.$store.getters.getLanguageString(context, key);
                     return string.replace("%s", str);
                 }
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString(context, key);
             },
 
             update() {
-                let data = { document: this.document.raw, db: this.collection.databaseName, coll: this.collection.collectionName, index: this.index };
-                EventBus.$emit('show-document-update', data );
+                let data = {
+                    document: this.document.raw,
+                    db: this.collection.databaseName,
+                    coll: this.collection.collectionName,
+                    index: this.index
+                };
+                EventBus.$emit('show-document-update', data);
             },
 
             deleteDocument() {
-                EventBus.$emit('delete-confirmation', {id: this.document._id, element: 'document', notification: this.showLanguage('document', 'deleteConfirm') });
+                EventBus.$emit('delete-confirmation', {
+                    id: this.document._id,
+                    element: 'document',
+                    notification: this.showLanguage('document', 'deleteConfirm')
+                });
             },
 
             newField() {
-                let data = { document: this.document.raw, db: this.collection.databaseName, coll: this.collection.collectionName, index: this.index };
-                EventBus.$emit('show-document-field', data );
+                let data = {
+                    document: this.document.raw,
+                    db: this.collection.databaseName,
+                    coll: this.collection.collectionName,
+                    index: this.index
+                };
+                EventBus.$emit('show-document-field', data);
             },
 
             duplicate() {
-                let data = { document: this.document.raw, db: this.collection.databaseName, coll: this.collection.collectionName };
-                EventBus.$emit('show-document-duplicate', data );
+                let data = {
+                    document: this.document.raw,
+                    db: this.collection.databaseName,
+                    coll: this.collection.collectionName
+                };
+                EventBus.$emit('show-document-duplicate', data);
             },
-
-            refresh() {
-                let data = { database: this.collection.databaseName, collection: this.collection.collectionName };
-                this.$store.dispatch('loadCollection', data);
-                setTimeout(function() {
-                    EventBus.$emit('document-insert' );
-                }, 500);
-            }
         }
     }
 </script>

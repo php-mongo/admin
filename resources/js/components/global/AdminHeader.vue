@@ -235,7 +235,7 @@
             },
 
             isMember() {
-                let isMember = this.$cookie.get('app-member');
+                let isMember = this.$cookies.get('app-member');
                 return ((isMember && isMember.length === 1) || this.userLoadStatus);
             }
         },

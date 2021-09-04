@@ -38,10 +38,18 @@ export default {
     },
 
     /*
+    *   Get a clean list of database names
+    *   GET /api/vi/databases/list/all
+    */
+    getDatabaseList: () => {
+        return window.axios.get( MONGO_CONFIG.API_URL + '/databases/list/all' );
+    },
+
+    /*
     *   Create a new Database
     *   POST  /api/v1/databases/create
     */
-    createDatabase: ( name) => {
+    createDatabase: ( name ) => {
         return window.axios.post( MONGO_CONFIG.API_URL + '/databases/create',
             {
                 database: name,
@@ -53,7 +61,7 @@ export default {
     *   Delete one or more Database(s)
     *   POST  /api/v1/databases/delete
     */
-    deleteDatabase: ( names) => {
+    deleteDatabase: ( names ) => {
         return window.axios.post( MONGO_CONFIG.API_URL + '/databases/delete',
             {
                 names: names,

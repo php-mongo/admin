@@ -366,6 +366,22 @@
                 }
             },
 
+            refreshDb(db) {
+                if (db) {
+                    this.$store.dispatch( 'loadCachedDatabase', db )
+                }
+            },
+
+            watchLeftNav() {
+                this.expanded = !this.expanded;
+                if (this.expanded === true) {
+                    this.$jqf(this.$refs.pmaDatabaseView).css('width', '94vw');
+                }
+                if (this.expanded === false) {
+                    this.$jqf(this.$refs.pmaDatabaseView).css('width', 'calc(97vw - 260px)');
+                }
+            },
+
             /*
             *   Show component
             */
@@ -381,16 +397,6 @@
             hideComponent() {
                 this.show = false;
             },
-
-            watchLeftNav() {
-                this.expanded = !this.expanded;
-                if (this.expanded === true) {
-                    this.$jqf(this.$refs.pmaDatabaseView).css('width', '94vw');
-                }
-                if (this.expanded === false) {
-                    this.$jqf(this.$refs.pmaDatabaseView).css('width', 'calc(97vw - 260px)');
-                }
-            }
         },
 
         /*
@@ -401,24 +407,27 @@
             *    Hide this component
             */
             EventBus.$on('hide-panels', () => {
-                this.hideComponent();
+                this.hideComponent()
             });
 
             /*
             *    Show this component
             */
-            EventBus.$on('show-database', () =>{
+            EventBus.$on('show-database', (db) =>{
                 this.showComponent();
+                if (db) {
+                    this.refreshDb(db)
+                }
             });
 
             /*
             *   Change panel behavior based on left panel size
             */
             EventBus.$on('collapse-left-nav', () => {
-                this.watchLeftNav();
+                this.watchLeftNav()
             });
             EventBus.$on('expand-left-nav', () => {
-                this.watchLeftNav();
+                this.watchLeftNav()
             });
         }
     }

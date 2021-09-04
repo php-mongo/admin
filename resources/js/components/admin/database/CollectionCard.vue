@@ -48,23 +48,21 @@
              *  We ave 2 variations on collection name
              */
             getCollectionName() {
-                return ((this.collection.collection.name) ? this.collection.collection.name : this.collection.collection.collectionName);
+                return this.collection.collection.name ? this.collection.collection.name : this.collection.collection.collectionName
             },
 
             /*
              *  Prevent errors when there are no objects
              */
             getObjectsCount() {
-              if (this.collection.objects) {
-                  return this.collection.objects.count;
-              }
+                return this.collection.objects ? this.collection.objects.count : 0
             },
 
             /*
              *  Only show id true
              */
             checkCollection() {
-                return (this.collection);
+                return (this.collection)
             }
         },
 
@@ -76,7 +74,7 @@
             *   Calls the Translation and Language service
             */
             showLanguage(context, key) {
-                return this.$store.getters.getLanguageString(context, key);
+                return this.$store.getters.getLanguageString(context, key)
             }
         }
     }

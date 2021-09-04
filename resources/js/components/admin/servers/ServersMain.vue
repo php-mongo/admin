@@ -51,8 +51,9 @@
                 table.bordered td {
                     border-bottom: 1px solid $infoColor;
                     min-width: 100px;
-                    padding-left: 20px;
+                    padding: 0 12px 0 12px;
                     text-align: left;
+                    position: relative;
                 }
                 table.bordered td.w50 {
                     min-width: 49.9%;
@@ -102,7 +103,7 @@
         <status-view></status-view>
         <processes-view></processes-view>
         <command-view></command-view>
-        <users-view></users-view>
+        <users-view v-bind:account="getUser"></users-view>
         <master-view></master-view>
     </div>
 </template>
@@ -127,6 +128,12 @@
             CommandView,
             UsersView,
             MasterView
-        }
+        },
+
+        computed: {
+            getUser() {
+                return this.$store.getters.getUser
+            },
+        },
     }
 </script>

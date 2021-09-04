@@ -40,12 +40,12 @@ class EditServerRequest extends FormRequest
     public function rules()
     {
         return [
-            'host'     => 'required|string|max:200',
-            'port'     => 'required|integer|min:5',
-            'username' => 'required|string|min:5|max:100',
             'active'   => 'required|boolean',
+            'host'     => 'required|string|max:200',
             'id'       => 'sometimes|integer',
             'password' => 'sometimes|string|min:5',
+            'port'     => 'required|integer|min:5',
+            'username' => 'required|string|min:5|max:100',
             'user_id'  => 'sometimes|integer'
         ];
     }
