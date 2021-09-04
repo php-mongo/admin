@@ -1,0 +1,63 @@
+<!--
+  ~ PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
+  ~ @version      phpmd.xml 1001 15/8/21, 1:12 pm  Gilbert Rehling $
+  ~ @package      PhpMongoAdmin\resources
+  ~ @subpackage   phpmd.xml
+  ~ @link         https://github.com/php-mongo/admin PHP MongoDB Admin
+  ~ @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+  ~ @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
+  ~ @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
+  ~  php-mongo-admin - License conditions:
+  ~  Contributions to our suggestion box are welcome: https://phpmongotools.com/suggestions
+  ~  This web application is available as Free Software and has no implied warranty or guarantee of usability.
+  ~  See licence.txt for the complete licensing outline.
+  ~  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
+  ~  See COPYRIGHT.php for copyright notices and further details.
+  -->
+<ruleset name="PhpMongoAdmin Custom"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://pmd.sf.net/ruleset/1.0.0"
+         xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0 http://pmd.sf.net/ruleset_xml_schema.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sf.net/ruleset_xml_schema.xsd">
+    <!--codesize-->
+    <rule ref="rulesets/codesize.xml">
+        <exclude name="CyclomaticComplexity" />
+        <exclude name="NPathComplexity" />
+        <exclude name="ExcessiveClassComplexity" />
+    </rule>
+    <rule ref="rulesets/codesize.xml/CyclomaticComplexity">
+        <properties>
+            <property name="reportLevel" value="20"/>
+        </properties>
+    </rule>
+    <rule ref="rulesets/codesize.xml/NPathComplexity">
+        <properties>
+            <property name="minimum" value="200"/>
+        </properties>
+    </rule>
+    <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity">
+        <properties>
+            <property name="maximum" value="100"/>
+        </properties>
+    </rule>
+    <!--design-->
+    <rule ref="rulesets/design.xml" />
+    <!--naming-->
+    <rule ref="rulesets/naming.xml">
+        <exclude name="ShortVariable" />
+    </rule>
+    <rule ref="rulesets/naming.xml/ShortVariable">
+        <properties>
+            <property name="exceptions" value="id,q,i,j,v,e,f,fp" />
+        </properties>
+    </rule>
+    <!--unusedcode-->
+    <rule ref="rulesets/unusedcode.xml" />
+    <!--controversial-->
+    <rule ref="rulesets/controversial.xml" />
+    <!--cleancode-->
+    <rule ref="rulesets/cleancode.xml">
+        <exclude name="StaticAccess" /> <!-- too many for now -->
+    </rule>
+
+</ruleset>

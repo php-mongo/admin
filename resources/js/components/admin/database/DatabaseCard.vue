@@ -56,7 +56,7 @@
 </style>
 
 <template>
-    <div class="database-inner" v-show="show">
+    <div class="database-inner" v-if="show">
         <table class="bordered unstriped">
             <tr>
                 <th class="text-center bb title"><span v-text="showLanguage('database', 'database', getDbName(db))"></span> </th>
@@ -77,7 +77,10 @@
                         </tr>
                         <tr>
                             <td class="text-center rb">
-                                <p><span class="pma-link" v-text="showLanguage('database', 'dropAll')"></span> | <span class="pma-link" v-text="showLanguage('database', 'clearAll')"></span></p>
+                                <p>
+                                    <span class="pma-link" v-text="showLanguage('database', 'dropAll')" title="To Do... use collection actions"></span> |
+                                    <span class="pma-link" v-text="showLanguage('database', 'clearAll')" title="To Do... use collection actions"></span>
+                                </p>
                             </td>
                             <td class="text-center">
                                 <p v-text="showLanguage('database', 'objectsCount')"></p>
@@ -177,59 +180,65 @@
             /*
             *   Collections count
             */
-            getCollectionCount: function() {
+            getCollectionCount() {
                 if (this.stats) {
                     return this.stats['collections'];
                 }
+                return 0
             },
 
             /*
             *   Objects count
             */
-            getObjectsCount: function() {
+            getObjectsCount() {
                 if (this.stats) {
                     return this.stats['objects'];
                 }
+                return 0
             },
 
             /*
             *   Average Objects Size
             */
-            getAvgObjSize: function() {
+            getAvgObjSize() {
                 if (this.stats) {
                     return this.stats['avgObjSize'];
                 }
+                return 0
             },
 
             /*
             *   Data size
             */
-            getDataSize: function() {
+            getDataSize() {
                 if (this.stats) {
                     return this.stats['dataSize'];
                 }
+                return 0
             },
 
             /*
             *   Storage size
             */
-            getStorageSize: function() {
+            getStorageSize() {
                 if (this.stats) {
                     return this.stats['storageSize'];
                 }
+                return 0
             },
 
             /*
             *   Index size
             */
-            getIndexSize: function() {
+            getIndexSize() {
                 if (this.stats) {
                     return this.stats['indexSize'];
                 }
+                return 0
             },
 
             getDB() {
-                return (this.db);
+                return this.db.db;
             }
         },
 
@@ -291,7 +300,7 @@
                 if (bytes < 1024 * 1024 * 1024 * 1024) {
                     return Math.round(bytes/1024/1024/1024, precision) + "g";
                 }
-                return bytes;
+                return bytes
             },
 
             /*
@@ -308,21 +317,21 @@
                 // event to enable collection panel
                 EventBus.$emit('show-collection', collection );
                 // hide this panel
-                this.show = false;
+                this.show = false
             },
 
             /*
             *   Show component
             */
             showComponent() {
-                this.show = true;
+                this.show = true
             },
 
             /*
             *   Hide component
             */
             hideComponent() {
-                this.show = false;
+                this.show = false
             },
         },
 
@@ -334,14 +343,19 @@
             *    Hide this component
             */
             EventBus.$on('hide-database-panels', () => {
-                this.hideComponent();
+                this.hideComponent()
 
             });
 
             EventBus.$on('show-database', () => {
                 // I was messing around trying to get this panel working correctly and loaded the db.child stats object - partly in use
                 this.stats = this.$store.getters.getStats;
-                this.show = true;
+                this.show = true
+
+            });
+
+            EventBus.$on('show-database-panel', () => {
+                this.show = true
 
             });
         },

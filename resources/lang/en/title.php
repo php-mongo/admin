@@ -52,6 +52,7 @@ return [
     "logoutTitle" => "Click here to logout from PHP Mongo Admin",
     "manageDataTitle" => "Manage your PHP Mongo Admin data",
     "masterTitle" => "View any Master | Slave clusters information",
+    "navUsernameTitle" => "Click to see your allocated MongoDb roles",
     "newCollectionTitle" => "Create a new collection in this database",
     "newFieldTitle" => "Add a new field",
     "processesTitle" => "View ongoing MongoDB processes",

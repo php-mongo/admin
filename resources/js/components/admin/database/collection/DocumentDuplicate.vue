@@ -73,6 +73,7 @@
             return {
                 actionMessage: null,
                 document: {},
+                error: null,
                 errorMessage: null,
                 errors: 0,
                 form: {
@@ -82,6 +83,8 @@
                     number: 1,
                     document: null
                 },
+                index: 0,
+                limit: 25,
                 show: false,
                 skel: {
                     collection: null,
@@ -101,9 +104,9 @@
             showLanguage( context, key, str ) {
                 if (str) {
                     let string = this.$store.getters.getLanguageString( context, key );
-                    return string.replace("%s", str);
+                    return string.replace("%s", str)
                 }
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             /*
@@ -123,7 +126,7 @@
 
                 // clear the _id from the data and save a copy
                 let str = this.$convObj( this.document ).json();
-                this.form.document = str.replace("\"_id\":null,", "");
+                this.form.document = str.replace("\"_id\":null,", "")
             },
 
             /*
@@ -133,27 +136,26 @@
                 let value = this.$jqf(event.target).value();
                 if (value === 'array') {
                     this.form.format   = 'array';
-                    this.form.document = this.makeArray( this.form.document );
+                    this.form.document = this.makeArray( this.form.document )
 
                 }  else if (value === 'json') {
                     this.form.format   = 'json';
-                    this.form.document = this.makeJson( this.form.document );
-
+                    this.form.document = this.makeJson( this.form.document )
                 }
             },
 
             makeJson( document ) {
-                return this.$convObj( document ).jsonT();
+                return this.$convObj( document ).jsonT()
             },
 
             makeArray( document ) {
-                return this.$convObj( document ).arrayT();
+                return this.$convObj( document ).arrayT()
             },
 
             /*
              *  This is our method that handles the saveDuplicate click
              */
-            saveDuplicate( action ) {
+            saveDuplicate() {
                 this.errorMessage = null;
 
                 // check format
@@ -162,7 +164,7 @@
                 }
 
                 // save duplicate
-                this.saveDocument();
+                this.saveDocument()
             },
 
             /*
@@ -183,18 +185,18 @@
                         this.index = 0;
                         // notify doc duplicate success
                         this.duplicated += 1;
-                        this.actionMessage = this.showLanguage('document', 'duplicated', this.duplicated);
+                        this.actionMessage = this.showLanguage('document', 'duplicated', this.duplicated)
                     }
                     else {
                         // track errors
                         this.errors += 1;
-                        this.errorMessage = this.showLanguage('document', 'errorsDuplicate', this.errors);
+                        this.errorMessage = this.showLanguage('errors', 'document.errorsDuplicate', this.errors)
                     }
                 }
 
                 // complete
                 this.index = 0;
-                this.handleDuplicate();
+                this.handleDuplicate()
             },
 
             /*
@@ -205,16 +207,23 @@
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     setTimeout(() => {
-                        this.handleDuplicate();
-                    }, 150);
+                        this.handleDuplicate()
+                    }, 150)
                 }
                 if (status === 2) {
                     EventBus.$emit('show-success', { notification: this.showLanguage('document', 'duplicateSuccess', this.duplicated) });
-                    this.clearData();
                     this.hideComponent();
+                    setTimeout(() => {
+                        this.clearData()
+                    }, 1000)
                 }
                 if (status === 3) {
-                    EventBus.$emit('show-error', { notification: this.showLanguage('document', 'duplicateError', this.errors) });
+                    let errors = this.$store.getters.getCollectionErrorData;
+                    this.error =
+                        errors ?
+                            errors :
+                            this.showLanguage('errors', 'document.duplicateError', this.errors);
+                    EventBus.$emit('show-error', { notification: this.error })
                 }
             },
 
@@ -226,14 +235,14 @@
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     setTimeout(() => {
-                        this.handleAll();
-                    }, 150);
+                        this.handleAll()
+                    }, 150)
                 }
                 if (status === 2) {
-                    return true;
+                    return true
                 }
                 if (status === 3) {
-                    return false;
+                    return false
                 }
             },
 
@@ -246,21 +255,21 @@
                 this.errorMessage = null;
                 this.errors = 0;
                 this.form = this.skel;
-                this.updated = 0;
+                this.updated = 0
             },
 
             /*
              *   Show component
              */
             showComponent() {
-                this.show = true;
+                this.show = true
             },
 
             /*
              *   Hide component
              */
             hideComponent() {
-                this.show = false;
+                this.show = false
             },
 
             /*
@@ -268,7 +277,7 @@
              */
             closeDialogOutside( event ) {
                 if ($(event.target).is('#panel-modal-duplicate')) {
-                    this.hideComponent();
+                    this.hideComponent()
                 }
             }
         },
@@ -282,12 +291,12 @@
              */
             EventBus.$on('show-document-duplicate', ( data ) => {
                 this.setDocument( data );
-                this.showComponent();
+                this.showComponent()
             });
         },
 
         destroyed() {
-            this.clearData();
+            this.clearData()
         }
     }
 </script>

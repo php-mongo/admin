@@ -30,7 +30,7 @@
 </style>
 
 <template>
-    <tr v-if="db">
+    <tr>
         <td class="info rb"><input v-show="db.db.name !== 'admin' && db.db.name !== 'local'" v-on:click="selectCheckbox" :checked="isChecked" type="checkbox" :value="db.db.name" /></td>
         <td class="info rb"><span class="pma-link" v-on:click="showDatabase">{{ getDbName(db) }}</span></td>
         <td class="info rb">{{ humanReadable(db.db.sizeOnDisk) }}</td>
@@ -52,15 +52,15 @@
         /*
         *   The component accepts one db as a property
         */
-        props: ['db'],
+        props: ['db','list'],
 
         /*
         *   We keep a reference to the associate database name
         */
         data() {
             return {
-                dbs: null,
                 checked: false,
+                dbs: null,
                 name: null
             }
         },
@@ -74,6 +74,10 @@
             */
             isChecked() {
                 return this.checked;
+            },
+
+            watchDb() {
+                return this.db
             }
         },
 
@@ -85,7 +89,7 @@
             *   Calls the Translation and Language service
             */
             showLanguage( context, key ) {
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             /*
@@ -94,11 +98,11 @@
             getDbName( db ) {
                 if (db.db.databaseName) {
                     this.name = db.db.databaseName;
-                    return db.db.databaseName;
+                    return db.db.databaseName
                 }
                 else {db.db.name;
                     this.name = db.db.name;
-                    return db.db.name;
+                    return db.db.name
                 }
             },
 
@@ -106,11 +110,10 @@
             *   Load the database panel
             */
             showDatabase() {
-            //    this.$store.dispatch('clearDatabase');
                 this.$store.dispatch('setActiveDatabase', this.name);
                 this.$store.dispatch('loadDatabase', this.name);
                 EventBus.$emit('hide-panels');
-                EventBus.$emit('show-database', this.name);
+                EventBus.$emit('show-database', this.name)
             },
 
             /*
@@ -118,19 +121,19 @@
             */
             humanReadable(bytes, precision) {
                 if (bytes === 0) {
-                    return 0;
+                    return 0
                 }
                 if (bytes < 1024) {
-                    return bytes + "B";
+                    return bytes + "B"
                 }
                 if (bytes < 1024 * 1024) {
-                    return Math.round(bytes/1024, precision) + "k";
+                    return Math.round(bytes/1024, precision) + "k"
                 }
                 if (bytes < 1024 * 1024 * 1024) {
-                    return Math.round(bytes/1024/1024, precision) + "m";
+                    return Math.round(bytes/1024/1024, precision) + "m"
                 }
                 if (bytes < 1024 * 1024 * 1024 * 1024) {
-                    return Math.round(bytes/1024/1024/1024, precision) + "g";
+                    return Math.round(bytes/1024/1024/1024, precision) + "g"
                 }
                 return bytes;
             },
@@ -139,15 +142,15 @@
             *   The status will govern the checkbox's state
             */
             checkDatabase(status) {
-                this.checked = status;
+                this.checked = status
             },
 
             /*
             *   Method handles the checkbox click
             */
             selectCheckbox() {
-                this.checked = !this.checked;
-            }
+                this.checked = !this.checked
+            },
         },
 
         /*
@@ -157,12 +160,12 @@
             EventBus.$on('check-all-databases', () => {
                 // exclude admin & local from deletion
                 if (this.name !== 'admin' && this.name !== 'local') {
-                    this.checkDatabase(true);
+                    this.checkDatabase(true)
                 }
             });
 
             EventBus.$on('uncheck-all-databases', () => {
-                this.checkDatabase(false);
+                this.checkDatabase(false)
 
             });
         },
@@ -178,13 +181,13 @@
             isChecked() {
                 if (this.checked === true) {
                     if (this.name !== 'admin' && this.name !== 'local') {
-                        EventBus.$emit('track-checked-db', this.name );
+                        EventBus.$emit('track-checked-db', this.name )
                     }
                 }
                 if (this.checked === false) {
-                    EventBus.$emit('untrack-checked-db', this.name );
+                    EventBus.$emit('untrack-checked-db', this.name )
                 }
-            }
+            },
         }
     }
 </script>

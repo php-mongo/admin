@@ -172,7 +172,7 @@
                     }
                 }
                 else if (status === 3) {
-                    let error = this.$store.getters.getCollErrorData;
+                    let error = this.$store.getters.getCollectionErrorData;
                     this.errorMessage = error ? error : "An error occurred during import";
                 }
             },

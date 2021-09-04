@@ -29,10 +29,14 @@ return [
     |
     */
 
-    'reset' => 'Your password has been reset!',
-    'sent' => 'We have emailed your password reset link!',
-    'throttled' => 'Please wait before retrying.',
-    'token' => 'This password reset token is invalid.',
-    'user' => "We can't find a user with that email address.",
+    "passwordTitle" => "Password Resets",
+    "passwordResetBold" => "At this time PhpMongoAdmin does not support user password resets",
+    "passwordResetInfo" => "PhpMongoAdmin currently only supports password resets for the original control user.<br>All other users should make a request via a system administrator.<br>System admins can send password request token to users within their access scope.",
+    "reset" => "Your password has been reset!",
+    //"sent" => "We have emailed your password reset link!",
+    "sent" => "Your password reset request was successful.<br>We have emailed your password reset link!<br>Please check your Inbox.<br>If you cannot find the email please check your junk-mail and or spam folders.",
+    "throttled" => "Please wait before retrying.",
+    "token" => "This password reset token is invalid.",
+    "user" => "We can't find a user with that email address.",
 
 ];

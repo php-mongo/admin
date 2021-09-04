@@ -25,6 +25,7 @@
     nav.top-navigation {
         min-height: 33px;
         max-width: 99%;
+        background-color: inherit;
 
         ul.links {
             display: inline-block;
@@ -34,6 +35,9 @@
                 display: inline-block;
                 list-style-type: none;
                 margin-left: 7px;
+                vertical-align: top;
+                position: relative;
+                background-color: inherit;
 
                 span {
                     font-weight: bold;
@@ -53,6 +57,10 @@
                     color: $red;
                     cursor: pointer;
                     padding: 4px;
+
+                    &:hover {
+                        text-decoration: none;
+                    }
                 }
 
                 &:hover {
@@ -86,6 +94,11 @@
             position: absolute;
             right: 20px;
             top: 0;
+            background-color: inherit;
+
+            li.actions {
+                padding-right: 10px;
+            }
 
             .country-flag {
                 height: 33px;
@@ -102,6 +115,20 @@
 
                 img {
                     width: 1.2rem;
+                }
+            }
+
+            p.roles-list {
+                background-color: inherit;
+                margin: 0;
+                position: absolute;
+                left: -52px;
+                min-width: 320px;
+                padding-left: 10px;
+
+                .role-item-wrapper {
+                    display: inline-block;
+                    width: 100%
                 }
             }
         }
@@ -149,27 +176,33 @@
                     <img src="img/icon/servers.png" /> <span class="pma-link" v-on:click="loadHome($event)">Localhost</span>
                 </li>
                 <li v-if="error !== null">
-                    <span class="top-error" v-on:click="closeError">{{ getError }}</span> <span class="text-info" v-text="showLanguage('nav', 'close')"></span>
+                    <span class="top-error" @click="$emit('clearError')">{{ getError }}</span>
+                    <span class="text-info pma-link" @click="$emit('clearError')" v-text="showLanguage('nav', 'close')"></span>
                 </li>
             </ul>
             <ul class="links right">
+                <!--display user-->
+                <li v-show="isMember">
+                    <span class="pma-link" v-show="userLoadStatus" @click="showRoles" :title="showLanguage('title', 'navUsernameTitle')">
+                        {{usersName}}
+                    </span>
+                    <p class="roles-list">
+                        <span class="role-item-wrapper" v-for="(role, key) in rolesList" v-bind:key="key" v-bind:role="role">
+                            <span class="roles-item">Database: {{ role.db }}, Role: {{ role.role }}</span>
+                        </span>
+                    </p>
+                </li>
+                <li><span class="pma-link">|</span></li>
                 <li>
                     <router-link :to="{ name: 'about' }">
                         <span class="pma-link" v-text="showLanguage('nav','about')"></span>
                     </router-link>
                 </li>
-                <li><span class="pma-link">|</span</li>
-                <!--display user-->
-                <li v-show="isMember" class="username">
-                    <span v-show="userLoadStatus" >
-                        {{usersName}}
-                    </span>
-                </li>
-                <li><span class="pma-link">|</span</li>
+                <li><span class="pma-link">|</span></li>
                 <li v-show="isMember" class="member-button">
                     <span class="pma-link" v-on:click="runLogout($event)" v-bind:title="showLanguage('title', 'logoutTitle')" v-text="showLanguage('nav', 'logout')"></span>
                 </li>
-                <li v-on:click="collapseNav">
+                <li class="actions" v-on:click="collapseNav">
                     <span class="nav-collapse" v-show="collapsed" :title="showLanguage('nav', 'collapse')"><img src="img/sort-asc.svg" alt="Collapse nav" /> </span>
                     <span class="nav-collapse" v-show="!collapsed" :title="showLanguage('nav', 'expand')"><img src="img/sort-desc.svg" alt="Expand nav" /> </span>
                 </li>
@@ -199,7 +232,7 @@
         /*
          *  handle error display
          */
-        props: ['error'],
+        props: ['user','error'],
 
         /*
         *   Data used with this component
@@ -209,9 +242,10 @@
                 collapsed: false,
                 countryName: null,
                 isLoggedIn: null,
+                rolesList: null,
                 searchActive: null,
-                userName: null,
-                user: {},
+                showRolesList: false,
+                index: 0,
             };
         },
 
@@ -230,49 +264,54 @@
             *   Retrieves the User Load Status from Vuex
             */
             userLoadStatus() {
-                return (this.$store.getters.getUserLoadStatus === 2);
+                return (this.$store.getters.getUserLoadStatus === 2)
             },
 
             /*
             *   Return the site name from config
             */
             siteName() {
-                return MONGO_CONFIG.SITE_NAME;
+                return MONGO_CONFIG.SITE_NAME
             },
 
             /*
             *   Check for country name
             */
             hasCountryName() {
-                return (this.countryName != null);
+                return (this.countryName != null)
             },
 
             /*
             *   Apply country name - not currently used
             */
             setCountryName() {
-                return this.countryName;
+                return this.countryName
             },
 
             /*
             *   Check for App membership
             */
             isMember() {
-                let isMember = this.$cookie.get('app-member');
-                return ((isMember && isMember.length >= 3) || this.userLoadStatus);
+                let isMember = this.$cookies.get('app-member');
+                return ((isMember && isMember.length >= 3) || this.userLoadStatus)
             },
 
             /*
             *   Render the username
             */
             usersName() {
-                return this.$store.getters.getUsersName;
+                return this.user.name
             },
 
+            /*
+            *   Renders the error to DOM
+            */
             getError() {
-                if (this.error && this.error.error) {
-                    return "Error: " + this.error.error;
-                }
+                return this.error.error ?
+                    "Alert: " + this.error.error :
+                    this.error.message ?
+                        "Alert: " + this.error.message :
+                        'Unhandled errors occurred'
             }
         },
 
@@ -285,54 +324,19 @@
             */
             showLanguage( context, key ) {
                 // return this.$trans( context, key );
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
-            /*
-            *   Open language selector
-            */
-            openLanguageSelector() {
-                EventBus.$emit('show-language-selector');
+            collapseNav() {
+                this.collapsed = !this.collapsed;
+                this.$emit('collapseNav', this.collapsed)
             },
 
             /*
             *   Get the users country name
             */
             getCountryNameValue() {
-                this.countryName = this.$store.getters.getCountryName;
-            },
-
-            /*
-            *   Run the logout sequence
-            */
-            runLogout(event) {
-                event.preventDefault();
-                let uid = this.$store.getters.getUserAuthStatus;
-                this.$store.dispatch('logoutUser', { uid: uid });
-                this.completeLogout();
-            },
-
-            completeLogout() {
-                EventBus.$emit('show-success', { notification: this.showLanguage('auth', 'logout-success')});
-                setTimeout(function() {
-                    router.push( { name: 'public' } );
-                    //window.location = ;
-                }, 2500);
-            },
-
-            /*
-            *   Checks whether the user is logged in
-            */
-            userLoggedIn() {
-                this.isLoggedIn = this.$store.getters.isLoggedIn;
-            },
-
-            /*
-            * Retrieves the User from Vuex
-            */
-            getUser() {
-                this.user = this.$store.getters.getUser;
-                this.userName = this.$store.getters.getUsersName;
+                this.countryName = this.$store.getters.getCountryName
             },
 
             /*
@@ -343,28 +347,52 @@
                 EventBus.$emit('hide-panels');
                 // force a reload of the databases
                 this.$store.dispatch('loadDatabases');
-                //EventBus.$emit('clear-active-nav');
                 this.$store.dispatch('setActiveNav', null);
                 EventBus.$emit('show-server');
-                EventBus.$emit('show-mongo');
+                EventBus.$emit('show-mongo')
             },
 
-            collapseNav() {
-                this.collapsed = !this.collapsed;
-                this.$emit('collapseNav', this.collapsed);
+            /*
+            *   Run the logout sequence
+            */
+            runLogout(event) {
+                event.preventDefault();
+                let uid = this.$store.getters.getUserAuthStatus;
+                this.$store.dispatch('logoutUser', { uid: uid });
+                this.completeLogout(uid)
             },
 
-            closeError() {
-                this.error = null;
-            }
+            completeLogout(uid) {
+                let status = this.$store.getters.getUserLogoutStatus;
+                if (status === 1 && this.index < 25) {
+                    this.index++;
+                    setTimeout(() => {
+                        this.completeLogout(uid)
+                    }, 100)
+                }
+                if (status === 2) {
+                    EventBus.$emit('show-success', { notification: this.showLanguage('auth', 'logout-success') });
+                    setTimeout(() => {
+                        router.push( { name: 'public' } )
+                    }, 2000)
+                    EventBus.$emit('user-logged-out', uid)
+                }
+                if (status === 3) {
+                    EventBus.$emit('show-error', { notification: 'An unknown error has interrupted the logout process' })
+                }
+            },
+
+            showRoles() {
+                this.showRolesList = !this.showRolesList;
+                this.rolesList = this.showRolesList ? this.$store.getters.getUserRoles : null
+            },
+
+            /*
+            *   Open language selector
+            */
+            openLanguageSelector() {
+                EventBus.$emit('show-language-selector')
+            },
         },
-
-        /*
-        * Methods to run when component is mounted
-        */
-        mounted() {
-            this.userLoggedIn();
-            this.getUser();
-        }
     }
 </script>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      CollectionController.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -22,36 +23,60 @@
 namespace App\Http\Controllers\Api;
 
 /**
- *   Defines the requests used by the controller.
+ *  Defines the controllers used by controller.
  */
+use App\Http\Controllers\Controller;
 
-use App\Http\Classes\VarExport;
+/**
+ *  Defines the requests used by the controller.
+ */
 use Illuminate\Http\Request;
+use App\Http\Requests\EditCollectionRequest;
+
+/**
+ * Models
+ */
+use App\Models\User;
+
+use App\Http\Traits\CollectionTrait;
 
 /**
  *  Defined application classes
  */
-use App\Http\Controllers\Controller;
+use App\Http\Classes\VarExport;
 use App\Http\Classes\ExportDocument;
 use App\Http\Classes\HighlightDocument;
 use App\Http\Classes\MongoConnection as Mongo;
 use App\Helpers\MongoHelper;
-use App\Http\Requests\EditCollectionRequest;
 use App\Http\Classes\QueryLogs;
+use App\Http\Classes\UnserialiseDocument;
 
 /**
  * Vendors
  */
-use MongoDB\BSON\Unserializable;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Log;
+use Mockery\Exception;
 use MongoDB;
-use phpDocumentor\Reflection\Types\Mixed_;
 
 /**
  * Class CollectionController
+ *
  * @package App\Http\Controllers\Api
  */
-class CollectionController extends Controller implements Unserializable
+class CollectionController extends Controller
 {
+    use CollectionTrait;
+
+    /**
+     * Add any arrays that the dbAdmin! roles can read
+     *
+     * @var string[]
+     */
+    private $dbAdminCollections = [
+        'system.profile'
+    ];
+
     /**
      * @var     int         $limit      how many documents should be fetched for each page
      */
@@ -87,11 +112,6 @@ class CollectionController extends Controller implements Unserializable
     private $client;
 
     /**
-     * @var     MongoDB\Model\BSONArray $unserialised
-     */
-    private $unserialised;
-
-    /**
      * @var     string      $database       mongo database name
      */
     private $database;
@@ -107,28 +127,19 @@ class CollectionController extends Controller implements Unserializable
     private $collectionStatistics;
 
     /**
-     * This has no affect during the QueryCollection method result processing
-     *
-     * @param   string      $search
-     *
-     * @return  mixed
+     * @var User|null
      */
-    private function findCollectionStatisticsValue( $search )
-    {
-        if (is_array($this->collectionStatistics)) {
-            foreach ($this->collectionStatistics as $key => $value) {
-                if ($key == $search && !is_array( $value)) {
-                    return $value;
-                }
-            }
-        }
-        return '';
-    }
+    private $user;
+
+    /**
+     * @var array
+     */
+    private $unserialised;
 
     /**
      * @return array
      */
-    private function getCollectionStatistics( ): array
+    private function getCollectionStatistics(): array
     {
         return $this->collectionStatistics;
     }
@@ -142,210 +153,34 @@ class CollectionController extends Controller implements Unserializable
     }
 
     /**
-     * @param $objectsArr
-     * @param $documentsArray
-     * @param $arr
-     */
-    private function prepareObjects(array $objectsArr, array $documentsArray, &$arr) : void
-    {
-        /** @var ExportDocument $docExport */
-        $docExport    = new ExportDocument();
-
-        /** @var HighlightDocument $docHighlight */
-        $docHighlight = new HighlightDocument();
-
-        $i = 0;
-        foreach ($objectsArr as $key => $obj) {
-            // set the text key value -> default as php
-            $docExport->setVar($obj);
-            $docExport->setParams([]);
-
-            /** @var MongoDB\BSON\ObjectId $id */
-            $id         = $obj['_id'];
-            if (is_object($id)) {
-                $obj['_id'] = $id->__toString();
-            }
-
-            // we need a raw version - easier to updated and manipulates with JS
-            $raw  = MongoHelper::extractDocument($obj);
-
-            // always set 'json' as the default for this
-            $text = $docExport->export($this->format);
-
-            // set the data key
-            $data = $docHighlight->highlight( $documentsArray[$i], $this->format, true);
-
-            $obj['raw']  = $raw;
-            $obj['text'] = $text;
-            $obj['data'] = $data;
-
-            // set the 'can_delete' bool
-            $obj['can_delete']    = (isset($obj['_id']) && false == $this->findCollectionStatisticsValue('capped'));
-
-            // set the 'can_modify' bool
-            $obj['can_modify']    = (isset($obj['_id']));
-
-            // set the 'can_duplicate' bool
-            $obj['can_duplicate'] = (isset($obj['_id']));
-
-            // set the 'can_add_field' bool
-            $obj['can_add_field'] = (isset($obj['_id']) && false == $this->findCollectionStatisticsValue('capped'));
-
-            // set the 'can_refresh' bool
-            $obj['can_refresh']   = (isset($obj['_id']));
-
-            $arr[$key] = $obj;
-
-            $i++;
-        }
-    }
-
-    /**
-     * Returns the collection
-     * Todo: !! taking the long road with this request as we want 'ALL' available data
-     * @todo consider using $objects = new MongoDB\Client->$db->$collection to fetch objects seperately
+     * This has no effect during the QueryCollection method result processing
      *
-     * @param   string    $database     string DB Name
-     * @param   string    $collection   string Collection Name
-     * @return  array
+     * @param   string $search
+     *
+     * @return  mixed
      */
-    private function getOneCollection(string $database, string $collection) : array
+    private function findCollectionStatisticsValue(string $search)
     {
-        /** @var MongoDB\Collection $collection */
-        $collection = $this->mongo->connectClientCollection( $database, $collection );
-
-        $objectsObj = $this->getObjects($database, $collection->getCollectionName());
-        $data       = $collection->__debugInfo();
-
-        /** @var  MongoDB\Driver\Manager $manager */
-        $manager    = $data['manager'];
-
-        /** @var MongoDB\Driver\Server $server */
-        $server    = $manager->getServers()[0];
-        $serverData['host'] = $server->getHost();
-        $serverData['port'] = $server->getPort();
-        $serverData['info'] = $server->getInfo();
-
-        // get the database
-        $db         = $this->mongo->connectClientDb( $database );
-
-        /** @var MongoDB\Driver\Cursor $stats Fetch the collection statistics*/
-        $stats      = $db->command( array("collStats" => $collection->getCollectionName()) );
-
-        /** @var MongoDB\Model\BSONDocument $bsonObj */
-        $bsonObj    = $stats->toArray()[0];
-        $array      = $bsonObj->getArrayCopy();
-
-        /**
-         * Extract BSON doc down to 3 levels
-         */
-        $statistics = [];
-        foreach ($array as $key => $value) {
-            if ($value instanceof MongoDB\Model\BSONDocument) {
-                $value = $value->getArrayCopy();
-            }
-            if (is_array($value)) {
-                $arr = [];
-                foreach ($value as $k => $v) {
-                    if ($v instanceof MongoDB\Model\BSONDocument) {
-                        $v = $v->getArrayCopy();
-                    }
-                    if (is_array($v)) {
-                        $a = [];
-                        foreach ($v as $index => $val) {
-                            if ($val instanceof MongoDB\Model\BSONDocument) {
-                                $val = $val->getArrayCopy();
-                            }
-                            $a[$index] = $val;
-                        }
-                        $arr[$k] = $a;
-                    } else {
-                        $arr[$k] = $v;
-                    }
+        if (is_array($this->collectionStatistics)) {
+            foreach ($this->collectionStatistics as $key => $value) {
+                if ($key == $search && !is_array($value)) {
+                    return $value;
                 }
-                $value = $arr;
-            }
-            $statistics[ $key ] = $value;
-        }
-
-        // save the stats for reference
-        $this->setCollectionStatistics( $statistics );
-
-        /**
-         * Extract the BSON docs from $objects
-         */
-        $objects    = [];
-        $objectsArr = $objectsObj['objects'];
-        $arr        = [];
-        $objects['count'] = $objectsObj['count'];
-
-        $documentsArray = [];
-        foreach ($objectsArr as $document) {
-            MongoHelper::prepareDocument( $document, $documentsArray,$this->fields );
-        }
-
-        $this->prepareObjects($objectsArr, $documentsArray, $arr);
-
-        $objects['objects'] = $arr;
-        $arr = array("collection" => $collection->__debugInfo(), "objects" => $objects, "stats" => $statistics, "server" => $serverData);
-
-        return $arr;
-    }
-
-    /**
-     * Returns the objects for the given collection
-     *
-     * @param   string  $db             string DB Name
-     * @param   string  $collection     string Collection name
-     * @return  array
-     */
-    private function getObjects($db, $collection) : array
-    {
-        // no errors this way
-        $arr = array(
-            "objects" => [],
-            "count" => 0
-        );
-
-        $cursor    = $this->client->$db->selectCollection($collection);
-        $objects   = $cursor->find();
-        $array     = $objects->toArray();
-
-        foreach ($array as $object) {
-            $arr['objects'][] = $object;
-        }
-        $arr['count'] = count($arr['objects']);
-        return $arr;
-    }
-
-    /**
-     * Used to confirm that a collection has been dropped
-     *
-     * @param  string $name
-     * @param  array  $result
-     * @param  bool   $ns
-     * @return array
-     */
-    private function setDeleteStatus(string $name, array $result, $ns = false) : array
-    {
-        if (1 == $result['ok']) {
-            if (@$result['dropped'] == $name || @$result['ns'] == $ns) {
-                return array($name => 'success');
             }
         }
-        return array($name => 'failed');
+        return '';
     }
 
     /**
-     * Mostly we dont need this as we want to strip out all the bits individually
+     * Mostly we don't need this as we want to strip out all the bits individually
      * In most cases ->getArrayCopy() or ->__toString() suffice
      *
      * @inheritDoc
      */
-    public function bsonUnserialize(array $data)
+    public function bsonUnserialize(string $data)
     {
         // TODO: Implement bsonUnserialize() method.
-        $this->unserialised = $data;
+        $this->unserialised = MongoDB\BSON\toPHP($data, ['root' => 'UnserialiseDocument']);
     }
 
     /**
@@ -353,12 +188,17 @@ class CollectionController extends Controller implements Unserializable
      */
     public function __construct()
     {
-        /** @var \App\Models\User $user */
-        $user = auth()->guard('api')->user();
-        $this->mongo = new Mongo($user);
-        if ($this->mongo->checkConfig()) {
-            $this->mongo->connectClient();
-            $this->client = $this->mongo->getClient();
+        try {
+            /** @var User $user */
+            $this->user = auth()->guard('api')->user();
+            $this->mongo = new Mongo($this->user);
+            $this->client = $this->mongo->connectAndGetClient();
+        } catch (\Throwable $t) {
+            Log::debug($t->getMessage());
+        }
+
+        if ($this->user && $this->user->exists) {
+            parent::__construct($this->user, $this->mongo);
         }
     }
 
@@ -369,31 +209,40 @@ class CollectionController extends Controller implements Unserializable
      * Method:      GET
      * Description: Fetches a collection with objects and stats
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param   Request $request
+     * @param   string $database
+     * @param   string $collection
+     * @return  Response
      */
-    public function getCollection(Request $request, $database, $collection)
+    public function getCollection(Request $request, string $database, string $collection): Response
     {
         try {
             $this->database   = $database;
             $this->collection = $collection;
             if (isset($database, $collection)) {
                 // get the collection
-                $collection = $this->getOneCollection($database, $collection);
-
+                $collection = $this->getOneCollection(
+                    $this->mongo->connectClientCollection($database, $collection)
+                );
                 return response()->success('success', array('collection' => $collection));
             }
             return response()->error('failed', array('message' => 'required parameters missing'));
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
 
     /**
-     * @param  Request $request
-     * @return mixed
+     * Run a query on a collection
+     *
+     * URL:         /api/v1/collection/query
+     * Method:      POST
+     * Description: Runs a query using provide params and returns result
+     *
+     * @param   Request $request
+     * @return  Response
      */
-    public function queryCollection(Request $request)
+    public function queryCollection(Request $request): Response
     {
         try {
             $this->database   = $request->get('database');
@@ -401,15 +250,19 @@ class CollectionController extends Controller implements Unserializable
             $params           = $request->get('params');
             $format           = $request->get('format');
             $criteria         = $params['criteria'];
+
             // ToDo: !! implement a sanity check if the format is array and we need to use EVIL eval() !!
-            $query            = 'json' == $format ? json_decode($criteria[ $format ], true) : eval("return " . $criteria[ $format ] . ";");
+            $query            = 'json' == $format ?
+                json_decode($criteria[ $format ], true) :
+                eval("return " . $criteria[ $format ] . ";");
+
             $collection       = $this->mongo->connectClientCollection($this->database, $this->collection);
-            $results          = $collection->find( $query );
+            $results          = $collection->find($query);
             $results          = $results->toArray();
             $documentsArray   = [];
             $documents        = [];
             foreach ($results as $document) {
-                MongoHelper::prepareDocument( $document, $documentsArray,$this->fields );
+                MongoHelper::prepareDocument($document, $documentsArray, $this->fields);
             }
             $this->prepareObjects($results, $documentsArray, $documents);
             $log = new QueryLogs();
@@ -418,8 +271,7 @@ class CollectionController extends Controller implements Unserializable
                 $log->logQuery($this->database, $this->collection, $criteria[ $format ]);
             }
             return response()->success('success', array('documents' => $documents));
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
@@ -431,14 +283,13 @@ class CollectionController extends Controller implements Unserializable
      * Method:      POST
      * Description: Create a new collection using the given name
      *
-     * @param EditCollectionRequest $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param   EditCollectionRequest $request
+     * @return  Response
      */
-    public function createCollection(EditCollectionRequest $request)
+    public function createCollection(EditCollectionRequest $request): Response
     {
         try {
             $data = $request->validated();
-        //    $name       = $data['name'];
             $database   = $data['database'];
             $collection = $data['name'];
             $capped     = $data['capped'];
@@ -457,13 +308,14 @@ class CollectionController extends Controller implements Unserializable
             }
 
             // create the collection
-            $database = $this->mongo->connectClientDb( $database );
-            $database->createCollection( $collection, $options );
-            $coll     = $this->getOneCollection ($database, $collection );
+            $database = $this->mongo->connectClientDb($database);
+            $database->createCollection($collection, $options);
+            $coll     = $this->getOneCollection(
+                $this->mongo->connectClientCollection($database, $collection)
+            );
 
             return response()->success('success', array( 'collection' => $coll ));
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
@@ -475,10 +327,10 @@ class CollectionController extends Controller implements Unserializable
      * Method:      POST
      * Description: Export all documents within collection(s) matching the given database
      *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param   Request $request
+     * @return  Response
      */
-    public function exportCollection(Request $request)
+    public function exportCollection(Request $request): Response
     {
         try {
             $database = $request->get('database');
@@ -497,43 +349,43 @@ class CollectionController extends Controller implements Unserializable
                     // ensure 1st collection is not null
                     $coll = $collections[0] ?: $collections[1];
                     // only available for a single collection
-                    $documents  = $database->selectCollection( $coll )->find();
+                    $documents  = $database->selectCollection($coll)->find();
                     $array  = [];
                     $fields = [];
                     foreach ($documents as $document) {
                         $array[] = MongoHelper::extractDocument($document, $fields, true);
                     }
                     $contents = json_encode($array);
-                }
-                else {
+                } else {
                     // handle indexes
                     foreach ($collections as $collectionName) {
                         if (!$collectionName) {
                             continue;
                         }
-                        /** @var MongoDB\Collection $collection */
-                        $collection  = $database->selectCollection( $collectionName );
+                        $collection  = $database->selectCollection($collectionName);
                         $information = $collection->listIndexes();
                         // for now : we are not importing the indexes
                         foreach ($information as $info) {
                             $options   = array();
-                            $exporter  =  new VarExport( $database, $info['key']);
-                            $contents .= "\n/** {$collection} indexes **/\ndb.getCollection(\"" . addslashes($collectionName) . "\").ensureIndex(" . $exporter->export('json') . ");\n";
+                            $exporter  =  new VarExport($database, $info['key']);
+                            $contents .= "\n/** {$collection} indexes **/\ndb.getCollection(\"" .
+                                addslashes($collectionName) . "\").ensureIndex(" . $exporter->export('json') . ");\n";
                         }
                     }
 
-                    // handle datadata
+                    // handle data
                     foreach ($collections as $collectionName) {
                         if (!$collectionName) {
                             continue;
                         }
-                        $documents  = $database->selectCollection( $collectionName )->find();
+                        $documents  = $database->selectCollection($collectionName)->find();
                         $contents .= "\n/** " . $collectionName  . " records **/\n";
                         foreach ($documents as $document) {
-                            $countDocuments ++;
+                            $countDocuments++;
                             $exporter = new VarExport($database, $document);
                             $doc = MongoHelper::extractDocument($document);
-                            $contents .= "db.getCollection(\"" . addslashes($collectionName) . "\").insert(" . json_encode($exporter->setObjectId($doc)) . ");\n";
+                            $contents .= "db.getCollection(\"" .
+                                addslashes($collectionName) . "\").insert(" . json_encode($exporter->setObjectId($doc)) . ");\n";
                         }
                     }
                 }
@@ -557,8 +409,8 @@ class CollectionController extends Controller implements Unserializable
                 return response()->success('success', array('export' => $contents ));
             }
             return response()->error('failed', array('message' => "missing parameters"));
-        }
-        catch(\Exception $e) {
+
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
@@ -570,10 +422,10 @@ class CollectionController extends Controller implements Unserializable
      * Method:      POST
      * Description: Import documents from one or ore collection(s) into the given database
      *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param   Request $request
+     * @return  Response
      */
-    public function importCollection(Request $request)
+    public function importCollection(Request $request): Response
     {
         try {
             $database       = $request->get('database');
@@ -585,21 +437,19 @@ class CollectionController extends Controller implements Unserializable
 
             if (isset($database, $type)) {
                 // get the file
-                foreach ($_FILES AS $f) {
+                foreach ($_FILES as $f) {
                     $file = $f;
                 }
 
                 // for zipped files
                 if (true === $gzip) {
-                    $body = gzuncompress( file_get_contents( $file['tmp_name'] ) );
-
+                    $body = gzuncompress(file_get_contents($file['tmp_name']));
                 } else {
-                    $body = file_get_contents( $file['tmp_name'] );
+                    $body = file_get_contents($file['tmp_name']);
                 }
 
                 // connect the manager
                 $this->mongo->connectManager();
-                /** @var MongoDB\Driver\Manager $manager */
                 $manager = $this->mongo->getManager();
 
                 // return the inserted count to the front-end
@@ -616,10 +466,11 @@ class CollectionController extends Controller implements Unserializable
                     // iterate the import array
                     foreach ($arr as $insert) {
                         // ignore the comments, index insert etc
-                        if (false !== strpos( $insert, "insert")) {
+                        if (false !== strpos($insert, "insert")) {
                             // we're good to go! get the collection(s)
                             // create array using collections as primary array key
-                            $insertArray[ MongoHelper::getCollectionNameFromInsert( $insert ) ][] = MongoHelper::getDateFromInsert( $insert );
+                            $insertArray[ MongoHelper::getCollectionNameFromInsert($insert) ][] =
+                                MongoHelper::getDateFromInsert($insert);
                         }
                     }
 
@@ -639,8 +490,7 @@ class CollectionController extends Controller implements Unserializable
                 return response()->success('success', array('import' => $inserted ));
             }
             return response()->error('failed', array('message' => 'parameters missing'));
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
@@ -652,10 +502,10 @@ class CollectionController extends Controller implements Unserializable
      * Method:      POST
      * Description: Update properties (capped, size, max)
      *
-     * @param Request $request
-     * @return mixed
+     * @param   Request $request
+     * @return  Response
      */
-    public function propertiesCollection(Request $request)
+    public function propertiesCollection(Request $request): Response
     {
         try {
             $database       = $request->get('database');
@@ -665,24 +515,24 @@ class CollectionController extends Controller implements Unserializable
             if (isset($database, $collection, $params)) {
                 // get the database
                 /** @var MongoDB\Database $db */
-                $db         = $this->mongo->connectClientDb( $database );
+                $db = $this->mongo->connectClientDb($database);
 
                 // temp collection name
                 $tempCollectionName = 'phpMongoAdmin_' . time();
-                if ($options   = MongoHelper::validateCollectionProperties( $params, $errors )) {
+                if ($options = MongoHelper::validateCollectionProperties($params, $errors)) {
                     // get the document from current collection
                     /** @var MongoDB\Collection $documents */
-                    $documents = MongoHelper::getObjects( $this->client, $database, $collection )['objects'];
+                    $documents = MongoHelper::getObjects($this->client, $database, $collection)['objects'];
 
                     // convert to array -> make compatible with primary BulkInsert action
                     $arr[ $tempCollectionName ] = [];
-                    foreach ( $documents as $doc ) {
+                    foreach ($documents as $doc) {
                         $arr[ $tempCollectionName ][] = $doc;
                     }
 
                     // create the TEMP collection -> continue on success
-                    $result = $db->createCollection( $tempCollectionName, $options )->getArrayCopy();
-                    if ( $result['ok'] == 1 ) {
+                    $result = $db->createCollection($tempCollectionName, $options)->getArrayCopy();
+                    if ($result['ok'] == 1) {
                         // track
                         $inserted = 0;
                         // connect the manager
@@ -692,19 +542,21 @@ class CollectionController extends Controller implements Unserializable
                         // this will handle multiple collection inserts
                         MongoHelper::handleBulkInsert($manager, $database, $arr, $tempCollectionName, false, $inserted);
 
-                        if  ( $inserted == count($arr[ $tempCollectionName ]) ) {
+                        if ($inserted == count($arr[ $tempCollectionName ])) {
                             // temp collection populated successfully -> drop the old collection
-                            $result = $db->dropCollection( $collection )->getArrayCopy();
-                            if ( $result['ok'] == 1 ) {
+                            $result = $db->dropCollection($collection)->getArrayCopy();
+                            if ($result['ok'] == 1) {
                                 /** @var MongoDB\Collection $coll */
                                 $command = new MongoDB\Driver\Command([
-                                    'renameCollection' => $database.'.'.$tempCollectionName,
-                                    'to' => $database.'.'.$collection
+                                    'renameCollection' => $database . '.' . $tempCollectionName,
+                                    'to' => $database . '.' . $collection
                                 ]);
                                 // ToDo !! analyse result and act accordingly !!
                                 $result = $manager->executeCommand('admin', $command);
 
-                                $collection = $this->getOneCollection ($database, $collection );
+                                $collection = $this->getOneCollection(
+                                    $this->mongo->connectClientCollection($database, $collection)
+                                );
                                 return response()->success('success', array( 'collection' => $collection ));
                             }
                         }
@@ -713,11 +565,9 @@ class CollectionController extends Controller implements Unserializable
                 }
                 return response()->error('failed', array('message' => $errors));
             }
-        }
-        catch(\MongoDB\Driver\Exception\Exception $exception) {
+        } catch (\MongoDB\Driver\Exception\Exception $exception) {
             return response()->error('failed', array('message' => $exception->getMessage()));
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
@@ -729,10 +579,10 @@ class CollectionController extends Controller implements Unserializable
      * Method:      POST
      * Description: Add an new Index to a collection (standard or 2d)
      *
-     * @param Request $request
-     * @return mixed
+     * @param   Request $request
+     * @return  Response
      */
-    public function indexCollection(Request $request)
+    public function indexCollection(Request $request): Response
     {
         try {
             $database       = $request->get('database');
@@ -746,7 +596,7 @@ class CollectionController extends Controller implements Unserializable
 
             // get the collection
             /** @var MongoDB\Collection $coll */
-            $coll         = $this->mongo->connectClientCollection( $database, $collection );
+            $coll = $this->mongo->connectClientCollection($database, $collection);
 
             if (true == $params['create']) {
                 $keys    = [];
@@ -763,16 +613,15 @@ class CollectionController extends Controller implements Unserializable
                 // extract the keys
                 $fields = $params['fields'];
                 foreach ($fields as $field) {
-                    $keys[ $field['field'] ] = $directions[ $field['direction'] ];
+                    $keys[ $field['field'] ] = $directions[$field['direction']];
                 }
 
                 // create
                 $indexName = $coll->createIndex($keys, $options);
 
-                return response()->success('success', array( 'index' => $indexName ));
+                return response()->success('success', array('index' => $indexName));
             }
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
@@ -784,10 +633,10 @@ class CollectionController extends Controller implements Unserializable
      * Method:      POST
      * Description: Rename a single collection
      *
-     * @param Request $request
-     * @return mixed
+     * @param   Request $request
+     * @return  Response
      */
-    public function renameCollection(Request $request)
+    public function renameCollection(Request $request): Response
     {
         try {
             $database       = $request->get('database');
@@ -802,8 +651,8 @@ class CollectionController extends Controller implements Unserializable
 
                 /** @var MongoDB\Collection $coll */
                 $command = new MongoDB\Driver\Command([
-                    'renameCollection' => $database.'.'.$collection,
-                    'to' => $database.'.'.$params['newName']
+                    'renameCollection' => $database . '.' . $collection,
+                    'to' => $database . '.' . $params['newName']
                 ]);
                 // ToDo: analyse this result and acto accordingly
                 $result = $manager->executeCommand('admin', $command);
@@ -811,11 +660,9 @@ class CollectionController extends Controller implements Unserializable
                 return response()->success('success', array( 'collection' => $collection ));
             }
             return response()->error('failed', array('message' => 'missing required parameters'));
-        }
-        catch(MongoDB\Driver\Exception\Exception $e) {
+        } catch (MongoDB\Driver\Exception\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
@@ -827,10 +674,10 @@ class CollectionController extends Controller implements Unserializable
      * Method:      POST
      * Description: Duplicate a single collection
      *
-     * @param Request $request
-     * @return mixed
+     * @param   Request $request
+     * @return  Response
      */
-    public function duplicateCollection(Request $request)
+    public function duplicateCollection(Request $request): Response
     {
         try {
             $database       = $request->get('database');
@@ -844,13 +691,13 @@ class CollectionController extends Controller implements Unserializable
 
                 // get the database
                 /** @var MongoDB\Database $db */
-                $db         = $this->mongo->connectClientDb( $database );
+                $db         = $this->mongo->connectClientDb($database);
 
                 if (true == $overwrite) {
                     // get the destination
-                    $destination = $this->mongo->connectClientCollection( $database, $duplicateName );
+                    $destination = $this->mongo->connectClientCollection($database, $duplicateName);
                     // confirm we have a collection
-                    if ( $destination instanceof MongoDB\Collection ) {
+                    if ($destination instanceof MongoDB\Collection) {
                         /** @var MongoDB\Model\BSONDocument $result */
                         $result = $destination->drop();
                         if ($result->errmsg) {
@@ -862,10 +709,11 @@ class CollectionController extends Controller implements Unserializable
                 // default options
                 // ToDo: we will introduce an option to 'preserve' the options from the source collections
                 $options = [];
-                $db->createCollection( $duplicateName, $options );
+                $db->createCollection($duplicateName, $options);
 
-                // ToDo:  modify the getObjects() so that we can only have the 'objects' data returned
-                $documents = MongoHelper::getObjects( $this->client, $database, $collection )['objects'];
+                // get the document from current collection
+                /** @var MongoDB\Collection $documents */
+                $documents = MongoHelper::getObjects($this->client, $database, $collection)['objects'];
 
                 // connect the manager
                 $this->mongo->connectManager();
@@ -881,8 +729,8 @@ class CollectionController extends Controller implements Unserializable
                     $i    = 0;  // might be able to use (~ as $i => $index) instead
                     // copy the indexes from source to duplicate
                     /** @var MongoDB\Collection $source */
-                    $source  = $this->mongo->connectClientCollection( $database, $collection );
-                    foreach ( $source->listIndexes() as $index ) {
+                    $source  = $this->mongo->connectClientCollection($database, $collection);
+                    foreach ($source->listIndexes() as $index) {
                         // we dont need the _id_ index as its created along with the collection
                         if ($i >= 1) {
                             foreach ($index['key'] as $k => $v) {
@@ -894,16 +742,17 @@ class CollectionController extends Controller implements Unserializable
 
                     if (count($keys) >= 1) {
                         /** @var MongoDB\Collection $coll */
-                        $coll = $this->mongo->connectClientCollection( $database, $duplicateName );
+                        $coll = $this->mongo->connectClientCollection($database, $duplicateName);
                         $coll->createIndex($keys, $options);
                     }
                 }
-                $duplicate = $this->getOneCollection( $database, $duplicateName );
+                $duplicate = $this->getOneCollection(
+                    $this->mongo->connectClientCollection($database, $collection)
+                );
                 return response()->success('success', array( 'collection' => $duplicate ));
             }
             return response()->error('failed', array('message' => 'missing required parameters'));
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
@@ -915,12 +764,12 @@ class CollectionController extends Controller implements Unserializable
      * Method:      GET
      * Description: Validate a single collection
      *
-     * @param Request $request
-     * @param $database
-     * @param $collection
-     * @return mixed
+     * @param   Request $request
+     * @param   string $database
+     * @param   string $collection
+     * @return  Response
      */
-    public function validateCollection(Request $request, $database, $collection)
+    public function validateCollection(Request $request, string $database, string $collection): Response
     {
         try {
             if (isset($database, $collection)) {
@@ -938,11 +787,9 @@ class CollectionController extends Controller implements Unserializable
 
                 return response()->success('success', array( 'validation' => $validation->toArray() ));
             }
-        }
-        catch(\MongoDB\Driver\Exception\Exception $e) {
+        } catch (\MongoDB\Driver\Exception\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
@@ -953,10 +800,11 @@ class CollectionController extends Controller implements Unserializable
      * URL:         /api/v1/collection/query/explain
      * Method:      POSY
      * Description: Validate a single collection
-     * @return mixed
-     * @throws MongoDB\Driver\Exception\Exception
+     *
+     * @param   Request $request
+     * @return  Response
      */
-    public function getQueryExplain(Request $request)
+    public function getQueryExplain(Request $request): Response
     {
         try {
             $database       = $request->get('database');
@@ -967,7 +815,7 @@ class CollectionController extends Controller implements Unserializable
             $query = json_decode($query, true);
 
             /** @var MongoDB\Collection $coll */
-            $coll = $this->mongo->connectClientCollection( $database, $collection );
+            $coll = $this->mongo->connectClientCollection($database, $collection);
 
             $query = new MongoDb\Operation\Find(
                 $coll->getDatabaseName(),
@@ -976,7 +824,7 @@ class CollectionController extends Controller implements Unserializable
             );
 
             /** @var MongoDB\Model\BSONDocument $result */
-            $result = $coll->explain( $query );
+            $result = $coll->explain($query);
             $array  = $result->getArrayCopy();
 
             $result = [];
@@ -1002,61 +850,111 @@ class CollectionController extends Controller implements Unserializable
                 }
             }
 
-            // ToDo: !! Build a Document extraction class - the MongoHelper is not that good as yet - may as well create a dedicated Class for the task
+            // ToDo: !! Build a Document extraction class
+            // - the MongoHelper is not that good as yet - may as well create a dedicated Class for the task
             if (isset($result[0]['parsedQuery']['x']) && $result[0]['parsedQuery']['x'] instanceof MongoDB\Model\BSONDocument) {
                 $result[0]['parsedQuery']['x'] = $result[0]['parsedQuery']['x']->getArrayCopy();
             }
 
-            if (isset($result[0]['winningPlan']['inputStage']) && $result[0]['winningPlan']['inputStage'] instanceof MongoDB\Model\BSONDocument) {
+            if (
+                isset($result[0]['winningPlan']['inputStage']) &&
+                $result[0]['winningPlan']['inputStage'] instanceof MongoDB\Model\BSONDocument
+            ) {
                 $result[0]['winningPlan']['inputStage'] = $result[0]['winningPlan']['inputStage']->getArrayCopy();
             }
 
-            if (isset($result[0]['winningPlan']['inputStage']['keyPattern']) && $result[0]['winningPlan']['inputStage']['keyPattern'] instanceof MongoDB\Model\BSONDocument) {
-                $result[0]['winningPlan']['inputStage']['keyPattern'] = $result[0]['winningPlan']['inputStage']['keyPattern']->getArrayCopy();
+            if (
+                isset($result[0]['winningPlan']['inputStage']['keyPattern']) &&
+                $result[0]['winningPlan']['inputStage']['keyPattern'] instanceof MongoDB\Model\BSONDocument
+            ) {
+                $result[0]['winningPlan']['inputStage']['keyPattern'] =
+                    $result[0]['winningPlan']['inputStage']['keyPattern']->getArrayCopy();
             }
 
-            if (isset($result[0]['winningPlan']['inputStage']['multiKeyPaths']) && $result[0]['winningPlan']['inputStage']['multiKeyPaths'] instanceof MongoDB\Model\BSONDocument) {
-                $result[0]['winningPlan']['inputStage']['multiKeyPaths'] = $result[0]['winningPlan']['inputStage']['multiKeyPaths']->getArrayCopy();
+            if (
+                isset($result[0]['winningPlan']['inputStage']['multiKeyPaths']) &&
+                $result[0]['winningPlan']['inputStage']['multiKeyPaths'] instanceof MongoDB\Model\BSONDocument
+            ) {
+                $result[0]['winningPlan']['inputStage']['multiKeyPaths'] =
+                    $result[0]['winningPlan']['inputStage']['multiKeyPaths']->getArrayCopy();
             }
 
-            if (isset($result[0]['winningPlan']['inputStage']['multiKeyPaths']['x']) && $result[0]['winningPlan']['inputStage']['multiKeyPaths']['x'] instanceof MongoDB\Model\BSONArray) {
-                $result[0]['winningPlan']['inputStage']['multiKeyPaths']['x'] = $result[0]['winningPlan']['inputStage']['multiKeyPaths']['x']->getArrayCopy();
+            if (
+                isset($result[0]['winningPlan']['inputStage']['multiKeyPaths']['x']) &&
+                $result[0]['winningPlan']['inputStage']['multiKeyPaths']['x'] instanceof MongoDB\Model\BSONArray
+            ) {
+                $result[0]['winningPlan']['inputStage']['multiKeyPaths']['x'] =
+                    $result[0]['winningPlan']['inputStage']['multiKeyPaths']['x']->getArrayCopy();
             }
 
-            if (isset($result[0]['winningPlan']['inputStage']['indexBounds']) && $result[0]['winningPlan']['inputStage']['indexBounds'] instanceof MongoDB\Model\BSONDocument) {
-                $result[0]['winningPlan']['inputStage']['indexBounds'] = $result[0]['winningPlan']['inputStage']['indexBounds']->getArrayCopy();
+            if (
+                isset($result[0]['winningPlan']['inputStage']['indexBounds']) &&
+                $result[0]['winningPlan']['inputStage']['indexBounds'] instanceof MongoDB\Model\BSONDocument
+            ) {
+                $result[0]['winningPlan']['inputStage']['indexBounds'] =
+                    $result[0]['winningPlan']['inputStage']['indexBounds']->getArrayCopy();
             }
 
-            if (isset($result[0]['winningPlan']['inputStage']['indexBounds']['x']) && $result[0]['winningPlan']['inputStage']['indexBounds']['x'] instanceof MongoDB\Model\BSONArray) {
-                $result[0]['winningPlan']['inputStage']['indexBounds']['x'] = $result[0]['winningPlan']['inputStage']['indexBounds']['x']->getArrayCopy();
+            if (
+                isset($result[0]['winningPlan']['inputStage']['indexBounds']['x']) &&
+                $result[0]['winningPlan']['inputStage']['indexBounds']['x'] instanceof MongoDB\Model\BSONArray
+            ) {
+                $result[0]['winningPlan']['inputStage']['indexBounds']['x'] =
+                    $result[0]['winningPlan']['inputStage']['indexBounds']['x']->getArrayCopy();
             }
 
-            if (isset($result[0]['rejectedPlans']) && $result[0]['rejectedPlans'] instanceof MongoDB\Model\BSONArray) {
-                $result[0]['rejectedPlans']= $result[0]['rejectedPlans']->getArrayCopy();
+            if (
+                isset($result[0]['rejectedPlans']) &&
+                $result[0]['rejectedPlans'] instanceof MongoDB\Model\BSONArray
+            ) {
+                $result[0]['rejectedPlans'] = $result[0]['rejectedPlans']->getArrayCopy();
             }
 
-            if (isset($result[1]['executionStages']['inputStage']) && $result[1]['executionStages']['inputStage'] instanceof MongoDB\Model\BSONDocument) {
+            if (
+                isset($result[1]['executionStages']['inputStage']) &&
+                $result[1]['executionStages']['inputStage'] instanceof MongoDB\Model\BSONDocument
+            ) {
                 $result[1]['executionStages']['inputStage'] = $result[1]['executionStages']['inputStage']->getArrayCopy();
             }
 
-            if (isset($result[1]['executionStages']['inputStage']['keyPattern']) && $result[1]['executionStages']['inputStage']['keyPattern'] instanceof MongoDB\Model\BSONDocument) {
-                $result[1]['executionStages']['inputStage']['keyPattern'] = $result[1]['executionStages']['inputStage']['keyPattern']->getArrayCopy();
+            if (
+                isset($result[1]['executionStages']['inputStage']['keyPattern']) &&
+                $result[1]['executionStages']['inputStage']['keyPattern'] instanceof MongoDB\Model\BSONDocument
+            ) {
+                $result[1]['executionStages']['inputStage']['keyPattern'] =
+                    $result[1]['executionStages']['inputStage']['keyPattern']->getArrayCopy();
             }
 
-            if (isset($result[1]['executionStages']['inputStage']['multiKeyPaths']) && $result[1]['executionStages']['inputStage']['multiKeyPaths'] instanceof MongoDB\Model\BSONDocument) {
-                $result[1]['executionStages']['inputStage']['multiKeyPaths'] = $result[1]['executionStages']['inputStage']['multiKeyPaths']->getArrayCopy();
+            if (
+                isset($result[1]['executionStages']['inputStage']['multiKeyPaths']) &&
+                $result[1]['executionStages']['inputStage']['multiKeyPaths'] instanceof MongoDB\Model\BSONDocument
+            ) {
+                $result[1]['executionStages']['inputStage']['multiKeyPaths'] =
+                    $result[1]['executionStages']['inputStage']['multiKeyPaths']->getArrayCopy();
             }
 
-            if (isset($result[1]['executionStages']['inputStage']['multiKeyPaths']['x']) && $result[1]['executionStages']['inputStage']['multiKeyPaths']['x'] instanceof MongoDB\Model\BSONArray) {
-                $result[1]['executionStages']['inputStage']['multiKeyPaths']['x'] = $result[1]['executionStages']['inputStage']['multiKeyPaths']['x']->getArrayCopy();
+            if (
+                isset($result[1]['executionStages']['inputStage']['multiKeyPaths']['x']) &&
+                $result[1]['executionStages']['inputStage']['multiKeyPaths']['x'] instanceof MongoDB\Model\BSONArray
+            ) {
+                $result[1]['executionStages']['inputStage']['multiKeyPaths']['x'] =
+                    $result[1]['executionStages']['inputStage']['multiKeyPaths']['x']->getArrayCopy();
             }
 
-            if (isset($result[1]['executionStages']['inputStage']['indexBounds']) && $result[1]['executionStages']['inputStage']['indexBounds'] instanceof MongoDB\Model\BSONDocument) {
-                $result[1]['executionStages']['inputStage']['indexBounds'] = $result[1]['executionStages']['inputStage']['indexBounds']->getArrayCopy();
+            if (
+                isset($result[1]['executionStages']['inputStage']['indexBounds']) &&
+                $result[1]['executionStages']['inputStage']['indexBounds'] instanceof MongoDB\Model\BSONDocument
+            ) {
+                $result[1]['executionStages']['inputStage']['indexBounds'] =
+                    $result[1]['executionStages']['inputStage']['indexBounds']->getArrayCopy();
             }
 
-            if (isset($result[1]['executionStages']['inputStage']['indexBounds']['x']) && $result[1]['executionStages']['inputStage']['indexBounds']['x'] instanceof MongoDB\Model\BSONArray) {
-                $result[1]['executionStages']['inputStage']['indexBounds']['x'] = $result[1]['executionStages']['inputStage']['indexBounds']['x']->getArrayCopy();
+            if (
+                isset($result[1]['executionStages']['inputStage']['indexBounds']['x']) &&
+                $result[1]['executionStages']['inputStage']['indexBounds']['x'] instanceof MongoDB\Model\BSONArray
+            ) {
+                $result[1]['executionStages']['inputStage']['indexBounds']['x'] =
+                    $result[1]['executionStages']['inputStage']['indexBounds']['x']->getArrayCopy();
             }
 
             if (isset($result[1]['allPlansExecution']) && $result[1]['allPlansExecution'] instanceof MongoDB\Model\BSONArray) {
@@ -1064,8 +962,7 @@ class CollectionController extends Controller implements Unserializable
             }
             return response()->success('success', array( 'explain' => $result ));
 
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
@@ -1077,12 +974,12 @@ class CollectionController extends Controller implements Unserializable
      * Method:      GET
      * Description: Get query logs for a given database and collection and current user
      *
-     * @param $database
-     * @param $collection
+     * @param   string $database
+     * @param   string $collection
      *
-     * @return mixed
+     * @return  Response
      */
-    public function getQueryLogs($database, $collection)
+    public function getQueryLogs(string $database, string $collection): Response
     {
         try {
             $log = new QueryLogs();
@@ -1091,8 +988,7 @@ class CollectionController extends Controller implements Unserializable
                 return response()->success('success', array('logs' => $logs));
             }
             return response()->success('success', array('logs' => []));
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
@@ -1104,10 +1000,10 @@ class CollectionController extends Controller implements Unserializable
      * Method:      POST
      * Description: Clear all documents from collection matching the given name
      *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param   Request $request
+     * @return  Response
      */
-    public function clearCollection(Request $request)
+    public function clearCollection(Request $request): Response
     {
         try {
             $database   = $request->get('database');
@@ -1120,8 +1016,7 @@ class CollectionController extends Controller implements Unserializable
                 $status = array("collection" => $collection, "deleted" => $result->getDeletedCount());
             }
             return response()->success('success', array('status' => $status ));
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }
@@ -1133,10 +1028,10 @@ class CollectionController extends Controller implements Unserializable
      * Method:      POST
      * Description: Delete the database matching the given name
      *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param   Request $request
+     * @return  Response
      */
-    public function deleteCollection(Request $request)
+    public function deleteCollection(Request $request): Response
     {
         try {
             $database   = $request->get('database');
@@ -1152,20 +1047,19 @@ class CollectionController extends Controller implements Unserializable
                         $collection = $this->mongo->connectClientCollection($database, $name);
                         /** @var MongoDB\Model\BSONDocument $result */
                         $result = $collection->drop();
-
+dd($result);
                         // ToDo: !! getting an odd error from front-end - request is sent twice
                         if ($result->errmsg) {
                             return response()->error('failed', array('message' => $result->errmsg));
 
                         } else {
-                            $status[] = $this->setDeleteStatus( $name, $result->getArrayCopy(), $ns);
+                            $status[] = $this->setDeleteStatus($name, $result->getArrayCopy(), $ns);
                         }
                     }
                 }
             }
             return response()->success('success', array('status' => $status ));
-        }
-        catch(\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('message' => $e->getMessage()));
         }
     }

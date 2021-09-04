@@ -82,7 +82,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'UTC'),
 
     /*
     |--------------------------------------------------------------------------
@@ -152,17 +152,27 @@ return [
 
     'display' => env('DISPLAY', 'array'),
 
+    'dbQueryLog' => env('DB_QUERY_LOGS', false),
+
     /*
-     * Custom configs curretly used for the demo website
-     *
-     * These may be usefull in the future for hard coding the MongoDB server user|password
+     * Custom DB configs currently used for the demo website: APP_ENV = 'demo'
+     * These can be used for customized handling of the server connection username | password
      * They'll be used in \App\Classes\MongoConnection.php
      */
     'dbUser' => env('DB_USER'),
 
     'dbPasswd' => env('DB_PASSWD'),
 
-    'dbQueryLog' => env('DB_QUERY_LOGS', false),
+    /*
+     * Other custom app settings
+     */
+    'minPwdLength' => env('APP_MIN_PWD_LENGTH', 5),
+
+    'ipinfo_enabled' => env('IPINFO_ENABLED', true),
+    'ipinfo_address' => env('IPINFO_ADDRESS', $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'),
+
+    /* no restriction by default */
+    'deny_env_add_users' => env('APP_DENY_ENV_ADD_USERS', ''),
 
     /*
     |--------------------------------------------------------------------------

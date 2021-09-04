@@ -107,11 +107,11 @@
                     // success!
                     this.actionMessage = this.showLanguage('collection', 'renameSuccess', this.form.newName);
                     setTimeout(() => {
-                        this.hideComponent();
-                    }, 2000);
+                        this.hideComponent()
+                    }, 2000)
                 }
                 else if (status === 3) {
-                    this.errorMessage = this.showLanguage('collection', 'renameError');
+                    this.errorMessage = this.showLanguage('errors', 'collection.renameError');
                 }
             },
 
@@ -119,7 +119,7 @@
              *   Show component
              */
             showComponent() {
-                this.show = true;
+                this.show = true
             },
 
             /*

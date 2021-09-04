@@ -143,7 +143,7 @@
                     }, 2000);
                 }
                 else if (status === 3) {
-                    this.errorMessage = this.showLanguage('collection', 'duplicateError');
+                    this.errorMessage = this.showLanguage('errors', 'collection.duplicateError');
                 }
             },
 

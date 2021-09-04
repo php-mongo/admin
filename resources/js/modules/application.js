@@ -33,6 +33,15 @@ export const application = {
     * JSON.parse(sessionStorage.getItem('location'))
     */
     state: {
+        activeNav: null,
+        appConfig: {
+            'minPwdLength': 5
+        },
+        currentLocation: {},
+        country: JSON.parse(sessionStorage.getItem('country')) || 'AU',
+        countryName: JSON.parse(sessionStorage.getItem('country_name')) || 'Australia',
+        countries: {},
+        errorData: null,
         language: JSON.parse(localStorage.getItem('language')) || 'en',
         languages: ['en', 'zh'],
         languageOptions: [
@@ -44,58 +53,12 @@ export const application = {
         languageArray: {},
         location: {},
         locationStatus: 0,
-        currentLocation: {},
-        country: JSON.parse(sessionStorage.getItem('country')) || 'AU',
-        countryName: JSON.parse(sessionStorage.getItem('country_name')) || 'Australia',
-        countries: {},
+        postcode: '',
         states: [],
         suburb: '',
-        postcode: '',
-        activeNav: null
     },
 
     actions: {
-        /*
-        *   This method is run from the Language modal for changing the current language
-        */
-        setLanguage( { commit, state }, data) {
-            commit( 'setLanguageStatus', 0);
-
-            console.log("language passed to set: " + data);
-
-            // this block simply ensures we are trying to load an existing language
-            if (state.languages.find(language => language === data)) {
-                console.log("language GTG!");
-                commit( 'setLanguage', data);
-                localStorage.setItem( 'language', JSON.stringify(data) );
-                commit( 'setLanguageArray' );
-                commit( 'setLanguageStatus', 2);
-
-            } else {
-                console.log("language not found in array!!");
-                commit( 'setLanguageStatus', 3);
-            }
-        },
-
-        /*
-        *   Commit the language
-        */
-        commitLanguage( { commit }, data) {
-            commit( 'setLanguageStatus', 0);
-            commit( 'setLanguage', data);
-            commit( 'setLanguageArray' );
-            commit( 'setLanguageStatus', 2);
-        },
-
-        /*
-        *   Set the default language - uses predefined config
-        */
-        setDefaultLanguage( { commit } ) {
-            commit( 'setLanguageStatus', 0);
-            commit( 'setLanguageArray' );
-            commit( 'setLanguageStatus', 2);
-        },
-
         /*
         *   Get the user's location from IPINFO
         */
@@ -107,8 +70,7 @@ export const application = {
                 commit( 'setLocation', cache );
                 commit( 'setLocationStatus', 2 );
                 dispatch( 'applyCurrentLocation', { location: cache } );
-
-                dispatch( 'getStates', cache.country );
+                dispatch( 'getStates', cache.country )
 
             } else {
                 UserAPI.getUserLocation( )
@@ -125,22 +87,73 @@ export const application = {
                             commit( 'setLocation', response.data );
                             commit( 'setLocationStatus', 2 );
                             dispatch('applyCurrentLocation', { location: location } );
-                            sessionStorage.setItem( 'location', JSON.stringify(response.data) );
+                            sessionStorage.setItem( 'location', JSON.stringify(response.data) )
 
-                        //    dispatch( 'getStates', response.data.country );
+                            // ToDo: unused for now: dispatch( 'getStates', response.data.country );
 
                         } else {
                             // location response was empty
                             commit( 'setLocation', {} );
-                            commit( 'setLocationStatus', 3 );
+                            commit( 'setLocationStatus', 3 )
                         }
                     })
                     .catch( (error) => {
-                        console.log('error getting location: ' + error);
                         commit( 'setLocation', {} );
                         commit( 'setLocationStatus', 3 );
+                        console.log('error getting location: ' + error.toJSON());
                     });
             }
+        },
+
+        /*
+        *   Get states for the current country (limited data at the moment)
+        */
+        getStates( { commit }, data ) {
+            UserAPI.getUserStates( data )
+                .then( ( response ) => {
+                    commit( 'setStates', response.data.states )
+                })
+                .catch( (error) => {
+                    console.log(error.toJSON())
+                })
+        },
+
+        /*
+        *   This method is run from the Language modal for changing the current language
+        */
+        setLanguage( { commit, state }, data) {
+            commit( 'setLanguageStatus', 0);
+
+            // this block simply ensures we are trying to load an existing language
+            if (state.languages.find(language => language === data)) {
+                commit( 'setLanguage', data);
+                localStorage.setItem( 'language', JSON.stringify(data) );
+                commit( 'setLanguageArray' );
+                commit( 'setLanguageStatus', 2)
+
+            } else {
+                console.log("language not found in array!!");
+                commit( 'setLanguageStatus', 3)
+            }
+        },
+
+        /*
+        *   Commit the language
+        */
+        commitLanguage( { commit }, data) {
+            commit( 'setLanguageStatus', 0);
+            commit( 'setLanguage', data);
+            commit( 'setLanguageArray' );
+            commit( 'setLanguageStatus', 2)
+        },
+
+        /*
+        *   Set the default language - uses predefined config
+        */
+        setDefaultLanguage( { commit } ) {
+            commit( 'setLanguageStatus', 0);
+            commit( 'setLanguageArray' );
+            commit( 'setLanguageStatus', 2)
         },
 
         /*
@@ -155,10 +168,10 @@ export const application = {
                 current.country     = data.location.country_name;
                 current.code        = data.location.country;
                 // make the commitment
-                commit( 'setCurrentLocation', current );
+                commit( 'setCurrentLocation', current )
 
             } else {
-                console.log("current location cannot be set: " + data.location);
+                console.log("current location cannot be set: " + data.location)
             }
         },
 
@@ -166,27 +179,14 @@ export const application = {
         *   Set country from cookie
         */
         setCountryNameFromCookie( { commit }, data) {
-            commit( 'setCountryName', data);
+            commit( 'setCountryName', data)
         },
 
         /*
         *   Set the countries array
         */
         setCountries( { commit }, data ) {
-            commit( 'setCountries', data);
-        },
-
-        /*
-        *   Get states for the current country (limited data at the moment)
-        */
-        getStates( { commit }, data ) {
-            UserAPI.getUserStates( data )
-                .then( ( response ) => {
-                    commit( 'setStates', response.data.states );
-                })
-                .catch( (error) => {
-                    console.log(error);
-                })
+            commit( 'setCountries', data)
         },
 
         /*
@@ -194,18 +194,25 @@ export const application = {
         *   ToDo: this allows clearing the activeNav value for the main navigation panel - until a better way surfaces
         */
         setActiveNav( { commit }, data ) {
-            commit( 'setActiveNav', data );
-        }
+            commit( 'setActiveNav', data )
+        },
 
+        setErrorData( { commit }, data ) {
+            commit( 'setAppErrorData', data )
+        },
+
+        clearAppErrorData( { commit } ) {
+            commit( 'setAppErrorData', null )
+        }
     },
 
     mutations: {
         setLanguageStatus( state, status ) {
-            state.languageStatus = status;
+            state.languageStatus = status
         },
 
         setLanguage( state, language) {
-            state.language = language;
+            state.language = language
         },
 
         setLanguageArray( state ) {
@@ -214,76 +221,85 @@ export const application = {
             if (language) {
                 console.log("initialising language: " + language);
                 if (window.i18n[ language ]) {
-                    data = window.i18n[ language ];
+                    data = window.i18n[ language ]
                 }
-                localStorage.setItem( 'language', JSON.stringify(language) );
+                localStorage.setItem( 'language', JSON.stringify(language) )
 
             } else {
                 console.log("setting default language: en");
-                data = window.i18n[ 'en' ];
+                data = window.i18n[ 'en' ]
             }
-            state.languageArray = data;
+            state.languageArray = data
         },
 
         setLocationStatus( state, status ) {
-            state.locationStatus = status;
+            state.locationStatus = status
         },
 
         setLocation( state, location ) {
-            state.location = location; // Object.assign({}, location); // location;
+            state.location = location
+            // Object.assign({}, location); // location;
         },
 
         setLocationFromCache( state, location ) {
-            state.location = location;
+            state.location = location
         },
 
         setCurrentLocation( state, location ) {
-            state.currentLocation = location; // Object.assign({}, location); // location;
+            state.currentLocation = location
+            // Object.assign({}, location); // location;
         },
 
         setCurrentLocationFromCache( state, location ) {
-            state.currentLocation = location;
+            state.currentLocation = location
         },
 
         setCountryName( state, countryName ) {
-            state.countryName = countryName;
+            state.countryName = countryName
         },
 
         setCountries( state, countries ) {
-            state.countries = countries;
+            state.countries = countries
         },
 
         setStates( state, states ) {
-            state.states = states;
+            state.states = states
         },
 
         setPostcode( state, postcode ) {
-            state.postcode = postcode;
+            state.postcode = postcode
         },
 
         setSuburb( state, suburb ) {
-            state.suburb = suburb;
+            state.suburb = suburb
         },
 
         /*
         *   Set the active navigation panel - this stores the panel name sent in events
         */
-        setActiveNav(state, panel) {
-            state.activeNav = panel;
+        setActiveNav( state, panel ) {
+            state.activeNav = panel
+        },
+
+        /*
+         * Save any messages returned from the BE containing the string 'not authorized'
+         */
+        setAppErrorData( state, data ) {
+            state.errorData = data
         }
     },
 
     getters: {
         getLanguageStatus( state ) {
-            return state.languageStatus;
+            return state.languageStatus
         },
 
         getLanguage( state ) {
-            return state.language;
+            return state.language
         },
 
         getLanguageArray( state ) {
-            return state.languageArray;
+            return state.languageArray
         },
 
         getLanguageString: (state) => (context, key) => {
@@ -292,77 +308,88 @@ export const application = {
                     let keys = key.split(".");
                     if (state.languageArray[context][keys[0]]) {
                         if (state.languageArray[context][keys[0]][keys[1]]) {
-                            return state.languageArray[context][keys[0]][keys[1]];
+                            return state.languageArray[context][keys[0]][keys[1]]
                         } else {
-                            console.log("no secondary key: " + keys[1]);
+                            console.log("no secondary key: " + keys[1])
                         }
 
                     } else {
-                        console.log("no primary key: " + keys[0]);
+                        console.log("no primary key: " + keys[0])
                     }
 
                 } else {
                     if (state.languageArray[context][key]) {
-                        return state.languageArray[context][key];
+                        return state.languageArray[context][key]
                     } else {
-                        console.log("no key: " + key);
+                        console.log("no key: " + key)
                     }
                 }
 
             } else {
-                console.log("no context: " + context);
+                console.log("no context: " + context)
             }
         },
 
         getLanguageOptions( state ) {
-            return state.languageOptions;
+            return state.languageOptions
         },
 
         getLocationStatus( state ) {
-            return state.locationStatus;
+            return state.locationStatus
         },
 
         getLocation( state) {
-            return state.location;
+            return state.location
         },
 
         getCurrentLocation( state ) {
-            return state.currentLocation;
+            return state.currentLocation
         },
 
         getCountry( state ) {
-            return state.country;
+            return state.country
         },
 
         getCountryName( state ) {
-            return state.countryName;
+            return state.countryName
         },
 
         getCountries( state ) {
-            return state.countries;
+            return state.countries
         },
 
         getStates( state ) {
-            return state.states;
+            return state.states
         },
 
         getCurrentStateCode: ( state ) => (name) => {
             let code = state.states.find(ste => ste.name === name);
             if (code) {
-                return code.code;
+                return code.code
             }
-            return name;
+            return name
         },
 
         getState( state ) {
-            return state.currentLocation.state;
+            return state.currentLocation.state
         },
 
         /*
         *   Get the active navigation panel
         */
         getActiveNav( state ) {
-            return state.activeNav;
+            return state.activeNav
+        },
+
+        getMinPwdLength( state ) {
+            return state.appConfig.minPwdLength
+        },
+
+        /*
+         * Displayed in the Top vue bar
+         */
+        getAppErrorData( state ) {
+            return state.errorData
         }
     }
 };

@@ -20,6 +20,7 @@
 | VUEX modules/display.js
 |-------------------------------------------------------------------------------
 | The Vuex data store for the display state
+| This is a placeholder for future work
 */
 export const display = {
   /*

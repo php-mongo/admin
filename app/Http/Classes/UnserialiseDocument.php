@@ -20,11 +20,40 @@ namespace App\Http\Classes;
 
 use MongoDB\BSON\Unserializable;
 
+/**
+ * UnserialiseDocument Class (Ozzy spelling !!)
+ * Usage: $document = MongoDB\BSON\toPHP($input, ['root' => 'UnserialiseDocument']);
+ * $input must be a string
+ *
+ * Implement this classes method where needed
+ */
 class UnserialiseDocument implements Unserializable
 {
+    /**
+     * @var array
+     */
     private $data = [];
 
-    function bsonUnserialize(array $data)
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * @param array $data
+     */
+    public function setData(array $data): void
+    {
+        $this->data = $data;
+    }
+
+    /**
+     * @param array $data
+     */
+    public function bsonUnserialize(array $data)
     {
         // TODO: Implement bsonUnserialize() method.
         $this->data = $data;

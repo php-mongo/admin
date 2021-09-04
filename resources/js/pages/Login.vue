@@ -34,6 +34,10 @@
                     <p v-text="showLanguage('login', 'text2')"></p>
                     <p v-text="showLanguage('login', 'text3')"></p>
                     <p v-text="showLanguage('login', 'text4')"></p>
+                    <p v-text="showLanguage('login', 'text5')"></p>
+                    <p v-text="showLanguage('login', 'text6')"></p>
+                    <p v-text="showLanguage('login', 'text7')"></p>
+                    <p v-text="showLanguage('login', 'text8')"></p>
                 </div>
                 <div class="column small-3">&nbsp;</div>
             </div>

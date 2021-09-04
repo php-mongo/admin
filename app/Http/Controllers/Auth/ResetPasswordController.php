@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      ResetPasswordController.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -19,10 +20,20 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use DateTime;
+use Firebase\JWT\JWT;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Ramsey\Uuid\Exception\DateTimeException;
 
 class ResetPasswordController extends Controller
 {
+    use ResetsPasswords;
+
     /*
     |--------------------------------------------------------------------------
     | Password Reset Controller
@@ -34,12 +45,88 @@ class ResetPasswordController extends Controller
     |
     */
 
-    use ResetsPasswords;
+    /**
+     * This offers moderate protection against obvious forgeries
+     * Also lock the process down for the moment
+     * ToDo:  rewrite when/if we need to allow a broader range of users to reset passwords
+     *
+     * @param   string $email
+     * @param   string $token
+     * @return  bool
+     * @throws  \Exception
+     */
+    private function checkTokenIsValid(string $email, string $token)
+    {
+        if ($email && $token) {
+            // ensure there is a token for the given email address
+            $result = DB::select('select * from password_resets where email = :e', ['e' => $email]);
+            if (empty($result)) {
+                return false;
+            }
+
+            // ToDo: for now we are limiting this action to the control user
+            $user = User::where('email', $email)->get();
+            if (empty($user)) {
+                return false;
+            }
+
+            $user = $user[0]->getAttributes();
+            // make sure the user is active
+            if ($user['active'] !== "1") {
+                return false;
+            }
+
+            // check for control user
+            if ($user['control_user'] !== "1") {
+                return false;
+            }
+
+            try {
+                $expire = (new DateTime($result[0]->created_at))->add(new \DateInterval('PT60M'));
+            } catch (DateTimeException $d) {
+                Log::debug($d->getMessage());
+                $expire = new DateTime();
+            }
+
+            // time now
+            $now = new DateTime('now');
+
+            // check expiry
+            if ($expire >= $now) {
+                // gtg
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Where to redirect users after resetting their password.
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/#/admin';
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('guest');
+    }
+
+    public function showResetForm(Request $request, $token)
+    {
+        $email = $request->get('email', null);
+        return view(
+            'auth.passwords.reset',
+            [
+                'token' => $token,
+                'email' => $email,
+                'validToken' => $this->checkTokenIsValid($email, $token)
+            ]
+        );
+    }
 }

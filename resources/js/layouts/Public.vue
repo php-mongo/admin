@@ -18,8 +18,8 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
 
-    div.public-view {
-        background-color: $navBgColor;
+    .public-view {
+        /*background-color: $navBgColor;
 
         header.header-content {
             position: fixed;
@@ -35,15 +35,20 @@
                 max-width: 99%;
             }
         }
+
         .main-content {
             padding: 30px 0 10px 0;
             margin-top: 0;
+        }*/
+
+        div.notification-container {
+            left: 2rem;
         }
     }
 </style>
 
 <template>
-    <div id="app-layout" class="public_view off-canvas-wrapper-inner" ref="appLayout">
+    <div id="app-layout" class="public-view off-canvas-wrapper-inner" ref="appLayout">
         <header class="header-content">
             <navigation></navigation>
         </header>
@@ -97,6 +102,7 @@
     import LanguageModal from "../components/global/LanguageModal";
 
     import SetupModal from "../components/global/SetupModal.vue";
+    import router from "../routes";
 
     export default {
         components: {
@@ -111,20 +117,59 @@
             SetupModal,
         },
 
-        method: {
+        data() {
+            return {
+                index: 0,
+                limit: 20,
+                showLogin: false,
+                loggedOut: null,
+            }
+        },
+
+        methods: {
             getCountryFromCookie() {
-                return this.$cookie.get('my-country');
+                return this.$cookies.get('my-country')
             },
 
             getCountryFromStore() {
-                return this.$store.getters.getCountryName;
+                return this.$store.getters.getCountryName
+            },
+
+            /*
+             * when the user reloads or refreshes and token is still valid
+             */
+            handleLoginCheck() {
+                let status = this.$store.getters.getUserLoadStatus;
+                if (status === 1 && this.index < this.limit) {
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.handleLoginCheck();
+                    }, 200)
+                }
+                if (status === 2) {
+                    setTimeout(() => {
+                        router.push( { name: 'admin' } );
+                    }, 200)
+                }
+                if (status === 3) {
+                    this.loggedOut = null;
+                    this.showLogin = true
+                }
             }
         },
 
         mounted() {
             if (this.getCountryFromCookie !== this.getCountryFromStore)  {
-                this.$store.dispatch('setCountryNameFromCookie', this.$cookie.get('my-country'));
+                this.$store.dispatch('setCountryNameFromCookie', this.$cookies.get('my-country'));
             }
+
+            EventBus.$on('user-logged-out', (uid) => {
+                this.loggedOut = uid;
+            });
+
+            EventBus.$on('login-success', () => {
+                console.log("public vue reports logged in")
+            });
         },
 
         created() {
@@ -140,14 +185,15 @@
                 });
             });
 
-            this.$store.dispatch( 'loadUser' );
-
-            window.addEventListener('scroll', this.weAreScrolling);
-
+            // initialise the user load test on page load
+            if (this.loggedOut === null) {
+                this.$store.dispatch( 'loadUser' );
+            }
+            this.handleLoginCheck();
         },
 
         destroyed() {
-            window.removeEventListener('scroll', this.weAreScrolling);
+            //
         }
     }
 </script>

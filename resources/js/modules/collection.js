@@ -38,6 +38,8 @@ export const collection = {
     */
     state: {
         activeCollection: null,
+        clearCollectionStatus: 0,
+        clearCollectionCount: 0,
         collection: {},
         collectionLoadStatus: 0,
         collections: [],
@@ -49,14 +51,18 @@ export const collection = {
         collectionIndex: null,
         collectionValidationStatus: 0,
         collectionValidation: null,
+        createCollectionStatus: 0,
+        currentFormat: 'json',
         displayCollection: {},
         displayCollectionStatus: 0,
-        createCollectionStatus: 0,
         deleteCollectionStatus: 0,
         deletingCollection: null,
         deleteCollectionCount: 0,
-        clearCollectionStatus: 0,
-        clearCollectionCount: 0,
+        documentCreateStatus: 0,
+        documentUpdateStatus: 0,
+        documentDeleteStatus: 0,
+        documentDuplicateStatus: 0,
+        errorData: {},
         exportCollectionStatus: 0,
         exportData: null,
         importCollectionStatus: 0,
@@ -66,12 +72,6 @@ export const collection = {
         queryExplainStatus: 0,
         queryCollection: [],
         queryCollectionLoadStatus: 0,
-        documentCreateStatus: 0,
-        documentUpdateStatus: 0,
-        documentDeleteStatus: 0,
-        documentDuplicateStatus: 0,
-        currentFormat: 'json',
-        errorData: {}
     },
 
     /*
@@ -79,84 +79,95 @@ export const collection = {
     */
     actions: {
         /*
-        *   Loads the collection from the API
+        *   Loads all collections from the API - needs a database reference
+        *   ToDo: this method is unused - do we need it??
         */
-        loadCollections( { commit } ) {
+        loadCollections( { dispatch, commit } ) {
             commit( 'setCollectionsLoadStatus', 1 );
 
             CollectionApi.getCollections()
                 .then( ( response ) => {
                     commit( 'setCollections', response.data.data.collections );
-                    commit( 'setCollectionsLoadStatus', 2 );
+                    commit( 'setCollectionsLoadStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setCollections', [] );
                     commit( 'setCollectionsLoadStatus', 3 );
-                    console.log(error);
-                    EventBus.$emit('no-results-found', { notification: 'No collections were returned from the api - please try again later', timer: 5000 });
-                });
+                    commit( 'setErrorData', error.response);
+                    dispatch( 'setErrorData', error.response.data );
+                    console.log(error.toJSON());
+                    EventBus.$emit('no-results-found', { notification: 'No collections were returned from the api - please try again later', timer: 5000 })
+                })
         },
 
         /*
         *   Loads a collection from the API
         */
-        loadCollection( { commit }, data ) {
+        loadCollection( { dispatch, commit, getters }, data ) {
             commit( 'setCollectionLoadStatus', 1 );
 
             CollectionApi.getCollection( data )
                 .then( ( response ) => {
                     commit( 'setCollection', response.data.data.collection );
-                    commit( 'setCollectionLoadStatus', 2 );
+                    commit( 'setCollectionLoadStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setCollection', {} );
+                    dispatch( 'setErrorData', error.response.data );
+                    if (getters.isUserDbAdmin === true) {
+                        dispatch( 'getLocalCollection', data );
+                        return
+                    }
+                    commit( 'setErrorData', error.response);
                     commit( 'setCollectionLoadStatus', 3 );
-                    console.log(error);
-                    EventBus.$emit('no-results-found', { notification: 'No collection was returned from the api - please try again later', timer: 5000 });
-                });
+                    console.log(error.toJSON());
+                    EventBus.$emit('no-results-found', { notification: 'No collection was returned from the api - please try again later', timer: 5000 })
+                })
         },
 
         /*
         *   Create a new collection - add result to collection array
         */
-        createCollection( { commit, dispatch }, data ) {
+        createCollection( { dispatch, commit }, data ) {
             commit( 'setCreateCollectionStatus', 1);
 
             CollectionApi.createCollection( data )
                 .then( ( response ) => {
+                    dispatch( 'setCollection', response.data.data.collection )
                     commit( 'setCreateCollectionStatus', 2 );
-                    //commit( 'setCreatedCollection', response.data.data.collection );
-                    dispatch( 'setCollection', response.data.data.collection );
+                    //commit( 'setCreatedCollection', response.data.data.collection ); // this is triggered from a DB context
                 })
                 .catch( (error) => {
                     commit( 'setCreateCollectionStatus', 3 );
-                    commit( 'setErrorData', error);
-                    console.log(error);
-                });
+                    commit( 'setErrorData', error.response);
+                    dispatch( 'setErrorData', error.response.data );
+                    console.log(error.toJSON())
+                })
         },
 
         /*
         *   Query a collection - add result to queryResults array
         */
-        queryCollection( { commit }, data ) {
+        queryCollection( { dispatch, commit }, data ) {
             commit( 'setQueryCollectionLoadStatus', 1);
 
             CollectionApi.queryCollection( data )
                 .then( ( response ) => {
                     commit( 'setQueryCollection', response.data.data.documents );
-                    commit( 'setQueryCollectionLoadStatus', 2 );
+                    commit( 'setQueryCollectionLoadStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setQueryCollectionLoadStatus', 3 );
-                    commit( 'setErrorData', error);
-                    console.log(error);
-                });
+                    commit( 'setErrorData', error.response);
+                    dispatch( 'setErrorData', error.response.data );
+                    console.log(error.toJSON())
+                })
         },
 
         /*
         *   Delete one or more collections - remove collection from array
         */
-        deleteCollection( { commit, dispatch }, data ) {
+        deleteCollection( { dispatch, commit }, data ) {
             commit( 'setDeleteCollectionStatus', 1);
             commit( 'setDeletingCollection', data.collection );
 
@@ -164,35 +175,37 @@ export const collection = {
                 .then( () => {
                     dispatch('dropCollection', data);
                     commit( 'setDeleteCollectionStatus', 2 );
-                    commit( 'setDeletingCollection', null );
+                    commit( 'setDeletingCollection', null )
                 })
                 .catch( (error) => {
                     commit( 'setDeleteCollectionStatus', 3 );
-                    commit( 'setErrorData', error);
                     commit( 'setDeletingCollection', null );
-                    console.log(error);
-                });
+                    commit( 'setErrorData', error.response);
+                    dispatch( 'setErrorData', error.response.data );
+                    console.log(error.toJSON())
+                })
         },
 
         /*
         *   Clear all documents from one collection -  clear all cached doc objects
         */
-        clearCollection( { commit }, data ) {
+        clearCollection( { dispatch, commit }, data ) {
             commit( 'setClearCollectionStatus', 1);
 
             CollectionApi.clearCollection( data )
                 .then( ( response ) => {
                     commit( 'setClearedCollection', response.data.data.status );
-                    commit( 'setClearCollectionStatus', 2 );
+                    commit( 'setClearCollectionStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setClearCollectionStatus', 3 );
-                    commit( 'setErrorData', error);
-                    console.log(error);
-                });
+                    commit( 'setErrorData', error.response);
+                    dispatch( 'setErrorData', error.response.data );
+                    console.log(error.toJSON())
+                })
         },
 
-        exportCollection( { commit }, data ) {
+        exportCollection( { dispatch, commit }, data ) {
             commit( 'setExportCollectionStatus', 1);
 
             if (data.params.download === true) {
@@ -200,17 +213,17 @@ export const collection = {
                     .then( (response ) => {
                         if (response.data.success === false) {
                             commit( 'setErrorData', response.data.errors);
-                            commit( 'setExportCollectionStatus', 3 );
+                            commit( 'setExportCollectionStatus', 3 )
 
                         } else {
                             commit( 'setExportCollectionStatus', 2 );
                             let blob        = response.data;
                             let ext = 'js';
                             if (data.params.gzip === true) {
-                                ext = 'gz';
+                                ext = 'gz'
                             }
                             if (data.params.json === true) {
-                                ext = 'json';
+                                ext = 'json'
                             }
                             let date        = new Date();
                             let ts          = "_" + date.getTime();
@@ -220,33 +233,35 @@ export const collection = {
 
                             link.href       = window.URL.createObjectURL(blob);
                             link.download   = fileName.replace(" ", "_").replace("+", "");
-                            link.click();
+                            link.click()
                         }
                     })
                     .catch( (error) => {
                         commit( 'setExportCollectionStatus', 3 );
-                        commit( 'setErrorData', error);
-                        console.log(error);
-                    });
+                        commit( 'setErrorData', error.response);
+                        dispatch( 'setErrorData', error.response.data );
+                        console.log(error.toJSON())
+                    })
 
             } else {
                 CollectionApi.exportCollectionView( data )
                     .then( (response ) => {
                         if (response.data.success === true) {
                             commit( 'setExportData', response.data.data.export);
-                            commit( 'setExportCollectionStatus', 2 );
+                            commit( 'setExportCollectionStatus', 2 )
 
                         } else {
                             commit( 'setErrorData', response.data.errors);
                             commit( 'setExportCollectionStatus', 3 );
-                            console.log(response.data.errors);
+                            console.log(response.data.errors)
                         }
                     })
                     .catch( (error) => {
                         commit( 'setExportCollectionStatus', 3 );
-                        commit( 'setErrorData', error);
-                        console.log(error);
-                    });
+                        commit( 'setErrorData', error.response);
+                        dispatch( 'setErrorData', error.response.data );
+                        console.log(error.toJSON())
+                    })
             }
         },
 
@@ -257,45 +272,47 @@ export const collection = {
                 .then( (response) => {
                     if (response.data.success === true) {
                         dispatch('loadDatabase', data.database);
-                        commit('setImportCollectionStatus', 2);
+                        commit('setImportCollectionStatus', 2)
 
                     } else {
                         commit( 'setErrorData', response.data.errors);
                         commit('setImportCollectionStatus', 3);
-                        console.log(response.data.errors);
+                        console.log(response.data.errors)
                     }
                 })
                 .catch( (error) => {
                     commit('setImportCollectionStatus', 3);
-                    commit( 'setErrorData', error);
-                    console.log(error);
-                });
+                    commit( 'setErrorData', error.response);
+                    dispatch( 'setErrorData', error.response.data );
+                    console.log(error.toJSON())
+                })
         },
 
-        saveCollectionProperties( { commit }, data) {
+        saveCollectionProperties( { dispatch, commit }, data) {
             commit('setCollectionPropertiesStatus', 1);
 
             CollectionApi.saveProperties( data )
                 .then( (response) => {
                     if (response.data.success === true) {
                         commit('setCollection', response.data.data.collection);
-                        commit('setCollectionPropertiesStatus', 2);
+                        commit('setCollectionPropertiesStatus', 2)
 
                     } else {
 
                         commit( 'setErrorData', response.data.errors);
                         commit('setCollectionPropertiesStatus', 3);
-                        console.log(response.data.errors);
+                        console.log(response.data.errors)
                     }
                 })
                 .catch( (error) => {
                     commit('setCollectionPropertiesStatus', 3);
-                    commit( 'setErrorData', error);
-                    console.log(error);
-                });
+                    commit( 'setErrorData', error.response);
+                    dispatch( 'setErrorData', error.response.data );
+                    console.log(error.toJSON())
+                })
         },
 
-        saveCollectionIndex( { commit }, data) {
+        saveCollectionIndex( { dispatch, commit }, data) {
             commit('setCollectionIndexStatus', 1);
             commit( 'setCollectionIndex', null );
 
@@ -303,22 +320,23 @@ export const collection = {
                 .then( (response) => {
                     if (response.data.success === true) {
                         commit( 'setCollectionIndex', response.data.data.index );
-                        commit( 'setCollectionIndexStatus', 2 );
+                        commit( 'setCollectionIndexStatus', 2 )
 
                     } else {
                         commit( 'setErrorData', response.data.errors );
                         commit( 'setCollectionIndexStatus', 3 );
-                        console.log(response.data.errors);
+                        console.log(response.data.errors)
                     }
                 })
                 .catch( (error) => {
                     commit( 'setCollectionIndexStatus', 3 );
-                    commit( 'setErrorData', error );
-                    console.log(error);
-                });
+                    commit( 'setErrorData', error.response);
+                    dispatch( 'setErrorData', error.response.data );
+                    console.log(error.toJSON())
+                })
         },
 
-        renameCollection( { commit, dispatch }, data) {
+        renameCollection( { dispatch, commit }, data) {
             commit('setCollectionRenameStatus', 1);
 
             CollectionApi.renameCollection( data )
@@ -326,22 +344,23 @@ export const collection = {
                     if (response.data.success === true) {
                         dispatch( 'loadDatabase', data.database );
                         dispatch( 'setActiveCollection', data.params.newName );
-                        commit( 'setCollectionRenameStatus', 2 );
+                        commit( 'setCollectionRenameStatus', 2 )
 
                     } else {
                         commit( 'setErrorData', response.data.errors );
                         commit( 'setCollectionRenameStatus', 3 );
-                        console.log(response.data.errors);
+                        console.log(response.data.errors)
                     }
                 })
                 .catch( (error) => {
                     commit( 'setCollectionRenameStatus', 3 );
-                    commit( 'setErrorData', error );
-                    console.log(error);
-                });
+                    commit( 'setErrorData', error.response);
+                    dispatch( 'setErrorData', error.response.data );
+                    console.log(error.toJSON())
+                })
         },
 
-        duplicateCollection( { commit, dispatch }, data) {
+        duplicateCollection( { dispatch, commit }, data) {
             commit('setCollectionDuplicateStatus', 1);
 
             CollectionApi.duplicateCollection( data )
@@ -350,52 +369,43 @@ export const collection = {
                         dispatch( 'loadDatabase', data.database );
                         dispatch( 'setActiveCollection', data.params.duplicateName );
                         dispatch( 'loadCollection', { database: data.database, collection: data.params.duplicateName } );
-                        commit( 'setCollectionDuplicateStatus', 2 );
+                        commit( 'setCollectionDuplicateStatus', 2 )
 
                     } else {
                         commit( 'setErrorData', response.data.errors );
                         commit( 'setCollectionDuplicateStatus', 3 );
-                        console.log(response.data.errors);
+                        console.log(response.data.errors)
                     }
                 })
                 .catch( (error) => {
                     commit( 'setCollectionDuplicateStatus', 3 );
-                    commit( 'setErrorData', error );
-                    console.log(error);
-                });
+                    commit( 'setErrorData', error.response);
+                    dispatch( 'setErrorData', error.response.data );
+                    console.log(error.toJSON())
+                })
         },
 
-        validateCollection( { commit }, data) {
+        validateCollection( { dispatch, commit }, data) {
             commit('setCollectionValidationStatus', 1);
 
             CollectionApi.validateCollection( data )
                 .then( (response) => {
                     if (response.data.success === true) {
                         commit( 'setCollectionValidation', response.data.data.validation[0] );
-                        commit( 'setCollectionValidationStatus', 2 );
+                        commit( 'setCollectionValidationStatus', 2 )
 
                     } else {
                         commit( 'setErrorData', response.data.errors );
                         commit( 'setCollectionValidationStatus', 3 );
-                        console.log(response.data.errors);
+                        console.log(response.data.errors)
                     }
                 })
                 .catch( (error) => {
                     commit( 'setCollectionValidationStatus', 3 );
-                    commit( 'setErrorData', error );
-                    console.log(error);
-                });
-        },
-
-        setDbCollections( { commit }, data) {
-            commit( 'setCollections', data);
-        },
-
-        /*
-        *   Set the active collection - used for collection tracking
-        */
-        setActiveCollection( { commit }, data ) {
-            commit( 'setActiveCollection', data );
+                    commit( 'setErrorData', error.response);
+                    dispatch( 'setErrorData', error.response.data );
+                    console.log(error.toJSON())
+                })
         },
 
         /*
@@ -407,13 +417,13 @@ export const collection = {
             CollectionApi.getQueryLogs( data )
                 .then( ( response ) => {
                     commit( 'setQueryLogs', response.data.data.logs );
-                    commit( 'setQueryLogsLoadStatus', 2 );
+                    commit( 'setQueryLogsLoadStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setQueryLogs', [] );
                     commit( 'setQueryLogsLoadStatus', 3 );
-                    console.log(error);
-                });
+                    console.log(error)
+                })
         },
 
         /*
@@ -425,20 +435,13 @@ export const collection = {
             CollectionApi.getQueryExplain( data )
                 .then( ( response ) => {
                     commit( 'setQueryExplain', response.data.data.explain );
-                    commit( 'setQueryExplainStatus', 2 );
+                    commit( 'setQueryExplainStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setQueryExplain', [] );
                     commit( 'setQueryExplainStatus', 3 );
-                    console.log(error);
-                });
-        },
-
-        /*
-        *   Set the current format for data entry (json | array)
-        */
-        setCurrentFormat( { commit }, data ) {
-            commit( 'setCurrentFormat', data );
+                    console.log(error)
+                })
         },
 
         /*
@@ -454,14 +457,14 @@ export const collection = {
                         commit( 'setUpdateDocumentStatus', 2);
                     } else {
                         commit( 'setUpdateDocumentStatus', 3);
-                        commit( 'setErrorData', 'no result');
+                        commit( 'setErrorData', 'no result')
                     }
                 })
                 .catch( (error) => {
                     commit( 'setUpdateDocumentStatus', 3);
                     commit( 'setErrorData', error);
-                    console.log(error);
-                });
+                    console.log(error)
+                })
         },
 
         /*
@@ -478,14 +481,15 @@ export const collection = {
                         commit( 'setDuplicateDocumentStatus', 2);
                     } else {
                         commit( 'setDuplicateDocumentStatus', 3);
-                        commit( 'setErrorData', 'no result');
+                        let error = response.data.data ? response.data.data : 'An unhandled error occurred';
+                        commit( 'setErrorData', error)
                     }
                 })
                 .catch( (error) => {
                     commit( 'setDuplicateDocumentStatus', 3);
                     commit( 'setErrorData', error);
-                    console.log(error);
-                });
+                    console.log(error)
+                })
         },
 
         /*
@@ -499,17 +503,18 @@ export const collection = {
                 .then( (response) => {
                     if (response.data.message === 'success') {
                         commit( 'setCreatedDocument', response.data.data.document );
-                        commit( 'setCreateDocumentStatus', 2);
+                        commit( 'setCreateDocumentStatus', 2)
                     } else {
                         commit( 'setCreateDocumentStatus', 3);
-                        commit( 'setErrorData', 'no result');
+                        let error = response.data.data ? response.data.data : 'An unhandled error occurred';
+                        commit( 'setErrorData', error)
                     }
                 })
                 .catch( (error) => {
                     commit( 'setCreateDocumentStatus', 3);
                     commit( 'setErrorData', error);
-                    console.log(error);
-                });
+                    console.log(error)
+                })
         },
 
         /*
@@ -523,21 +528,58 @@ export const collection = {
                     // ToDo: we are just handling single doc delete today
                     if (response.data.message === 'success') {
                         commit( 'setDeleteDocumentStatus', 2 );
-                        commit( 'setDeletedDocument', [data._id] );
+                        commit( 'setDeletedDocument', [data._id] )
                     } else {
                         commit( 'setDeleteDocumentStatus', 3 );
-                        commit( 'setErrorData', 'not deleted');
+                        commit( 'setErrorData', 'not deleted')
                     }
                 })
                 .catch( (error) => {
                     commit( 'setDeleteDocumentStatus', 3 );
                     commit( 'setErrorData', error);
-                    console.log(error);
+                    console.log(error)
+                })
+        },
+
+        getLocalCollection( { commit, getters, rootGetters }, data) {
+            const dbs = getters.getDatabases;
+            let database = dbs.filter((db) => db.db && db.db.name && db.db.name === data.database)[0];
+            if (database.collections.length > 0) {
+                commit( 'setCollection', {
+                    collection: {
+                        collection:  database.collections[0].collection,
+                        objects:  database.collections[0].objects,
+                        server: null,
+                        stats:  database.collections[0].stats
+                    }
                 });
+                commit( 'setErrorData', rootGetters.getLanguageString('errors', 'collection.unableToReadCollection'));
+                commit( 'setCollectionLoadStatus', 2 )
+                return true
+            }
+            commit( 'setCollectionLoadStatus', 3 )
+        },
+
+        setDbCollections( { commit }, data) {
+            commit( 'setCollections', data)
+        },
+
+        /*
+        *   Set the active collection - used for collection tracking
+        */
+        setActiveCollection( { commit }, data ) {
+            commit( 'setActiveCollection', data )
+        },
+
+        /*
+        *   Set the current format for data entry (json | array)
+        */
+        setCurrentFormat( { commit }, data ) {
+            commit( 'setCurrentFormat', data )
         },
 
         setDocument( { commit }, data ) {
-            commit( 'setDocumentUpdates', data);
+            commit( 'setDocumentUpdates', data)
         }
     },
 
@@ -549,113 +591,113 @@ export const collection = {
         *   Set the collection load status
         */
         setCollectionsLoadStatus( state, status ) {
-            state.collectionLoadStatus = status;
+            state.collectionLoadStatus = status
         },
 
         /*
         *   Sets the collections
         */
         setCollections( state, collections ) {
-            state.collections = collections;
+            state.collections = collections
         },
 
         /*
         *   Set the collection load status
         */
         setCollectionLoadStatus( state, status ) {
-            state.collectionLoadStatus = status;
+            state.collectionLoadStatus = status
         },
 
         /*
         *   Sets the collection
         */
         setCollection( state, collection ) {
-            state.collection = collection;
+            state.collection = collection
         },
 
         /*
         *   Set the collection save properties status
         */
         setCollectionPropertiesStatus( state, status ) {
-            state.collectionPropertiesStatus = status;
+            state.collectionPropertiesStatus = status
         },
 
         /*
         *   Set the collection save index status
         */
         setCollectionIndexStatus( state, status ) {
-            state.collectionIndexStatus = status;
+            state.collectionIndexStatus = status
         },
 
         setCollectionIndex( state, index ) {
-            state.collectionIndex = index;
+            state.collectionIndex = index
         },
 
         /*
         *   Set the collection save rename status
         */
         setCollectionRenameStatus( state, status ) {
-            state.collectionRenameStatus = status;
+            state.collectionRenameStatus = status
         },
 
         /*
         *   Set the collection duplicate status
         */
         setCollectionDuplicateStatus( state, status ) {
-            state.collectionDuplicateStatus = status;
+            state.collectionDuplicateStatus = status
         },
 
         /*
         *   Set the collection validation status
         */
         setCollectionValidationStatus( state, status ) {
-            state.collectionValidationStatus = status;
+            state.collectionValidationStatus = status
         },
 
         setCollectionValidation( state, validation ) {
-            state.collectionValidation = validation;
+            state.collectionValidation = validation
         },
 
         /*
         *   Set the display collection
         */
         setDisplayCollection( state, collection) {
-            state.displayCollection = collection;
+            state.displayCollection = collection
         },
 
         /*
         *   Set the display collection status
         */
         setDisplayCollectionStatus( state, status) {
-            state.displayCollectionStatus = status;
+            state.displayCollectionStatus = status
         },
 
         /*
         *   Set the create collection status
         */
         setCreateCollectionStatus( state, status) {
-            state.createCollectionStatus = status;
+            state.createCollectionStatus = status
         },
 
         /*
         *   Add the new collection into the existing array
         */
         setCreatedCollection( state, collection ) {
-            state.collections.push( collection );
+            state.collections.push( collection )
         },
 
         /*
         *   Set the delete collection status
         */
         setDeleteCollectionStatus( state, status) {
-            state.deleteCollectionStatus = status;
+            state.deleteCollectionStatus = status
         },
 
         /*
         *   Set the deleting collection value
         */
         setDeletingCollection( state, collection) {
-            state.deletingCollection = collection;
+            state.deletingCollection = collection
         },
 
         /*
@@ -677,7 +719,7 @@ export const collection = {
         *   Set the clear collection status
         */
         setClearCollectionStatus( state, status) {
-            state.clearCollectionStatus = status;
+            state.clearCollectionStatus = status
         },
 
         /*
@@ -686,70 +728,70 @@ export const collection = {
         setClearedCollection( state, status ) {
             state.collection.objects.count = 0;
             state.collection.objects.objects = [];
-            state.clearCollectionCount = status.deleted;
+            state.clearCollectionCount = status.deleted
         },
 
         /*
         *   Set the active collection
         */
         setActiveCollection(state, collection) {
-            state.activeCollection = collection;
+            state.activeCollection = collection
         },
 
         /*
         *   Set the query collection load status
         */
         setQueryCollectionLoadStatus(state, status) {
-            state.queryCollectionLoadStatus = status;
+            state.queryCollectionLoadStatus = status
         },
 
         /*
         *   Set the query collection results data
         */
         setQueryCollection(state, documents) {
-            state.queryCollection = documents;
+            state.queryCollection = documents
         },
 
         /*
         *   Set the query logs load status
         */
         setQueryLogsLoadStatus(state, status) {
-            state.queryLogsLoadStatus = status;
+            state.queryLogsLoadStatus = status
         },
 
         /*
         *   Set the query log load data
         */
         setQueryLogs(state, logs) {
-            state.queryLogs = logs;
+            state.queryLogs = logs
         },
 
         /*
         *   Set the query explain load status
         */
         setQueryExplainStatus(state, status) {
-            state.queryExplainStatus = status;
+            state.queryExplainStatus = status
         },
 
         /*
         *   Set the query explain data
         */
         setQueryExplain(state, explain) {
-            state.queryExplain = explain;
+            state.queryExplain = explain
         },
 
         /*
          *  Set the document update status
          */
         setUpdateDocumentStatus( state, status ) {
-            state.documentUpdateStatus = status;
+            state.documentUpdateStatus = status
         },
 
         /*
          *  Replace document with updated version
          */
         setUpdatedDocument( state, data ) {
-            state.collection.objects.objects[data.index].raw = JSON.parse(data.document);
+            state.collection.objects.objects[data.index].raw = JSON.parse(data.document)
         },
 
         /*
@@ -758,7 +800,7 @@ export const collection = {
         setDocumentUpdates( state, data ) {
             if (data.text) {
                 state.collection.objects.objects[data.index].text = data.text;
-                state.collection.objects.objects[data.index].data = data.data;
+                state.collection.objects.objects[data.index].data = data.data
             }
         },
 
@@ -766,14 +808,14 @@ export const collection = {
          *  Set the document duplicate status
          */
         setDuplicateDocumentStatus( state, status ) {
-            state.documentDuplicateStatus = status;
+            state.documentDuplicateStatus = status
         },
 
         /*
          *  Set the document create status
          */
         setCreateDocumentStatus( state, status ) {
-            state.documentCreateStatus = status;
+            state.documentCreateStatus = status
         },
 
         /*
@@ -781,14 +823,14 @@ export const collection = {
          */
         setCreatedDocument( state, data ) {
             state.collection.objects.objects.push(data);
-            state.collection.objects.count += 1;
+            state.collection.objects.count += 1
         },
 
         /*
         *   Set the delete document status
         */
         setDeleteDocumentStatus( state, status) {
-            state.documentDeleteStatus = status;
+            state.documentDeleteStatus = status
         },
 
         /*
@@ -801,31 +843,31 @@ export const collection = {
                 documents.forEach(function(value) {
                     objects.forEach(function(doc) {
                         if (doc._id !== value) {
-                            arr.push(doc);
+                            arr.push(doc)
                         }
                     });
-                });
+                })
             } else {
                 objects.forEach(function(doc) {
                     if (doc._id !== documents) {
-                        arr.push(doc);
+                        arr.push(doc)
                     }
-                });
+                })
             }
             state.collection.objects.objects = arr;
-            state.collection.objects.count -= 1;
+            state.collection.objects.count -= 1
         },
 
         setExportCollectionStatus( state, status ) {
-            state.exportCollectionStatus = status;
+            state.exportCollectionStatus = status
         },
 
         setExportData( state, data ) {
-            state.exportData = data;
+            state.exportData = data
         },
 
         setImportCollectionStatus( state, status ) {
-            state.importCollectionStatus = status;
+            state.importCollectionStatus = status
         },
 
         /*
@@ -833,9 +875,9 @@ export const collection = {
         */
         setErrorData( state, errors ) {
             if (errors.message) {
-                state.errorData = errors.message;
+                state.errorData = errors.message
             } else {
-                state.errorData = errors;
+                state.errorData = errors
             }
         },
 
@@ -843,7 +885,7 @@ export const collection = {
         *   Set the current format
         */
         setCurrentFormat(state, format) {
-            state.currentFormat = format;
+            state.currentFormat = format
         }
     },
 
@@ -855,78 +897,78 @@ export const collection = {
         *   Return the collections load status
         */
         getCollectionsLoadStatus( state ) {
-            return state.collectionsLoadStatus;
+            return state.collectionsLoadStatus
         },
 
         /*
         *   Return the collections
         */
         getCollections( state ) {
-            return state.collections;
+            return state.collections
         },
 
         /*
         *   Return the collection load status
         */
         getCollectionLoadStatus( state ) {
-            return state.collectionLoadStatus;
+            return state.collectionLoadStatus
         },
 
         /*
         *   Return the collection
         */
         getCollection( state ) {
-            return state.collection;
+            return state.collection
         },
 
         /*
         *   Get the collection save properties status
         */
         getCollectionPropertiesStatus( state ) {
-            return state.collectionPropertiesStatus;
+            return state.collectionPropertiesStatus
         },
 
         /*
         *   Set the collection save index status
         */
         getCollectionIndexStatus( state ) {
-            return state.collectionIndexStatus;
+            return state.collectionIndexStatus
         },
 
         getCollectionIndex( state ) {
-            return state.collectionIndex;
+            return state.collectionIndex
         },
 
         /*
         *   Get the collection save rename status
         */
         getCollectionRenameStatus( state ) {
-            return state.collectionRenameStatus;
+            return state.collectionRenameStatus
         },
 
         /*
         *   Get the collection duplicate status
         */
         getCollectionDuplicateStatus( state ) {
-            return state.collectionDuplicateStatus;
+            return state.collectionDuplicateStatus
         },
 
         /*
-        *   Get the collection validation status
+        *   Get the collection validation statu
         */
         getCollectionValidationStatus( state ) {
             return state.collectionValidationStatus;
         },
 
         getCollectionValidation( state ) {
-            return state.collectionValidation;
+            return state.collectionValidation
         },
 
         /*
         *   Return the display collection status
         */
         getDisplayCollectionStatus( state ) {
-            return state.displayCollectionStatus;
+            return state.displayCollectionStatus
         },
 
         /*
@@ -934,13 +976,13 @@ export const collection = {
         */
         getDisplayCollection: (state) => (id) => {
             if (state.collection && state.collection.id !== '') {
-                return state.collection;
+                return state.collection
             } else {
                 let collection = state.collection.find(collection => collection.id === id);
                 if (collection) {
                     state.displayCollectionStatus = id;
                     state.displayCollection = collection;
-                    return collection;
+                    return collection
                 }
             }
         },
@@ -949,28 +991,28 @@ export const collection = {
         *   Get the create collection status
         */
         getCreateCollectionStatus( state ) {
-            return state.createCollectionStatus;
+            return state.createCollectionStatus
         },
 
         /*
         *   Get the delete collection status
         */
         getDeleteCollectionStatus( state ) {
-            return state.deleteCollectionStatus;
+            return state.deleteCollectionStatus
         },
 
         /*
         *   Get the deleting collection value
         */
         getDeletingCollection( state) {
-            return state.deletingCollection;
+            return state.deletingCollection
         },
 
         /*
         *   Get the clear collection status
         */
         getClearCollectionStatus( state ) {
-            return state.clearCollectionStatus;
+            return state.clearCollectionStatus
         },
 
         /*
@@ -978,7 +1020,7 @@ export const collection = {
         */
         getCollectionStats( state ) {
             if (state.collection) {
-                return state.collection.stats;
+                return state.collection.stats
             }
         },
 
@@ -986,119 +1028,119 @@ export const collection = {
         *   Fetch any active error
         */
         getCollectionErrorData( state ) {
-            return state.errorData;
+            return state.errorData
         },
 
         /*
         *   Return the export status
         */
         getExportCollectionStatus( state ) {
-            return state.exportCollectionStatus;
+            return state.exportCollectionStatus
         },
 
         /*
         *   Return the export data when no download is required
         */
         getExportData( state ) {
-            return state.exportData;
+            return state.exportData
         },
 
         /*
         *   Return the import status
         */
         getImportCollectionStatus( state ) {
-            return state.importCollectionStatus;
+            return state.importCollectionStatus
         },
 
         /*
         *   Get the active collection
         */
         getActiveCollection( state) {
-            return state.activeCollection;
+            return state.activeCollection
         },
 
         /*
         *   Get the query collection load status
         */
         getQueryCollectionLoadStatus(state) {
-            return state.queryCollectionLoadStatus;
+            return state.queryCollectionLoadStatus
         },
 
         /*
         *   Get the query collection results data
         */
         getQueryCollection(state) {
-            return state.queryCollection;
+            return state.queryCollection
         },
 
         /*
         *   Get the query logs load status
         */
         getQueryLogsLoadStatus( state) {
-            return state.queryLogsLoadStatus;
+            return state.queryLogsLoadStatus
         },
 
         /*
         *   Get the query logs data
         */
         getQueryLogs( state) {
-            return state.queryLogs;
+            return state.queryLogs
         },
 
         /*
         *   Get the query explain load status
         */
         getQueryExplainStatus(state) {
-            return state.queryExplainStatus;
+            return state.queryExplainStatus
         },
 
         /*
         *   Get the query explain data
         */
         getQueryExplain(state) {
-            return state.queryExplain;
+            return state.queryExplain
         },
 
         /*
         *   Det the current format
         */
         getCurrentFormat( state ) {
-            return state.currentFormat;
+            return state.currentFormat
         },
 
         /*
          *  Get the document update status
          */
         getUpdateDocumentStatus (state ) {
-            return state.documentUpdateStatus;
+            return state.documentUpdateStatus
         },
 
         /*
          *  Get the document duplicate status
          */
         getDuplicateDocumentStatus (state ) {
-            return state.documentDuplicateStatus;
+            return state.documentDuplicateStatus
         },
 
         /*
          *  Get the document create status
          */
         getCreateDocumentStatus (state ) {
-            return state.documentCreateStatus;
+            return state.documentCreateStatus
         },
 
         /*
         *   Get the delete document status
         */
         getDeleteDocumentStatus( state ) {
-            return state.documentDeleteStatus;
+            return state.documentDeleteStatus
         },
 
         /*
          *  Get the documents from the current collection
          */
         getDocuments( state ) {
-            return state.collection.objects.objects;
+            return state.collection.objects ? state.collection.objects.objects : null
         },
 
         /*
@@ -1108,13 +1150,9 @@ export const collection = {
             let documents = state.collection.objects.objects;
             if (documents) {
                 return documents.map( document => {
-                    return document._id = id;
+                    return document._id = id
                 });
             }
         },
-
-        getCollErrorData( state ) {
-            return state.exportData;
-        }
     }
 };

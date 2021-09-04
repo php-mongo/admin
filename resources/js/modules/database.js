@@ -38,30 +38,36 @@ export const database = {
     */
     state: {
         activeDatabase: null,
+        canUserReadDatabase: false,
+        canUserWriteDatabase: false,
+        canUserCreateDatabase: false,
+        canUserDropDatabase: false,
         commandLoadStatus: 0,
         commandResults: [],
+        createDatabaseStatus: 0,
         databases: [],
         databasesLoadStatus: 0,
         database: {},
+        databaseList: [],
+        databaseListLoadStatus: 0,
         databaseLoadStatus: 0,
-        displayDatabase: {},
-        displayDatabaseStatus: 0,
+        dbAuthStatus: 0,
         dbCollection: {},
         dbCollectionStatus: 0,
-        createDatabaseStatus: 0,
+        dbDeleteUserStatus: 0,
+        dbUserStatus: 0,
         deleteDatabaseStatus: 0,
-        transferDatabaseStatus: 0,
+        displayDatabase: {},
+        displayDatabaseStatus: 0,
+        errorData: {},
+        getDbAuth: [],
         inserted: 0,
-        saveProfileStatus: 0,
+        level: null,
         profileStatus: 0,
         profile: [],
-        level: null,
         repairStatus: 0,
-        dbAuthStatus: 0,
-        getDbAuth: [],
-        dbUserStatus: 0,
-        dbDeleteUserStatus: 0,
-        errorData: {}
+        saveProfileStatus: 0,
+        transferDatabaseStatus: 0,
     },
 
     /*
@@ -71,36 +77,44 @@ export const database = {
         /*
         *   Loads the database from the API
         */
-        loadDatabases( { commit } ) {
-            commit( 'setDatabasesLoadStatus', 1 );
+        loadDatabases( { dispatch, commit, getters } ) {
+            if (getters.getCanUserReadDatabase === false)  {
+                return;
+            }
 
+            commit( 'setDatabasesLoadStatus', 1 );
             DatabaseApi.getDatabases()
                 .then( ( response ) => {
                     if (response.data.success === true) {
                         commit( 'setDatabases', response.data.data.databases );
-                        commit( 'setDatabasesLoadStatus', 2 );
+                        commit( 'setDatabasesLoadStatus', 2 )
                     } else {
-                        console.log(response.data.errors);
                         commit( 'setErrorData', response.data.errors );
                         commit( 'setDatabasesLoadStatus', 3 );
+                        console.log(response.data.errors)
                     }
                 })
                 .catch( (error) => {
-                    console.log(error);
                     commit( 'setDatabases', [] );
                     commit( 'setDatabasesLoadStatus', 3 );
-                    commit( 'setErrorData', error.errors );
+                    commit( 'setErrorData', error.response.data );
+                    dispatch( 'setErrorData', error.response.data );
                     EventBus.$emit('no-results-found', { notification: 'No databases were returned from the api - please try again later' });
+                    console.log(error.toJSON())
+
                 });
         },
 
         /*
         *   Loads a database from the API
         */
-        loadDatabase( { commit, dispatch }, data ) {
+        loadDatabase( { dispatch, commit, getters }, data ) {
+            if (getters.getCanUserReadDatabase === false)  {
+                return;
+            }
+
             commit( 'setDatabaseLoadStatus', 1 );
             commit( 'setDatabase', {} );
-
             DatabaseApi.getDatabase( data )
                 .then( ( response ) => {
                     commit( 'setActiveDatabase', data );
@@ -108,27 +122,16 @@ export const database = {
                     commit( 'setDatabaseLoadStatus', 2 );
 
                     let collections = response.data.data.database.collections;
-                    dispatch('setDbCollections', collections);
+                    dispatch('setDbCollections', collections)
                 })
                 .catch( (error) => {
                     commit( 'setDatabase', {} );
                     commit( 'setDatabaseLoadStatus', 3 );
                     commit( 'setErrorData', error.errors );
-                    console.log(error);
+                    dispatch( 'setErrorData', error.response.data );
                     EventBus.$emit('no-results-found', { notification: 'No database was returned from the api - please try again later' });
+                    console.log(error.toJSON())
                 });
-        },
-
-        loadCachedDatabase( { commit }, db) {
-            commit( 'setCachedDatabase', db);
-            commit( 'setActiveDatabase', db);
-        },
-
-        /*
-        *   Because we set the 'admin' database on site - we can clear the stored DB before rendering the single DB view
-        */
-        clearDatabase( { commit }) {
-            commit ( 'clearDatabaseObject' );
         },
 
         /*
@@ -140,12 +143,12 @@ export const database = {
             DatabaseApi.createDatabase( data )
                 .then( ( response ) => {
                     commit( 'setCreatedDatabase', response.data.data.database );
-                    commit( 'setCreateDatabaseStatus', 2 );
+                    commit( 'setCreateDatabaseStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setCreateDatabaseStatus', 3 );
                     commit( 'setErrorData', error);
-                    console.log(error);
+                    console.log(error.toJSON())
                 });
         },
 
@@ -158,12 +161,12 @@ export const database = {
             DatabaseApi.deleteDatabase( data )
                 .then( () => {
                     commit( 'setDeletedDatabase', data );
-                    commit( 'setDeleteDatabaseStatus', 2 );
+                    commit( 'setDeleteDatabaseStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setDeleteDatabaseStatus', 3 );
                     commit( 'setErrorData', error);
-                    console.log(error);
+                    console.log(error.toJSON())
                 });
         },
 
@@ -174,18 +177,17 @@ export const database = {
                 .then( ( response ) => {
                     if (response.data.success === true) {
                         commit( 'setCommandResults', response.data.data.results );
-                        commit( 'setCommandLoadStatus', 2 );
-
+                        commit( 'setCommandLoadStatus', 2 )
                     } else {
                         commit( 'setErrorData', response.data.errors);
-                        commit( 'setCommandLoadStatus', 3 );
+                        commit( 'setCommandLoadStatus', 3 )
                     }
                 })
                 .catch( (error) => {
                     commit( 'setCommandLoadStatus', 3 );
                     commit( 'setCommandResults', [] );
                     commit( 'setErrorData', error);
-                    console.log(error);
+                    console.log(error.toJSON())
                 });
         },
 
@@ -195,13 +197,13 @@ export const database = {
             DatabaseApi.transferDatabase(data)
                 .then((response) => {
                     commit( 'setTransferStatus', 2 );
-                    commit( 'setInserted', response.data.data.inserted );
+                    commit( 'setInserted', response.data.data.inserted )
                 })
                 .catch( (error) => {
                     commit( 'setTransferStatus', 3 );
                     commit( 'setErrorData', error );
                     commit( 'setInserted', 0 );
-                    console.log(error);
+                    console.log(error.toJSON())
                 });
         },
 
@@ -210,14 +212,14 @@ export const database = {
 
             DatabaseApi.saveProfile(data)
                 .then(() => {
-                    commit( 'setSaveProfileStatus', 2 );
+                    commit( 'setSaveProfileStatus', 2 )
                     // ToDo: the result return does not contain the updated level
                 })
                 .catch( (error) => {
                     commit( 'setSaveProfileStatus', 3 );
                     commit( 'setErrorData', error );
                     commit( 'setProfile', 0 );
-                    console.log(error);
+                    console.log(error.toJSON())
                 });
         },
 
@@ -228,13 +230,13 @@ export const database = {
                 .then((response) => {
                     commit( 'setProfileStatus', 2 );
                     commit( 'setProfile', response.data.data.profile );
-                    commit( 'setLevel', response.data.data.level );
+                    commit( 'setLevel', response.data.data.level )
                 })
                 .catch( (error) => {
                     commit( 'setProfileStatus', 3 );
                     commit( 'setErrorData', error );
                     commit( 'setProfile', 0 );
-                    console.log(error);
+                    console.log(error.toJSON())
                 });
         },
 
@@ -243,11 +245,11 @@ export const database = {
 
             DatabaseApi.repairDb(data)
                 .then(() => {
-                    commit( 'setRepairStatus', 2 );
+                    commit( 'setRepairStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setRepairStatus', 3 );
-                    console.log(error);
+                    console.log(error.toJSON())
                 });
         },
 
@@ -257,11 +259,11 @@ export const database = {
             DatabaseApi.getDbAuth(data)
                 .then((response) => {
                     commit( 'setDbAuth', response.data.data.results);
-                    commit( 'setDbAuthStatus', 2 );
+                    commit( 'setDbAuthStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setDbAuthStatus', 3 );
-                    console.log(error);
+                    console.log(error.toJSON())
                 });
         },
 
@@ -270,25 +272,51 @@ export const database = {
 
             DatabaseApi.saveDbUser(data)
                 .then(() => {
-                    commit( 'setDbUserStatus', 2 );
+                    commit( 'setDbUserStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setDbUserStatus', 3 );
-                    console.log(error);
+                    console.log(error.toJSON())
                 });
         },
 
-        deleteDbUser( {commit}, data) {
+        deleteDbUser( { commit }, data) {
             commit('setDeleteDbUserStatus', 1);
 
             DatabaseApi.deleteDbUser(data)
                 .then(() => {
-                    commit( 'setDeleteDbUserStatus', 2 );
+                    commit( 'setDeleteDbUserStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setDeleteDbUserStatus', 3 );
-                    console.log(error);
+                    console.log(error.toJSON())
                 });
+        },
+
+        getDatabaseList( { commit } ) {
+            commit('setDatabaseListLoadStatus', 1);
+
+            DatabaseApi.getDatabaseList()
+                .then( (response) => {
+                    commit( 'setDatabaseList', response.data.data.databaseList )
+                    commit('setDatabaseListLoadStatus', 2);
+                })
+                .catch( (error) => {
+                    commit('setDatabaseListLoadStatus', 3);
+                    console.log(error.toJSON())
+                });
+        },
+
+        loadCachedDatabase( { commit }, db) {
+            commit( 'setCachedDatabase', db);
+            commit( 'setActiveDatabase', db)
+        },
+
+        /*
+        *   Because we set the 'admin' database on site - we can clear the stored DB before rendering the single DB view
+        */
+        clearDatabase( { commit }) {
+            commit ( 'clearDatabaseObject' )
         },
 
         /*
@@ -296,15 +324,15 @@ export const database = {
         */
         getDbCollection( { commit }, collection ) {
             commit('setDbCollectionStatus', 1);
-            commit( 'findDbCollection', collection);
+            commit( 'findDbCollection', collection)
         },
 
         setCollection( { commit }, data) {
-            commit( 'setCollectionToDatabase', data);
+            commit( 'setCollectionToDatabase', data)
         },
 
         dropCollection( { commit }, data) {
-            commit( 'setDropCollectionFromDatabase', data);
+            commit( 'setDropCollectionFromDatabase', data)
         },
 
         /*
@@ -312,7 +340,75 @@ export const database = {
         *   ToDo: this also gets set when the DB is fetched - this may be redundant
         */
         setActiveDatabase( { commit }, data) {
-            commit( 'setActiveDatabase', data );
+            commit( 'setActiveDatabase', data )
+        },
+
+        clearErrorData( { commit }) {
+            commit( 'clearErrorData' );
+        },
+
+        canUserReadWriteDatabases( { dispatch, commit, getters, rootGetters } ) {
+            let readRoles = [
+                'root',
+                'read',
+                'readAnyDatabase',
+                'readWrite',
+                'readWriteAnyDatabase',
+                'dbAdmin',
+                'dbAdminAnyDatabase',
+                'dbOwner',
+            ];
+            let writeRoles = [
+                'root',
+                'readWrite',
+                'readWriteAnyDatabase',
+                'dbOwner',
+            ];
+            let createRoles = [
+                'root',
+                'readWriteAnyDatabase',
+                'dbAdminAnyDatabase',
+                'dbOwner',
+            ];
+            let dropRoles = [
+                'root',
+                'readWriteAnyDatabase',
+                'dbAdminAnyDatabase',
+                'dbOwner',
+            ];
+            let roles = rootGetters.getUserRoles;
+            let readAllowed = false,
+                writeAllowed = false,
+                createAllowed = false,
+                dropAllowed = false;
+            if (roles) {
+                roles.forEach((role) => {
+                    readRoles.map((allow) => {
+                        if (allow === role.role) {
+                            readAllowed = true
+                        }
+                    });
+                    writeRoles.map((allow) => {
+                        if (allow === role.role) {
+                            writeAllowed = true
+                        }
+                    });
+                    createRoles.map((allow) => {
+                        if (allow === role.role) {
+                            createAllowed = true
+                        }
+                    });
+                    dropRoles.map((allow) => {
+                        if (allow === role.role) {
+                            dropAllowed = true
+                        }
+                    });
+                });
+            }
+            commit( 'setCanUserReadDatabase', readAllowed);
+            commit( 'setCanUserWriteDatabase', writeAllowed);
+            commit( 'setCanUserCreateDatabase', createAllowed);
+            commit( 'setCanUserDropDatabase', dropAllowed);
         }
     },
 
@@ -321,10 +417,29 @@ export const database = {
     */
     mutations: {
         /*
+         * Set the read, write, create and drop boolean values
+         */
+        setCanUserReadDatabase( state, status ) {
+            state.canUserReadDatabase = status
+        },
+
+        setCanUserWriteDatabase( state, status ) {
+            state.canUserWriteDatabase = status
+        },
+
+        setCanUserCreateDatabase( state, status ) {
+            state.canUserCreateDatabase = status
+        },
+
+        setCanUserDropDatabase( state, status ) {
+            state.canUserDropDatabase = status
+        },
+
+        /*
         *   Set the database load status
         */
         setDatabasesLoadStatus( state, status ) {
-            state.databaseLoadStatus = status;
+            state.databaseLoadStatus = status
         },
 
         /*
@@ -334,68 +449,82 @@ export const database = {
         */
         setDatabases( state, databases ) {
             state.databases = databases;
-            state.database  = databases.find(db => db.db.name === 'admin');
+            state.database  = databases.find(db => db.db.name === 'admin')
         },
 
         setCachedDatabase( state, database ) {
             let databases = state.databases;
-            state.database  = databases.find(db => db.db.name === database);
+            state.database  = databases.find(db => db.db.name === database)
         },
 
         /*
         *   Set the database load status
         */
         setDatabaseLoadStatus( state, status ) {
-            state.databaseLoadStatus = status;
+            state.databaseLoadStatus = status
         },
 
         /*
         *   Sets the database
         */
         setDatabase( state, database ) {
-            state.database = database;
+            state.database = database
         },
 
         /*
         * Clears the DB so that its data wont show on initial component rendering
         */
         clearDatabaseObject( state ) {
-            state.database = {};
+            state.database = {}
         },
 
         /*
         *   Set the display database
         */
         setDisplayDatabase( state, database) {
-            state.displayDatabase = database;
+            state.displayDatabase = database
+        },
+
+        /*
+        *   Set the database list load status
+        */
+        setDatabaseListLoadStatus( state, status ) {
+            state.databaseListLoadStatus = status
+        },
+
+        /*
+        *   Set the database list data
+        */
+        setDatabaseList( state, list ) {
+            state.databaseList = list
         },
 
         /*
         *   Set the display database status
         */
         setDisplayDatabaseStatus( state, status) {
-            state.displayDatabaseStatus = status;
+            state.displayDatabaseStatus = status
         },
 
         /*
         *   Set the create database status
         */
         setCreateDatabaseStatus( state, status) {
-            state.createDatabaseStatus = status;
+            state.createDatabaseStatus = status
         },
 
         /*
         *   Add the new database into the existing array
         */
         setCreatedDatabase( state, database ) {
-            state.databases.push( database );
+            state.databases.push( database )
         },
 
         /*
         *   Set the delete database status
         */
         setDeleteDatabaseStatus( state, status) {
-            state.deleteDatabaseStatus = status;
+            state.deleteDatabaseStatus = status
         },
 
         /*
@@ -410,10 +539,10 @@ export const database = {
                 arr = [];
                 state.databases.forEach( (db) => {
                     if (db.db.name !== value) {
-                        arr.push(db);
+                        arr.push(db)
                     }
                 });
-                state.databases = arr;
+                state.databases = arr
             });
         },
 
@@ -421,33 +550,34 @@ export const database = {
         *   Save the error data for reference
         */
         setErrorData( state, error ) {
-            state.errorData = error;
+            state.errorData = error
         },
 
         /*
          * With luck - save the new collection into the current exhibited database
          */
         setCollectionToDatabase( state, collection ) {
-            if (state.database) {
-                if (state.database.collections) {
-                    state.database.collections.push(collection);
-                }
-            }
+            console.log("setting collection: " + collection.collection.collectionName + " to db: " + collection.collection.databaseName);
             if (state.databases) {
                 state.databases.forEach( (database, index ) => {
                     if (database.db.name === collection.collection.databaseName) {
                         state.databases[index].collections.push(collection);
-                        return true;
+                        return true
                     }
                 });
             }
+            /*if (state.database) {
+                if (state.database.collections) {
+                    state.database.collections.push(collection)
+                }
+            }*/
         },
 
         /*
         *   Set the active database
         */
         setActiveDatabase(state, database) {
-            state.activeDatabase = database;
+            state.activeDatabase = database
         },
 
         /*
@@ -461,7 +591,7 @@ export const database = {
             let collections = state.database.collections;
             collections.forEach( (collection) => {
                 if (collection.collection.name !== coll && collection.collection.collectionName !== coll) {
-                    arr.push(collection);
+                    arr.push(collection)
                 }
             });
             state.database.collections = arr;
@@ -473,80 +603,84 @@ export const database = {
                     arr = [];
                     collections.forEach( (collection) => {
                         if (collection.collection.name !== coll && collection.collection.collectionName !== coll) {
-                            arr.push(collection);
+                            arr.push(collection)
                         }
                     });
                     database.collections = arr;
                     state.databases[index] = database;
-                    return true;
+                    return true
                 }
             });
         },
 
         setDbCollectionStatus( state, status ) {
-            state.dbCollectionStatus = status;
+            state.dbCollectionStatus = status
         },
 
         findDbCollection(state, c ) {
             let collection = state.database.collections.find(coll => coll.collection.name === c);
             if (collection) {
                 state.dbCollection = collection;
-                state.dbCollectionStatus = 2;
+                state.dbCollectionStatus = 2
             } else {
-                state.dbCollectionStatus = 3;
+                state.dbCollectionStatus = 3
             }
         },
 
         setCommandLoadStatus( state, status ) {
-            state.commandLoadStatus = status;
+            state.commandLoadStatus = status
         },
 
         setCommandResults( state, results ) {
-            state.commandResults = results;
+            state.commandResults = results
         },
 
         setTransferStatus( state, status ) {
-            state.transferDatabaseStatus = status;
+            state.transferDatabaseStatus = status
         },
 
         setInserted( state, inserted) {
-            state.inserted = inserted;
+            state.inserted = inserted
         },
 
         setSaveProfileStatus( state, status) {
-            state.saveProfileStatus = status;
+            state.saveProfileStatus = status
         },
 
         setProfileStatus( state, status) {
-            state.profileStatus = status;
+            state.profileStatus = status
         },
 
         setProfile( state, profile) {
-            state.profile = profile;
+            state.profile = profile
         },
 
         setLevel( state, level) {
-            state.level = level;
+            state.level = level
         },
 
         setRepairStatus( state, status ) {
-            state.repairStatus = status;
+            state.repairStatus = status
         },
 
         setDbAuthStatus( state, status ) {
-            state.dbAuthStatus = status;
+            state.dbAuthStatus = status
         },
 
         setDbAuth( state, auth ) {
-            state.getDbAuth = auth;
+            state.getDbAuth = auth
         },
 
         setDbUserStatus( state, status ) {
-            state.dbUserStatus = status;
+            state.dbUserStatus = status
         },
 
         setDeleteDbUserStatus( state, status ) {
-            state.dbDeleteUserStatus = status;
+            state.dbDeleteUserStatus = status
+        },
+
+        clearErrorData( state ) {
+            state.errorData = null
         }
     },
 
@@ -555,38 +689,72 @@ export const database = {
     */
     getters: {
         /*
+         *  Return the read, write, create and drop boolean values
+         */
+        getCanUserReadDatabase( state ) {
+            // if this returns false >> the user has no usable roles
+            return state.canUserReadDatabase;
+        },
+
+        getCanUserWriteDatabase( state ) {
+            return state.canUserWriteDatabase;
+        },
+
+        getCanUserCreateDatabase( state ) {
+            return state.canUserCreateDatabase;
+        },
+
+        getCanUserDropDatabase( state ) {
+            return state.canUserDropDatabase;
+        },
+
+        /*
         *   Return the databases load status
         */
         getDatabasesLoadStatus( state ) {
-            return state.databasesLoadStatus;
+            return state.databasesLoadStatus
         },
 
         /*
         *   Return the databases
         */
         getDatabases( state ) {
-            return state.databases;
+            return state.databases
         },
 
         /*
         *   Return the database load status
         */
         getDatabaseLoadStatus( state ) {
-            return state.databaseLoadStatus;
+            return state.databaseLoadStatus
         },
 
         /*
         *   Return the database
         */
         getDatabase( state ) {
-            return state.database;
+            return state.database
+        },
+
+        /*
+        *   Get the database list load status
+        */
+        getDatabaseListLoadStatus( state ) {
+            return state.databaseListLoadStatus
+        },
+
+        /*
+        *   Get the database list data
+        */
+        getDatabaseList( state ) {
+            return state.databaseList
         },
 
         /*
         *   Return the display database status
         */
         getDisplayDatabaseStatus( state ) {
-            return state.displayDatabaseStatus;
+            return state.displayDatabaseStatus
         },
 
         /*
@@ -594,14 +762,14 @@ export const database = {
         */
         getDisplayDatabase: (state) => (id) => {
             if (state.database && state.database.id !== '') {
-                return state.database;
+                return state.database
 
             } else {
                 let database = state.database.find(database => database.id === id);
                 if (database) {
                     state.displayDatabaseStatus = id;
                     state.displayDatabase = database;
-                    return database;
+                    return database
                 }
             }
         },
@@ -610,14 +778,14 @@ export const database = {
         *   Get the create database status
         */
         getCreateDatabaseStatus( state ) {
-            return state.createDatabaseStatus;
+            return state.createDatabaseStatus
         },
 
         /*
         *   Get the delete database status
         */
         getDeleteDatabaseStatus( state ) {
-            return state.deleteDatabaseStatus;
+            return state.deleteDatabaseStatus
         },
 
         /*
@@ -625,7 +793,7 @@ export const database = {
         */
         getStats( state ) {
             if (state.database) {
-                return state.database.stats;
+                return state.database.stats
             }
         },
 
@@ -633,70 +801,70 @@ export const database = {
         *   Fetch any active error
         */
         getErrorData( state ) {
-            return state.errorData;
+            return state.errorData
         },
 
         /*
         *   Get the active database
         */
         getActiveDatabase( state) {
-            return state.activeDatabase;
+            return state.activeDatabase
         },
 
         getDbCollectionStatus( state ) {
-            return state.dbCollectionStatus;
+            return state.dbCollectionStatus
         },
 
         getDbCollection( state ) {
-            return state.dbCollection;
+            return state.dbCollection
         },
 
         getCommandLoadStatus( state ) {
-            return state.commandLoadStatus;
+            return state.commandLoadStatus
         },
 
         getCommandResults( state ) {
-            return state.commandResults;
+            return state.commandResults
         },
 
         getTransferStatus(state) {
-            return state.transferDatabaseStatus;
+            return state.transferDatabaseStatus
         },
 
         getInserted( state ) {
-            return state.inserted;
+            return state.inserted
         },
 
         getSaveProfileStatus( state ) {
-           return state.saveProfileStatus;
+           return state.saveProfileStatus
         },
 
         getProfileStatus( state ) {
-            return state.profileStatus;
+            return state.profileStatus
         },
 
         getProfile( state ) {
-            return state.profile;
+            return state.profile
         },
 
         getLevel( state ) {
-            return state.level;
+            return state.level
         },
 
         getRepairStatus( state ) {
-            return state.repairStatus;
+            return state.repairStatus
         },
 
         getDbAuthStatus( state ) {
-            return state.dbAuthStatus;
+            return state.dbAuthStatus
         },
 
         getDbAuth( state ) {
-            return state.getDbAuth;
+            return state.getDbAuth
         },
 
         getDbUserStatus( state ) {
-            return state.dbUserStatus;
+            return state.dbUserStatus
         }
     }
 };

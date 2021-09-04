@@ -85,4 +85,12 @@ body {
         color: $dangerColor;
         cursor: pointer;
     }
+
+    .notification-container {
+        position: fixed;
+        z-index: 999999;
+        left: 12rem;
+        right: 0;
+        top: 20px;
+    }
 }

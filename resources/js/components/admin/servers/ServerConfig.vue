@@ -44,10 +44,14 @@
             <tr>
                 <th class="bb" v-text="showLanguage('servers', 'created')"></th><td>{{ server.created_at}}</td>
             </tr>
-            <tr>
+            <tr v-if="showActions">
                 <th class="bb" v-text="showLanguage('servers', 'actions')"></th><td>
                 <span class="pma-link" @click="$emit('edit', server.id)" v-text="showLanguage('servers', 'edit')"></span> |
                 <span class="pma-link-danger" @click="$emit('delete', server.id)" v-text="showLanguage('servers', 'delete')"></span></td>
+            </tr>
+            <tr v-if="!showActions">
+                <th class="bb" v-text="showLanguage('global', 'warning')"></th>
+                <td v-text="showLanguage('servers', 'cannotDelete')"></td>
             </tr>
         </table>
     </div>
@@ -64,7 +68,7 @@
         /*
          *  One prop is better than none!
          */
-        props: ['server'],
+        props: ['server','total'],
 
         /*
          *  The lonely data element
@@ -72,6 +76,17 @@
         data() {
             return {
                 activate: null
+            }
+        },
+
+        computed: {
+            showActions() {
+                if (this.total >= 2) {
+                    if (this.server.is_current === 0) {
+                        return true
+                    }
+                }
+                return false
             }
         },
 

@@ -108,7 +108,7 @@
                     }
                 }
                 else if (status === 3) {
-                    this.errorMessage = this.showLanguage('collection', 'logsActionError');
+                    this.errorMessage = this.showLanguage('errors', 'collection.logsActionError');
                 }
             },
 

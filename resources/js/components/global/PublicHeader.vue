@@ -241,7 +241,7 @@
             },
 
             isMember() {
-                let isMember = this.$cookie.get('phpmongoapp-member');
+                let isMember = this.$cookies.get('phpmongoapp-member');
                 return ((isMember && isMember.length === 1) || this.userLoadStatus);
             }
         },
@@ -280,13 +280,23 @@
             */
             getUser() {
                 this.user = this.$store.getters.getUser;
-            }
+            },
+
+            resetStatus(logout) {
+                if (logout) {
+                    this.isLoggedIn = null
+                }
+            },
         },
 
         mounted() {
             this.getCountryNameValue();
             this.userLoggedIn();
             this.getUser();
+
+            EventBus.$on('user-logged-out', () => {
+                this.resetStatus(true)
+            })
         }
     }
 </script>

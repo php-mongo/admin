@@ -20,22 +20,22 @@
 </style>
 
 <template>
-    <div id="pma-servers-view" class="pma-servers-panel align-left" v-show="show">
+    <div id="pma-servers-view" class="pma-servers-panel align-left" v-if="show">
         <div class="servers-inner">
             <div class="servers-head">
                 <h3 v-text="showLanguage('servers', 'title')"></h3>
-                <p v-show="getServersCount">
+                <p v-show="!getServersCount">
                     <span v-text="showLanguage('servers', 'none')"></span>
                     <span class="pma-link" v-on:click="setupServer" v-text="showLanguage('servers', 'createFirst')"></span>
                 </p>
-                <p v-show="!getServersCount">
+                <p v-show="getServersCount">
                     <span v-text="showLanguage('servers', 'add')"></span>
                     <span class="pma-link" v-on:click="setupServer" v-text="showLanguage('servers', 'addNew')"></span>
                 </p>
                 <p v-show="message">{{ message }}</p>
             </div>
             <div v-show="createNew || editing" class="server-create">
-                <p v-show="error">{{ error }}</p>
+                <p class="form-error" v-show="error">{{ error }}</p>
                 <p class="field">
                     <label class="input-group-label input">
                         <span v-text="showLanguage('servers', 'host')"></span>: <input v-model="form.host" type="text" >
@@ -63,14 +63,22 @@
                         <span v-text="showLanguage('servers', 'active')"></span>: <input class="checkbox u-pull-left" v-model="form.active" type="checkbox" >
                     </label>
                 </p>
-                <p class="field" v-show="createNew">
-                    <button class="button" type="submit" v-on:click="createServer" v-text="showLanguage('servers', 'createButton')"></button>
-                </p>
-                <p class="field" v-show="editing">
-                    <button class="button" type="submit" v-on:click="createServer" v-text="showLanguage('servers', 'updateButton')"></button>
+                <p class="field">
+                    <button class="button" type="submit" v-on:click="createServer" v-text="showLanguage('servers', 'createButton')" v-show="createNew"></button>
+                    <button class="button" type="submit" v-on:click="createServer" v-text="showLanguage('servers', 'updateButton')" v-show="editing"></button>
+                    <button class="button warning" @click="reset" v-text="showLanguage('global', 'reset')"></button>
+                    <button class="button warning" @click="cancel" v-text="showLanguage('global', 'cancel')"></button>
                 </p>
             </div>
-            <server-config @activateServer="activateServer($event)" @edit="edit($event)" @delete="deleteConfig($event)" v-for="(server, index) in getServers" :key="index" v-bind:server="server"></server-config>
+            <server-config
+                @activateServer="activateServer($event)"
+                @edit="edit($event)"
+                @delete="deleteConfig($event)"
+                v-for="(server, index) in getServers"
+                :key="index"
+                v-bind:server="server"
+                v-bind:total="getTotal"
+            ></server-config>
         </div>
     </div>
 </template>
@@ -102,13 +110,9 @@
         data() {
             return {
                 createNew: false,
-                editing: false,
                 deleteId: null,
-                hostConfigs: [],
-                index: 0,
-                limit: 55,
-                show: false,
-                server: {},
+                editing: false,
+                error: null,
                 form: {
                     host: null,
                     port: 27017,
@@ -117,6 +121,13 @@
                     password2: null,
                     active: null
                 },
+                hostConfigs: [],
+                index: 0,
+                limit: 55,
+                message: null,
+                show: false,
+                server: {},
+                servers: null,
                 setup: {
                     host: null,
                     port: 27017,
@@ -125,8 +136,6 @@
                     password2: null,
                     active: 0
                 },
-                message: null,
-                error: null
             }
         },
 
@@ -138,15 +147,19 @@
              *  Get the server configs for the current user
              */
             getServers() {
-                return this.$store.getters.getServers;
+                return this.$store.getters.getServers
+            },
+
+            getTotal() {
+                return this.$store.getters.getServersCount
             },
 
             /*
              *  If no servers are configured for the user (control user), let them know
              */
             getServersCount() {
-                return !(this.$store.getters.getServersCount >= 1);
-            }
+                return (this.$store.getters.getServersCount >= 1)
+            },
         },
 
         /*
@@ -156,24 +169,12 @@
             /*
             *   Calls the Translation and Language service
             */
-            showLanguage( context, key ) {
-                return this.$store.getters.getLanguageString( context, key );
-            },
-
-            /*
-             *   Show component
-             */
-            showComponent() {
-                // load all servers allocated to the current user
-                this.$store.dispatch( 'loadServers' );
-                this.show = true;
-            },
-
-            /*
-             *   Hide component
-             */
-            hideComponent() {
-                this.show = false;
+            showLanguage( context, key, str ) {
+                if (str) {
+                    let string = this.$store.getters.getLanguageString( context, key );
+                    return string.replace("%s", str )
+                }
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             /*
@@ -181,28 +182,46 @@
              */
             setupServer() {
                 this.form = this.setup;
-                this.createNew = !this.createNew;
+                this.createNew = !this.createNew
             },
 
             /*
              *  Validate the server data before sending
              */
-            validataServer() {
-                if ((this.editing && this.form.password) || this.createNew) {
-                    if (this.form.password !== this.form.password2) {
-                        this.error = this.showLanguage('servers', 'passwordsError');
-                        return false;
+            validateServer() {
+                if (this.createNew) {
+                    if (!this.form.host) {
+                        this.error = this.showLanguage('errors', 'servers.hostRequired');
+                        return false
+                    }
+                    if (!this.form.username) {
+                        this.error = this.showLanguage('errors', 'global.userRequired');
+                        return false
+                    }
+                    if (!this.form.password) {
+                        this.error = this.showLanguage('errors', 'global.passwordRequired');
+                        return false
                     }
                 }
-                return true;
+                if ((this.editing && this.form.password) || this.createNew) {
+                    if (this.form.password.length < this.$store.getters.getMinPwdLength) {
+                        this.error = this.showLanguage('errors', 'global.passwordLength', this.$store.getters.getMinPwdLength);
+                        return false
+                    }
+                    if (this.form.password !== this.form.password2) {
+                        this.error = this.showLanguage('errors', 'global.passwordMatch');
+                        return false
+                    }
+                }
+                return true
             },
 
             /*
              *  Submit server configuration
              */
             createServer() {
-                if (this.validataServer()) {
-                    this.$store.dispatch('saveServer', this.form);
+                if (this.validateServer()) {
+                    this.$store.dispatch('saveServer', this.form)
                 }
             },
 
@@ -214,15 +233,15 @@
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     setTimeout(() => {
-                        this.completeCreateServer();
-                    }, 200);
+                        this.completeCreateServer()
+                    }, 200)
                 }
                 if (status === 2) {
                     EventBus.$emit('show-success', { notification: this.showLanguage('servers', 'success'), timer: 5000 });
-                    this.createNew = false;
+                    this.createNew = false
                 }
                 if (status === 3) {
-                    EventBus.$emit('show-error', { notification: this.showLanguage('servers', 'error'), timer: 7000 })
+                    EventBus.$emit('show-error', { notification: this.showLanguage('errors', 'servers.createError'), timer: 7000 })
                 }
             },
 
@@ -231,7 +250,7 @@
              */
             activateServer( id ) {
                 if (id) {
-                    this.$store.dispatch('activateServer', id);
+                    this.$store.dispatch('activateServer', id)
                 }
             },
 
@@ -240,7 +259,7 @@
              */
             edit(id) {
                 this.form = this.$store.getters.getServerConfiguration(id);
-                this.editing = !this.editing;
+                this.editing = !this.editing
             },
 
             /*
@@ -248,7 +267,7 @@
              */
             deleteConfig(id) {
                 this.deleteId = id;
-                EventBus.$emit('delete-confirmation', {id: id, element: 'server', notification: this.showLanguage('servers', 'deleteConfirm') });
+                EventBus.$emit('delete-confirmation', {id: id, element: 'server', notification: this.showLanguage('servers', 'deleteConfirm') })
             },
 
             /*
@@ -257,7 +276,7 @@
             deleteConfirmed(id) {
                 if (id === this.deleteId) {
                     this.$store.dispatch('deleteServer', id);
-                    this.handleDeletion();
+                    this.handleDeletion()
                 }
             },
 
@@ -267,23 +286,48 @@
             handleDeletion() {
                 let status = this.$store.getters.getServerDeleteStatus;
                 if (status === 1) {
-                    this.handleDeletion();
+                    this.handleDeletion()
                 }
-                if (status == 2) {
-                    EventBus.$emit('show-success', { notification: this.showLanguage('servers', 'deleteSuccess'), timer: 5000 });
+                if (status === 2) {
+                    EventBus.$emit('show-success', { notification: this.showLanguage('servers', 'deleteSuccess'), timer: 5000 })
                     this.deleteId = null;
                 }
-                if (status == 3) {
-                    EventBus.$emit('show-error', { notification: this.showLanguage('servers', 'deleteFailed'), timer: 7000 });
+                if (status === 3) {
+                    EventBus.$emit('show-error', { notification: this.showLanguage('errors', 'servers.deleteFailed'), timer: 7000 })
                 }
             },
 
             /*
              *  Cancel the deletion
              */
-            deleteCancelled(id) {
-                this.deleteId = null;
-            }
+            deleteCancelled() {
+                this.deleteId = null
+            },
+
+            reset() {
+                this.form = this.setup;
+            },
+
+            cancel() {
+                this.reset();
+                this.createNew = !this.createNew
+            },
+
+            /*
+             *   Show component
+             */
+            showComponent() {
+                // load all servers allocated to the current user
+                this.$store.dispatch( 'loadServers' );
+                this.show = true
+            },
+
+            /*
+             *   Hide component
+             */
+            hideComponent() {
+                this.show = false
+            },
         },
 
         /*

@@ -21,12 +21,14 @@
 
 <template>
     <div class="collection-document" v-show="show && hasDocument">
-        <document-nav @expand="expand($event)" @text="text($event)" v-bind:document="document" v-bind:collection="collection" v-bind:index="index"></document-nav>
+        <document-nav @refresh="refresh" @expand="expand($event)" @text="text($event)" v-bind:document="document" v-bind:collection="collection" v-bind:index="index"></document-nav>
         <div :id="'text_' + index" :class="'doc-data index-' + index" ref="data-document" v-html="getDataByFormat"></div>
         <div :id="'field_' + index" class="doc-text hidden-element" ref="text-document">
             <textarea ref="textbox" rows="7" cols="60" v-on:dblclick="selectAll($event)">{{ getTextByFormat }}</textarea>
         </div>
-        <div class="doc-right-to-top"><span class="pma-link" v-text="showLanguage('document', 'top')"></span></div>
+        <div class="doc-right-to-top">
+            <span class="pma-link" v-text="showLanguage('document', 'top')" @click="$emit('pma-main-panel-scroll', {})"></span>
+        </div>
     </div>
 </template>
 
@@ -65,35 +67,35 @@
             /*
              *  When a format is selected in the Collection nav, this method flips the visible data content
              */
-            getDataByFormat( document ) {
-                if (this.format === 'json') {
+            getDataByFormat() {
+                if (this.format === 'json' && this.document.data) {
                     if ( this.document ) {
-                        return this.document.data;
+                        return this.document.data
                     }
                 }
                 if (this.format === 'array') {
-                    //return this.document.text;
-                    return this.$convObj(this.document.raw).arrayH(); // this.document.text;
+                    return this.$convObj(this.document.raw).arrayH()
                 }
+                return this.document.raw
             },
 
             /*
              *  When a format is selected in the Collection nav, this method flips the textarea content
              */
-            getTextByFormat( document ) {
-                if (this.format === 'json') {
+            getTextByFormat() {
+                if (this.format === 'json' && this.document.text) {
                     if ( this.document ) {
-                        return this.document.text;
+                        return this.document.text
                     }
                 }
                 if (this.format === 'array') {
-                    //return this.document.data;
-                    return this.$convObj(this.document.raw).arrayT(); //this.document.data;
+                    return this.$convObj(this.document.raw).arrayT()
                 }
+                return this.document.raw
             },
 
             hasDocument() {
-                return (this.document != null);
+                return (this.document != null)
             }
         },
 
@@ -182,17 +184,25 @@
              */
             handleDeletion() {
                 let status = this.$store.getters.getDeleteDocumentStatus;
-                if (status == 1) {
+                if (status === 1) {
                     this.handleDeletion();
                 }
-                if (status == 2) {
+                if (status === 2) {
                     EventBus.$emit('show-success', { notification: this.showLanguage('document', 'deleteSuccess'), timer: 5000 });
                     this.show = false;
                 }
-                if (status == 3) {
-                    EventBus.$emit('show-error', { notification: this.showLanguage('document', 'deleteFailed'), timer: 7000 });
+                if (status === 3) {
+                    EventBus.$emit('show-error', { notification: this.showLanguage('errors', 'document.deleteFailed'), timer: 7000 });
                 }
             },
+
+            refresh() {
+                let data = { database: this.collection.databaseName, collection: this.collection.collectionName };
+                this.$store.dispatch('loadCollection', data);
+                setTimeout(function() {
+                    EventBus.$emit('document-inserted' );
+                }, 500);
+            }
         },
 
         mounted() {

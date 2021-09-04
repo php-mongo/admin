@@ -142,7 +142,7 @@
                     this.actionMessage = this.showLanguage('collection', 'propertiesSuccess');
                 }
                 else if (status === 3) {
-                    this.errorMessage = this.showLanguage('collection', 'propertiesError');
+                    this.errorMessage = this.showLanguage('errors', 'collection.propertiesError');
                 }
             },
 

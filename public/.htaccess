@@ -5,6 +5,13 @@
 
     RewriteEngine On
 
+    # Set REQUEST_SCHEME (standard environment variable in Apache 2.4)
+    RewriteCond %{HTTPS} off
+    RewriteRule .* - [E=REQUEST_SCHEME:http]
+
+    RewriteCond %{HTTPS} on
+    RewriteRule .* - [E=REQUEST_SCHEME:https]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

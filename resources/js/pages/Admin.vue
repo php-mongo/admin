@@ -95,7 +95,9 @@
         *   This component triggers the Ads download from the API
         */
         mounted() {
-            this.$store.dispatch( 'loadDatabases' );
+            setTimeout(() => {
+                this.$store.dispatch( 'loadDatabases' );
+            }, 500)
         }
     }
 </script>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      SetupController.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -32,14 +33,19 @@ use App\Http\Requests\StoreControlUser;
 /**
  * Models
  */
+use App\Models\Server;
 use App\Models\User;
+
+/**
+ * Helpers
+ */
+use App\Helpers\UserHelper;
+use App\Helpers\MongoConnectionHelper;
 
 /**
  * Facades
  */
-//use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class SetupController
@@ -53,6 +59,40 @@ class SetupController extends Controller
      * @var string
      */
     protected $redirectTo = '/#/admin';
+
+    /**
+     * @param Collection|null $users
+     * @param Collection|null $Servers
+     * @return bool
+     */
+    private function checkStatus(?Collection $users, ?Collection $Servers): bool
+    {
+        $result = false;
+        foreach ($users as $user) {
+            if ($user->exists && $user->isControlUser()) {
+            //    dd($user->getAttributes());
+                $servers = $user->servers()->where('active', 1)->get();
+                foreach ($servers as $server) {
+                    $attrs = $server->getAttributes();
+                    $result = MongoConnectionHelper::checkConnectionConfig(
+                        $attrs['port'],
+                        $attrs['host'],
+                        $attrs['username'],
+                        $attrs['password']
+                    );
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    private function getMessage(Request $request)
+    {
+        $string = $request->session()->get('status', null);
+        return strpos($string, 'Your password reset request was successful') !== false ?
+            $string : null;
+    }
 
     /**
      * Create a new controller instance.
@@ -69,9 +109,18 @@ class SetupController extends Controller
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function getSetup()
+    public function getSetup(Request $request)
     {
-        return view('public.setup');
+        $success = $this->getMessage($request);
+        //dump($success);
+        //dd($request);
+        return view(
+            'public.setup',
+            [
+                'completed' => $this->checkStatus(User::all(), Server::all()),
+                'success' => $success
+            ]
+        );
     }
 
     /**
@@ -79,23 +128,17 @@ class SetupController extends Controller
      *
      * @param StoreControlUser $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     * @throws \Throwable
      */
     public function saveSetup(StoreControlUser $request)
     {
-        $data = $request->validated();
+        try {
+            $data = $request->validated();
+            UserHelper::generateLoginUser($data);
+            return redirect('/admin');
 
-        // new user
-        $user               = new User();
-        $user->name         = $data['name'];
-        $user->user         = $data['user'];
-        $user->email        = $data['email'];
-        $user->password     = Hash::make($data['password']);
-        $user->control_user = 1;
-        $user->admin_user   = 1;
-        $user->active       = 1;
-
-        $user->save();
-
-        return redirect('/admin');
+        } catch (\Throwable $t) {
+            throw new $t;
+        }
     }
 }

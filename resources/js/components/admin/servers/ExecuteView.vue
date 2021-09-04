@@ -20,7 +20,7 @@
 </style>
 
 <template>
-    <div id="pma-execute-view" class="pma-servers-panel align-left" v-show="show">
+    <div id="pma-execute-view" class="pma-servers-panel align-left" v-if="show">
         <div class="servers-inner">
             <p>Executing JavaScript commands via PHP is now deprecated: PhpMongoAdmin is designed to use MongoDB drivers which no longer supports the use of eval() command.</p>
         </div>

@@ -27,6 +27,12 @@
         .pma-main-inner {
             margin: 0;
             width: calc(100vw - 262px);
+
+            .doc-right-to-top {
+                bottom: 5px;
+                position: absolute;
+                right: 10px;
+            }
         }
     }
 
@@ -92,7 +98,7 @@
 
         computed: {
             watchCollection() {
-                return this.$store.getters.getActiveCollection;
+                return this.$store.getters.getActiveCollection
             }
         },
 
@@ -100,17 +106,17 @@
          *   Defined methods for the component
          */
         methods: {
-            watchLeftNav() {
+            handleLeftNav() {
                 this.expanded = !this.expanded;
                 if (this.expanded === true) {
                     this.$jqf(this.$refs.pmaMainPanel).css('margin-left', '5px');
                     this.$jqf(this.$refs.pmaMainPanel).css('width', '99vw');
-                    this.$jqf(this.$refs.pmaInner).css('width', '100vw');
+                    this.$jqf(this.$refs.pmaInner).css('width', '100vw')
                 }
                 if (this.expanded === false) {
                     this.$jqf(this.$refs.pmaMainPanel).css('margin-left', '245px');
                     this.$jqf(this.$refs.pmaMainPanel).css('width', 'calc(100vw - 262px)');
-                    this.$jqf(this.$refs.pmaInner).css('width', 'calc(100vw - 262px)');
+                    this.$jqf(this.$refs.pmaInner).css('width', 'calc(100vw - 262px)')
                 }
             },
 
@@ -122,11 +128,11 @@
                 if (this.collectionActive === true) {
                     if (scrollPos >= 389 && this.scrolled === false) {
                         this.scrolled = true;
-                        EventBus.$emit('lockCollectionPagination', true);
+                        EventBus.$emit('lockCollectionPagination', true)
                     }
                     if (scrollPos <= 388 && this.scrolled === true) {
                         this.scrolled = false;
-                        EventBus.$emit('lockCollectionPagination', false);
+                        EventBus.$emit('lockCollectionPagination', false)
                     }
                 }
             },
@@ -135,7 +141,18 @@
              *  We have a reference for the activeCollection status
              */
             setActiveCollection() {
-                this.collectionActive = !this.collectionActive;
+                this.collectionActive = !this.collectionActive
+            },
+
+            /*
+             *  Handle scrolling
+             */
+            scrollToTop() {
+                let target = this.$refs.pmaMainPanel;
+                let scrollPos = target.scrollTop;
+                if (scrollPos > 1) {
+                    target.scrollTo(0,0)
+                }
             }
         },
 
@@ -144,17 +161,21 @@
          */
         mounted() {
             EventBus.$on('collapse-left-nav', () => {
-                this.watchLeftNav();
+                this.handleLeftNav()
             });
 
             EventBus.$on('expand-left-nav', () => {
-                this.watchLeftNav();
+                this.handleLeftNav()
             });
+
+            EventBus.$on('pma-main-panel-scroll', () => {
+                this.scrollToTop()
+            })
         },
 
         watch: {
             watchCollection() {
-                this.setActiveCollection();
+                this.setActiveCollection()
             }
         }
     }

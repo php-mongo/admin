@@ -1,11 +1,11 @@
 <?php
-/**
+/*
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
- * @version      data.php 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+ * @version      UnableToDeleteUserException.php 1001 12/8/21, 9:53 pm  Gilbert Rehling $
  * @package      PhpMongoAdmin\resources
- * @subpackage   data.php
+ * @subpackage   UnableToDeleteUserException.php
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
- * @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
+ * @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
  * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
  * @author       Gilbert Rehling:  gilbert@phpmongoadmin.com (www.gilbert-rehling.com)
  *  php-mongo-admin - License conditions:
@@ -16,17 +16,19 @@
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
-/*
-|--------------------------------------------------------------------------
-| Data Language Lines
-|--------------------------------------------------------------------------
-|
-| The following language lines are used within code.
-|
-*/
+namespace App\Exceptions;
 
-return [
+use Exception;
 
-    "setAreaDataMessage" => "Postcode & Suburb already used - please select another"
-
-];
+class UnableToConnectMongoDbException extends Exception
+{
+    /**
+     * Report or log an exception.
+     *
+     * @return string
+     */
+    public function message($msg = 'Unable to connect to the MongoDB database')
+    {
+        return $msg;
+    }
+}

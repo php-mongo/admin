@@ -18,12 +18,7 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
 
-    div.error-notification-container{
-        position: fixed;
-        z-index: 999999;
-        left: 12rem;
-        right: 0;
-        top: 0;
+    div.notification-container{
 
         div.error-notification  {
             background: $white;
@@ -32,7 +27,7 @@
             border-right: 5px solid $errorBorder;
             min-height: 50px;
             line-height: 55px;
-            margin: 2.3rem auto auto auto;
+            margin: 1.1rem auto auto auto;
             min-width: 400px;
             max-width: 920px;
             color: $noticeColor;
@@ -51,7 +46,7 @@
 
 <template>
   <transition name="slide-in-top">
-    <div class="error-notification-container" v-show="show">
+    <div class="notification-container" v-show="show">
       <div class="error-notification">
         <img src="img/error.svg"/> {{ errorMessage }}
       </div>

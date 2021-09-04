@@ -74,12 +74,18 @@
 </style>
 
 <template>
-    <div ref="pmaServerView" id="pma-server-view" class="pma-server-view align-left" v-show="show">
-        <command-line v-bind:commandLine="getCommandLine"></command-line>
-        <connection-card v-bind:connectionCard="getConnection"></connection-card>
-        <web-server v-bind:webServer="getWebServer"></web-server>
-        <directives v-bind:directives="getDirectives"></directives>
-        <build-info v-bind:buildInfo="getBuildInfo"></build-info>
+    <div ref="pmaServerView" id="pma-server-view" class="pma-server-view align-left" v-if="show">
+        <div v-show="getServerLoadStatus === 2">
+            <command-line v-bind:commandLine="getCommandLine"></command-line>
+            <connection-card v-bind:connectionCard="getConnection"></connection-card>
+            <web-server v-bind:webServer="getWebServer"></web-server>
+            <directives v-bind:directives="getDirectives"></directives>
+            <build-info v-bind:buildInfo="getBuildInfo"></build-info>
+        </div>
+        <div class="float-center text-center" v-show="getServerLoadStatus !== 2">
+            <p v-text="showLanguage('global', 'loadingApplication')"></p>
+            <p><img src="img/ajax-loader-60x60.gif" :alt="showLanguage('global', 'loading')"></p>
+        </div>
     </div>
 </template>
 
@@ -128,27 +134,34 @@
              *  Because of the complex variations of each child component it seemed a better idea to call each object individually
              */
             getBuildInfo() {
-                return this.$store.getters.getBuildInfo;
+                return this.$store.getters.getBuildInfo
             },
 
             getCommandLine() {
-                return this.$store.getters.getCommandLine;
+                return this.$store.getters.getCommandLine
             },
 
             getConnection() {
-                return this.$store.getters.getConnection;
+                return this.$store.getters.getConnection
             },
 
             getDirectives() {
-                return this.$store.getters.getDirectives;
+                return this.$store.getters.getDirectives
             },
 
             getWebServer() {
-                return this.$store.getters.getWebServer;
+                return this.$store.getters.getWebServer
             },
 
             getComposerData() {
-                return this.$store.getters.getComposerData;
+                return this.$store.getters.getComposerData
+            },
+
+            /*
+             *  Do stop unwanted display of the container until loading is finished
+             */
+            getServerLoadStatus() {
+                return this.$store.getters.getServerLoadStatus
             }
         },
 
@@ -157,27 +170,34 @@
          */
         methods: {
             /*
+            *   Calls the Translation and Language service
+            */
+            showLanguage( context, key ) {
+                return this.$store.getters.getLanguageString( context, key )
+            },
+
+            watchLeftNav() {
+                this.expanded = !this.expanded;
+                if (this.expanded === true) {
+                    this.$jqf(this.$refs.pmaServerView).css('width', '93vw')
+                }
+                if (this.expanded === false) {
+                    this.$jqf(this.$refs.pmaServerView).css('width', 'calc(93vw - 262px)')
+                }
+            },
+
+            /*
              *   Show component
              */
             showComponent() {
-                this.show = true;
+                this.show = true
             },
 
             /*
              *   Hide component
              */
             hideComponent() {
-                this.show = false;
-            },
-
-            watchLeftNav() {
-                this.expanded = !this.expanded;
-                if (this.expanded === true) {
-                    this.$jqf(this.$refs.pmaServerView).css('width', '93vw');
-                }
-                if (this.expanded === false) {
-                    this.$jqf(this.$refs.pmaServerView).css('width', 'calc(93vw - 262px)');
-                }
+                this.show = false
             },
         },
 
@@ -185,30 +205,30 @@
          *    get on ur bikes and ride !!
          */
         mounted() {
-            // load al the default view server data
+            // load all the default view server data
             this.$store.dispatch( 'loadServer' );
 
             /*
              *    Hide this component
              */
             EventBus.$on('hide-panels', ( ) => {
-                this.hideComponent();
+                this.hideComponent()
             });
 
             /*
             *    Show this component
             */
             EventBus.$on('show-server', () => {
-                this.showComponent();
+                this.showComponent()
             });
 
             EventBus.$on('collapse-left-nav', () => {
-                this.watchLeftNav();
+                this.watchLeftNav()
             });
 
             EventBus.$on('expand-left-nav', () => {
-                this.watchLeftNav();
-            });
+                this.watchLeftNav()
+            })
         }
     }
 </script>

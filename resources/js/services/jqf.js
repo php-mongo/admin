@@ -40,65 +40,96 @@ export default function makeJqf() {
      * Returns a set of methods for manipulating classes and actions on DOM elements
      */
     return function jqf(element) {
-        // nearly every method here will require the 'list' reference
-        let list = element.classList;
+        // many methods here will require the 'list' reference
+        let list = element ? element.classList : null, text;
 
         return {
             toggle: function (c) {
                 list.toggle(c);
-                return this;
+                return this
             },
             add: function (c) {
                 list.add(c);
-                return this;
+                return this
             },
             remove: function (c) {
                 list.remove(c);
-                return this;
+                return this
             },
             replace: function (array) {
                 list.remove(array[0]);
                 list.add(array[1]);
-                return this;
+                return this
             },
             hasClass: function (c) {
                 return list.forEach(function(value) {
                     if (value === c) {
-                        return true;
+                        return true
                     }
                 });
             },
             text: function (t) {
                 element.innerText = t;
+                return this
             },
-            html: function (h) {
+            html: function (h, nl2br) {
+                if (nl2br) {
+                    h = this.nl2br(h);
+                }
                 element.innerHTML = h;
+                return this
             },
             focus: function () {
                 element.focus();
+                return this
             },
             show: function () {
                 element.style.display = 'inline-block';
+                return this
             },
             hide: function () {
                 element.style.display = 'none';
+                return this
             },
             css: function (e, v) {
                 element.style[e] = v;
+                return this
             },
             value: function () {
                 if (element.value) {
-                    return element.value;
+                    return element.value
                 }
-                return element.options[element.selectedIndex].value;
+                return element.options[element.selectedIndex].value
             },
             readonly: function (s) {
                 if (s === true) {
-                    element.readonly = 'readonly';
+                    element.readonly = 'readonly'
                 }
                 else {
-                    element.readonly = false;
+                    element.readonly = false
                 }
+                return this
+            },
+            nl2br: function (str) {
+                return str ? str.replaceAll("\n", "<br>") : '';
+            },
+            humanReadable: function(bytes, precision = 3) {
+                if (bytes === 0) {
+                    return 0;
+                }
+                if (bytes < 1024) {
+                    return Math.round(bytes, 2) + "B";
+                }
+                if (bytes < 1024 * 1024) {
+                    return Math.round(bytes/1024, precision) + "k";
+                }
+                if (bytes < 1024 * 1024 * 1024) {
+                    return Math.round(bytes/1024/1024, precision) + "m";
+                }
+                if (bytes < 1024 * 1024 * 1024 * 1024) {
+                    return Math.round(bytes/1024/1024/1024, precision) + "g";
+                }
+                return bytes
             }
         }
     }

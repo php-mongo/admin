@@ -145,7 +145,7 @@
             *   Determines if the user is a member
             */
             isMember() {
-                var isMember = this.$cookie.get('app-member');
+                var isMember = this.$cookies.get('app-member');
                 return ((isMember && isMember.length >= 3) || this.userLoadStatus);
             },
 
@@ -210,7 +210,7 @@
             * get the country name of the user
             */
             getCountryNameValue() {
-                this.country = this.$store.getters.getCountryName; // this.$cookie.get('my-country');
+                this.country = this.$store.getters.getCountryName; // this.$cookies.get('my-country');
             }
         },
 

@@ -33,7 +33,7 @@ class HighlightDocument
     /**
      * @var
      */
-    private $_render;
+    private $render;
 
     /**
      * @var array
@@ -43,69 +43,26 @@ class HighlightDocument
     /**
      * @return mixed
      */
-    private function _getRender()
+    private function getRender()
     {
-        return $this->_render;
+        return $this->render;
     }
 
     /**
      * @param mixed $render
      */
-    private function _setRender($render): void
+    private function setRender($render): void
     {
-        $this->_render = $render;
-    }
-
-    /**
-     * HighlightDocument constructor.
-     * @param string $render
-     */
-    public function __construct(string $render = 'default')
-    {
-        $this->_setRender( $render );
-    }
-
-    /**
-     * Export var as string then highlight it.
-     *
-     * @param   mixed       $var        variable to be exported
-     * @param   string      $format     data format, array|json
-     * @param   boolean     $label      if add label to field
-     * @return  string
-     */
-    public function highlight( $var, $format = "array", $label = false)
-    {
-        $json = json_encode( $var );
-        $output = MongoHelper::json_format_html( $json);
-
-        // set the Object ID
-        $output = preg_replace_callback("/(['\"])id\\.(.+)\\.id(['\"])/U", function($match) {
-            return $this->_setObjectId( $match );
-
-        }, $output);
-
-        // set all 'key' | 'field' wrappers
-        $output = preg_replace_callback("/(['\"])key\\.(.+)\\.key(['\"])/U", function($match) {
-            return $this->_setKeyWrapper( $match );
-
-        }, $output);
-
-        // set all 'value' wrappers - perform minor content analysis
-        $output = preg_replace_callback("/(['\"])value\\.(.+)\\.value(['\"])/U", function($match) {
-            return $this->_analyseValue( $match );
-
-        }, $output);
-
-        return $output;
+        $this->render = $render;
     }
 
     /**
      * Set an Object ID
      *
-     * @param array $arr
-     * @return string
+     * @param   array $arr
+     * @return  string
      */
-    private function _setObjectId(array $arr )
+    private function setObjectId(array $arr): string
     {
         $id = 'n/a';
         if (isset($arr[2]) && false === strpos($arr[2], '"')) {
@@ -113,34 +70,34 @@ class HighlightDocument
         }
         return '<span class="string" style="color: blue">ObjectId</span>' .
             '<span style="color: blue">(</span>' .
-            $this->_wrapQuotes( $id ) .
+            $this->wrapQuotes($id) .
             '<span style="color: blue">)</span>';
     }
 
     /**
      * Wrap a key value
      *
-     * @param array $arr
-     * @return string
+     * @param   array   $arr
+     * @return  string
      */
-    private function _setKeyWrapper( array $arr)
+    private function setKeyWrapper(array $arr): string
     {
         $key = 'n/a';
         if (isset($arr[2]) && false === strpos($arr[2], '"')) {
             $key = $arr[2];
         }
         return '<span class="field" data-field="' . $key . '">' .
-            $this->_wrapQuotes( $key ) .
+            $this->wrapQuotes($key) .
             '</span>';
     }
 
     /**
      * Analyse a value element
      *
-     * @param array $arr
-     * @return string
+     * @param   array $arr
+     * @return  string
      */
-    private function _analyseValue(array $arr)
+    private function analyseValue(array $arr): string
     {
         $value = 'n/a';
         if (isset($arr[2]) && false === strpos($arr[2], '"')) {
@@ -152,47 +109,48 @@ class HighlightDocument
                     return '<span class="string" style="color: blue">NumberInt</span>' .
                         '<span style="color: blue">(</span>' .
                         '<span class="value">' .
-                        $this->_wrapQuotes( $value ) .
+                        $this->wrapQuotes($value) .
                         '</span>' .
                         '<span style="color: blue">)</span>';
                 default:
-                    return $this->_wrapValue( $value );
+                    return $this->wrapValue($value);
             }
         }
         // default for the moment
-        return $this->_wrapValue( $value );
+        return $this->wrapValue($value);
     }
 
     /**
-     * Wrap a value
+     * Wrap a value with value class span
      *
-     * @param $value
-     * @return string
+     * @param   $value
+     * @return  string
      */
-    private function _wrapValue( $value)
+    private function wrapValue($value): string
     {
         return '<span class="value">' .
-            $this->_wrapQuotes( $value ) .
+            $this->wrapQuotes($value) .
             '</span>';
     }
 
     /**
      * Wrap with quotes
      *
-     * @param $value
-     * @return string
+     * @param   mixed $value
+     * @return  string
      */
-    private function _wrapQuotes( $value ) {
+    private function wrapQuotes($value): string
+    {
         return '"' . $value . '"';
     }
 
     /**
      * Wrap a bracket
      *
-     * @param $char
-     * @return string
+     * @param   mixed   $char
+     * @return  string
      */
-    private function _wrapBracket( $char )
+    private function wrapBracket($char): string
     {
         return '<span style="color: green">' . $char . '</span>';
     }
@@ -200,64 +158,116 @@ class HighlightDocument
     /**
      * Wrap a colon
      *
-     * @param bool $input
-     * @return string
+     * @param   string|null $input
+     * @return  string
      */
-    private function _wrapColon( $input = false )
+    private function wrapColon(?string $input): string
     {
-        return $input . '<span style="color: green">:</span>';
+        return $input ? $input . '<span style="color: green">:</span>' : '<span style="color: green">:</span>';
     }
 
     /**
-     * Default value wrap method
+     * Default value wrap method with fixed color
      *
-     * @param $value
-     * @return string
+     * @param   $value
+     * @return  string
      */
-    private function _wrapValueDefault( $value ) {
+    private function wrapValueDefault($value)
+    {
         return '<span class="value" style="color: #DD0000">' . $value . '</span>';
     }
 
     /**
-     * Wrap value with red
+     * Wrap value with red class
      *
-     * @param $value
-     * @return string
+     * @param   mixed   $value
+     * @return  string
      */
-    private function _wrapValueRed( $value ) {
+    private function wrapValueRed($value)
+    {
         return '<span class="value" style="color: red">' . $value . '</span>';
     }
 
     /**
      * Add a comma
      *
-     * @param bool $input
-     * @return string
+     * @param   string|null $input
+     * @return  string
      */
-    private function _addComma( $input = false)
+    private function addComma(?string $input)
     {
-        return $input . ",";
+        return $input ? $input . "," : ",";
     }
 
     /**
      * Add a break
      *
-     * @param bool $input
-     * @return string
+     * @param   string|null $input
+     * @return  string
      */
-    private function _addBr( $input = false )
+    private function addBr(?string $input)
     {
-        return $input . '<br>';
+        return $input ? $input . '<br>' : '<br>';
     }
 
     /**
      * Add a tab
      *
-     * @param bool $input
-     * @return string
+     * @param   string|null $input
+     * @return  string
      */
-    private function _addTab( $input = false )
+    private function addTab(?string $input)
     {
         return $input . '&nbsp;&nbsp;';
+    }
+
+    /**
+     * HighlightDocument constructor.
+     * @param string $render
+     */
+    public function __construct(string $render = 'default')
+    {
+        $this->setRender($render);
+    }
+
+    /**
+     * Export var as string then highlight it.
+     *
+     * @param   mixed       $var        variable to be exported
+     * @param   string      $format     data format, array|json
+     * @param   boolean     $label      if add label to field
+     * @return  string
+     */
+    public function highlight($var, string $format = "array", bool $label = false): string
+    {
+        $json = json_encode($var);
+        $output = MongoHelper::jsonFormatHtml($json);
+
+        // set the Object ID
+        $output = preg_replace_callback(
+            "/(['\"])id\\.(.+)\\.id(['\"])/U",
+            function ($match) {
+                return $this->setObjectId($match);
+            },
+            $output
+        );
+
+        // set all 'key' | 'field' wrappers
+        $output = preg_replace_callback(
+            "/(['\"])key\\.(.+)\\.key(['\"])/U",
+            function ($match) {
+                return $this->setKeyWrapper($match);
+            },
+            $output
+        );
+
+        // set all 'value' wrappers - perform minor content analysis
+        return preg_replace_callback(
+            "/(['\"])value\\.(.+)\\.value(['\"])/U",
+            function ($match) {
+                return $this->analyseValue($match);
+            },
+            $output
+        );
     }
 }

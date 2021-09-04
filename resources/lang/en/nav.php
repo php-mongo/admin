@@ -40,7 +40,7 @@ return [
     "execute" => "Execute",
     "expand" => "Click to expand navigation",
     "language" => "Select Language",
-    'latest' => 'Latest',
+    "latest" => "Latest",
     "login" => "Login",
     "logout" => "Logout",
     "master" => "Master|Slave",
