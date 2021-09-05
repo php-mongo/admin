@@ -322,20 +322,7 @@
                 <p>
                     <span class="fieldBlock">
                         <label for="user" class="col-md-4 col-form-label text-md-right" v-text="showLanguage('login', 'username')"></label>
-<<<<<<< HEAD
                         <input readonly="readonly" id="user" type="text" class="form-control" ref="user" name="user" v-model="credentials.user" required autocomplete="user" v-on:blur="checkUser()">
-=======
-                        <input
-                            id="user"
-                            type="text"
-                            class="form-control"
-                            ref="user"
-                            name="user"
-                            required autocomplete="user"
-                            v-model="credentials.user"
-                            v-on:blur="checkUser()"
-                        >
->>>>>>> master
                     </span>
                     <span class="help-block" id="userInfo" ref="userInfo"></span>
                 </p>
