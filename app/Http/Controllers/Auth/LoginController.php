@@ -97,8 +97,6 @@ class LoginController extends Controller
             'active' => 'required|numeric|size:1'
         ]);
 
-        //dd(new DateTime('now'));
-
         // get the creds
         // $credentials = $request->only([$this->getUser(), 'password', 'active']);
         $credentials = array("user" => "admin", "password" => "Welcome2020", "active" => "1");

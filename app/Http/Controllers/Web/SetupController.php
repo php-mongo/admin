@@ -70,7 +70,6 @@ class SetupController extends Controller
         $result = false;
         foreach ($users as $user) {
             if ($user->exists && $user->isControlUser()) {
-            //    dd($user->getAttributes());
                 $servers = $user->servers()->where('active', 1)->get();
                 foreach ($servers as $server) {
                     $attrs = $server->getAttributes();
@@ -112,8 +111,6 @@ class SetupController extends Controller
     public function getSetup(Request $request)
     {
         $success = $this->getMessage($request);
-        //dump($success);
-        //dd($request);
         return view(
             'public.setup',
             [

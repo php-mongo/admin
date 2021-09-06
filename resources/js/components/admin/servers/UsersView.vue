@@ -192,12 +192,12 @@
                     </label>
                     <span v-if="createNew === true">
                         <role-selector
-                            @updateRole="updateRole($event, index)"
+                            @updateRole="updateRole($event, (index-1))"
                             @removeRole="removeRole"
                             @addRole="addRole"
                             v-show="createNew"
                             v-for="index in roleCount"
-                            :key="index"
+                            :key="index-1"
                         ></role-selector>
                     </span>
                     <span v-if="editing === true">
@@ -506,6 +506,7 @@
              *  Makes sure roles are not added twice for a new user
              */
             updateRole(role, index) {
+                console.log("received index: " + index);
                 // ToDo:  run test to ensure uniformity and relativity of roles being added
                 function match(r) {
                     return r === role

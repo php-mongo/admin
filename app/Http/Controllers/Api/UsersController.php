@@ -107,7 +107,7 @@ class UsersController extends Controller
     {
         $env     = config('app.env');
         $setting = explode(",", config('app.deny_env_add_users'));
-        return empty($setting) || in_array($env, $setting);
+        return empty($setting) || !in_array($env, $setting);
     }
 
     /**
@@ -154,7 +154,6 @@ class UsersController extends Controller
             }
             if ($this->user && $this->canAdministerUsers() && isset($fetch, $type, $id)) {
                 // todo: set this up to fetch users for editing
-                dd($this->user);
             }
             return response()->error('failed', array( 'error' => 'Unauthorized'), 401);
 
