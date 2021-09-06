@@ -413,7 +413,7 @@
                 credentials: {
                     active: "1", // ensures that only active users can login
                     host: 'localhost',
-                    user: 'admin',
+                    user: 'admin1',
                     password: 'good-guess',
                     db: null,
                 },

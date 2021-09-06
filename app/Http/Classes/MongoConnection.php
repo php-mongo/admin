@@ -338,9 +338,11 @@ class MongoConnection
             // demo site only
             $server = array('host' => 'localhost',
                 'port' => 27017, 'username' =>  config('app.dbUser') , 'password' => config('app.dbPasswd'));
+            $this->userName = config('app.dbUser');
         }
 
         $this->setServer($server);
+        $this->prepareLocalUser();
     }
 
     /**
@@ -390,7 +392,8 @@ class MongoConnection
     public function connectClientDb(string $db): MongoDB\Database
     {
         $prep = $this->prepareConnection();
-        return (new MongoDB\Client($prep['uri'], $prep['options']))->$db;
+        $clientDb = (new MongoDB\Client($prep['uri'], $prep['options']))->$db;
+        return $clientDb;
     }
 
     /**
