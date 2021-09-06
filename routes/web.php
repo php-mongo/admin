@@ -74,7 +74,6 @@ Route::get('js/lang.js', function() {
 | Localisation assistance - getting the accept language value from the browser
 */
 Route::get('js/acceptLang.js', function() {
-    //dd($_SERVER);
     header('Content-Type: text/javascript');
     $string = $_SERVER['HTTP_ACCEPT_LANGUAGE'];
     echo explode(";", explode(",", $string)[1])[0];

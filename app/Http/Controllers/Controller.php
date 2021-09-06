@@ -80,7 +80,6 @@ class Controller extends BaseController
     protected function canAdministerUsers(?string $database = 'admin'): bool
     {
         $attr = $this->getAttributes();
-        //dd($attr);
         return ((int)$attr['control_user'] === 1 ||
             (int)$attr['admin_user'] === 1 ||
             $this->mongo->hasRootRole() ||
