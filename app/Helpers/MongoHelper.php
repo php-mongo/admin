@@ -179,8 +179,6 @@ class MongoHelper
                 "updateUser" => $data['user']
             );
 
-            //dd($data['updated']);
-
             if (self::findUpdateKey($data['updated'], 'password')) {
                 $command['pwd'] = $data['password'];
             }
@@ -207,8 +205,6 @@ class MongoHelper
                 }
                 $command['roles'] = $roles;
             }
-
-        //    dd($command);
 
             /*@var MongoDB\Driver\Cursor $result */
             /** @var MongoDB\Model\BSONDocument $result */

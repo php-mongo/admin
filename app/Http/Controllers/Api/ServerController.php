@@ -448,8 +448,6 @@ class ServerController extends Controller
                     new MongoDb\Driver\Command($command)
                 );
 
-                //dd($results->toArray()[0]);
-
                 return response()->success('success', array('status' => $results->toArray()[0]));
             }
             else {
@@ -494,11 +492,10 @@ class ServerController extends Controller
             );
 
             $results = $results->toArray()[0];
-            //dd($results->inprog[0]);
 
             return response()->success('success', array('processes' => array("inprog" => $results->inprog, "ok" => $results->ok)));
-        }
-        catch (\Exception $e) {
+
+        } catch (\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
 
         } catch (MongoDB\Driver\Exception\Exception $e) {

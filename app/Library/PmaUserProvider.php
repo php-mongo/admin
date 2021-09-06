@@ -68,7 +68,6 @@ class PmaUserProvider implements UserProvider
      */
     public function retrieveByCredentials(array $credentials): ?Authenticatable
     {
-    //    dd($credentials);
         $user = User::where($credentials)->get();
         if ($user->exists) {
             return $user;

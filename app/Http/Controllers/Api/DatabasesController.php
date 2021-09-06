@@ -229,7 +229,6 @@ class DatabasesController extends Controller
             $databases = $this->client->listDatabases();
             $arr = [];
             foreach ($databases as $database) {
-                //dd($database);
                 $arr[] = array(
                     'name' => $database->getName(),
                     'sizeOnDisk' => $database->getSizeOnDisk(),
