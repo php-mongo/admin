@@ -1047,7 +1047,7 @@ class CollectionController extends Controller
                         $collection = $this->mongo->connectClientCollection($database, $name);
                         /** @var MongoDB\Model\BSONDocument $result */
                         $result = $collection->drop();
-dd($result);
+
                         // ToDo: !! getting an odd error from front-end - request is sent twice
                         if ($result->errmsg) {
                             return response()->error('failed', array('message' => $result->errmsg));

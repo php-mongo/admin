@@ -614,8 +614,12 @@
 
             handleRememberMe() {
                 this.cookieCleared = false;
-                this.credentials.user = this.$cookies.get('pma-member');
-                this.checkUser()
+                let user = this.$cookies.get('pma-member');
+                if (user) {
+                    // only do this is user exists
+                    this.credentials.user = user;
+                    this.checkUser()
+                }
             },
 
             forgetUsername() {

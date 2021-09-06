@@ -36,19 +36,19 @@
             <option value="" v-text="showLanguage('users', 'roleSelect')"></option>
             <option
                 value="readAnyDatabase"
-                v-text="showLanguage('users', 'roleReadonly')"
+                v-text="showLanguage('users', 'roleReadonlyAny')"
             ></option>
             <option
                 value="readWriteAnyDatabase"
-                v-text="showLanguage('users', 'roleReadWrite')"
+                v-text="showLanguage('users', 'roleReadWriteAny')"
             ></option>
             <option
                 value="dbAdminAnyDatabase"
-                v-text="showLanguage('users', 'roleDbAdmin')"
+                v-text="showLanguage('users', 'roleDbAdminAny')"
             ></option>
             <option
                 value="userAdminAnyDatabase"
-                v-text="showLanguage('users', 'roleUserAdmin')"
+                v-text="showLanguage('users', 'roleUserAdminAny')"
             ></option>
         </select>
         <button
