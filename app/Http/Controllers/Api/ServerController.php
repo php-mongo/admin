@@ -362,12 +362,12 @@ class ServerController extends Controller
         /** @var User $user */
         // Set the default DB
         // ToDo: admin wont work for non ROOT users
-        $this->db    = 'admin';
+        /*$this->db    = 'admin';
         $this->user  = auth()->guard('api')->user();
         $this->mongo = new Mongo($this->user);
         if ($this->mongo->checkConfig()) {
             $this->database = $this->mongo->connectClientDb($this->db);
-        }
+        }*/
 
         // ToDo: for now just use the config value = these need to be reading the 'current server' once we implement server configs
         // ToDo: Server configs implemented - keeping these here for reference...
@@ -388,6 +388,16 @@ class ServerController extends Controller
      */
     public function getServer(): Response
     {
+        /** @var User $user */
+        // Set the default DB
+        // ToDo: admin wont work for non ROOT users
+        $this->db    = 'admin';
+        $this->user  = auth()->guard('api')->user();
+        $this->mongo = new Mongo($this->user);
+        if ($this->mongo->checkConfig()) {
+            $this->database = $this->mongo->connectClientDb($this->db);
+        }
+        dd($this->user);
         // get the server data
         $arr = [];
 
@@ -417,7 +427,7 @@ class ServerController extends Controller
         $arr['composer']    = $this->composer;
         $arr['errors']      = $this->getErrorMessage();
 
-        return response()->success('success', array('server' => $arr));
+        //return response()->success('success', array('server' => $arr));
     }
 
     /**

@@ -303,9 +303,11 @@ class MongoConnection
      */
     public function __construct(?User $user)
     {
-        if (!$user) {
+        if (empty($user->exists)) {
             return false;
         }
+
+    //    dd($user);
 
         /** @var Server $server */
         $servers = $user->servers()->where('active', 1)->get();
