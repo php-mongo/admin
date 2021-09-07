@@ -307,8 +307,6 @@ class MongoConnection
             return false;
         }
 
-    //    dd($user);
-
         /** @var Server $server */
         $servers = $user->servers()->where('active', 1)->get();
 

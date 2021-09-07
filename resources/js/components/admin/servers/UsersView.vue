@@ -769,7 +769,9 @@
                         errors.user[0] :
                         errors.message ?
                             errors.message :
-                            this.showLanguage('users', 'processing');
+                            errors.error ?
+                                errors.error :
+                                this.showLanguage('users', 'processing');
 
                     setTimeout( () =>{
                         this.clearMessages(0)

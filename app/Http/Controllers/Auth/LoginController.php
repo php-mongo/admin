@@ -26,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
@@ -109,7 +110,7 @@ class LoginController extends Controller
 
         // check the creds
         if (!$token = auth()->attempt($credentials)) {
-            $user = User::where('user', $credentials['user'])->get();
+            $user = User::where('user', $credentials['user'])->get()[0];
             $user = isset($user[0]) > 0 ? $user[0]->getAttributes() : array('active' => null);
             if ($user['active'] === "0") {
                 Log::channel('auth')->info('Login attempted on inactive account: ', ['user' => $credentials['user']]);

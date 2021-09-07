@@ -163,7 +163,7 @@ class DatabasesController extends Controller
             return true;
         }
         // still here??
-        if (!in_array($dbn, $this->excluded, true)) {
+        if (!in_array($dbn, $this->excludedDemo, true)) {
             return true;
         }
         return false;
@@ -224,6 +224,7 @@ class DatabasesController extends Controller
         }
         catch (\Exception $e) {
             $this->setErrorMessage($e->getMessage());
+            return [];
         }
     }
 
