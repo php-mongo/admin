@@ -16,7 +16,33 @@
   -->
 
 <style lang="scss">
-    /* @import '~@/abstracts/_variables.scss'; */
+    @import '~@/abstracts/_variables.scss';
+    .servers-inner {
+        p.field {
+            span.info-text {
+                display: inline-block;
+                text-align: left;
+            }
+        }
+        .form-error {
+            display: inline-block;
+        }
+        .bordered {
+            tr, th, td {
+                &:hover {
+                    background-color: $black;
+                    color: $lightGrey;
+                }
+            }
+        }
+        table {
+            th.server-uri {
+                padding: 7px 4px !important;
+                font-size: 0.8rem !important;
+            }
+        }
+    }
+
 </style>
 
 <template>
@@ -26,11 +52,13 @@
                 <h3 v-text="showLanguage('servers', 'title')"></h3>
                 <p v-show="!getServersCount">
                     <span v-text="showLanguage('servers', 'none')"></span>
-                    <span class="pma-link" v-on:click="setupServer" v-text="showLanguage('servers', 'createFirst')"></span>
+                    <span class="pma-link" v-on:click="setupServer"
+                          v-text="showLanguage('servers', 'createFirst')"></span>
                 </p>
                 <p v-show="getServersCount">
                     <span v-text="showLanguage('servers', 'add')"></span>
-                    <span class="pma-link" v-on:click="setupServer" v-text="showLanguage('servers', 'addNew')"></span>
+                    <span class="pma-link" v-on:click="setupServer"
+                          v-text="showLanguage('servers', 'addNew')"></span>
                 </p>
                 <p v-show="message">{{ message }}</p>
             </div>
@@ -38,36 +66,111 @@
                 <p class="form-error" v-show="error">{{ error }}</p>
                 <p class="field">
                     <label class="input-group-label input">
-                        <span v-text="showLanguage('servers', 'host')"></span>: <input v-model="form.host" type="text" >
+                        <span v-text="showLanguage('servers', 'mongoCloud')"></span>:
+                        <input
+                            type="checkbox"
+                            class="checkbox u-pull-left"
+                            v-model="form.mongo_cloud"
+                            v-on:click="updateConnection"
+                        >
                     </label>
                 </p>
                 <p class="field">
                     <label class="input-group-label input">
-                        <span v-text="showLanguage('servers', 'port')"></span>: <input v-model="form.port" type="text" >
+                        <span v-text="showLanguage('servers', 'host')"></span>:
+                        <input
+                            type="text"
+                            v-model="form.host"
+                            :placeholder="getHostPlaceholder"
+                            v-on:focus="hostHelp = true"
+                            v-on:blur="hostHelp = false"
+                            v-on:keyup="updateConnection"
+                        >
+                    </label>
+                    <span class="text-info info-text" v-show="hostHelp" v-text="showLanguage('servers', 'hostHelp')"></span>
+                </p>
+                <p class="field">
+                    <label class="input-group-label input">
+                        <span v-text="showLanguage('servers', 'port')"></span>:
+                        <input
+                            type="text"
+                            v-model="form.port"
+                            :placeholder="showLanguage('servers', 'portPlaceholder')"
+                            v-on:keyup="updateConnection"
+                        >
                     </label>
                 </p>
                 <p class="field">
                     <label class="input-group-label input">
-                        <span v-text="showLanguage('servers', 'username')"></span>: <input v-model="form.username" type="text" ></label>
-                </p>
-                <p class="field">
-                    <label class="input-group-label input">
-                        <span v-text="showLanguage('servers', 'password')"></span>: <input v-model="form.password" type="password" ></label>
-                </p>
-                <p class="field">
-                    <label class="input-group-label input">
-                        <span v-text="showLanguage('servers', 'confirm')"></span>: <input v-model="form.password2" type="password" ></label>
-                </p>
-                <p class="field">
-                    <label class="input-group-label input">
-                        <span v-text="showLanguage('servers', 'active')"></span>: <input class="checkbox u-pull-left" v-model="form.active" type="checkbox" >
+                        <span v-text="showLanguage('servers', 'username')"></span>:
+                        <input
+                            type="text"
+                            v-model="form.username"
+                            :placeholder="showLanguage('servers', 'usernamePlaceholder')"
+                            v-on:keyup="updateConnection"
+                        >
                     </label>
                 </p>
                 <p class="field">
-                    <button class="button" type="submit" v-on:click="createServer" v-text="showLanguage('servers', 'createButton')" v-show="createNew"></button>
-                    <button class="button" type="submit" v-on:click="createServer" v-text="showLanguage('servers', 'updateButton')" v-show="editing"></button>
-                    <button class="button warning" @click="reset" v-text="showLanguage('global', 'reset')"></button>
-                    <button class="button warning" @click="cancel" v-text="showLanguage('global', 'cancel')"></button>
+                    <label class="input-group-label input">
+                        <span v-text="showLanguage('servers', 'password')"></span>:
+                        <input
+                            type="password"
+                            v-model="form.password"
+                            :placeholder="showLanguage('servers', 'passwordPlaceholder')"
+                            v-on:keyup="updateConnection"
+                        >
+                    </label>
+                </p>
+                <p class="field">
+                    <label class="input-group-label input">
+                        <span v-text="showLanguage('servers', 'confirm')"></span>:
+                        <input
+                            type="password"
+                            v-model="form.password2"
+                            :placeholder="showLanguage('servers', 'confirmPlaceholder')"
+                        >
+                    </label>
+                </p>
+                <p class="field" v-show="this.form.mongo_cloud === true">
+                    <label class="input-group-label input">
+                        <span v-text="showLanguage('servers', 'mongoCloudDb')"></span>:
+                        <input
+                            type="text"
+                            v-model="form.mongo_cloud_database"
+                            :placeholder="showLanguage('servers', 'mongoCloudDbPlaceholder')"
+                            v-on:keyup="updateConnection"
+                        >
+
+                    </label>
+                    <span class="text-info info-text"
+                          v-text="showLanguage('servers', 'mongoCloudDbInfo')"
+                    ></span>
+                </p>
+                <p class="field">
+                    <label class="input-group-label input">
+                        <span v-text="showLanguage('servers', 'active')"></span>:
+                        <input
+                            type="checkbox"
+                            class="checkbox u-pull-left"
+                            v-model="form.active"
+                        >
+                    </label>
+                </p>
+                <p class="field">
+                    <span v-text="showConnection"></span>
+                </p>
+                <p class="field">
+                    <button class="button" type="submit" v-on:click="createServer"
+                            v-text="showLanguage('servers', 'createButton')"
+                            v-show="createNew"></button>
+                    <button class="button" type="submit" v-on:click="updateServer"
+                            v-text="showLanguage('servers', 'updateButton')"
+                            v-show="editing"></button>
+                    <button class="button warning" @click="reset"
+                            v-text="showLanguage('global', 'reset')"></button>
+                    <button class="button warning" @click="cancel"
+                            v-text="showLanguage('global', 'cancel')"></button>
                 </p>
             </div>
             <server-config
@@ -76,6 +179,7 @@
                 @delete="deleteConfig($event)"
                 v-for="(server, index) in getServers"
                 :key="index"
+                v-show="!createNew && !editing"
                 v-bind:server="server"
                 v-bind:total="getTotal"
             ></server-config>
@@ -109,19 +213,23 @@
          */
         data() {
             return {
+                connection: null,
                 createNew: false,
                 deleteId: null,
                 editing: false,
                 error: null,
                 form: {
+                    active: null,
                     host: null,
-                    port: 27017,
-                    username: null,
+                    mongo_cloud: false,
+                    mongo_cloud_database: '',
                     password: null,
                     password2: null,
-                    active: null
+                    port: 27017,
+                    username: '',
                 },
                 hostConfigs: [],
+                hostHelp: null,
                 index: 0,
                 limit: 55,
                 message: null,
@@ -129,12 +237,14 @@
                 server: {},
                 servers: null,
                 setup: {
+                    active: 0,
                     host: null,
-                    port: 27017,
-                    username: null,
+                    mongo_cloud: false,
+                    mongo_cloud_database: '',
                     password: null,
                     password2: null,
-                    active: 0
+                    username: '',
+                    port: 27017,
                 },
             }
         },
@@ -150,6 +260,9 @@
                 return this.$store.getters.getServers
             },
 
+            /*
+             *  Track the total for this user
+             */
             getTotal() {
                 return this.$store.getters.getServersCount
             },
@@ -159,6 +272,22 @@
              */
             getServersCount() {
                 return (this.$store.getters.getServersCount >= 1)
+            },
+
+            /*
+             *  Dynamic placeholder for host field
+             */
+            getHostPlaceholder(){
+                return this.form.mongo_cloud === true ?
+                    this.showLanguage('servers', 'hostMongoPlaceholder') :
+                    this.showLanguage('servers', 'hostPlaceholder')
+            },
+
+            /*
+             *  Show the pre configured URI
+             */
+            showConnection() {
+                return this.connection
             },
         },
 
@@ -185,10 +314,53 @@
                 this.createNew = !this.createNew
             },
 
+            updateConnection() {
+                this.error = null;
+                setTimeout(() => {
+                    let form = this.form, host = form.host;
+                    if (!host) {
+                        this.connection = '';
+                        return
+                    }
+                    if (host === 'localhost' || host === '127.0.0.1') {
+                        if (form.mongo_cloud === true) {
+                            this.error = this.showLanguage('errors', 'servers.mongoCloudHost', host);
+                            return
+                        }
+                        this.connection = this.configLocalhost(host);
+                        return
+                    }
+                    if (form.mongo_cloud === true) {
+                        this.connection = this.configMongoCloud(host);
+                        return
+                    }
+                    this.connection = host + ":" + form.port
+                },250)
+            },
+
+            configLocalhost(host) {
+                  return "mongodb://" + host + ":" + this.form.port
+            },
+
+            configMongoCloud(host) {
+                let password = '', p = 0, form = this.form, tail;
+                if (form.password) {
+                    for (p = 0; p <= form.password.length; p++) {
+                        password += "*"
+                    }
+                }
+                tail = "?retryWrites=true&w=majority";
+                if (form.mongo_cloud_database) {
+                    tail = "/" + form.mongo_cloud_database + tail
+                }
+                return "mongodb+srv://" + form.username + ":" + password + "@" + host + tail
+            },
+
             /*
              *  Validate the server data before sending
              */
             validateServer() {
+                this.error = null;
                 if (this.createNew) {
                     if (!this.form.host) {
                         this.error = this.showLanguage('errors', 'servers.hostRequired');
@@ -213,6 +385,10 @@
                         return false
                     }
                 }
+                if (this.form.mongo_cloud === true && (this.form.host === 'localhost' || this.form.host === '127.0.0.1')) {
+                    this.error = this.showLanguage('errors', 'servers.mongoCloudHost', this.form.host);
+                    return false
+                }
                 return true
             },
 
@@ -221,7 +397,8 @@
              */
             createServer() {
                 if (this.validateServer()) {
-                    this.$store.dispatch('saveServer', this.form)
+                    this.$store.dispatch('saveServer', this.form);
+                    this.completeCreateServer()
                 }
             },
 
@@ -237,11 +414,38 @@
                     }, 200)
                 }
                 if (status === 2) {
-                    EventBus.$emit('show-success', { notification: this.showLanguage('servers', 'success'), timer: 5000 });
+                    EventBus.$emit('show-success', { notification: this.showLanguage('servers', 'createSuccess'), timer: 5000 });
                     this.createNew = false
                 }
                 if (status === 3) {
                     EventBus.$emit('show-error', { notification: this.showLanguage('errors', 'servers.createError'), timer: 7000 })
+                }
+            },
+
+            updateServer() {
+                if (this.validateServer()) {
+                    this.form.update = 1;
+                    this.$store.dispatch('saveServer', this.form);
+                }
+            },
+
+            /*
+             *  Handle the aftermath of the new server addition
+             */
+            completeUpdateServer() {
+                let status = this.$store.getters.getServerSaveStatus;
+                if (status === 1 && this.index < this.limit) {
+                    this.index += 1;
+                    setTimeout(() => {
+                        this.completeUpdateServer()
+                    }, 200)
+                }
+                if (status === 2) {
+                    EventBus.$emit('show-success', { notification: this.showLanguage('servers', 'updateSuccess'), timer: 5000 });
+                    this.editing = false
+                }
+                if (status === 3) {
+                    EventBus.$emit('show-error', { notification: this.showLanguage('errors', 'servers.updateError'), timer: 7000 })
                 }
             },
 
@@ -310,7 +514,12 @@
 
             cancel() {
                 this.reset();
-                this.createNew = !this.createNew
+                if (this.editing) {
+                    this.createNew = !this.editing
+                }
+                if (this.createNew) {
+                    this.createNew = !this.createNew
+                }
             },
 
             /*

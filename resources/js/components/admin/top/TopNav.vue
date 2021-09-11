@@ -90,16 +90,16 @@
                 <li v-bind:class="{active: getActivePanel('databases')}">
                     <span v-on:click="loadPanel('databases', $event)"><img src="img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'databasesTitle')" v-text="showLanguage('nav', 'databases')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('servers')}" v-if="isRootUser || isAdminUser">
+                <li v-bind:class="{active: getActivePanel('servers')}">
                     <span v-on:click="loadPanel('servers', $event)"><img src="img/icon/servers2.png" /> <span v-bind:title="showLanguage('title', 'serversTitle')" v-text="showLanguage('nav', 'servers')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('execute')}" v-if="isRootUser || isAdminUser">
                     <span v-on:click="loadPanel('execute', $event)"><img src="img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('nav', 'execute')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('status')}" v-if="isRootUser">
+                <li v-bind:class="{active: getActivePanel('status')}" v-if="isRootUser || isAdminUser">
                     <span v-on:click="loadPanel('status', $event)"><img src="img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'statusTitle')" v-text="showLanguage('nav', 'status')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('processes')}" v-if="isRootUser">
+                <li v-bind:class="{active: getActivePanel('processes')}" v-if="isRootUser || isAdminUser">
                     <span v-on:click="loadPanel('processes', $event)"><img src="img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'processesTitle')" v-text="showLanguage('nav', 'processes')"></span></span>
                 </li>
                 <li v-bind:class="{active: getActivePanel('command')}">

@@ -40,13 +40,15 @@ class EditServerRequest extends FormRequest
     public function rules()
     {
         return [
-            'active'   => 'required|boolean',
-            'host'     => 'required|string|max:200',
-            'id'       => 'sometimes|integer',
-            'password' => 'sometimes|string|min:5',
-            'port'     => 'required|integer|min:5',
-            'username' => 'required|string|min:5|max:100',
-            'user_id'  => 'sometimes|integer'
+            'active'        => 'required|boolean',
+            'host'          => 'required|string|max:200',
+            'id'            => 'sometimes|integer',
+            'mongo_cloud'   => 'required|boolean',
+            'mongo_cloud_database'   => 'sometimes|string',
+            'password'      => 'sometimes|string|min:5',
+            'port'          => 'required|integer|min:5',
+            'username'      => 'required|string|min:5|max:100',
+            'user_id'       => 'sometimes|integer'
         ];
     }
 
@@ -60,7 +62,7 @@ class EditServerRequest extends FormRequest
         return [
             'host'     => 'Please enter a valid db server host name',
             'port'     => 'Please enter a valid mongodb port value',
-            'username' => 'Please enter a valide username',
+            'username' => 'Please enter a valid username',
             'password' => 'Your password must contain at least 5 characters',
             'active'   => 'A valid configuration status was not found',
             'user_id'  => 'The selected user ID is invalid'

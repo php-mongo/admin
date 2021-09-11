@@ -23,8 +23,8 @@ use App\Helpers\MongoHelper;
 use App\Http\Classes\ExportDocument;
 use App\Http\Classes\HighlightDocument;
 use App\Exceptions\UnableToLoadCollectionException;
-use Exception;
 use MongoDB;
+use Illuminate\Support\Facades\Log;
 
 trait CollectionTrait
 {
@@ -43,15 +43,9 @@ trait CollectionTrait
             $database   = $collection->getDatabaseName();
             $collectionName = $collection->getCollectionName();
 
+            // get the server data
             $data       = $collection->__debugInfo();
-            /** @var  MongoDB\Driver\Manager $manager */
-            $manager    = $data['manager'];
-
-            /** @var MongoDB\Driver\Server $server */
-            $server     = $manager->getServers()[0];
-            $serverData['host'] = $server->getHost();
-            $serverData['port'] = $server->getPort();
-            $serverData['info'] = $server->getInfo();
+            $serverData = $this->getServerData($data['manager']);
 
             // get the database
             $db         = $this->mongo->connectClientDb($database);
@@ -155,6 +149,7 @@ trait CollectionTrait
             );
 
         } catch (\Throwable $t) {
+            Log::debug('getOneCollection exception: ' . $t->getMessage());
             throw new UnableToLoadCollectionException($t->getMessage());
         }
     }
@@ -313,5 +308,23 @@ trait CollectionTrait
         }
         $arr['count'] = count($arr['objects']);
         return $arr;
+    }
+
+    /**
+     * @param MongoDB\Driver\Manager $manager
+     * @return array
+     */
+    private function getServerData(MongoDB\Driver\Manager $manager): array
+    {
+        /** @var MongoDB\Driver\Server $server */
+        $server     = $manager->getServers();
+        if (empty($server[0])) {
+            return [];
+        }
+        $serverData['host'] = $server[0]->getHost();
+        $serverData['port'] = $server[0]->getPort();
+        $serverData['info'] = $server[0]->getInfo();
+
+        return $serverData;
     }
 }
