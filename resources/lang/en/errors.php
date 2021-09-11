@@ -74,6 +74,8 @@ return [
         "createError" => "Server configuration was not created, please try again",
         "deleteFailed" => "Server configuration was not deleted - please try again",
         "hostRequired" => "Please enter the host server name",
+        "mongoCloudHost" => "You cannot use '%s' for a connection to mongo atlas cloud",
+        "updateError" => "Server configuration was not updated, please try again",
     ],
 
     "users" => [

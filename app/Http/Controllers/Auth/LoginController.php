@@ -20,10 +20,8 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use DateTime;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Http\Request;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
@@ -109,7 +107,7 @@ class LoginController extends Controller
         // check the creds
         if (!$token = auth()->attempt($credentials)) {
             $user = User::where('user', $credentials['user'])->get();
-            $user = isset($user[0]) > 0 ? $user[0]->getAttributes() : array('active' => null);
+            $user = isset($user[0]) ? $user[0]->getAttributes() : array('active' => null);
             if ($user['active'] === "0") {
                 Log::channel('auth')->info('Login attempted on inactive account: ', ['user' => $credentials['user']]);
                 return response()->json(['success' => false, 'error' => 'Inactive'], 401);

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      Server.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -19,6 +20,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Server extends Model
 {
@@ -28,7 +30,7 @@ class Server extends Model
      * @var array
      */
     protected $fillable = [
-        'host', 'port', 'username', 'password', 'user_id', 'is_current',
+        'host', 'port', 'username', 'password', 'user_id', 'is_current', 'mongo_cloud',
     ];
 
     /**
@@ -48,4 +50,9 @@ class Server extends Model
     protected $casts = [
         'created_at' => 'datetime',
     ];
+
+    public function getMongoCloudAttribute($value)
+    {
+        return (bool)$value;
+    }
 }

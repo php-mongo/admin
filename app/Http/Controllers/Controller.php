@@ -72,6 +72,14 @@ class Controller extends BaseController
     }
 
     /**
+     * @return bool
+     */
+    protected function isControlUser(): bool
+    {
+        return $this->user->getAttribute('control_user') === "1";
+    }
+
+    /**
      * Control user, all admin users or user with correct role(s)
      *
      * @param string|null $database
