@@ -146,6 +146,9 @@ class ServerController extends Controller
         return $this->errorMessage;
     }
 
+    /**
+     * @return bool|string|void
+     */
     private function getVersion()
     {
         try {
@@ -168,8 +171,8 @@ class ServerController extends Controller
             curl_close($ch);
 
             return $output;
-        }
-        catch(Exception $e) {
+
+        } catch (Exception $e) {
             $this->setErrorMessage($e->getMessage());
         }
     }
@@ -178,7 +181,7 @@ class ServerController extends Controller
      * @param string|array|null $errorMessage
      * @return mixed|null
      */
-    public function setErrorMessage($errorMessage): ?mixed
+    public function setErrorMessage($errorMessage): void
     {
         $this->errorMessage = $errorMessage;
     }
@@ -222,9 +225,12 @@ class ServerController extends Controller
                 $this->webServers["server"] = $webServer;
             }
             $this->webServers['phpv'] = array('version' => '<a href="http://www.php.net" target="_blank">PHP</a> ' . PHP_VERSION);
-            $this->webServers['phpe'] = array('extension' => '<a href="http://www.php.net/mongodb" target="_blank">Extension</a> - <a href="http://pecl.php.net/package/mongodb" target="_blank">mongodb</a>/' . $version);
-        }
-        catch (Exception $e) {
+            $this->webServers['phpe'] = array(
+                'extension' =>
+                    '<a href="http://www.php.net/mongodb" target="_blank">Extension</a> - <a href="http://pecl.php.net/package/mongodb" target="_blank">mongodb</a>/' .
+                    $version
+            );
+        } catch (Exception $e) {
             $this->webServers = [];
         }
     }
@@ -251,8 +257,8 @@ class ServerController extends Controller
                 $arr[$index] = array($key => $array);
             }
             $this->directives =  $arr;
-        }
-        catch (Exception $e) {
+
+        } catch (Exception $e) {
             $this->directives = [];
         }
     }
@@ -316,7 +322,7 @@ class ServerController extends Controller
     private function getComposerData()
     {
         try {
-            $reader                  = new ConfigurationReader;
+            $reader                  = new ConfigurationReader();
             $composer                = base_path('composer.json');
             $data                    = $reader->read($composer);
             $obj                     = $data->rawData();
@@ -348,8 +354,8 @@ class ServerController extends Controller
             $composer['license']    = $data->license();
             $composer['version']    = $this->getVersion();
             $this->composer         = $composer;
-        }
-        catch (Exception $e) {
+
+        } catch (Exception $e) {
             $this->composer = [];
         }
     }
@@ -450,18 +456,16 @@ class ServerController extends Controller
                 );
 
                 return response()->success('success', array('status' => $results->toArray()[0]));
-            }
-            else {
+
+            } else {
                 return response()->error('failed', array('error' => 'database name missing'));
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
 
         } catch (MongoDB\Driver\Exception\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
         }
-
     }
 
     /**

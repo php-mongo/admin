@@ -45,6 +45,7 @@ use App\Models\User;
  * MongoDB connection
  */
 use App\Http\Classes\MongoConnection as Mongo;
+use Illuminate\Support\Facades\Crypt;
 
 
 class ServersController extends Controller
@@ -72,8 +73,10 @@ class ServersController extends Controller
      */
     public function index(): Response
     {
-        $servers = Server::all();
-        return response()->success('success', array('servers' => $servers));
+        if ($this->isControlUser()) {
+            return response()->success('success', array('servers' => Server::all()));
+        }
+        return response()->success('success', array('servers' => $this->user->servers()->get()));
     }
 
     /**
@@ -99,7 +102,14 @@ class ServersController extends Controller
         $server->port       = $data['port'];
         $server->username   = $data['username'];
         if (!empty($data['password'])) {
-            $server->password   = $data['password'];
+            $server->password   = Crypt::encryptString($data['password']);
+        }
+        if (!empty($data['mongo_cloud'])) {
+            $server->mongo_cloud = (int)$data['mongo_cloud'];
+        }
+        if (!empty($data['mongo_cloud_database'])) {
+            // non 'admin' mongodb atlas users need to connect to a database
+            $server->mongo_cloud_database = $data['mongo_cloud_database'];
         }
         $server->active     = $data['active'];
         $server->user_id    = $this->user->getAttribute('id');
@@ -109,7 +119,7 @@ class ServersController extends Controller
     }
 
     /**
-     * Activate a server - deactive any active server
+     * Activate a server || deactivate any active server
      *
      * @param   EditServerRequest $request
      * @return  Response

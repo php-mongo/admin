@@ -20,10 +20,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use DateTime;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Hash;
@@ -87,7 +86,7 @@ class LoginController extends Controller
      * Handles our logging via API request
      *
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      * @throws \Illuminate\Validation\ValidationException
      */
     public function login(Request $request)
@@ -110,8 +109,9 @@ class LoginController extends Controller
 
         // check the creds
         if (!$token = auth()->attempt($credentials)) {
-            $user = User::where('user', $credentials['user'])->get()[0];
-            $user = isset($user[0]) > 0 ? $user[0]->getAttributes() : array('active' => null);
+            $user = User::where('user', $credentials['user'])->get();
+            $user = isset($user[0]) ? $user[0]->getAttributes() : array('active' => null);
+
             if ($user['active'] === "0") {
                 Log::channel('auth')->info('Login attempted on inactive account: ', ['user' => $credentials['user']]);
                 return response()->json(['success' => false, 'error' => 'Inactive'], 401);
@@ -151,7 +151,7 @@ class LoginController extends Controller
      *
      * @param Request $request
      * @param $uid
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function logout(Request $request, $uid)
     {
@@ -172,9 +172,9 @@ class LoginController extends Controller
      * Generates the response with the Passport Token
      *
      * @param $token
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    protected function respondWithToken($token)
+    protected function respondWithToken($token): JsonResponse
     {
         // ToDo: setup a mechanism to set this expiry duration via an admin panel and use a dynamic value
         $days = 60 * 60 * 27 * 28; // 28 days

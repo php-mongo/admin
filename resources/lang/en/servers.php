@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      servers.php 1001 6/8/20, 8:58 pm  Gilbert Rehling $
@@ -31,13 +32,17 @@ return [
     "active" => "Active",
     "add" => "Add another server configuration.",
     "addNew" => "Add New",
-    "cannotDelete" => "Current server: cannot delete this configuration",
+    "cannotEditDelete" => "Current server: cannot edit|delete this configuration",
+    "cannotEdit" => "Current server: cannot edit this configuration",
+    "cannotDelete" => "Locked server: cannot delete this configuration",
     "check" => "Check to activate",
     "confirm" => "Confirm",
+    "confirmPlaceholder" => "password confirmation",
     "create" => "Create Server",
     "created" => "Created",
     "createButton" => "Create",
     "createFirst" => "Create 1st Server",
+    "createSuccess" => "Server configuration created successfully",
     "current" => "Current Server",
     "delete" => "Delete Server",
     "deleteFailed" => "Server configuration was not deleted - please try again",
@@ -46,19 +51,30 @@ return [
     "deleteConfirm" => "Deleting this server configuration can not be reversed. Continue?",
     "edit" => "Edit Server",
     "host" => "Host",
+    "hostPlaceholder" => "host.domain.suffix",
+    "hostMongoPlaceholder" => "cluster.prefix.mongodb.net",
+    "hostHelp" => "Do not place any special characters or prefixes here, only the server host.domain name",
     "info" => "Servers are created within each user account, however, administrators may share a server configuration with another existing user",
+    "mongoCloud" => "Connect to MongoDb Atlas Cloud Cluster",
+    "mongoCloudDb" => "Atlas DB",
+    "mongoCloudDbPlaceholder" => "cloud database name: optional",
+    "mongoCloudDbInfo" => "If your Mongo Atlas (Cloud) account does not have Cluster Admin privileges you should specify the database you wish to connect to",
+    "mongoCloudTitle" => "Mongo Cloud",
     "new" => "New Server",
     "none" => "You have no servers configured yet.",
     "password" => "Password",
+    "passwordPlaceholder" => "password: min 5 chars",
     "port" => "Port",
+    "portPlaceholder" => "ignored for Mongo Atlas Cloud connections",
     "server" => "Server",
     "servers" => "Servers",
     "share" => "Share Server",
     "statistics" => "Server Statistics",
-    "success" => "Server configuration created successfully",
     "title" => "Servers Configuration Panel",
     "updateButton" => "Update",
     "username" => "Username",
+    "usernamePlaceholder" => "enter your username",
+    "updateSuccess" => "Server configuration updated successfully",
     "view" => "View Server"
 
 ];

@@ -22,36 +22,63 @@
     <div>
         <table class="bordered">
             <tr>
-                <th class="bb" v-text="showLanguage('servers', 'host')"></th><td>{{ server.host }}</td>
+                <th class="bb" v-text="showLanguage('servers', 'host')"></th>
+                <td>{{ server.host }}</td>
             </tr>
             <tr>
-                <th class="bb" v-text="showLanguage('servers', 'port')"></th><td>{{ server.port }}</td>
+                <th class="bb" v-text="showLanguage('servers', 'port')"></th>
+                <td>{{ server.port }}</td>
             </tr>
             <tr>
-                <th class="bb" v-text="showLanguage('servers', 'username')"></th><td>{{ server.username }}</td>
+                <th class="bb" v-text="showLanguage('servers', 'username')"></th>
+                <td>{{ server.username }}</td>
             </tr>
             <tr>
-                <th class="bb" v-text="showLanguage('servers', 'password')"></th><td>*****</td>
+                <th class="bb" v-text="showLanguage('servers', 'password')"></th>
+                <td>*****</td>
             </tr>
             <tr>
                 <th class="bb" v-text="showLanguage('servers', 'active')"></th>
                 <td>{{ showBool(server.active) }}
                 <span class="activate-checkbox" v-show="server.active === 0" :title="showLanguage('title' , 'activateServerTitle')">
-                    <input @change="activateServer(server.id)" v-model="activate" type="checkbox" /> <span v-text="showLanguage('servers', 'check')"></span>
+                    <input @change="activateServer(server.id)" v-model="activate" type="checkbox" />
+                    <span v-text="showLanguage('servers', 'check')"></span>
                 </span>
                 </td>
             </tr>
             <tr>
-                <th class="bb" v-text="showLanguage('servers', 'created')"></th><td>{{ server.created_at}}</td>
+                <th class="bb" v-text="showLanguage('servers', 'created')"></th>
+                <td>{{ server.created_at}}</td>
             </tr>
-            <tr v-if="showActions">
-                <th class="bb" v-text="showLanguage('servers', 'actions')"></th><td>
-                <span class="pma-link" @click="$emit('edit', server.id)" v-text="showLanguage('servers', 'edit')"></span> |
-                <span class="pma-link-danger" @click="$emit('delete', server.id)" v-text="showLanguage('servers', 'delete')"></span></td>
+            <tr>
+                <th class="bb" v-text="showLanguage('servers', 'mongoCloudTitle')"></th>
+                <td>{{ showBool(server.mongo_cloud) }}</td>
             </tr>
-            <tr v-if="!showActions">
+            <tr>
+                <th class="server-uri bb" colspan="2" v-text="showConnection()"></th>
+            </tr>
+            <tr v-if="canEdit || canDelete">
+                <th
+                    class="bb"
+                    v-text="showLanguage('servers', 'actions')"
+                ></th><td>
+                <span
+                    class="pma-link"
+                    @click="$emit('edit', server.id)"
+                    v-text="showLanguage('servers', 'edit')"
+                    v-if="canEdit"
+                ></span>
+                <span v-if="canEdit && canDelete">|</span>
+                <span
+                    class="pma-link-danger"
+                    @click="$emit('delete', server.id)"
+                    v-text="showLanguage('servers', 'delete')"
+                    v-if="canDelete"
+                ></span></td>
+            </tr>
+            <tr v-if="!canEdit && !canDelete">
                 <th class="bb" v-text="showLanguage('global', 'warning')"></th>
-                <td v-text="showLanguage('servers', 'cannotDelete')"></td>
+                <td v-text="showLanguage('servers', 'cannotEditDelete')"></td>
             </tr>
         </table>
     </div>
@@ -75,19 +102,29 @@
          */
         data() {
             return {
-                activate: null
+                activate: null,
+                connection: null
             }
         },
 
         computed: {
             showActions() {
+                return true; //this.total >= 2;
+
+            },
+
+            canEdit() {
+                return this.total >= 2;
+            },
+
+            canDelete() {
                 if (this.total >= 2) {
-                    if (this.server.is_current === 0) {
+                    if (this.server.active === "0") {
                         return true
                     }
                 }
                 return false
-            }
+            },
         },
 
         /*
@@ -105,7 +142,7 @@
              *  Display a readable value
              */
             showBool( value ) {
-                if (value === 1 || value === "1") {
+                if (value === 1 || value === "1" || value === true) {
                     return 'True';
                 }
                 return 'False';
@@ -118,7 +155,33 @@
                 if (this.activate === true) {
                     this.$emit('activate-server', id);
                 }
-            }
+            },
+
+            showConnection() {
+                let host = this.server.host;
+                if (!host) {
+                    return '';
+                }
+                if (host === 'localhost' || host === '127.0.0.1') {
+                    return this.configLocalhost(host)
+                }
+                if (this.server.mongo_cloud && this.server.mongo_cloud === true) {
+                    return this.configMongoCloud(host);
+                }
+                return host + ":" + this.server.port
+            },
+
+            configLocalhost(host) {
+                return "mongodb://" + host + ":" + this.server.port
+            },
+
+            configMongoCloud(host) {
+                let password = '*****', tail = "?retryWrites=true&w=majority";
+                if (this.server.mongo_cloud_database) {
+                    tail = "/" + this.server.mongo_cloud_database + tail
+                }
+                return "mongodb+srv://" + this.server.username + ":" + password + "@" + host + tail
+            },
         }
     }
 </script>

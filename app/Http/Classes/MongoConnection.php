@@ -27,6 +27,7 @@ namespace App\Http\Classes;
  * @uses
  */
 
+use App\Exceptions\NoServerConfigurationException;
 use App\Exceptions\UnableToConnectMongoDbException;
 use App\Http\Traits\PrivilegesTrait;
 use App\Models\User;
@@ -124,6 +125,9 @@ class MongoConnection
     /** @var array */
     private $userRoles;
 
+    /** @var bool */
+    private $mongoCloud;
+
     /**
      * @return MongoDB\Client
      */
@@ -199,6 +203,22 @@ class MongoConnection
     }
 
     /**
+     * @return bool
+     */
+    public function getMongoCloud(): bool
+    {
+        return $this->mongoCloud;
+    }
+
+    /**
+     * @param string $mongoCloud
+     */
+    public function setMongoCloud(string $mongoCloud = "0"): void
+    {
+        $this->mongoCloud = (bool)$mongoCloud;
+    }
+
+    /**
      * Sets the user primary database
      *
      * @param   string $userDb
@@ -234,17 +254,37 @@ class MongoConnection
      * Only uses the server details if they exist
      *
      * @return array
+     * @throws NoServerConfigurationException
      */
     private function prepareConnection(): array
     {
         $server = $this->getServer();
-        $prefix = false !== strpos($server['host'], 'localhost') ? 'mongodb' : 'mongodb+srv';
-        // create the URI
-        $uri = $prefix . '://' . $server['host'] . ':' . $server['port'];
+        $this->setMongoCloud($server['mongo_cloud']);
+        if ($server['mongo_cloud'] === "1") {
+            // custom URL for connection to MongoDb Cloud
+            $tail = '?retryWrites=true&w=majority';
+            // add the database if there is one set
+            if (!empty($server['mongo_cloud_database'])) {
+                $tail = "/" . $server['mongo_cloud_database'] . $tail;
+            }
+            $uri = 'mongodb+srv://' .
+                $server['username']. ':' .
+                urlencode(Crypt::decryptString($server['password'])) . '@' .
+                $server['host'] . $tail;
+        }
+        if ($server['mongo_cloud'] === "0") {
+            $prefix = false !== strpos($server['host'], 'localhost') ? 'mongodb' : 'mongodb+srv';
+            $uri = $prefix . '://' . $server['host'] . ':' . $server['port'];
+        }
+        if (empty($uri)) {
+            throw new NoServerConfigurationException('No server configuration found');
+        }
+
         $options = [];
         if (!empty($server['username']) && !empty($server['password'])) {
             $options['username'] = $server['username'];
-            $options['password'] = $server['password'];
+            // decrypts either the stored user or server password
+            $options['password'] = Crypt::decryptString($server['password']);
         }
         return array("uri" => $uri, 'options' => $options);
     }
@@ -318,16 +358,16 @@ class MongoConnection
             $this->userName = $server['username'];
         }
         // When there is no Server associated with the user, we assume that the user has been created using 'both' login and database
-        // ToDo: if the user has 'NO' server and 'NO' mongo DB cred - they wont have may usable options
+        // ToDo: if the user has 'NO' server and 'NO' mongo DB cred - they wont have many usable options
+        // ToDo: re-confirm the setup process
         if (empty($servers[0])) {
             $server = array(
                 'id' => 0,
                 'host' => 'localhost',
+                'mongo_cloud' => "0", // fake this so we don't break other checks
                 'port' => 27017,
                 'username' => $user->getAttribute('user'),
-                'password' => $user->getAttribute('encrypted_password') ?
-                    Crypt::decryptString($user->getAttribute('encrypted_password')) :
-                    null
+                'password' => $user->getAttribute('encrypted_password')
             );
 
             // save the username
@@ -358,12 +398,15 @@ class MongoConnection
 
     /**
      * Create a client connection and save locally
+     * @throws NoServerConfigurationException
      */
     public function connectClient(): void
     {
         if (!$this->client instanceof MongoDB\Client) {
             $prep = $this->prepareConnection();
-            $this->client = new MongoDB\Client($prep['uri'], $prep['options']);
+            $this->client = $this->getMongoCloud() ?
+                new MongoDB\Client($prep['uri']) :
+                new MongoDB\Client($prep['uri'], $prep['options']);
         }
 
         // prepare the local user permissions data
@@ -372,7 +415,7 @@ class MongoConnection
 
     /**
      * @return MongoDB\Client
-     * @throws UnableToConnectMongoDbException
+     * @throws UnableToConnectMongoDbException|NoServerConfigurationException
      */
     public function connectAndGetClient(): MongoDB\Client
     {
@@ -388,12 +431,15 @@ class MongoConnection
      *
      * @param string $db
      * @return MongoDB\Database
+     * @throws NoServerConfigurationException
      */
     public function connectClientDb(string $db): MongoDB\Database
     {
         $prep = $this->prepareConnection();
-        $clientDb = (new MongoDB\Client($prep['uri'], $prep['options']))->$db;
-        return $clientDb;
+
+        return $this->getMongoCloud() ?
+            (new MongoDB\Client($prep['uri']))->$db :
+            (new MongoDB\Client($prep['uri'], $prep['options']))->$db;
     }
 
     /**
@@ -402,21 +448,27 @@ class MongoConnection
      * @param string $db
      * @param string $collection
      * @return MongoDB\Collection
+     * @throws NoServerConfigurationException
      */
     public function connectClientCollection(string $db, string $collection): MongoDB\Collection
     {
         $prep = $this->prepareConnection();
-        return (new MongoDB\Client($prep['uri'], $prep['options']))->$db->$collection;
+        return $this->getMongoCloud() ?
+            (new MongoDB\Client($prep['uri']))->$db->$collection :
+            (new MongoDB\Client($prep['uri'], $prep['options']))->$db->$collection;
     }
 
     /**
      * Create a manager connection and save locally
+     * @throws NoServerConfigurationException
      */
     public function connectManager(): void
     {
         if (!$this->manager instanceof MongoDB\Driver\Manager) {
             $prep = $this->prepareConnection();
-            $this->manager = new MongoDB\Driver\Manager($prep['uri'], $prep['options']);
+            $this->manager = $this->getMongoCloud() ?
+                new MongoDB\Driver\Manager($prep['uri']) :
+                new MongoDB\Driver\Manager($prep['uri'], $prep['options']);
         }
     }
 
