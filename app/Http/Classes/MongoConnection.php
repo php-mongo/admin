@@ -376,8 +376,13 @@ class MongoConnection
 
         if ('demo' == env('APP_ENV')) {
             // demo site only
-            $server = array('host' => 'localhost',
-                'port' => 27017, 'username' =>  config('app.dbUser') , 'password' => config('app.dbPasswd'));
+            $server = array(
+                'host' => 'localhost',
+                'mongo_cloud' => "0",
+                'port' => 27017,
+                'username' => config('app.dbUser'),
+                'password' => Crypt::encryptString(config('app.dbPasswd')), // so we don't break downstream
+            );
         }
 
         $this->setServer($server);
