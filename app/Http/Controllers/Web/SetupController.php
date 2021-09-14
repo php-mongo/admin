@@ -31,6 +31,12 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreControlUser;
 
 /**
+ * Response
+ */
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
+
+/**
  * Models
  */
 use App\Models\Server;
@@ -46,6 +52,13 @@ use App\Helpers\MongoConnectionHelper;
  * Facades
  */
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\View\View;
+
+/**
+ * Exception
+ */
+use Throwable;
 
 /**
  * Class SetupController
@@ -104,9 +117,9 @@ class SetupController extends Controller
     }
 
     /**
-     * Loads the initial setup laylout
+     * Loads the initial setup layout
      *
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @return Factory|View
      */
     public function getSetup(Request $request)
     {
@@ -124,18 +137,18 @@ class SetupController extends Controller
      * Saves the Control User
      *
      * @param StoreControlUser $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
-     * @throws \Throwable
+     * @return RedirectResponse|Redirector
+     * @throws Throwable
      */
     public function saveSetup(StoreControlUser $request)
     {
         try {
             $data = $request->validated();
-            UserHelper::generateLoginUser($data);
+            UserHelper::generateControlUser($data);
             return redirect('/admin');
 
-        } catch (\Throwable $t) {
-            throw new $t;
+        } catch (Throwable $t) {
+            throw $t;
         }
     }
 }

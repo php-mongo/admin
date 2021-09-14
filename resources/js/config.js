@@ -38,8 +38,8 @@ switch ( process.env.NODE_ENV )  {
         break;
 
     case 'staging':
-        api_url = '//staging.phpmongoadmin.com/api/v1';
-        web_url = '//staging.phpmongoadmin.com';
+        api_url = './api/v1';
+        web_url = './';
         break;
 
     case 'demo':

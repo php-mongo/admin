@@ -27,7 +27,7 @@ class StoreControlUser extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -37,12 +37,12 @@ class StoreControlUser extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'name'     => 'required|string|max:200',
             'user'     => 'required|string|min:5|max:50',
-            'password' => 'required|string|min:8',
+            'password' => 'required|string|min:' . config('app.minPwdLength'),
             'email'    => 'required|email:rfc,dns'
         ];
     }
@@ -52,7 +52,7 @@ class StoreControlUser extends FormRequest
      *
      * @return array
      */
-    public function messages()
+    public function messages(): array
     {
         return [
             'name'     => 'Please enter a valid name',
