@@ -24,7 +24,7 @@
         position: relative;
         top: 0;
         width: calc(100vw - 262px);
-        z-index: 88;
+        z-index: 90;
 
         .pma-link {
             color: $linkColor;
