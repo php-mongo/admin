@@ -23,10 +23,12 @@
 namespace App\Helpers;
 
 /**
- * We are handling MongoDB based functionality
+ * @use
  */
 use App\Models\Postcode;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Crypt;
@@ -34,13 +36,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
+use ipinfo\ipinfo\Details;
 use ipinfo\ipinfo\IPinfo;
 use ipinfo\ipinfo\IPinfoException;
-use App\Exceptions\UnableToDeleteUserException;
 
 /**
  * Always be prepared to accept failure !!
  */
+use App\Exceptions\UnableToDeleteUserException;
 use Exception;
 
 /**
@@ -106,7 +109,7 @@ class UserHelper
         }
         $user->save();
 
-        if ($user->control_user === "1") {
+        if ($user->admin_user === "1") {
             dispatch('Illuminate\Auth\Events\Registered');
         }
 
@@ -139,7 +142,7 @@ class UserHelper
      * Return one or more users
      *
      * @param   string|null $search
-     * @return  User[]|\Illuminate\Database\Eloquent\Collection
+     * @return  User[]|Collection
      */
     public static function getLoginUsers(?string $search = null)
     {
@@ -171,8 +174,36 @@ class UserHelper
     }
 
     /**
+     * Generate a new Login user
+     *
+     * @param array $data
+     * @return  User
+     */
+    public static function generateControlUser(array $data): User
+    {
+        // generate new login user
+        $password = $data['password'];
+        $user = new User();
+        $user->setAttribute('name', $data['name']);
+        $user->setAttribute('user', $data['user']);
+        $user->setAttribute('email', $data['email']);
+        $user->setAttribute('password', Hash::make($password));
+        $user->setAttribute('control_user', "1"); // only one control user is allowed
+        $user->setAttribute('admin_user', "1");
+        $user->setAttribute('active', "1");
+        $user->setAttribute('encrypted_password', Crypt::encryptString($password));
+        $user->setAttribute('message', ''); // this needs to be an empty string for the FE
+        // the control user should have a local (or remote) MongoDb account to add to the Server table
+        $user->save();
+
+        dispatch('Illuminate\Auth\Events\Registered');
+
+        return $user;
+    }
+
+    /**
      * @param   Request $request
-     * @return  bool|\ipinfo\ipinfo\Details|mixed
+     * @return  bool|Details|mixed
      * @throws  Exception
      */
     public static function getIPInfo(Request $request)
@@ -307,9 +338,9 @@ class UserHelper
      * @param $state
      * @param $value
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public static function getUserArea(Request $request, $country, $state, $value)
+    public static function getUserArea(Request $request, $country, $state, $value): JsonResponse
     {
         try {
             if (is_numeric($value)) {
