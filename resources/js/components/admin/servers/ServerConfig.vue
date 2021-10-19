@@ -68,7 +68,7 @@
                     v-text="showLanguage('servers', 'edit')"
                     v-if="canEdit"
                 ></span>
-                <span v-if="canEdit && canDelete">|</span>
+                <span v-if="canEdit && canDelete"> | </span>
                 <span
                     class="pma-link-danger"
                     @click="$emit('delete', server.id)"
