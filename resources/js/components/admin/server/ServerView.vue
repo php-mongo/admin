@@ -86,6 +86,9 @@
             <p v-text="showLanguage('global', 'loadingApplication')"></p>
             <p><img src="img/ajax-loader-60x60.gif" :alt="showLanguage('global', 'loading')"></p>
         </div>
+        <div>
+            <p>&nbsp;</p>
+        </div>
     </div>
 </template>
 

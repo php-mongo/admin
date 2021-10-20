@@ -529,6 +529,7 @@
              */
             showComponent() {
                 // load all servers allocated to the current user
+                this.editing = this.createNew = false;
                 this.$store.dispatch( 'loadServers' );
                 this.show = true
             },

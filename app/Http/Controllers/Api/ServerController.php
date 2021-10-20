@@ -289,9 +289,10 @@ class ServerController extends Controller
      */
     private function getConnection()
     {
+        $server = $this->mongo->getServer();
         try {
             $port   = '';
-            $host   = 'localhost';
+            $host   = $server['host'];
             $cursor = $this->database->command(array("getCmdLineOpts" => 1));
             foreach ($cursor as $document) {
                 if (isset($document['parsed']['net']['port'])) {
@@ -301,15 +302,15 @@ class ServerController extends Controller
             $this->connection = array(
                 "Host"      => $host,
                 "Port"      => $port,
-                "Username"  => "******",
+                "Username"  => $server['username'],
                 "Password"  => "******"
             );
 
         } catch (Exception $e) {
             $this->connection = array(
-                "Host"      => 'localhost',
-                "Port"      => 27017,
-                "Username"  => "******",
+                "Host"      => $server['host'],
+                "Port"      => $server['port'],
+                "Username"  => $server['username'],
                 "Password"  => "******"
             );
         }
