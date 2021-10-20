@@ -122,6 +122,7 @@
              *  Collapsing this component via events
              */
             collapseNav( status ) {
+                EventBus.$emit('collapse-nav', status)
                 this.collapsed = status
             },
 
@@ -179,9 +180,9 @@
                 this.watchLeftNav()
             });
 
-            EventBus.$on('collapse-nav', (status) => {
+           /* EventBus.$on('collapse-nav', (status) => {
                 this.collapseNav(status)
-            });
+            });*/
 
             setTimeout(() => {
                 this.setPermissionError()

@@ -310,6 +310,7 @@
              *  Display the server creation form
              */
             setupServer() {
+                this.editing = false;
                 this.form = this.setup;
                 this.createNew = !this.createNew
             },
@@ -426,6 +427,7 @@
                 if (this.validateServer()) {
                     this.form.update = 1;
                     this.$store.dispatch('saveServer', this.form);
+                    this.completeUpdateServer()
                 }
             },
 
@@ -515,7 +517,7 @@
             cancel() {
                 this.reset();
                 if (this.editing) {
-                    this.createNew = !this.editing
+                    this.editing = !this.editing
                 }
                 if (this.createNew) {
                     this.createNew = !this.createNew
@@ -527,6 +529,7 @@
              */
             showComponent() {
                 // load all servers allocated to the current user
+                this.editing = this.createNew = false;
                 this.$store.dispatch( 'loadServers' );
                 this.show = true
             },
