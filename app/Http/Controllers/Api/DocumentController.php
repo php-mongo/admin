@@ -30,6 +30,8 @@ use App\Http\Controllers\Controller;
 /**
  *   Defines the requests used by the controller.
  */
+
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -137,10 +139,10 @@ class DocumentController extends Controller implements Unserializable
      * @param   string  $db string DB Name
      * @param   string  $collection string Collection name
      * @param   array   $document
-     * @return  MongoDB\Model\BSONDocument
+     * @return  array|object
      * @throws  DocumentObjectException
      */
-    private function getObject(string $db, string $collection, array $document): MongoDB\Model\BSONDocument
+    private function getObject(string $db, string $collection, array $document)
     {
         try {
              // no errors this way
@@ -221,7 +223,7 @@ class DocumentController extends Controller implements Unserializable
      * @param  MongoDB\DeleteResult  $result
      * @return array
      */
-    private function setDeleteStatus(string $id, MongoDB\DeleteResult $result)
+    private function setDeleteStatus(string $id, MongoDB\DeleteResult $result): array
     {
         if (true == $result->isAcknowledged() && 1 == $result->getDeletedCount()) {
             return array($id => 'success');
@@ -308,7 +310,7 @@ class DocumentController extends Controller implements Unserializable
             if (!is_array($document)) {
                 // remove windoes goobies
                 $document = preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $document);
-                $document = json_decode(str_replace("'","\"", $document), true);
+                $document = json_decode(str_replace("'", "\"", $document), true);
             }
 
             if (count($document) > 0) {
@@ -316,25 +318,24 @@ class DocumentController extends Controller implements Unserializable
                 $cursor = $this->mongo->connectClientCollection($database, $collection);
 
                 // insert doc
-                $result = $cursor->insertOne($document );
+                $result = $cursor->insertOne($document);
 
                 // get the ObjectId and then the new object with extras intact
                 $insertId = $result->getInsertedId();
                 $arr = array(
-                    '_id' => new MongoDB\BSON\ObjectId($insertId->__toString() )
+                    '_id' => new MongoDB\BSON\ObjectId($insertId->__toString())
                 );
-                $doc = $this->getObject($database, $collection, $arr );
+                $doc = $this->getObject($database, $collection, $arr);
 
                 return response()->success('success', array('document' => $doc));
             }
-            return response()->success('failed', array('message' => 'document has errors'));
+            return response()->error('failed', array('message' => 'document has errors'));
 
-        }
-        catch( DocumentObjectException $e) {
-            return response()->success('failed', array('message' => $e->getMessage()));
-        }
-        catch(Exception $e) {
-            return response()->success('failed', array('message' => $this->scrapeError($e->getMessage())));
+        } catch (DocumentObjectException $e) {
+            return response()->error('failed', array('message' => $e->getMessage()));
+
+        } catch (Exception $e) {
+            return response()->error('failed', array('message' => $this->scrapeError($e->getMessage())));
         }
     }
 
@@ -356,35 +357,34 @@ class DocumentController extends Controller implements Unserializable
             // our values
             $database   = $request->get('database');
             $collection = $request->get('collection');
-            /** @var $document JSON  We'll always be expecting a JSON document from the front-end */
+            /** @var $document We'll always be expecting a JSON document from the front-end */
             $document   = $request->get('document');
             $type       = $request->get('type', null);
 
             // decode the document as we may need an array
             $document = json_decode($document, true);
 
-            // if type exists and matches, and we have field and value create the correct MongoDB data type
+            // if type exists and matches, and we have a field and value create the correct MongoDB data type
             if ($type && in_array($type, $this->types)) {
-                $field = $request->get( 'field', null );
-                $value = $request->get( 'value', null );
+                $field = $request->get('field', null);
+                $value = $request->get('value', null);
                 if ($field && $value) {
-
                     // ToDo: !! for now any 'mixed' type value will be JSON - the default format
-                    $realValue = DocumentHelper::convertValue( 'admin', $type, $this->format, $value );
+                    $realValue = DocumentHelper::convertValue('admin', $type, $this->format, $value);
                     $document[ $field ] = $type == 'mixed' ? json_decode($realValue, true) : $realValue;
                 }
                 // ToDo: ? do we need to set and return an error in this case ?
             }
 
             // get the collection
-            $collection = $this->mongo->connectClientCollection($database, $collection );
+            $collection = $this->mongo->connectClientCollection($database, $collection);
 
             // We need to build the object ID
             // ToDo: !! for now all of our updates will use the _id !!
             $id = array('_id' => new MongoDB\BSON\ObjectId($id));
 
             //
-            $result = $collection->replaceOne($id, $document );
+            $result = $collection->replaceOne($id, $document);
 
             // $doc = $this->getObject($database, $collection, $result->getUpsertedId() );
             // possible result values
@@ -399,24 +399,24 @@ class DocumentController extends Controller implements Unserializable
                 return response()->success('success', array('document' => $document));
 
             } else {
-                return response()->success('failed', array('message' => 'update failed'));
+                return response()->error('failed', array('message' => 'update failed'));
             }
-        }
-        catch (\Exception $e) {
-            return response()->success('failed', array('message' => $this->scrapeError($e->getMessage())));
+
+        } catch (\Exception $e) {
+            return response()->error('failed', array('message' => $this->scrapeError($e->getMessage())));
         }
     }
 
     /**
-     * Duplicatinga new MongoDB document
+     * Duplicating a new MongoDB document
      *
      * URL:         /api/v1/document/duplicate
      * Method:      POST
      * Description: Create a new document
      *
-     * @param Request $request
+     * @param   Request $request
      *
-     * @return Response
+     * @return  Response
      */
     public function duplicateDocument(Request $request): Response
     {
@@ -429,28 +429,27 @@ class DocumentController extends Controller implements Unserializable
             $document = json_decode($document, true);
             if (count($document) >= 1) {
                 // get the collection
-                $cursor = $this->mongo->connectClientCollection($database, $collection );
+                $cursor = $this->mongo->connectClientCollection($database, $collection);
 
                 // insert doc
-                $result     = $cursor->insertOne($document );
+                $result     = $cursor->insertOne($document);
 
                 // get the ObjectId and then the new object with extras intact
                 $insertId = $result->getInsertedId();
                 $arr = array(
-                    '_id' => new MongoDB\BSON\ObjectId($insertId->__toString() )
+                    '_id' => new MongoDB\BSON\ObjectId($insertId->__toString())
                 );
-                $doc = $this->getObject($database, $collection, $arr );
+                $doc = $this->getObject($database, $collection, $arr);
 
                 return response()->success('success', array( 'document' => $doc ));
             }
-            return response()->success('failed', array( 'message' => 'document has errors' ));
+            return response()->error('failed', array( 'message' => 'document has errors' ));
 
-        }
-        catch( DocumentObjectException $e) {
-            return response()->success('failed', array( 'message' => $e->getMessage() ));
-        }
-        catch(\Exception $e) {
-            return response()->success('failed', array( 'message' => $this->scrapeError($e->getMessage())));
+        } catch (DocumentObjectException $e) {
+            return response()->error('failed', array( 'message' => $e->getMessage() ));
+
+        } catch (\Exception $e) {
+            return response()->error('failed', array( 'message' => $this->scrapeError($e->getMessage())));
         }
     }
 
@@ -461,22 +460,25 @@ class DocumentController extends Controller implements Unserializable
      * Method:      POST
      * Description: Delete the database matching the given name
      *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param   Request $request
+     * @param   $database
+     * @param   $collection
+     * @param   $oid
+     * @return  Response
      */
     public function destroy(Request $request, $database, $collection, $oid)
     {
         try {
             // get the collection
-            $collection = $this->mongo->connectClientCollection($database, $collection );
+            $collection = $this->mongo->connectClientCollection($database, $collection);
 
             try {
                 // generate the OID object
                 $arr = array(
-                    '_id' => new MongoDB\BSON\ObjectId($oid )
+                    '_id' => new MongoDB\BSON\ObjectId($oid)
                 );
-            }
-            catch(\Exception $e) {
+
+            } catch (\Exception $e) {
                 if (false !== strpos($e->getMessage(), "Error parsing ObjectId string:")) {
                     $arr = array("_id" => $oid);
                 }
@@ -485,13 +487,13 @@ class DocumentController extends Controller implements Unserializable
             // delete doc
             $status   = array();
             /** @var MongoDB\DeleteResult $result */
-            $result   = $collection->deleteOne($arr );
+            $result   = $collection->deleteOne($arr);
             $status[] = $this->setDeleteStatus($oid, $result);
 
-            return response()->success('success', array('status' => $status ));
-        }
-        catch(\Exception $e) {
-            return response()->success('failed', array( 'message' => $e->getMessage() ));
+            return response()->success('success', array('status' => $status));
+
+        } catch (\Exception $e) {
+            return response()->error('failed', array( 'message' => $e->getMessage() ));
         }
     }
 

@@ -183,7 +183,6 @@ class DatabasesController extends Controller
             // this can occur if there is no Server config
             return response()->error('failed', array('error' => $error));
         }
-
         return response()->success('success', array('databases' => $databases));
     }
 
@@ -208,7 +207,6 @@ class DatabasesController extends Controller
             // this can occur if there is no Server config
             return response()->error('failed', array('error' => $error));
         }
-
         return response()->success('success', array('database' => $database));
     }
 
@@ -241,8 +239,8 @@ class DatabasesController extends Controller
                     return strcasecmp($a['name'], $b['name']);
                 }
             );
-
             return response()->success('success', array('databaseList' => $arr));
+
         } catch (Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
         }
@@ -292,6 +290,7 @@ class DatabasesController extends Controller
                 "db" => $database->__debugInfo(), "stats" => $statistics, "collections" => $this->getCollections($db));
 
             return response()->success('success', array('database' => $arr));
+
         } catch (Exception $e) {
             return response()->error('failed', array('error' => 'unable to create database ' . $db));
         }
@@ -324,6 +323,7 @@ class DatabasesController extends Controller
                 }
             }
             return response()->success('success', array('status' => $status));
+
         } catch (Exception $e) {
             return response()->error('failed', array('error' => 'unable to delete database(s) ' . $names));
         }
@@ -364,8 +364,8 @@ class DatabasesController extends Controller
                 // be good be good! - Johnny !!
                 return response()->success('success', array('results' => $results->toArray()[0]));
             }
-
             return response()->error('failed', array('error' => 'database names mismatched'));
+
         } catch (Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
         }
@@ -415,8 +415,8 @@ class DatabasesController extends Controller
 
                 return response()->success('success', array('inserted' => $inserted));
             }
-
             return response()->error('failed', array('error' => 'database names mismatched'));
+
         } catch (Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
         }
@@ -448,8 +448,8 @@ class DatabasesController extends Controller
 
                 return response()->success('success', array('result' => $result->toArray()));
             }
-
             return response()->error('failed', array('error' => 'database names mismatched'));
+
         } catch (Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
         }
@@ -481,8 +481,8 @@ class DatabasesController extends Controller
 
                 return response()->success('success', array('profile' => $documents->toArray(), 'level' => $level));
             }
-
             return response()->error('failed', array('error' => 'database name missing'));
+
         } catch (Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
         }
@@ -510,8 +510,8 @@ class DatabasesController extends Controller
 
                 return response()->success('success', array('result' => $result));
             }
-
             return response()->error('failed', array('error' => 'database name missing'));
+
         } catch (Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
         }
@@ -538,8 +538,8 @@ class DatabasesController extends Controller
 
                 return response()->success('success', array('results' => $results->toArray()));
             }
-
             return response()->error('failed', array('error' => 'database name missing'));
+
         } catch (Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));
         }

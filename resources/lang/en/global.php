@@ -50,6 +50,7 @@ return [
     "logo_" => "Logo",
     "logo" => "PHP Mongo Admin",
     "more" => "More",
+    "name" => "Name",
     "no" => "No",
     "noRoles" => "Your MongoDb account does not not have any associated roles, or, you don't have a MongoDb account.<br>
     Please contact your system administrator for assistance.<br><br>
@@ -62,6 +63,7 @@ return [
     Alternatively, you may have to delete the database file that was created and run the setup process again.<br>
     Your MongoDb data will not be affected, however, you will need the mongodb credentials that you may have either been provided with or created during the database installation and setup.<br>
     Detailed installation and setup help is available via the PhpMongoAdmin support channel: <a href=\"https://phpmongoadmin.com/support\">phpmongoadmin.com/support</a>",
+    "ok" => "OK",
     "pleaseWait" => "Please Wait",
     "region" => "Region",
     "reset" => "Reset",

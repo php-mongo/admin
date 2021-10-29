@@ -259,6 +259,7 @@
                     :key="index"
                     v-bind:user="user"
                 ></database-user>
+                <p v-if="databaseUsers.length === 0" v-text="showLanguage('users', 'noDbUsers')"></p>
             </div>
             <div>
                 <p><span class="form-error" v-if="!enable" v-text="error"></span></p>

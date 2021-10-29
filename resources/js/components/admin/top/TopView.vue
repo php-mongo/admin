@@ -85,6 +85,9 @@
                 error: null,
                 expanded: false,
                 collapsed: false,
+                limit: 5,
+                retries: 0,
+                retryInterval: null,
                 user: {}
             }
         },
@@ -142,7 +145,10 @@
 
             setPermissionError() {
                 if (this.$store.getters.getCanUserReadDatabase === false && this.$store.getters.getCanUserWriteDatabase === false) {
-                    this.setError(this.showLanguage('errors', 'noDatabaseRole'))
+                    this.setError(this.showLanguage('errors', 'noDatabaseRole'));
+                    if (this.$store.getters.getConnectionConfirmation) {
+                        this.retryInit()
+                    }
                 }
             },
 
@@ -160,6 +166,36 @@
             getUser() {
                 this.user = this.$store.getters.getUser
             },
+
+            handleGetUser() {
+                if (!this.user.id && this.retries < this.limit) {
+                    setTimeout(() => {
+                        this.user = this.$store.getters.getUser
+                    }, 100)
+                } else {
+                    this.setPermissionError()
+                }
+            },
+
+            retryInit() {
+                this.retryInterval = setInterval(() => {
+                    this.error = 'Retrying initialisation';
+                    if (this.retries < this.limit) {
+                        this.retries++;
+                        // try fetching db's again
+                        this.retry()
+
+                    } else {
+                        this.retries = 0;
+                        this.retryInterval = null
+                    }
+                }, 5000 )
+            },
+
+            retry()  {
+                console.log("retrying databases fetch..");
+                this.$store.dispatch('loadDatabases')
+            }
         },
 
         /*
@@ -169,8 +205,7 @@
             // we pass the user to child components as props
             setTimeout(() => {
                 this.getUser();
-                this.setPermissionError()
-            }, 500)
+            }, 250)
 
             EventBus.$on('collapse-left-nav', () => {
                 this.watchLeftNav()
@@ -180,14 +215,13 @@
                 this.watchLeftNav()
             });
 
-           /* EventBus.$on('collapse-nav', (status) => {
-                this.collapseNav(status)
-            });*/
-
-            setTimeout(() => {
+           /* setTimeout(() => {
+                if (!this.user.id) {
+                    this.getUser()
+                }
                 this.setPermissionError()
             }, 500)
-
+*/
         },
 
         watch: {

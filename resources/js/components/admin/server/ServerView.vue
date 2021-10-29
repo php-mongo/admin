@@ -82,9 +82,12 @@
             <directives v-bind:directives="getDirectives"></directives>
             <build-info v-bind:buildInfo="getBuildInfo"></build-info>
         </div>
-        <div class="float-center text-center" v-show="getServerLoadStatus !== 2">
+        <div class="float-center text-center" v-show="getServerLoadStatus !== 2 && getServerLoadStatus !== 3">
             <p v-text="showLanguage('global', 'loadingApplication')"></p>
             <p><img src="img/ajax-loader-60x60.gif" :alt="showLanguage('global', 'loading')"></p>
+        </div>
+        <div class="float-center text-center" v-if="getServerLoadStatus === 3">
+            <p v-text="getServerErrorMessage"></p>
         </div>
         <div>
             <p>&nbsp;</p>
@@ -161,11 +164,15 @@
             },
 
             /*
-             *  Do stop unwanted display of the container until loading is finished
+             *  Use the server load status to manage the display output
              */
             getServerLoadStatus() {
                 return this.$store.getters.getServerLoadStatus
-            }
+            },
+
+            getServerErrorMessage() {
+                return this.$store.getters.getServerErrorDataMessage
+            },
         },
 
         /*
@@ -232,6 +239,15 @@
             EventBus.$on('expand-left-nav', () => {
                 this.watchLeftNav()
             })
+        },
+
+        watch: {
+            getServerLoadStatus() {
+                if (this.$store.getters.getServerLoadStatus === 2) {
+                    // let the application know the we have a connection
+                    this.$store.dispatch('setConnectionStatus', true)
+                }
+            }
         }
     }
 </script>

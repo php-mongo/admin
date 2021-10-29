@@ -37,6 +37,7 @@ export const application = {
         appConfig: {
             'minPwdLength': 5
         },
+        connectionConfirmed: null,
         currentLocation: {},
         currentDbHost: 'Localhost',
         country: JSON.parse(sessionStorage.getItem('country')) || 'AU',
@@ -208,6 +209,10 @@ export const application = {
 
         setDbHost( { commit }, data ) {
             commit( 'setDbHost', data )
+        },
+
+        setConnectionStatus( { commit }, data ) {
+            commit( 'setConnectionConfirmation', data)
         }
     },
 
@@ -295,6 +300,10 @@ export const application = {
 
         setDbHost( state, data ) {
             state.currentDbHost = data
+        },
+
+        setConnectionConfirmation( state, status ) {
+            state.connectionConfirmed = status
         }
     },
 
@@ -406,6 +415,10 @@ export const application = {
        */
         getDbHost( state ) {
             return state.currentDbHost
+        },
+
+        getConnectionConfirmation( state ) {
+            return state.connectionConfirmed
         }
     }
 };

@@ -32,20 +32,23 @@ export const server = {
     *   Defines the 'state' being monitored for the module
     */
     state: {
-        servers: [],
-        serversLoadStatus: 0,
-        server: {},
-        serverLoadStatus: 0,
-        serverConfig: {},
-        serverSaveStatus: 0,
-        serverActivateStatus: 0,
-        serverDeleteStatus: 0,
         displayServer: {},
         displayServerStatus: 0,
-        loadServerStatus: 0,
-        serverStatus: {},
+        errorData: null,
         loadServerProcesses: 0,
-        serverProcesses: []
+        loadServerStatus: 0,
+        serverProcesses: [],
+        server: {},
+        serverActivateStatus: 0,
+        serverConfig: {},
+        serverDeleteStatus: 0,
+        serverLoadStatus: 0,
+        serverStatus: {},
+        servers: [],
+        serversLoadStatus: 0,
+        serverSaveStatus: 0,
+        replicationData: {},
+        replicationDataStatus: 0,
     },
 
     /*
@@ -66,7 +69,7 @@ export const server = {
                 .catch( (error) => {
                     commit( 'setServers', [] );
                     commit( 'setServersLoadStatus', 3 );
-                    console.log(error)
+                    console.error(error.toString())
                 });
         },
 
@@ -84,8 +87,11 @@ export const server = {
                 })
                 .catch( (error) => {
                     commit( 'setServer', {} );
+                    commit( 'setServerErrorData', error.response );
+                    dispatch( 'clearDatabases' );
+                    dispatch( 'setDbHost', 'Localhost' )
                     commit( 'setServerLoadStatus', 3 );
-                    console.log(error)
+                    console.error(error.toString())
                 });
         },
 
@@ -103,7 +109,7 @@ export const server = {
                 .catch( (error) => {
                     commit( 'setServerConfig', {} );
                     commit( 'setServerSaveStatus', 3 );
-                    console.log(error)
+                    console.error(error.toString())
                 });
         },
 
@@ -120,8 +126,9 @@ export const server = {
                 })
                 .catch( (error) => {
                     commit( 'setServerConfig', {} );
+                    commit( 'setServerErrorData', error.response );
                     commit( 'setServerActivateStatus', 3 );
-                    console.log(error)
+                    console.error(error.toString())
                 });
         },
 
@@ -139,7 +146,7 @@ export const server = {
                 .catch( (error) => {
                     commit( 'setServerDelete', {} );
                     commit( 'setServerDeleteStatus', 3 );
-                    console.log(error)
+                    console.error(error.toString())
                 });
         },
 
@@ -157,7 +164,7 @@ export const server = {
                 .catch( (error) => {
                     commit( 'setServerStatus', {} );
                     commit( 'setLoadServerStatus', 3 );
-                    console.log(error)
+                    console.error(error.toString())
                 });
         },
 
@@ -180,9 +187,29 @@ export const server = {
                 .catch( (error) => {
                     commit( 'setServerProcesses', [] );
                     commit( 'setLoadServerProcesses', 3 );
-                    console.log(error)
+                    console.error(error.toString())
                 });
         },
+
+        getReplicationData( { commit }) {
+            commit( 'setReplicationDataStatus', 1 )
+
+            ServerApi.getReplicationData()
+                .then( ( response ) => {
+                    if (response.data.data.replication) {
+                        commit( 'setReplicationData', response.data.data.replication );
+                        commit( 'setReplicationDataStatus', 2 );
+                        console.log("replication:" + response.data.data.replication)
+                    }
+
+                })
+                .catch( (error) => {
+                    commit( 'setReplicationData', [] );
+                    commit( 'setServerErrorData', error.response );
+                    commit( 'setReplicationDataStatus', 3 );
+                    console.error(error.toString())
+                });
+        }
     },
 
     /*
@@ -295,6 +322,18 @@ export const server = {
         */
         setServerProcesses( state, processes ) {
             state.serverProcesses = processes
+        },
+
+        setReplicationDataStatus( state, status ) {
+            state.replicationDataStatus = status
+        },
+
+        setReplicationData( state, data ) {
+            state.replicationData = data
+        },
+
+        setServerErrorData( state, error ) {
+            state.errorData = error
         }
     },
 
@@ -466,6 +505,32 @@ export const server = {
         */
         getServerProcesses( state ) {
             return state.serverProcesses
+        },
+
+        getReplicationDataStatus( state ) {
+            return state.replicationDataStatus
+        },
+
+        getReplicationData( state ) {
+            return state.replicationData
+        },
+
+        getServerErrorData( state ) {
+            return state.errorData
+        },
+
+        getServerErrorDataMessage( state ) {
+            let data = state.errorData;
+            if (data.data) {
+                if (data.data.errors) {
+                    if (data.data.errors.error) {
+                        return data.data.errors.error
+                    }
+                    return data.data.errors
+                }
+                return data.data
+            }
+            return data
         }
     }
 };
