@@ -240,6 +240,17 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
 
     /*
     * -------------------------------------------------------
+    * Get Server replication data (private route)
+    * -------------------------------------------------------
+    * URL:         /api/v1/server/replication
+    * Controller:  API/ServerController@getServerReplication
+    * Method:      GET
+    * Description: Gets any the Master / Slave replication data if existing
+    */
+    Route::get('/server/replication', 'Api\ServerController@getServerReplication');
+
+    /*
+    * -------------------------------------------------------
     * Get all Databases (private route)
     * -------------------------------------------------------
     * URL:         /api/v1/databases

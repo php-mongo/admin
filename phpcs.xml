@@ -37,7 +37,7 @@
     <!-- Override for PhpMongoAdmin -->
     <rule ref="Generic.Files.LineLength">
         <properties>
-            <property name="lineLimit" value="135"/>
+            <property name="lineLimit" value="140"/>
             <property name="absoluteLineLimit" value="0"/>
         </properties>
     </rule>

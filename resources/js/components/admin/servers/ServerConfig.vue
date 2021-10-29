@@ -16,10 +16,29 @@
   -->
 
 <style lang="scss">
-    /* nothing to see here! */
+    @import '~@/abstracts/_variables.scss';
+    .server-config {
+        th {
+            width: 250px;
+        }
+
+        tr.active {
+            th, td {
+                color: $green !important;
+            }
+        }
+
+        .server-uri {
+            background-color: $tableHeaderBg;
+            color: $white;
+            font-size: 1.2rem;
+            padding: 5px !important;
+            text-align: center !important;
+        }
+    }
 </style>
 <template>
-    <div>
+    <div class="server-config">
         <table class="bordered">
             <tr>
                 <th class="bb" v-text="showLanguage('servers', 'host')"></th>
@@ -37,7 +56,7 @@
                 <th class="bb" v-text="showLanguage('servers', 'password')"></th>
                 <td>*****</td>
             </tr>
-            <tr>
+            <tr v-bind:class="{ active: isActive }">
                 <th class="bb" v-text="showLanguage('servers', 'active')"></th>
                 <td>{{ showBool(server.active) }}
                 <span class="activate-checkbox" v-show="server.active === 0" :title="showLanguage('title' , 'activateServerTitle')">
@@ -55,26 +74,35 @@
                 <td>{{ showBool(server.mongo_cloud) }}</td>
             </tr>
             <tr>
-                <th class="server-uri bb" colspan="2" v-text="showConnection()"></th>
+                <td class="server-uri bb" colspan="2" v-text="showConnection()"></td>
             </tr>
             <tr v-if="canEdit || canDelete">
                 <th
                     class="bb"
                     v-text="showLanguage('servers', 'actions')"
-                ></th><td>
-                <span
-                    class="pma-link"
-                    @click="$emit('edit', server.id)"
-                    v-text="showLanguage('servers', 'edit')"
-                    v-if="canEdit"
-                ></span>
-                <span v-if="canEdit && canDelete">|</span>
-                <span
-                    class="pma-link-danger"
-                    @click="$emit('delete', server.id)"
-                    v-text="showLanguage('servers', 'delete')"
-                    v-if="canDelete"
-                ></span></td>
+                ></th>
+                <td>
+                    <span
+                        class="pma-link"
+                        @click="$emit('edit', server.id)"
+                        v-text="showLanguage('servers', 'edit')"
+                        v-if="canEdit"
+                    ></span>
+                    <span v-if="canEdit && canDelete"> | </span>
+                    <span
+                        class="pma-link-danger"
+                        @click="$emit('delete', server.id)"
+                        v-text="showLanguage('servers', 'delete')"
+                        v-if="canDelete"
+                    ></span>
+                    <span v-if="canDelete && server.active === '0'"> | </span>
+                    <span
+                        class="pma-link-activate"
+                        @click="$emit('activate', server.id)"
+                        v-text="showLanguage('servers', 'activate')"
+                        v-if="server.active === '0'"
+                    ></span>
+                </td>
             </tr>
             <tr v-if="!canEdit && !canDelete">
                 <th class="bb" v-text="showLanguage('global', 'warning')"></th>
@@ -84,11 +112,6 @@
     </div>
 </template>
 <script>
-    /*
-     * Import the Event bus - not being used...
-     */
-    //import { EventBus } from '../../../event-bus.js';
-
     export default {
         name: "ServerConfig",
 
@@ -125,6 +148,11 @@
                 }
                 return false
             },
+
+            isActive() {
+                let v = this.server.active;
+                return v === 1 || v === "1" || v === true;
+            }
         },
 
         /*

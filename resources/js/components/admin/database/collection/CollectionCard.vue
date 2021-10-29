@@ -61,6 +61,10 @@
                     margin-bottom: .7rem;
                 }
             }
+            &.collnav {
+                top: 33px;
+            }
+
         }
         .page-message {
             font-weight: 600;
@@ -493,6 +497,7 @@
             return {
                 show: false,
                 collapsed: false,
+                collapsedNav: false,
                 expanded: false,
                 name: null,
                 start: 0,
@@ -661,7 +666,8 @@
             },
 
             watchScroll() {
-                return this.lockPagination === true ? 'fixed' : ''
+                return this.lockPagination === true && this.collapsedNav === true ? 'fixed collnav' :
+                    this.lockPagination === true && this.collapsedNav === false ? 'fixed' : ''
             }
         },
 
@@ -991,7 +997,7 @@
                 }
                 if (status === true && this.expanded === false) {
                     this.$jqf(this.$refs.recordsHeader).css('left', '245px');
-                    this.$jqf(this.$refs.recordsHeader).css('width', 'calc(97vw - 260px)')
+                    this.$jqf(this.$refs.recordsHeader).css('width', 'calc(97vw - 250px)')
                 }
             },
 
@@ -1046,6 +1052,7 @@
             });
 
             EventBus.$on('collapse-db', (collapse) => {
+                console.log("collapse-db: " + collapse)
             });
 
             EventBus.$on('document-updated', (data) => {
@@ -1078,6 +1085,10 @@
 
             EventBus.$on('expand-left-nav', () => {
                 this.watchLeftNav()
+            });
+
+            EventBus.$on('collapse-nav', (status) => {
+                this.collapsedNav = status
             });
         },
 

@@ -173,7 +173,7 @@
         <nav class="top-navigation">
             <ul class="links">
                 <li class="host-link text-left">
-                    <img src="img/icon/servers.png" /> <span class="pma-link" v-on:click="loadHome($event)">Localhost</span>
+                    <img src="img/icon/servers.png" /> <span class="pma-link" v-on:click="loadHome($event)">{{ getDbHost }}</span>
                 </li>
                 <li v-if="error !== null">
                     <span class="top-error" @click="$emit('clearError')">{{ getError }}</span>
@@ -223,11 +223,6 @@
 
     import router from '../../../routes';
 
-    /*
-    *   Imports filters.
-    */
-    import TextFilter from '../../global/TextFilter.vue';
-
     export default {
         /*
          *  handle error display
@@ -250,13 +245,6 @@
         },
 
         /*
-        *   Registers child components with the component.
-        */
-        components: {
-            TextFilter
-        },
-
-        /*
         *   Defines the computed properties on the component.
         */
         computed: {
@@ -272,6 +260,14 @@
             */
             siteName() {
                 return MONGO_CONFIG.SITE_NAME
+            },
+
+            /*
+            *   Display the current DB connection hostname
+            */
+            getDbHost() {
+                let host = this.$store.getters.getDbHost;
+                return !host || host === 'localhost' ? 'Localhost' : host
             },
 
             /*

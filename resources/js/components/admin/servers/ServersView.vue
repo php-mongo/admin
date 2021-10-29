@@ -174,7 +174,7 @@
                 </p>
             </div>
             <server-config
-                @activateServer="activateServer($event)"
+                @activate="activateServer($event)"
                 @edit="edit($event)"
                 @delete="deleteConfig($event)"
                 v-for="(server, index) in getServers"
@@ -183,6 +183,7 @@
                 v-bind:server="server"
                 v-bind:total="getTotal"
             ></server-config>
+            <p>&nbsp;</p>
         </div>
     </div>
 </template>
@@ -213,6 +214,7 @@
          */
         data() {
             return {
+                activateId: null,
                 connection: null,
                 createNew: false,
                 deleteId: null,
@@ -310,6 +312,7 @@
              *  Display the server creation form
              */
             setupServer() {
+                this.editing = false;
                 this.form = this.setup;
                 this.createNew = !this.createNew
             },
@@ -426,6 +429,7 @@
                 if (this.validateServer()) {
                     this.form.update = 1;
                     this.$store.dispatch('saveServer', this.form);
+                    this.completeUpdateServer()
                 }
             },
 
@@ -454,7 +458,53 @@
              */
             activateServer( id ) {
                 if (id) {
-                    this.$store.dispatch('activateServer', id)
+                    this.index = 0;
+                    this.activateId = id;
+                    EventBus.$emit('action-confirmation',
+                        {
+                            notification: this.showLanguage('servers', 'activateConfirm'),
+                            id: id,
+                            element: 'server'
+                        }
+                    )
+                }
+            },
+
+            activateConfirmed( id ) {
+                if (id === this.activateId) {
+                    this.$store.dispatch('activateServer', id);
+                    this.handleActivation()
+                }
+            },
+
+            handleActivation() {
+                let status = this.$store.getters.getServerActivateStatus
+                if (status === 1 && this.index < this.limit) {
+                    this.index++;
+                    setTimeout(() => {
+                        this.handleActivation()
+                    }, 50)
+                }
+                if (status === 2) {
+                    EventBus.$emit('hide-collection-lists');
+                    EventBus.$emit('hide-panels');
+                    // force a reload of the components
+                    this.$store.dispatch('loadUser');
+                    setTimeout(() => {
+                        this.$store.dispatch('loadServer');
+                        setTimeout(() => {
+                            this.$store.dispatch('loadDatabases');
+                            setTimeout(() =>{
+                                this.$store.dispatch('setActiveNav', null);
+                                EventBus.$emit('show-server');
+                                EventBus.$emit('show-mongo')
+                            }, 250)
+                        }, 250)
+                    }, 250)
+                }
+                if (status === 3) {
+                    let error = this.$store.getters.getServerErrorData;
+                    EventBus.$emit('show-error', { notification: this.showLanguage('errors', 'servers.activateFailed', error), timer: 7000 })
                 }
             },
 
@@ -470,6 +520,7 @@
              *  Delete the server configuration
              */
             deleteConfig(id) {
+                this.index = 0;
                 this.deleteId = id;
                 EventBus.$emit('delete-confirmation', {id: id, element: 'server', notification: this.showLanguage('servers', 'deleteConfirm') })
             },
@@ -489,8 +540,11 @@
              */
             handleDeletion() {
                 let status = this.$store.getters.getServerDeleteStatus;
-                if (status === 1) {
-                    this.handleDeletion()
+                if (status === 1 && this.index < this.limit) {
+                    this.index++;
+                    setTimeout(() => {
+                        this.handleDeletion()
+                    }, 50);
                 }
                 if (status === 2) {
                     EventBus.$emit('show-success', { notification: this.showLanguage('servers', 'deleteSuccess'), timer: 5000 })
@@ -501,13 +555,6 @@
                 }
             },
 
-            /*
-             *  Cancel the deletion
-             */
-            deleteCancelled() {
-                this.deleteId = null
-            },
-
             reset() {
                 this.form = this.setup;
             },
@@ -515,7 +562,7 @@
             cancel() {
                 this.reset();
                 if (this.editing) {
-                    this.createNew = !this.editing
+                    this.editing = !this.editing
                 }
                 if (this.createNew) {
                     this.createNew = !this.createNew
@@ -527,6 +574,7 @@
              */
             showComponent() {
                 // load all servers allocated to the current user
+                this.editing = this.createNew = false;
                 this.$store.dispatch( 'loadServers' );
                 this.show = true
             },
@@ -547,28 +595,42 @@
             *    Hide this component
             */
             EventBus.$on('hide-panels', () => {
-                this.hideComponent();
+                this.hideComponent()
             });
 
             /*
             *    Show this component
             */
             EventBus.$on('show-servers', () => {
-                this.showComponent();
+                this.showComponent()
             });
 
             /*
             *    Confirmed deletion
             */
             EventBus.$on('confirm-delete-server', (id) => {
-                this.deleteConfirmed(id);
+                this.deleteConfirmed(id)
             });
 
             /*
             *    Confirmed deletion
             */
-            EventBus.$on('cancel-delete-server', (id) => {
-                this.deleteCancelled(id);
+            EventBus.$on('cancel-delete-server', () => {
+                this.deleteId = null
+            });
+
+            /*
+            *    Confirmed deletion
+            */
+            EventBus.$on('confirm-action-server', (id) => {
+                this.activateConfirmed(id)
+            });
+
+            /*
+            *    Confirmed deletion
+            */
+            EventBus.$on('cancel-action-server', () => {
+                this.activateId = null
             });
         }
     }
