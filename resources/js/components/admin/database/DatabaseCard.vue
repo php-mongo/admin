@@ -238,7 +238,10 @@
             },
 
             getDB() {
-                return this.db.db;
+                if (this.db.db) {
+                    return this.db.db
+                }
+                return '';
             }
         },
 

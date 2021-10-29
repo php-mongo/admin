@@ -209,12 +209,12 @@ class UserHelper
     public static function getIPInfo(Request $request)
     {
         try {
-            if (config('ipinfo_enabled') && self::pingHost(IPinfo::API_URL)) {
+            if (config('app.ipinfo_enabled') && self::pingHost(IPinfo::API_URL)) {
                 $ipInfo = Session::get('ipInfo');
                 if ($ipInfo) {
                     return $ipInfo;
                 }
-                $ip = config('ipinfo_address'); // from env() or $_SERVER
+                $ip = config('app.ipinfo_address'); // from env() or $_SERVER
                 $access_token = 'e5f368ed86097c';
                 /** @var IPinfo $client */
                 $client = new IPinfo($access_token);

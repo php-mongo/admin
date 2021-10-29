@@ -44,7 +44,7 @@ class EditServerRequest extends FormRequest
             'host'          => 'required|string|max:200',
             'id'            => 'sometimes|integer',
             'mongo_cloud'   => 'required|boolean',
-            'mongo_cloud_database'   => 'sometimes|string',
+            'mongo_cloud_database'   => 'required_if:mongo_cloud,true|string|nullable',
             'password'      => 'sometimes|string|min:5',
             'port'          => 'required|integer|min:5',
             'username'      => 'required|string|min:5|max:100',

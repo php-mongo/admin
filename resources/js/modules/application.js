@@ -30,14 +30,16 @@ import UserAPI from '../api/user.js';
 export const application = {
     /*
     *   Defines the 'state' being monitored for the module
-    * JSON.parse(sessionStorage.getItem('location'))
+    *   JSON.parse(sessionStorage.getItem('location'))
     */
     state: {
         activeNav: null,
         appConfig: {
             'minPwdLength': 5
         },
+        connectionConfirmed: null,
         currentLocation: {},
+        currentDbHost: 'Localhost',
         country: JSON.parse(sessionStorage.getItem('country')) || 'AU',
         countryName: JSON.parse(sessionStorage.getItem('country_name')) || 'Australia',
         countries: {},
@@ -203,6 +205,14 @@ export const application = {
 
         clearAppErrorData( { commit } ) {
             commit( 'setAppErrorData', null )
+        },
+
+        setDbHost( { commit }, data ) {
+            commit( 'setDbHost', data )
+        },
+
+        setConnectionStatus( { commit }, data ) {
+            commit( 'setConnectionConfirmation', data)
         }
     },
 
@@ -286,6 +296,14 @@ export const application = {
          */
         setAppErrorData( state, data ) {
             state.errorData = data
+        },
+
+        setDbHost( state, data ) {
+            state.currentDbHost = data
+        },
+
+        setConnectionConfirmation( state, status ) {
+            state.connectionConfirmed = status
         }
     },
 
@@ -390,6 +408,17 @@ export const application = {
          */
         getAppErrorData( state ) {
             return state.errorData
+        },
+
+        /*
+       *   Used to display the DB hostname
+       */
+        getDbHost( state ) {
+            return state.currentDbHost
+        },
+
+        getConnectionConfirmation( state ) {
+            return state.connectionConfirmed
         }
     }
 };

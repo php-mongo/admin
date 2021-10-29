@@ -100,7 +100,8 @@
                     this.name = db.db.databaseName;
                     return db.db.databaseName
                 }
-                else {db.db.name;
+                else {
+                    db.db.name;
                     this.name = db.db.name;
                     return db.db.name
                 }

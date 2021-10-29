@@ -21,45 +21,61 @@
 import { MONGO_CONFIG } from "../config";
 
 export default {
-    /*
-    *   Get the server details displayed on the dashboard
-    *   !! This is handled by a specific ServerController !!
-    *   GET /api/v1/server
-    */
+    /**
+     * Get the server details displayed on the dashboard
+     * !! This is handled by a specific ServerController !!
+     * GET /api/v1/server
+     * @returns {Promise<AxiosResponse<any>>}
+     */
     getServer: () => {
         return window.axios.get( MONGO_CONFIG.API_URL + '/server' );
     },
 
-    /*
-    *   Get the server processes details displayed on the dashboard
-    *   !! This is handled by a specific ServerController !!
-    *   GET /api/v1/server/processes
-    */
+    /**
+     * Get the server processes details displayed on the dashboard
+     * !! This is handled by a specific ServerController !!
+     * GET /api/v1/server/processes
+     * @returns {Promise<AxiosResponse<any>>}
+     */
     getServerProcesses: () => {
         return window.axios.get( MONGO_CONFIG.API_URL + '/server/processes' );
     },
 
-    /*
-    *   Get the server status details displayed on the dashboard
-    *   !! This is handled by a specific ServerController !!
-    *   GET /api/v1/server/{database}/status
-    */
+    /**
+     * Get the server status details displayed on the dashboard
+     * !! This is handled by a specific ServerController !!
+     * GET /api/v1/server/{database}/status
+     * @param database
+     * @returns {Promise<AxiosResponse<any>>}
+     */
     getServerStatus: (database) => {
         return window.axios.get( MONGO_CONFIG.API_URL + '/server/' + database + '/status' );
     },
 
-    /*
-    *   Get the servers setup by current user
-    *   GET /api/v1/servers
-    */
+    /**
+     * Get servers Master / Slave data if any exists
+     * GET /api/v1/server/replication
+     * @returns {Promise<AxiosResponse<any>>}
+     */
+    getReplicationData: () => {
+        return window.axios.get( MONGO_CONFIG.API_URL + '/server/replication' );
+    },
+
+    /**
+     * Get the servers setup by current user
+     * GET /api/v1/servers
+     * @returns {Promise<AxiosResponse<any>>}
+     */
     getServers: () => {
         return window.axios.get( MONGO_CONFIG.API_URL + '/servers' );
     },
 
-    /*
-    *   Save the server details either created or edited on the Servers view
-    *   POST /api/v1/servers
-    */
+    /**
+     * Save the server details either created or edited on the Servers view
+     * POST /api/v1/servers
+     * @param data
+     * @returns {Promise<AxiosResponse<any>>}
+     */
     saveServer: ( data ) => {
         return window.axios.post( MONGO_CONFIG.API_URL + '/servers',
             {
@@ -68,10 +84,12 @@ export default {
             });
     },
 
-    /*
-    *   Activate the server configuration
-    *   GET /api/v1/servers/activate
-    */
+    /**
+     * Activate the server configuration
+     * GET /api/v1/servers/activate
+     * @param data
+     * @returns {Promise<AxiosResponse<any>>}
+     */
     activateServer: (data) => {
         return window.axios.post( MONGO_CONFIG.API_URL + '/servers/activate',
             {
@@ -80,10 +98,12 @@ export default {
             });
     },
 
-    /*
-    *   Delete the server configurations
-    *   GET /api/v1/servers/{id}
-    */
+    /**
+     * Delete the server configurations
+     * GET /api/v1/servers/{id}
+     * @param data
+     * @returns {Promise<AxiosResponse<any>>}
+     */
     deleteServer: (data) => {
         return window.axios.delete( MONGO_CONFIG.API_URL + '/servers/' + data );
     }

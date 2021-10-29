@@ -53,8 +53,8 @@
         <div class="notification-container" v-show="show">
             <div class="action-notification">
                 <img src="img/error.svg"/> {{ message }}
-                <button class="button warning" v-on:click="confirmDelete()">Confirm action</button>
-                <button class="button" v-on:click="cancelDelete()">Cancel</button>
+                <button class="button warning" v-on:click="confirmAction()">Confirm action</button>
+                <button class="button" v-on:click="cancelAction()">Cancel</button>
             </div>
         </div>
     </transition>
@@ -80,12 +80,12 @@
         },
 
         methods: {
-            confirmDelete() {
+            confirmAction() {
                 EventBus.$emit('confirm-action-' + this.element, this.id);
                 this.close();
             },
 
-            cancelDelete() {
+            cancelAction() {
                 EventBus.$emit('cancel-action-' + this.element, this.id);
                 this.close();
             },

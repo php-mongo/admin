@@ -130,9 +130,9 @@ class ServersController extends Controller
         $servers      = Server::all();
         $updateServer = null;
         foreach ($servers as $server) {
-            if (1 == $server->active && $id != $server->id) {
+            if ("1" === $server->active && $id != $server->id) {
                 /** @var Server $update */
-                $update         = Server::where('id', $server->id)->get();
+                $update         = Server::where('id', $server->id)->get()[0];
                 $update->setAttribute('active', 0);
                 $update->save();
             }
@@ -141,13 +141,17 @@ class ServersController extends Controller
                 $updateServer = $server;
             }
         }
-        $updateServer->setAttribute('active', 1);
-        $updateServer->save();
-        return response()->success('success', array('server' => $updateServer));
+        if ($updateServer) {
+            $updateServer = Server::where('id', $updateServer->id)->get()[0];
+            $updateServer->setAttribute('active', 1);
+            $updateServer->save();
+            return response()->success('success', array('server' => $updateServer));
+        }
+        return response()->error('failed', array('error' => 'Unable to find server to activate'));
     }
 
     /**
-     * @ToDo We are handling updates with the store method
+     * ToDo: We are handling updates with the store method
      * Update the specified resource in storage.
      *
      * @param   Request $request

@@ -87,28 +87,28 @@
     <nav ref="navPanel" class="panel-navigation" v-show="!collapsed">
         <div class="text-left">
             <ul class="links">
-                <li v-bind:class="{active: getActivePanel('databases')}">
+                <li v-bind:class="{active: activeNav === 'databases'}">
                     <span v-on:click="loadPanel('databases', $event)"><img src="img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'databasesTitle')" v-text="showLanguage('nav', 'databases')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('servers')}">
+                <li v-bind:class="{active: activeNav === 'servers'}">
                     <span v-on:click="loadPanel('servers', $event)"><img src="img/icon/servers2.png" /> <span v-bind:title="showLanguage('title', 'serversTitle')" v-text="showLanguage('nav', 'servers')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('execute')}" v-if="isRootUser || isAdminUser">
+                <li v-bind:class="{active: activeNav === 'execute'}" v-if="isRootUser || isAdminUser">
                     <span v-on:click="loadPanel('execute', $event)"><img src="img/icon/json.gif" /> <span v-bind:title="showLanguage('title', 'executeTitle')" v-text="showLanguage('nav', 'execute')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('status')}" v-if="isRootUser || isAdminUser">
+                <li v-bind:class="{active: activeNav === 'status'}" v-if="isRootUser || isAdminUser">
                     <span v-on:click="loadPanel('status', $event)"><img src="img/icon/detail.png" /> <span v-bind:title="showLanguage('title', 'statusTitle')" v-text="showLanguage('nav', 'status')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('processes')}" v-if="isRootUser || isAdminUser">
+                <li v-bind:class="{active: activeNav === 'processes'}" v-if="isRootUser || isAdminUser">
                     <span v-on:click="loadPanel('processes', $event)"><img src="img/icon/report.png" /> <span v-bind:title="showLanguage('title', 'processesTitle')" v-text="showLanguage('nav', 'processes')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('command')}">
+                <li v-bind:class="{active: activeNav === 'command'}">
                     <span v-on:click="loadPanel('command', $event)"><img src="img/icon/s-icon.gif" /> <span v-bind:title="showLanguage('title', 'commandTitle')" v-text="showLanguage('nav', 'command')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('users')}" v-if="isRootUser || isAdminUser || isUserAdmin">
+                <li v-bind:class="{active: activeNav === 'users'}" v-if="isRootUser || isAdminUser || isUserAdmin">
                     <span v-on:click="loadPanel('users', $event)"><img src="img/icon/databases.png" /> <span v-bind:title="showLanguage('title', 'usersTitle')" v-text="showLanguage('nav', 'users')"></span></span>
                 </li>
-                <li v-bind:class="{active: getActivePanel('master')}" v-if="isRootUser || isAdminUser">
+                <li v-bind:class="{active: activeNav === 'master'}" v-if="isRootUser || isAdminUser">
                     <span v-on:click="loadPanel('master', $event)"><img src="img/icon/key.png" /> <span v-bind:title="showLanguage('title', 'masterTitle')" v-text="showLanguage('nav', 'master')"></span></span>
                 </li>
             </ul>
@@ -173,7 +173,7 @@
 
             isUserAdmin() {
                 return this.$store.getters.canUserAdminUsers;
-            }
+            },
         },
 
         /*
@@ -184,21 +184,14 @@
             *   Calls the Translation and Language service
             */
             showLanguage( context, key ) {
-                // return this.$trans( context, key );
                 return this.$store.getters.getLanguageString( context, key )
             },
 
             /*
-            *   Get the active panel
+            *   Sets the active nav when navigation is triggered outside this view
+            *   ToDo: verify the need for this method
             */
-            getActivePanel: function(panel) {
-                return this.activePanel === panel
-            },
-
-            /*
-            *   Set the active panel
-            */
-            setActivePanel: function() {
+            setActiveNav() {
                 this.activePanel = this.$store.getters.getActivePanel
             },
 
@@ -206,15 +199,23 @@
             *   Load main panel content via event
             */
             loadPanel( item ) {
+                this.activePanel = item;
                 this.$store.dispatch('setActiveNav', item);
                 EventBus.$emit('hide-panels');
                 EventBus.$emit('show-' + item)
-            }
+            },
+
+            /*
+            *   Get the active panel
+            */
+            getActivePanel(panel) {
+                return this.activePanel === panel
+            },
         },
 
        watch: {
             activeNav() {
-                this.setActivePanel()
+                this.setActiveNav();
             }
         }
     }
