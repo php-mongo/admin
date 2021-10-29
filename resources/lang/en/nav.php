@@ -43,7 +43,7 @@ return [
     "latest" => "Latest",
     "login" => "Login",
     "logout" => "Logout",
-    "master" => "Master|Slave",
+    "master" => "Cluster",
     "post" => "Post Ad",
     "privacy" => "Privacy Policy",
     "processes" => "Processes",

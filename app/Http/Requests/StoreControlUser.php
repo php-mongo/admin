@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      StoreControlUser.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $

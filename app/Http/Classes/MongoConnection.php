@@ -383,6 +383,7 @@ class MongoConnection
                 'port' => 27017,
                 'username' =>  config('app.dbUser') ,
                 'password' => Crypt::encryptString(config('app.dbPasswd')));
+
             $this->userName = config('app.dbUser');
         }
 

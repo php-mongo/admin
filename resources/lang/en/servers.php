@@ -30,6 +30,8 @@ return [
 
     "actions" => "Actions",
     "active" => "Active",
+    "activate" => "Activate",
+    "activateConfirm" => "Please confirm server activation. All views and data will be refreshed!",
     "add" => "Add another server configuration.",
     "addNew" => "Add New",
     "cannotEditDelete" => "Current server: cannot edit|delete this configuration",

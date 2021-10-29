@@ -23,11 +23,12 @@
 namespace App\Helpers;
 
 /**
- * We are handling MongoDB based functionality
+ * @use
  */
 use App\Models\Postcode;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Crypt;
@@ -35,13 +36,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
+use ipinfo\ipinfo\Details;
 use ipinfo\ipinfo\IPinfo;
 use ipinfo\ipinfo\IPinfoException;
-use App\Exceptions\UnableToDeleteUserException;
 
 /**
  * Always be prepared to accept failure !!
  */
+use App\Exceptions\UnableToDeleteUserException;
 use Exception;
 
 /**
@@ -174,14 +176,14 @@ class UserHelper
     /**
      * Generate a new Login user
      *
-     * @param   array $data
-     * @return  User
+     * @param   array $data  User
      */
     public static function generateControlUser(array $data): User
     {
         // generate new login user
         $password = $data['password'];
-        $user               = new User();
+        $user     = new User();
+
         $user->setAttribute('name', $data['name']);
         $user->setAttribute('user', $data['user']);
         $user->setAttribute('email', $data['email']);
@@ -201,18 +203,18 @@ class UserHelper
 
     /**
      * @param   Request $request
-     * @return  bool|\ipinfo\ipinfo\Details|mixed
+     * @return  bool|Details|mixed
      * @throws  Exception
      */
     public static function getIPInfo(Request $request)
     {
         try {
-            if (config('ipinfo_enabled') && self::pingHost(IPinfo::API_URL)) {
+            if (config('app.ipinfo_enabled') && self::pingHost(IPinfo::API_URL)) {
                 $ipInfo = Session::get('ipInfo');
                 if ($ipInfo) {
                     return $ipInfo;
                 }
-                $ip = config('ipinfo_address'); // from env() or $_SERVER
+                $ip = config('app.ipinfo_address'); // from env() or $_SERVER
                 $access_token = 'e5f368ed86097c';
                 /** @var IPinfo $client */
                 $client = new IPinfo($access_token);
@@ -336,9 +338,9 @@ class UserHelper
      * @param $state
      * @param $value
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public static function getUserArea(Request $request, $country, $state, $value)
+    public static function getUserArea(Request $request, $country, $state, $value): JsonResponse
     {
         try {
             if (is_numeric($value)) {

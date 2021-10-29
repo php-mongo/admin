@@ -51,6 +51,7 @@ use App\Helpers\MongoConnectionHelper;
 /**
  * Facades
  */
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\View\View;

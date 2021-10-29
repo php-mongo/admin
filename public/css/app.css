@@ -8164,6 +8164,11 @@ body .pma-link-danger {
   cursor: pointer;
 }
 
+body .pma-link-activate {
+  color: #38c172;
+  cursor: pointer;
+}
+
 body .notification-container {
   position: fixed;
   z-index: 999999;

@@ -178,15 +178,6 @@ class ServerController extends Controller
     }
 
     /**
-     * @param string|array|null $errorMessage
-     * @return mixed|null
-     */
-    public function setErrorMessage($errorMessage): void
-    {
-        $this->errorMessage = $errorMessage;
-    }
-
-    /**
      * Runs the command function on MongoDB
      */
     private function getCommandline()
@@ -290,9 +281,10 @@ class ServerController extends Controller
      */
     private function getConnection()
     {
+        $server = $this->mongo->getServer();
         try {
             $port   = '';
-            $host   = 'localhost';
+            $host   = $server['host'];
             $cursor = $this->database->command(array("getCmdLineOpts" => 1));
             foreach ($cursor as $document) {
                 if (isset($document['parsed']['net']['port'])) {
@@ -302,15 +294,15 @@ class ServerController extends Controller
             $this->connection = array(
                 "Host"      => $host,
                 "Port"      => $port,
-                "Username"  => "******",
+                "Username"  => $server['username'],
                 "Password"  => "******"
             );
 
         } catch (Exception $e) {
             $this->connection = array(
-                "Host"      => 'localhost',
-                "Port"      => 27017,
-                "Username"  => "******",
+                "Host"      => $server['host'],
+                "Port"      => $server['port'],
+                "Username"  => $server['username'],
                 "Password"  => "******"
             );
         }
@@ -361,6 +353,204 @@ class ServerController extends Controller
     }
 
     /**
+     * Strip the data we want from the "replSetGetStatus" response
+     *
+     * @param   object $input
+     * @return  array
+     */
+    private function setReplicationData(object $input): array
+    {
+        $output = [];
+        foreach ($input as $key => $data) {
+            switch ($key) {
+                case 'date':
+                    /** @var MongoDB\BSON\UTCDateTime $input->$key */
+                    $output[$key] = $input->$key->toDateTime();
+                    break;
+
+                case 'optimes':
+                    /** @var MongoDB\BSON\Timestamp $lastCommittedOpTime */
+                    $lastCommittedOpTime = $data->lastCommittedOpTime->ts;
+                    $output['lastCommittedOpTime'] = date("Y-m-d H:m:s", $lastCommittedOpTime->getTimestamp());
+
+                    /** @var MongoDB\BSON\UTCDateTime $lastCommittedWallTime */
+                    $lastCommittedWallTime = $data->lastCommittedWallTime;
+                    $output['lastCommittedOpTime'] = $lastCommittedWallTime->toDateTime();
+
+                    /** @var MongoDB\BSON\Timestamp $readConcernMajorityOpTime */
+                    $readConcernMajorityOpTime = $data->readConcernMajorityOpTime->ts;
+                    $output['readConcernMajorityOpTime'] = date("Y-m-d H:m:s". $readConcernMajorityOpTime->getTimestamp());
+
+                    /** @var MongoDB\BSON\UTCDateTime $readConcernMajorityWallTime */
+                    $readConcernMajorityWallTime = $data->readConcernMajorityWallTime;
+                    $output['readConcernMajorityWallTime'] = $readConcernMajorityWallTime->toDateTime();
+
+                    /** @var MongoDB\BSON\Timestamp $appliedOpTime */
+                    $appliedOpTime = $data->appliedOpTime->ts;
+                    $output['appliedOpTime'] = date("Y-m-d H:m:s", $appliedOpTime->getTimestamp());
+
+                    /** @var MongoDB\BSON\Timestamp $durableOpTime */
+                    $durableOpTime = $data->durableOpTime->ts;
+                    $output['durableOpTime'] = date("Y-m-d H:m:s", $durableOpTime->getTimestamp());
+
+                    /** @var MongoDB\BSON\UTCDateTime $lastAppliedWallTime */
+                    $lastAppliedWallTime = $data->lastAppliedWallTime;
+                    $output['lastAppliedWallTime'] = $lastAppliedWallTime->toDateTime();
+
+                    /** @var MongoDB\BSON\UTCDateTime $lastDurableWallTime */
+                    $lastDurableWallTime = $data->lastDurableWallTime;
+                    $output['lastDurableWallTime'] = $lastDurableWallTime->toDateTime();
+                    break;
+
+                case 'lastStableRecoveryTimestamp':
+                    /** @var MongoDB\BSON\Timestamp $data */
+                    $output['lastStableRecoveryTimestamp'] = date("Y-m-d H:m:s", $data->getTimestamp());
+                    break;
+
+                case 'electionCandidateMetrics':
+                    $output['electionCandidateMetrics']['lastElectionReason'] = $data->lastElectionReason;
+
+                    /** @var MongoDB\BSON\UTCDateTime $lastElectionDate */
+                    $lastElectionDate = $data->lastElectionDate;
+                    $output['electionCandidateMetrics']['lastElectionDate'] = $lastElectionDate->toDateTime();
+                    $output['electionCandidateMetrics']['electionTerm'] = $data->electionTerm;
+
+                    /** @var MongoDB\BSON\Timestamp $lastCommittedOpTimeAtElection */
+                    $lastCommittedOpTimeAtElection = $data->lastCommittedOpTimeAtElection->ts;
+                    $output['electionCandidateMetrics']['lastCommittedOpTimeAtElection'] =
+                        date("Y-m-d H:m:s", $lastCommittedOpTimeAtElection->getTimestamp());
+
+                    /** @var MongoDB\BSON\Timestamp $lastSeenOpTimeAtElection */
+                    $lastSeenOpTimeAtElection = $data->lastSeenOpTimeAtElection->ts;
+                    $output['electionCandidateMetrics']['lastSeenOpTimeAtElection'] =
+                        date("Y-m-d H:m:s", $lastSeenOpTimeAtElection->getTimestamp());
+                    $output['electionCandidateMetrics']['numVotesNeeded'] = $data->numVotesNeeded;
+                    $output['electionCandidateMetrics']['priorityAtElection'] = $data->priorityAtElection;
+                    $output['electionCandidateMetrics']['electionTimeoutMillis'] = $data->electionTimeoutMillis;
+                    $output['electionCandidateMetrics']['numCatchUpOps'] = $data->numCatchUpOps;
+
+                    /** @var MongoDB\BSON\UTCDateTime $newTermStartDate */
+                    $newTermStartDate = $data->newTermStartDate;
+                    $output['electionCandidateMetrics']['newTermStartDate'] = $newTermStartDate->toDateTime();
+
+                    /** @var MongoDB\BSON\UTCDateTime $wMajorityWriteAvailabilityDate */
+                    $wMajorityWriteAvailabilityDate = $data->wMajorityWriteAvailabilityDate;
+                    $output['electionCandidateMetrics']['wMajorityWriteAvailabilityDate'] = $wMajorityWriteAvailabilityDate->toDateTime();
+                    break;
+
+                case 'members':
+                    $members = [];
+                    foreach ($data as $row) {
+                        $member = [];
+                        $member['_id'] = $row->_id;
+                        $member['name'] = $row->name;
+                        $member['health'] = $row->health;
+                        $member['state'] = $row->state;
+                        $member['stateStr'] = $row->stateStr;
+                        $member['uptime'] = $row->uptime;
+
+                        /** @var MongoDB\BSON\Timestamp $optime */
+                        $optime = $row->optime->ts;
+                        $member['optime'] = date("Y-m-d H:m:s", $optime->getTimestamp());
+
+                        $member['optimeDurable'] = null;
+                        if (isset($row->optimeDurable)) {
+                            /** @var MongoDB\BSON\Timestamp $optimeDurable */
+                            $optimeDurable = $row->optimeDurable->ts;
+                            $member['optimeDurable'] = date("Y-m-d H:m:s", $optimeDurable->getTimestamp());
+                        }
+
+                        /** @var MongoDB\BSON\UTCDateTime $optimeDate */
+                        $optimeDate = $row->optimeDate;
+                        $member['optimeDate'] = $optimeDate->toDateTime();
+
+                        $member['optimeDurableDate'] = null;
+                        if (isset($row->optimeDurableDate)) {
+                            /** @var MongoDB\BSON\UTCDateTime $optimeDurableDate */
+                            $optimeDurableDate = $row->optimeDurableDate;
+                            $member['optimeDurableDate'] = $optimeDurableDate->toDateTime();
+                        }
+
+                        $member['lastHeartbeat'] = null;
+                        if (isset($row->lastHeartbeat)) {
+                            /** @var MongoDB\BSON\UTCDateTime $lastHeartbeat */
+                            $lastHeartbeat = $row->lastHeartbeat;
+                            $member['lastHeartbeat'] = $lastHeartbeat->toDateTime();
+                        }
+
+                        $member['electionTime'] = null;
+                        if (isset($row->electionTime)) {
+                            $member['electionTime'] = date("Y-m-d H:m:s", $row->electionTime->getTimestamp());
+                        }
+
+                        $member['electionDate'] = null;
+                        if (isset($row->electionDate)) {
+                            $member['electionDate'] = $row->electionDate->toDateTime();
+                        }
+
+                        $member['lastHeartbeatRecv'] = null;
+                        if (isset($row->lastHeartbeatRecv)) {
+                            /** @var MongoDB\BSON\UTCDateTime $lastHeartbeatRecv */
+                            $lastHeartbeatRecv = $row->lastHeartbeatRecv;
+                            $member['lastHeartbeatRecv'] = $lastHeartbeatRecv->toDateTime();
+                        }
+
+                        $member['pingMs'] = $row->pingMs ?? null;
+                        $member['lastHeartbeatMessage'] = $row->lastHeartbeatMessage;
+                        $member['syncSourceHost'] = $row->syncSourceHost;
+                        $member['syncSourceId'] = $row->syncSourceId;
+                        $member['infoMessage'] = $row->infoMessage;
+                        $member['configVersion'] = $row->configVersion;
+                        $member['configTerm'] = $row->configTerm;
+                        $member['self'] = $row->self ?? null;
+
+                        $members[] = $member;
+                    }
+
+                    $output['members'] = $members;
+                    break;
+
+                case '$clusterTime':
+                    /** @var MongoDB\BSON\Timestamp $clusterTime */
+                    $clusterTime = $data->clusterTime;
+                    $output['clusterTime'] = date("Y-m-d H:m:s", $clusterTime->getTimestamp());
+                    break;
+
+                case 'operationTime':
+                    /** @var MongoDB\BSON\Timestamp $data */
+                    $output['operationTime'] = date("Y-m-d H:m:s", $data->getTimestamp());
+                    break;
+
+                default:
+                    $output[$key] = $data;
+                    break;
+            }
+        }
+        return $output;
+    }
+
+    /**
+     * Very basic check that we have a database connection
+     *
+     * @return bool
+     */
+    private function checkConnection(): bool
+    {
+        if (!$this->database || $this->database === null) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * @param string|array|null $errorMessage
+     */
+    public function setErrorMessage($errorMessage): void
+    {
+        $this->errorMessage = $errorMessage;
+    }
+
+    /**
      * DbsController constructor.
      */
     public function __construct()
@@ -373,6 +563,10 @@ class ServerController extends Controller
         $this->mongo = new Mongo($this->user);
         if ($this->mongo->checkConfig()) {
             $this->database = $this->mongo->connectClientDb($this->db);
+        }
+
+        if ($this->user && $this->user->exists) {
+            parent::__construct($this->user, $this->mongo);
         }
 
         // ToDo: for now just use the config value = these need to be reading the 'current server' once we implement server configs
@@ -394,6 +588,11 @@ class ServerController extends Controller
      */
     public function getServer(): Response
     {
+        // verify the connection
+        if (!$this->checkConnection()) {
+            return response()->error('failed', array('error' => "MongoDb server is not connected. Please check the active configuration"));
+        }
+
         // get the server data
         $arr = [];
 
@@ -499,6 +698,46 @@ class ServerController extends Controller
             $results = $results->toArray()[0];
 
             return response()->success('success', array('processes' => array("inprog" => $results->inprog, "ok" => $results->ok)));
+
+        } catch (\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+
+        } catch (MongoDB\Driver\Exception\Exception $e) {
+            return response()->error('failed', array('error' => $e->getMessage()));
+        }
+    }
+
+    /**
+     * Executes the repSetGetStatus command and returns formatted data
+     *
+     * URL:         /api/v1/server/replication
+     * Method:      GET
+     * Description: Handles the command to get Cluster data and sends the formatted data returned from setReplicationData()
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function getServerReplication(Request $request)
+    {
+        try {
+            $database = 'admin';
+            // get connection manager
+            $this->mongo->connectManager();
+            /** @var MongoDB\Driver\Manager $manager */
+            $manager = $this->mongo->getManager();
+
+            $command = array(
+                "replSetGetStatus" => 1
+            );
+            $results = $manager->executeCommand(
+                $database,
+                new MongoDb\Driver\Command($command)
+            );
+
+            $results = $results->toArray()[0];
+
+            // return data based on the current user permissions
+            return response()->success('success', array('replication' => $this->setReplicationData($results)));
 
         } catch (\Exception $e) {
             return response()->error('failed', array('error' => $e->getMessage()));

@@ -320,10 +320,17 @@ export const database = {
         },
 
         /*
+         * Clear all database if the server load returns an error
+         */
+        clearDatabases( { commit }) {
+            commit( 'setDatabases', [])
+        },
+
+        /*
         *   Get a collection from the stored single database object
         */
         getDbCollection( { commit }, collection ) {
-            commit('setDbCollectionStatus', 1);
+            commit( 'setDbCollectionStatus', 1);
             commit( 'findDbCollection', collection)
         },
 

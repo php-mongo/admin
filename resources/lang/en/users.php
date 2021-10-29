@@ -55,6 +55,7 @@ return [
     "loginUsers" => "Login users",
     "loginUsersShow" => "Show login users",
     "name" => "Name",
+    "noDbUsers" => "This current server has no manageable database user accounts",
     "notEditMongoUser" => "The mongodb account username cannot be editing here.<br>You can update the combined '_id and user' if you have edit permission on the system.users collection",
     "password" => "Password",
     "phone" => "Phone number",

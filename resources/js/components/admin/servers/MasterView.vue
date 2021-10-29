@@ -16,13 +16,95 @@
   -->
 
 <style lang="scss">
-    /* @import '~@/abstracts/_variables.scss'; */
+    #pma-cluster-view {
+        ul {
+            list-style: none !important;
+        }
+
+        li::marker {
+            display: none;
+            color: #fff;
+        }
+
+        p {
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            width: 100%;
+        }
+
+        span {
+            text-decoration: none;
+
+            &::marker {
+                display: none;
+            }
+        }
+
+        .title {
+            display: inline-block;
+            min-width: 170px;
+            font-weight: bold;
+        }
+    }
 </style>
 
 <template>
-    <div id="pma-servers-view" class="pma-servers-panel align-left" v-show="show">
+    <div id="pma-cluster-view" class="pma-servers-panel align-left" v-show="show">
         <div class="servers-inner">
-            <p>Master view</p>
+            <h3 v-text="showLanguage('cluster', 'clusterOverview')"></h3>
+            <ul v-if="replication">
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('global', 'ok')"></span>:</span>
+                        {{ replication.ok }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'set')"></span>:</span>
+                        {{ replication.set }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'clusterTime')"></span>:</span>
+                        {{ replication.clusterTime }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'appliedOpTime')"></span>:</span>
+                        {{ replication.appliedOpTime }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'votingMembersCount')"></span>:</span>
+                        {{ replication.votingMembersCount }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'majorityVoteCount')"></span>:</span>
+                        {{ replication.majorityVoteCount }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'operationTime')"></span>:</span>
+                        {{ replication.operationTime }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'membersTitle')"></span>:</span>
+                    </p>
+                    <cluster-member v-for="(member, key) in replication.members" v-bind:key="key" v-bind:member="member"></cluster-member>
+                </li>
+            </ul>
+            <p v-if="!replication && !error" v-text="showLanguage('cluster', 'loading')"></p>
+            <p class="form-error" v-if="error" v-text="error"></p>
+            <p class="text-info" v-if="noCluster" v-text="showLanguage('cluster', 'noCluster')"></p>
         </div>
     </div>
 </template>
@@ -33,26 +115,27 @@
      */
     import { EventBus } from '../../../event-bus.js';
 
+    import ClusterMember from "./ClusterMember";
+
     export default {
         name: "MasterView",
+
+        components: {
+            ClusterMember
+        },
 
         /*
          *   Data required for this component
          */
         data() {
             return {
-                show: false,
-                server: {},
-                form: {
-                    host: null,
-                    port: 27017,
-                    username: null,
-                    password: null,
-                    password2: null,
-                    active: null
-                },
+                error: null,
+                index: 0,
+                limit: 525,
                 message: null,
-                error: null
+                noCluster: null,
+                replication: null,
+                show: false,
             }
         },
 
@@ -60,12 +143,7 @@
          *   Defines the computed properties on the component.
          */
         computed: {
-            /*
-             *  Get the server configs for the current user
-             */
-            getServers() {
-                return this.$store.getters.getServers;
-            }
+            //
         },
 
         /*
@@ -76,23 +154,43 @@
             *   Calls the Translation and Language service
             */
             showLanguage( context, key ) {
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
+            },
+
+            handleReplicationData() {
+                let status = this.$store.getters.getReplicationDataStatus;
+                if (status === 1 && this.index < this.limit) {
+                    this.index++;
+                    setTimeout(() => {
+                        this.handleReplicationData()
+                    }, 50)
+                }
+                if (status === 2) {
+                    this.replication = this.$store.getters.getReplicationData
+                }
+                if (status === 3) {
+                    this.error = this.$store.getters.getServerErrorDataMessage;
+                    if (this.error === 'not running with --replSet') {
+                        this.noCluster = true;
+                    }
+                }
             },
 
             /*
              *   Show component
              */
             showComponent() {
-                // load all servers allocated to the current user
-                this.$store.dispatch( 'loadServers' );
+                // load all server replication data for the current connection
+                this.$store.dispatch('getReplicationData');
                 this.show = true;
+                this.handleReplicationData()
             },
 
             /*
              *   Hide component
              */
             hideComponent() {
-                this.show = false;
+                this.show = false
             }
         },
 
@@ -104,14 +202,14 @@
             *    Hide this component
             */
             EventBus.$on('hide-panels', () => {
-                this.hideComponent();
+                this.hideComponent()
             });
 
             /*
             *    Show this component
             */
             EventBus.$on('show-master', () => {
-                this.showComponent();
+                this.showComponent()
             });
         }
     }

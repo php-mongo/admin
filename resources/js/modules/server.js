@@ -32,20 +32,23 @@ export const server = {
     *   Defines the 'state' being monitored for the module
     */
     state: {
-        servers: [],
-        serversLoadStatus: 0,
-        server: {},
-        serverLoadStatus: 0,
-        serverConfig: {},
-        serverSaveStatus: 0,
-        serverActivateStatus: 0,
-        serverDeleteStatus: 0,
         displayServer: {},
         displayServerStatus: 0,
-        loadServerStatus: 0,
-        serverStatus: {},
+        errorData: null,
         loadServerProcesses: 0,
-        serverProcesses: []
+        loadServerStatus: 0,
+        serverProcesses: [],
+        server: {},
+        serverActivateStatus: 0,
+        serverConfig: {},
+        serverDeleteStatus: 0,
+        serverLoadStatus: 0,
+        serverStatus: {},
+        servers: [],
+        serversLoadStatus: 0,
+        serverSaveStatus: 0,
+        replicationData: {},
+        replicationDataStatus: 0,
     },
 
     /*
@@ -56,35 +59,39 @@ export const server = {
         *   Loads the servers from the API
         */
         loadServers( { commit } ) {
-            commit( 'setServersLoadStatus', 1 );
+            commit( 'setServersLoadStatus', 1 )
 
             ServerApi.getServers()
                 .then( ( response ) => {
                     commit( 'setServers', response.data.data.servers );
-                    commit( 'setServersLoadStatus', 2 );
+                    commit( 'setServersLoadStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setServers', [] );
                     commit( 'setServersLoadStatus', 3 );
-                    console.log(error);
+                    console.error(error.toString())
                 });
         },
 
         /*
         *   Loads the server from the API
         */
-        loadServer( { commit } ) {
+        loadServer( { commit, dispatch } ) {
             commit( 'setServerLoadStatus', 1 );
 
             ServerApi.getServer()
                 .then( ( response ) => {
                     commit( 'setServer', response.data.data.server );
-                    commit( 'setServerLoadStatus', 2 );
+                    commit( 'setServerLoadStatus', 2 )
+                    dispatch( 'setDbHost', response.data.data.server.connection.Host )
                 })
                 .catch( (error) => {
                     commit( 'setServer', {} );
+                    commit( 'setServerErrorData', error.response );
+                    dispatch( 'clearDatabases' );
+                    dispatch( 'setDbHost', 'Localhost' )
                     commit( 'setServerLoadStatus', 3 );
-                    console.log(error);
+                    console.error(error.toString())
                 });
         },
 
@@ -92,17 +99,17 @@ export const server = {
          * Save a server configuration
          */
         saveServer( { commit }, data) {
-            commit( 'setServerSaveStatus', 1 );
+            commit( 'setServerSaveStatus', 1 )
 
             ServerApi.saveServer(data)
                 .then( ( response ) => {
                     commit( 'setServerConfig', response.data.data.server );
-                    commit( 'setServerSaveStatus', 2 );
+                    commit( 'setServerSaveStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setServerConfig', {} );
                     commit( 'setServerSaveStatus', 3 );
-                    console.log(error);
+                    console.error(error.toString())
                 });
         },
 
@@ -115,12 +122,13 @@ export const server = {
             ServerApi.activateServer(data)
                 .then( (response ) => {
                     commit( 'setServerConfig', response.data.data.server );
-                    commit( 'setServerActivateStatus', 2 );
+                    commit( 'setServerActivateStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setServerConfig', {} );
+                    commit( 'setServerErrorData', error.response );
                     commit( 'setServerActivateStatus', 3 );
-                    console.log(error);
+                    console.error(error.toString())
                 });
         },
 
@@ -133,12 +141,12 @@ export const server = {
             ServerApi.deleteServer(data)
                 .then( () => {
                     commit( 'setServerDelete', data );
-                    commit( 'setServerDeleteStatus', 2 );
+                    commit( 'setServerDeleteStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setServerDelete', {} );
                     commit( 'setServerDeleteStatus', 3 );
-                    console.log(error);
+                    console.error(error.toString())
                 });
         },
 
@@ -146,17 +154,17 @@ export const server = {
         *   Loads the server status from the API
         */
         getServerStatus( { commit }, database ) {
-            commit( 'setLoadServerStatus', 1 );
+            commit( 'setLoadServerStatus', 1 )
 
             ServerApi.getServerStatus(database)
                 .then( ( response ) => {
                     commit( 'setServerStatus', response.data.data.status );
-                    commit( 'setLoadServerStatus', 2 );
+                    commit( 'setLoadServerStatus', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setServerStatus', {} );
                     commit( 'setLoadServerStatus', 3 );
-                    console.log(error);
+                    console.error(error.toString())
                 });
         },
 
@@ -164,24 +172,44 @@ export const server = {
         *   Loads the server processes from the API
         */
         getServerProcesses( { commit } ) {
-            commit( 'setLoadServerProcesses', 1 );
+            commit( 'setLoadServerProcesses', 1 )
 
             ServerApi.getServerProcesses()
                 .then( ( response ) => {
                     if (response.data.data.processes) {
                         if (response.data.data.processes.inprog) {
                             console.log("inprog:" + response.data.data.processes.inprog);
-                            commit( 'setServerProcesses', response.data.data.processes.inprog );
+                            commit( 'setServerProcesses', response.data.data.processes.inprog )
                         }
                     }
-                    commit( 'setLoadServerProcesses', 2 );
+                    commit( 'setLoadServerProcesses', 2 )
                 })
                 .catch( (error) => {
                     commit( 'setServerProcesses', [] );
                     commit( 'setLoadServerProcesses', 3 );
-                    console.log(error);
+                    console.error(error.toString())
                 });
         },
+
+        getReplicationData( { commit }) {
+            commit( 'setReplicationDataStatus', 1 )
+
+            ServerApi.getReplicationData()
+                .then( ( response ) => {
+                    if (response.data.data.replication) {
+                        commit( 'setReplicationData', response.data.data.replication );
+                        commit( 'setReplicationDataStatus', 2 );
+                        console.log("replication:" + response.data.data.replication)
+                    }
+
+                })
+                .catch( (error) => {
+                    commit( 'setReplicationData', [] );
+                    commit( 'setServerErrorData', error.response );
+                    commit( 'setReplicationDataStatus', 3 );
+                    console.error(error.toString())
+                });
+        }
     },
 
     /*
@@ -192,42 +220,42 @@ export const server = {
         *   Set the servers load status
         */
         setServersLoadStatus( state, status ) {
-            state.serversLoadStatus = status;
+            state.serversLoadStatus = status
         },
 
         /*
         *   Sets the servers
         */
         setServers( state, servers ) {
-            state.servers = servers;
+            state.servers = servers
         },
 
         /*
         *   Set the server load status
         */
         setServerLoadStatus( state, status ) {
-            state.serverLoadStatus = status;
+            state.serverLoadStatus = status
         },
 
         /*
         *   Sets the server
         */
         setServer( state, server ) {
-            state.server = server;
+            state.server = server
         },
 
         /*
         *   Set the server save status
         */
         setServerSaveStatus( state, status ) {
-            state.serverSaveStatus = status;
+            state.serverSaveStatus = status
         },
 
         /*
         *   Set the server activate status
         */
         setServerActivateStatus( state, status ) {
-            state.serverActivateStatus = status;
+            state.serverActivateStatus = status
         },
 
         /*
@@ -235,14 +263,14 @@ export const server = {
         */
         setServerConfig( state, server ) {
             state.serverConfig = server;
-            state.servers.push( server );
+            state.servers.push( server )
         },
 
         /*
         *   Set the server delete status
         */
         setServerDeleteStatus( state, status ) {
-            state.serverDeleteStatus = status;
+            state.serverDeleteStatus = status
         },
 
         /*
@@ -250,7 +278,7 @@ export const server = {
         */
         setServerDelete( state, id ) {
             state.servers = state.servers.map( server => {
-                return server.id !== id;
+                return server.id !== id
             });
         },
 
@@ -258,42 +286,54 @@ export const server = {
         *   Set the display server
         */
         setDisplayServer( state, server) {
-            state.displayServer = server;
+            state.displayServer = server
         },
 
         /*
         *   Set the display server status
         */
         setDisplayServerStatus( state, status) {
-            state.displayServerStatus = status;
+            state.displayServerStatus = status
         },
 
         /*
         *   Set the load server status
         */
         setLoadServerStatus( state, status) {
-            state.loadServerStatus = status;
+            state.loadServerStatus = status
         },
 
         /*
         *   Set the server status
         */
         setServerStatus( state, status) {
-            state.serverStatus = status;
+            state.serverStatus = status
         },
 
         /*
         *   Set the load server processes status
         */
         setLoadServerProcesses( state, status) {
-            state.loadServerProcesses = status;
+            state.loadServerProcesses = status
         },
 
         /*
         *   Set the server processes
         */
         setServerProcesses( state, processes ) {
-            state.serverProcesses = processes;
+            state.serverProcesses = processes
+        },
+
+        setReplicationDataStatus( state, status ) {
+            state.replicationDataStatus = status
+        },
+
+        setReplicationData( state, data ) {
+            state.replicationData = data
+        },
+
+        setServerErrorData( state, error ) {
+            state.errorData = error
         }
     },
 
@@ -305,14 +345,14 @@ export const server = {
         *   Return the servers load status
         */
         getServersLoadStatus( state ) {
-            return state.serversLoadStatus;
+            return state.serversLoadStatus
         },
 
         /*
         *   Return the servers
         */
         getServers( state ) {
-            return state.servers;
+            return state.servers
         },
 
         /*
@@ -320,7 +360,7 @@ export const server = {
         */
         getServersCount( state ) {
             if (state.servers) {
-                return state.servers.length;
+                return state.servers.length
             }
             return 0;
         },
@@ -329,95 +369,95 @@ export const server = {
         *   Return the server load status
         */
         getServerLoadStatus( state ) {
-            return state.serverLoadStatus;
+            return state.serverLoadStatus
         },
 
         /*
         *   Return the server
         */
         getServer( state ) {
-            return state.server;
+            return state.server
         },
 
         /*
         *   Return the server save status
         */
         getServerSaveStatus( state ) {
-            return state.serverSaveStatus;
+            return state.serverSaveStatus
         },
 
         /*
         *   Return the server activate status
         */
         getServerActivateStatus( state ) {
-            return state.serverActivateStatus;
+            return state.serverActivateStatus
         },
 
         /*
         *   Return the server
         */
         getServerConfig( state ) {
-            return state.serverConfig;
+            return state.serverConfig
         },
 
         /*
         *   Return a server configuration for editing
         */
         getServerConfiguration: ( state ) => (id) => {
-            return state.servers.find(server => server.id === id);
+            return state.servers.find(server => server.id === id)
         },
 
         getServerDeleteStatus( state ) {
-            return state.serverDeleteStatus;
+            return state.serverDeleteStatus
         },
 
         /*
          *  Return the build info for the loaded server
          */
         getBuildInfo( state ) {
-          return state.server.buildinfo;
+          return state.server.buildinfo
         },
 
         /*
          *  Return the command line info for the loaded server
          */
         getCommandLine( state ) {
-            return state.server.commandline;
+            return state.server.commandline
         },
 
         /*
          *  Return the server connection details for the loaded server
          */
         getConnection( state ) {
-            return state.server.connection;
+            return state.server.connection
         },
 
         /*
          *  Return the directives for the loaded server
          */
         getDirectives( state ) {
-            return state.server.directives;
+            return state.server.directives
         },
 
         /*
          *  Return the local server information
          */
         getWebServer( state ) {
-            return state.server.webserver;
+            return state.server.webserver
         },
 
         /*
          *  Return the application composer details
          */
         getComposerData( state ) {
-            return state.server.composer;
+            return state.server.composer
         },
 
         /*
         *   Return the display server status
         */
         getDisplayServerStatus( state ) {
-            return state.displayServerStatus;
+            return state.displayServerStatus
         },
 
         /*
@@ -425,16 +465,16 @@ export const server = {
         */
         getDisplayServer: (state) => (id) => {
             if (state.server && state.server.id !== '') {
-                return state.server;
+                return state.server
 
             } else {
-                let server = state.server.find(server => server.id === id);
+                let server = state.server.find(server => server.id === id)
                 if (server) {
                     // this.store.commit('setDisplayAdStatus', id);
                     // this.store.commit('setDisplayAd', ad);
                     state.displayServerStatus = id;
                     state.displayServer = server;
-                    return server;
+                    return server
                 }
             }
         },
@@ -443,28 +483,54 @@ export const server = {
         *   Get the load server's status status
         */
         getLoadServerStatus( state ) {
-            return state.loadServerStatus;
+            return state.loadServerStatus
         },
 
         /*
         *   Get the server's status
         */
         getServerStatus( state ) {
-            return state.serverStatus;
+            return state.serverStatus
         },
 
         /*
         *   Set the load server processes status
         */
         getLoadServerProcesses( state ) {
-            return state.loadServerProcesses;
+            return state.loadServerProcesses
         },
 
         /*
         *   Get the server processes
         */
         getServerProcesses( state ) {
-            return state.serverProcesses;
+            return state.serverProcesses
+        },
+
+        getReplicationDataStatus( state ) {
+            return state.replicationDataStatus
+        },
+
+        getReplicationData( state ) {
+            return state.replicationData
+        },
+
+        getServerErrorData( state ) {
+            return state.errorData
+        },
+
+        getServerErrorDataMessage( state ) {
+            let data = state.errorData;
+            if (data.data) {
+                if (data.data.errors) {
+                    if (data.data.errors.error) {
+                        return data.data.errors.error
+                    }
+                    return data.data.errors
+                }
+                return data.data
+            }
+            return data
         }
     }
 };

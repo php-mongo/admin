@@ -611,14 +611,9 @@
                 this.cookieCleared = false;
                 let user = this.$cookies.get('pma-member');
                 if (user) {
-<<<<<<< HEAD
                      // only do this is user exists
                     this.credentials.user = user;
                     this.checkUser()
-=======
-                    this.credentials.user = user;
-                        this.checkUser()
->>>>>>> 12ebfe40375c0c2f5d969d27f47c17b51ff59f6c
                 }
             },
 
