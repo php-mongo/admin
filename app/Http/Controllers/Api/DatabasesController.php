@@ -100,7 +100,7 @@ class DatabasesController extends Controller
     /**
      * @var array $excludedDemo DB's for exclusion when on Demo site
      */
-    private $excludedDemo = ['admin', 'config', 'local'];
+    private $excludedDemo = ['admin', 'config', 'local', 'AdminTest'];
 
     /**
      * @var array $excludedAll DB's for exclusion when NON admin (root) user
