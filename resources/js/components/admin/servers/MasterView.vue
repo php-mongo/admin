@@ -1,7 +1,7 @@
 <!--
   - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
   - @version      ServersView.vue 1001 6/8/20, 8:58 pm  Gilbert Rehling $
-  - @package      PhpMongoAdmin\resources
+  - @package      PhpMongoAdmin\resources\js\components
   - @subpackage   ServersView.vue
   - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
   - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
@@ -42,7 +42,7 @@
 
         .title {
             display: inline-block;
-            min-width: 170px;
+            min-width: 180px;
             font-weight: bold;
         }
     }
@@ -55,20 +55,8 @@
             <ul v-if="replication">
                 <li>
                     <p>
-                        <span class="u-pull-left title"><span v-text="showLanguage('global', 'ok')"></span>:</span>
-                        {{ replication.ok }}
-                    </p>
-                </li>
-                <li>
-                    <p>
                         <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'set')"></span>:</span>
                         {{ replication.set }}
-                    </p>
-                </li>
-                <li>
-                    <p>
-                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'clusterTime')"></span>:</span>
-                        {{ replication.clusterTime }}
                     </p>
                 </li>
                 <li>
@@ -79,8 +67,50 @@
                 </li>
                 <li>
                     <p>
-                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'votingMembersCount')"></span>:</span>
-                        {{ replication.votingMembersCount }}
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'clusterTime')"></span>:</span>
+                        {{ replication.clusterTime }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'date')"></span>:</span>
+                        {{ replication.date }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'durableOpTime')"></span>:</span>
+                        {{ replication.durableOpTime }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'heartbeatInterval')"></span>:</span>
+                        {{ replication.heartbeatIntervalMillis }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'electionTerm')"></span>:</span>
+                        {{ replication.electionCandidateMetrics.electionTerm }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'electionTimeout')"></span>:</span>
+                        {{ replication.electionCandidateMetrics.electionTimeoutMillis }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'lastCommittedOpTime')"></span>:</span>
+                        {{ replication.electionCandidateMetrics.lastCommittedOpTimeAtElection }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'lastStableRecoveryTimestamp')"></span>:</span>
+                        {{ replication.lastStableRecoveryTimestamp }}
                     </p>
                 </li>
                 <li>
@@ -91,20 +121,81 @@
                 </li>
                 <li>
                     <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'membersTitle')"></span>:</span>
+                    </p>
+                    <cluster-member v-for="(member, key) in replication.members" v-bind:key="key" v-bind:member="member"></cluster-member>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'myState')"></span>:</span>
+                        {{ replication.myState }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('global', 'ok')"></span>:</span>
+                        {{ replication.ok }}
+                    </p>
+                </li>
+                <li>
+                    <p>
                         <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'operationTime')"></span>:</span>
                         {{ replication.operationTime }}
                     </p>
                 </li>
                 <li>
                     <p>
-                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'membersTitle')"></span>:</span>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'readConcernMajorityOpTime')"></span>:</span>
+                        {{ replication.readConcernMajorityOpTime }}
                     </p>
-                    <cluster-member v-for="(member, key) in replication.members" v-bind:key="key" v-bind:member="member"></cluster-member>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'readConcernMajorityWallTime')"></span>:</span>
+                        {{ replication.readConcernMajorityWallTime }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'syncSourceHost')"></span>:</span>
+                        {{ replication.syncSourceHost }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'syncSourceId')"></span>:</span>
+                        {{ replication.syncSourceId }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'term')"></span>:</span>
+                        {{ replication.term }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'votingMembersCount')"></span>:</span>
+                        {{ replication.votingMembersCount }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'writableVotingMajorityMembersCount')"></span>:</span>
+                        {{ replication.writeableVotingMembersCount }}
+                    </p>
+                </li>
+                <li>
+                    <p>
+                        <span class="u-pull-left title"><span v-text="showLanguage('cluster', 'writeMajorityCount')"></span>:</span>
+                        {{ replication.writeMajorityCount }}
+                    </p>
                 </li>
             </ul>
             <p v-if="!replication && !error" v-text="showLanguage('cluster', 'loading')"></p>
             <p class="form-error" v-if="error" v-text="error"></p>
             <p class="text-info" v-if="noCluster" v-text="showLanguage('cluster', 'noCluster')"></p>
+            <p>&nbsp;</p>
         </div>
     </div>
 </template>
@@ -157,6 +248,9 @@
                 return this.$store.getters.getLanguageString( context, key )
             },
 
+            /*
+             *  Common handler type method
+             */
             handleReplicationData() {
                 let status = this.$store.getters.getReplicationDataStatus;
                 if (status === 1 && this.index < this.limit) {
@@ -195,7 +289,7 @@
         },
 
         /*
-        *    get on ur bikes and ride !!
+        *   You have been mounted!
         */
         mounted() {
             /*
