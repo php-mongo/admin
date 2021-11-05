@@ -1,7 +1,7 @@
 <!--
   - PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
-  - @version      ServersView.vue 1001 6/8/20, 8:58 pm  Gilbert Rehling $
-  - @package      PhpMongoAdmin\resources
+  - @version      ClusterMember.vue 1001 6/8/20, 8:58 pm  Gilbert Rehling $
+  - @package      PhpMongoAdmin\resources\js\components
   - @subpackage   ServersView.vue
   - @link         https://github.com/php-mongo/admin PHP MongoDB Admin
   - @copyright    Copyright (c) 2020. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
@@ -19,7 +19,7 @@
     .cluster-member {
         width: 95% !important;
         height: auto !important;
-        margin-left: 150px;
+        margin-left: 100px;
 
         ul.member-data {
             list-style: none;
