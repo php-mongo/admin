@@ -75,14 +75,14 @@ class SetupController extends Controller
 
     /**
      * @param Collection|null $users
-     * @param Collection|null $Servers
      * @return bool
      */
-    private function checkStatus(?Collection $users, ?Collection $Servers): bool
+    private function checkStatus(?Collection $users): bool
     {
         $result = false;
         foreach ($users as $user) {
             if ($user->exists && $user->isControlUser()) {
+                /** @var Server $servers */
                 $servers = $user->servers()->where('active', 1)->get();
                 foreach ($servers as $server) {
                     $attrs = $server->getAttributes();
@@ -127,7 +127,7 @@ class SetupController extends Controller
         return view(
             'public.setup',
             [
-                'completed' => $this->checkStatus(User::all(), Server::all()),
+                'completed' => $this->checkStatus(User::all()),
                 'success' => $success
             ]
         );
