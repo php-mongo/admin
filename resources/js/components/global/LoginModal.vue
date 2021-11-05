@@ -414,7 +414,7 @@
                     active: "1", // ensures that only active users can login
                     host: 'localhost',
                     user: 'admin1',
-                    password: 'good-guess',
+                    password: 'good-guess-i guess',
                     db: null,
                 },
                 errorData: null,
