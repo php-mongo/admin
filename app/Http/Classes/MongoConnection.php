@@ -383,6 +383,7 @@ class MongoConnection
                 'username' => config('app.dbUser'),
                 'password' => Crypt::encryptString(config('app.dbPasswd')), // so we don't break downstream
             );
+            $this->userName = config('app.dbUser');
         }
 
         $this->setServer($server);
