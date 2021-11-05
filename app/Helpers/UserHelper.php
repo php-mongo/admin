@@ -38,11 +38,11 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Http;
 use ipinfo\ipinfo\Details;
 use ipinfo\ipinfo\IPinfo;
-use ipinfo\ipinfo\IPinfoException;
 
 /**
  * Always be prepared to accept failure !!
  */
+use ipinfo\ipinfo\IPinfoException;
 use App\Exceptions\UnableToDeleteUserException;
 use Exception;
 
