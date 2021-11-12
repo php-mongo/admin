@@ -363,7 +363,7 @@ class MongoConnection
         if (empty($servers[0])) {
             $server = array(
                 'id' => 0,
-                'host' => 'localhost',
+                'host' => config('app.mongoDbHost'),
                 'mongo_cloud' => "0", // fake this so we don't break other checks
                 'port' => 27017,
                 'username' => $user->getAttribute('user'),
@@ -377,7 +377,7 @@ class MongoConnection
         if ('demo' == env('APP_ENV')) {
             // demo site only
             $server = array(
-                'host' => 'localhost',
+                'host' => config('app.mongoDbHost'),
                 'mongo_cloud' => "0",
                 'port' => 27017,
                 'username' => config('app.dbUser'),
