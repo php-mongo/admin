@@ -42,6 +42,9 @@ trait DatabaseTrait
         // Still here??
         // Check if user has root role
         if ($this->mongo->hasRootRole()) {
+            if (in_array($db, $this->excludedRoot, true)) {
+                return false;
+            }
             return true;
         }
         // for now always restrict these for non-root accounts
