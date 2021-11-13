@@ -156,6 +156,8 @@ return [
 
     'mongoDbHost' => env('MONGODB_HOST', 'localhost'),
 
+    'isDockerApp' => env('IS_DOCKER_APP', false),
+
     /*
      * Custom DB configs currently used for the demo website: APP_ENV = 'demo'
      * These can be used for customized handling of the server connection username | password
