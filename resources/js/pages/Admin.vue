@@ -87,17 +87,36 @@
         data() {
             return {
                 errorMessage: null,
+                index: 0,
+                limit: 50,
                 show: true
             }
+        },
+
+        methods: {
+            handleCheckUser() {
+                let status = this.$store.getters.getUserLoadStatus;
+                if (status === 1 && this.index < this.limit) {
+                    this.index++;
+                    setTimeout(() => {
+                        this.handleCheckUser()
+                    }, 100)
+                }
+                if (status === 2) {
+                    console.log("user loaded - try to fetch databases");
+                    this.$store.dispatch( 'loadDatabases' )
+                }
+                if (status === 3) {
+                    // user not authorized or other error
+                }
+            },
         },
 
         /*
         *   This component triggers the Ads download from the API
         */
         mounted() {
-            setTimeout(() => {
-                this.$store.dispatch( 'loadDatabases' );
-            }, 500)
+            this.handleCheckUser()
         }
     }
 </script>
