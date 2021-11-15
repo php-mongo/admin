@@ -21,7 +21,7 @@
 
 <template>
     <li class="crumb-link text-left" v-if="crumb.name !== null">
-        <span class="dbl-arr">>></span> <img :src="'/img/icon/' + getCrumbType + '.png'" />
+        <span class="dbl-arr">>></span> <img :src="'img/icon/' + getCrumbType + '.png'" />
         <span v-if="crumb.link === true" class="crumb pma-link" @click="$emit('loadCrumb', crumb.name)">{{getCrumbName(crumb)}}</span>
         <span v-if="crumb.link === false" class="pma-text">{{getCrumbName(crumb)}}</span>
     </li>
