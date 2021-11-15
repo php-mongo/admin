@@ -183,7 +183,7 @@
                 <div class="right">
                     <!-- country flag display -->
                     <span v-on:click="openLanguageSelector()" class="country-flag ng-scope" v-show="hasCountryName">
-                        <img v-bind:src="'/img/flags/icons/' + setCountryName + '.ico'" v-bind:alt="'Your country is ' + setCountryName" v-bind:title="showLanguage('title', 'countryIsTitle') + ' ' + setCountryName">
+                        <img v-bind:src="'img/flags/icons/' + setCountryName + '.ico'" v-bind:alt="'Your country is ' + setCountryName" v-bind:title="showLanguage('title', 'countryIsTitle') + ' ' + setCountryName">
                     </span>
                 </div>
             </div>

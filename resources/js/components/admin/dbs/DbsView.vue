@@ -139,6 +139,7 @@
                 databaseList: null,
                 display: false,
                 index: 0,
+                limit: 50,
                 user: {},
             }
         },
@@ -186,7 +187,27 @@
             *   Retrieves the User from Vuex
             */
             getUser() {
-                this.user = this.$store.getters.getUser
+                this.index = 0;
+                this.handleGetUser();
+            },
+
+            handleGetUser() {
+                let status = this.$store.getters.getUserLoadStatus;
+                if (status === 1 && this.index < this.limit) {
+                    this.index++;
+                    setTimeout(() => {
+                        this.handleGetUser()
+                    }, 100)
+                }
+                if (status === 2) {
+                    this.user = this.$store.getters.getUser;
+                    setTimeout(() => {
+                        this.checkUserType();
+                    }, 50)
+                }
+                if (status === 3) {
+                    // user not authorized or other error
+                }
             },
 
             /*
@@ -194,7 +215,12 @@
              */
             checkUserType() {
                 if (this.$store.getters.getCanUserReadDatabase === false) {
-                    let roles = this.user.user_role.roles;
+                    let roles = [];
+                    if (this.user) {
+                        if (this.user.user_role) {
+                            roles = this.user.user_role.roles;
+                        }
+                    }
                     let userAdmin = [
                         'userAdmin',
                         'userAdminAnyDatabase'
@@ -243,7 +269,6 @@
             // we pass the user to child components as props
             setTimeout(() => {
                 this.getUser();
-                this.checkUserType()
             }, 500)
 
             EventBus.$on('change-list', (data) => {

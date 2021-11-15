@@ -38,6 +38,14 @@
                 margin-right: 20px;
                 margin-left: 20px;
             }
+
+            .close {
+                float: right;
+                border: 1px solid $lighterGrey;
+                font-weight: bolder;
+                margin: 0;
+                cursor: pointer;
+            }
         }
     }
 
@@ -48,6 +56,7 @@
     <div class="notification-container" v-show="show">
       <div class="success-notification">
         <img src="img/progressring.gif"/> {{ successMessage }}
+        <img class="close" v-on:click="close" src="img/close-icon.svg">
       </div>
     </div>
   </transition>
@@ -67,6 +76,12 @@
             return {
                 successMessage: '',
                 show: false
+            }
+        },
+
+        methods: {
+            close() {
+                this.show = false;
             }
         },
 
