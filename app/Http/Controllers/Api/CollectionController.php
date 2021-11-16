@@ -173,9 +173,8 @@ class CollectionController extends Controller
 
     /**
      * Mostly we don't need this as we want to strip out all the bits individually
-     * In most cases ->getArrayCopy() or ->__toString() suffice
+     * In most ces ->getArrayCopy() or ->__toString() will suffice
      *
-     * @inheritDoc
      */
     public function bsonUnserialize(string $data)
     {
