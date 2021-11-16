@@ -36,8 +36,12 @@
                 <th class="bb" v-text="showLanguage('users', 'id')"></th>
                 <td v-on:click="collapseUser">
                     {{ user._id }}
-                    <span class="user-collapse u-pull-right" v-show="collapsed" :title="showLanguage('users', 'collapse')"><img src="img/sort-asc-dark.svg" alt="Collapse user" /> </span>
-                    <span class="user-collapse u-pull-right" v-show="!collapsed" :title="showLanguage('users', 'expand')"><img src="img/sort-desc-dark.svg" alt="Expand user" /> </span>
+                    <span class="user-collapse u-pull-right" v-show="collapsed" :title="showLanguage('users', 'expand')">
+                        <img src="img/sort-asc-dark.svg" alt="Expand user" />
+                    </span>
+                    <span class="user-collapse u-pull-right" v-show="!collapsed" :title="showLanguage('users', 'collapse')">
+                        <img src="img/sort-desc-dark.svg" alt="Collapse user" />
+                    </span>
                 </td>
             </tr>
             <tr v-show="!collapsed">
