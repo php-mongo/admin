@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      version.php 1001 1/9/20, 7:41 pm  Gilbert Rehling $
@@ -16,4 +17,4 @@
  *  See COPYRIGHT.php for copyright notices and further details.
  */
 
-echo '1.0.0-alpha-0.8';
+echo '1.0.1-alpha-5.0';
