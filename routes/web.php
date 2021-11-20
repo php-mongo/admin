@@ -33,7 +33,7 @@ use Illuminate\Foundation\Auth\VerifiesEmails;
 /*
 | For testing we can always load the welcome blade template
 */
-Route::get('/welcome', function () {
+Route::get('./welcome', function () {
     return view('public/welcome');
 });
 
@@ -83,17 +83,17 @@ Route::get('js/acceptLang.js', function() {
 /*
 | Default routes - always require setup to be completed - default public page with notification
 */
-Route::get('/', 'Web\AppController@getApp')->name('public')
+Route::get('', 'Web\AppController@getApp')->name('public')
     ->middleware('setup');
 
 
-Route::get('/admin', 'Web\AppController@getApp')
+Route::get('admin', 'Web\AppController@getApp')
     ->middleware('setup');
 
 /*
 | Public, Login and logout
 */
-Route::get('/logout', 'Web\AppController@getLogout')
+Route::get('./logout', 'Web\AppController@getLogout')
     ->name('logout');
 
 /*
@@ -102,7 +102,7 @@ Route::get('/logout', 'Web\AppController@getLogout')
 Route::get('/setup', 'Web\SetupController@getSetup')
     ->name('setup');
 
-Route::post('/setup', 'Web\SetupController@saveSetup')
+Route::post('setup', 'Web\SetupController@saveSetup')
     ->name('save-setup');
 
 /*
