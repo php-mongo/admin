@@ -103,11 +103,15 @@ class UsersController extends Controller
         }
     }
 
-    private function isUserCreateAllowed()
+    /**
+     * Used to evaluate restrictions on creating user accounts
+     * @return bool
+     */
+    private function isUserCreateAllowed(): bool
     {
-        $env     = config('app.env');
-        $setting = explode(",", config('app.deny_env_add_users'));
-        return empty($setting) || !in_array($env, $setting);
+        $env = config('app.env');
+        $environments = explode(",", config('app.deny_env_add_users'));
+        return empty($environments) || !in_array($env, $environments);
     }
 
     /**

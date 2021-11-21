@@ -35,9 +35,9 @@ trait DatabaseTrait
     private function handleExclusions(string $db): bool
     {
         $env = env('APP_ENV');
-        if ('demo' === $env && !in_array($db, $this->excludedDemo, true)) {
+        if ('demo' === $env && in_array($db, $this->excludedDemo, true)) {
             // basic demo site exclusions
-            return true;
+            return false;
         }
         // Still here??
         // Check if user has root role
