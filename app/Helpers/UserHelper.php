@@ -25,8 +25,11 @@ namespace App\Helpers;
 /**
  * @use
  */
+
+use App\Jobs\NewAdminUser;
 use App\Models\Postcode;
 use App\Models\User;
+use App\Jobs\NewControlUser;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -110,7 +113,7 @@ class UserHelper
         $user->save();
 
         if ($user->admin_user === "1") {
-            dispatch('Illuminate\Auth\Events\Registered');
+            dispatch(new NewAdminUser($user));
         }
 
         return $user;
@@ -196,7 +199,7 @@ class UserHelper
         // the control user should have a local (or remote) MongoDb account to add to the Server table
         $user->save();
 
-        dispatch('Illuminate\Auth\Events\Registered');
+        dispatch(new NewControlUser($user));
 
         return $user;
     }
