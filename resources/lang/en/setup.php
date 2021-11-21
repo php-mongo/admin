@@ -56,8 +56,8 @@ return [
     "welcomeTitle" => "Welcome to PhpMongoAdmin Application",
     "welcomeBold" => "Perhaps you are lost? See below for some assistance",
     "welcomeText" => "Here are some links to help you find your way:",
-    "welcomeP1" => "To help you get started: <a href=\"/setup\">Setup page</a>",
-    "welcomeP2" => "Front door: <a href=\"/#public\">Login here</a>",
-    "welcomeP3" => "Application entry point: <a href=\"/#admin\">PhpMongoAdmin</a>"
+    "welcomeP1" => "To help you get started: <a href=\"setup\">Setup page</a>",
+    "welcomeP2" => "Front door: <a href=\"./\">Login here</a>",
+    "welcomeP3" => "Application entry point: <a href=\"./#admin\">PhpMongoAdmin</a>"
 
 ];
