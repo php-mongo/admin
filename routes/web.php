@@ -33,7 +33,7 @@ use Illuminate\Foundation\Auth\VerifiesEmails;
 /*
 | For testing we can always load the welcome blade template
 */
-Route::get('./welcome', function () {
+Route::get('welcome', function () {
     return view('public/welcome');
 });
 
@@ -93,13 +93,13 @@ Route::get('admin', 'Web\AppController@getApp')
 /*
 | Public, Login and logout
 */
-Route::get('./logout', 'Web\AppController@getLogout')
+Route::get('logout', 'Web\AppController@getLogout')
     ->name('logout');
 
 /*
 | Initial setup for the control user - public access
 */
-Route::get('/setup', 'Web\SetupController@getSetup')
+Route::get('setup', 'Web\SetupController@getSetup')
     ->name('setup');
 
 Route::post('setup', 'Web\SetupController@saveSetup')

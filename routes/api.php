@@ -212,7 +212,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * URL:         /api/v1/server
     * Controller:  API/ServerController@getServer
     * Method:      GET
-    * Description: Gets all of the current Server information
+    * Description: Gets all the current Server's information
     */
     Route::get('/server', 'Api\ServerController@getServer');
 
@@ -223,7 +223,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * URL:         /api/v1/server/processes
     * Controller:  API/ServerController@getServerProcesses
     * Method:      GET
-    * Description: Gets all of the current Server's active processes information
+    * Description: Gets all the current Server's active processes information
     */
     Route::get('/server/processes', 'Api\ServerController@getServerProcesses');
 
@@ -234,7 +234,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * URL:         /api/v1/server/{database}/status
     * Controller:  API/ServerController@getServerStatus
     * Method:      GET
-    * Description: Gets all of the current Server status & information
+    * Description: Gets all the current Server's status information
     */
     Route::get('/server/{database}/status', 'Api\ServerController@getServerStatus');
 
@@ -245,7 +245,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:api'], function() {
     * URL:         /api/v1/server/replication
     * Controller:  API/ServerController@getServerReplication
     * Method:      GET
-    * Description: Gets any the Master / Slave replication data if existing
+    * Description: Gets any Master / Slave replication data if existing
     */
     Route::get('/server/replication', 'Api\ServerController@getServerReplication');
 
