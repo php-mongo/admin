@@ -32,12 +32,12 @@
             <header class="header-content">
                 <nav class="navigation top-navigation grid-container" style="width: inherit">
                     <a  title="{{ __('global.logo') }}" href="/" class="router-link-logo">
-                        <span class="logo"><img src="/img/logo-pma.png" /> </span>
+                        <span class="logo"><img src="img/logo-pma.png" /> </span>
                     </a>
 
                     <div class="u-pull-right">
                         <span class="country-flag ng-scope">
-                        <img src="/img/flags/icons/Australia.ico" alt="{{ __('title.countryIsTitle') }} " title="{{ __('title.countryIsTitle') }}  Australia" style="">
+                        <img src="img/flags/icons/Australia.ico" alt="{{ __('title.countryIsTitle') }} " title="{{ __('title.countryIsTitle') }}  Australia" style="">
                     </span>
                     </div>
                 </nav>
