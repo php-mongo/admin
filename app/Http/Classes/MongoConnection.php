@@ -249,7 +249,11 @@ class MongoConnection
         return $this->userName;
     }
 
-    public function getPrefix(string $host)
+    /**
+     * @param string $host
+     * @return string
+     */
+    public function getPrefix(string $host): string
     {
         return (
             false !== strpos($host, 'localhost') ||
@@ -358,6 +362,7 @@ class MongoConnection
         /** @var Server $server */
         $servers = $user->servers()->where('active', 1)->get();
 
+        // This provides the default mechanism for handle MongoDB server access
         if (isset($servers[0])) {
             $server = $servers[0];
             $server->setAttribute('is_current', 1);
@@ -365,9 +370,9 @@ class MongoConnection
             $server         = $server->getAttributes();
             $this->userName = $server['username'];
         }
-        // When there is no Server associated with the user, we assume that the user has been created using 'both' login and database
-        // ToDo: if the user has 'NO' server and 'NO' mongo DB cred - they wont have many usable options
-        // ToDo: re-confirm the setup process
+
+        // When there is no Server associated with the user, we assume that the user has been created using 'both', login and database
+        // Or, the Control User has been created with a Username & Password that will provide direct access to the local MongoDB database
         if (empty($servers[0])) {
             $server = array(
                 'id' => 0,
@@ -382,8 +387,13 @@ class MongoConnection
             $this->userName = $user->getAttribute('user');
         }
 
+        /**
+         * This block creates the ability to have a username & password defined in the .env file
+         * This activates a single user mode
+         */
         if ('demo' == env('APP_ENV')) {
-            // demo site only
+            define('SINGLE_USER_MODE', 1);
+            // predefined environment: default is 'demo'
             $server = array(
                 'host' => config('app.mongoDbHost'),
                 'mongo_cloud' => "0",
