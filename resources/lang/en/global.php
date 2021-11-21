@@ -58,7 +58,7 @@ return [
     Check that the application database was created during setup: site-root-directory/database/sqlite/database.sqlite<br>
     If this file was not created then the server may not have write access - this is usually tested during the setup process.<br>
     If the file does exist and you have forgotten your Control-User account details you can recover the account by running the setup script again.<br>
-    <a href=\"" . $protocol . "://" . $_SERVER['SERVER_NAME'] . "/setup\">" . $_SERVER['SERVER_NAME'] . "/setup</a><br>
+    <a href=\"setup\">" . $_SERVER['SERVER_NAME'] . "/setup</a><br>
     The setup process will analise the application status and provide you with suitable options for recovery.<br><br>
     Alternatively, you may have to delete the database file that was created and run the setup process again.<br>
     Your MongoDb data will not be affected, however, you will need the mongodb credentials that you may have either been provided with or created during the database installation and setup.<br>
