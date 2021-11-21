@@ -249,6 +249,14 @@ class MongoConnection
         return $this->userName;
     }
 
+    public function getPrefix(string $host)
+    {
+        return (
+            false !== strpos($host, 'localhost') ||
+            config('app.isDockerApp') === true
+        ) ? 'mongodb' : 'mongodb+srv';
+    }
+
     /**
      * Sets up the mongodb connection options
      * Only uses the server details if they exist
@@ -268,15 +276,12 @@ class MongoConnection
                 $tail = "/" . $server['mongo_cloud_database'] . $tail;
             }
             $uri = 'mongodb+srv://' .
-                $server['username']. ':' .
+                $server['username'] . ':' .
                 urlencode(Crypt::decryptString($server['password'])) . '@' .
                 $server['host'] . $tail;
         }
         if ($server['mongo_cloud'] === "0") {
-            $prefix = (
-                false !== strpos($server['host'], 'localhost') ||
-                config('app.isDockerApp') === true
-            ) ? 'mongodb' : 'mongodb+srv';
+            $prefix = $this->getPrefix($server['host']);
             $uri = $prefix . '://' . $server['host'] . ':' . $server['port'];
         }
         if (empty($uri)) {
