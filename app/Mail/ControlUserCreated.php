@@ -42,7 +42,7 @@ class ControlUserCreated extends Mailable
      */
     public function build(): ControlUserCreated
     {
-        return $this->markdown('emails.controlUser')
+        return $this->markdown('email.controlUser')
             ->with([
                 'user' => $this->user,
             ]);
