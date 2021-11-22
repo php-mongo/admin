@@ -36,7 +36,7 @@
                 display: inline-block;
                 float: left;
                 list-style-type: none;
-                padding: 0 10px;
+                padding: 0;
 
                 span {
                     font-weight: bold;

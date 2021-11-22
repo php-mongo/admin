@@ -18,22 +18,25 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
     #pma-processes-view {
-        table {
-            max-width: 97%;
+        .processes-inner {
+            overflow-x: auto;
+            table {
+                max-width: 97%;
 
-            thead {
-                .title {
-                    font-weight: 800;
-                    background-color: $cccColor;
+                thead {
+                    .title {
+                        font-weight: 800;
+                        background-color: $cccColor;
+                    }
+                    .trbg {
+                        background-color: $tableRowBg;
+                    }
                 }
-                .trbg {
-                   background-color: $tableRowBg;
-                }
-            }
-            tbody {
-                .tdrb {
-                    td {
-                        border-right: 1px solid $cccColor;
+                tbody {
+                    .tdrb {
+                        td {
+                            border-right: 1px solid $cccColor;
+                        }
                     }
                 }
             }
@@ -43,50 +46,48 @@
 
 <template>
     <div id="pma-processes-view" class="pma-servers-panel align-left" v-if="show">
-        <div class="servers-inner">
-            <div>
-                <div v-if="errorMessage">{{ errorMessage }}</div>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th colspan="11" class="title"><span v-text="showLanguage('server', 'processList')"></span> (db.$cmd.sys.inprog.find({$all:1}))</th>
-                        </tr>
-                        <tr class="trbg">
-                            <td v-text="showLanguage('server', 'processId')"></td>
-                            <td v-text="showLanguage('server', 'processThreadId')"></td>
-                            <td v-text="showLanguage('server', 'processNameSpace')"></td>
-                            <td v-text="showLanguage('server', 'processDescription')"></td>
-                            <td v-text="showLanguage('server', 'processClient')"></td>
-                            <td v-text="showLanguage('server', 'processActive')"></td>
-                            <td v-text="showLanguage('server', 'processLockType')"></td>
-                            <td v-text="showLanguage('server', 'processWaiting')"></td>
-                            <td v-text="showLanguage('server', 'processSeconds')"></td>
-                            <td v-text="showLanguage('server', 'processOperation')"></td>
-                            <td v-text="showLanguage('server', 'processClientMetadata')"></td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-if="!processes">
-                            <td colspan="11">
-                                <span v-text="showLanguage('server', 'processesNone')"></span>
-                            </td>
-                        </tr>
-                        <tr class="tdrb" v-for="(process, index) in processes" :key="index" v-bind:process="process">
-                            <td v-html="getString(process.connectionId)"></td>
-                            <td v-html="getString(process.threadId)"></td>
-                            <td v-html="getString(process.ns)"></td>
-                            <td v-html="getString(process.desc)"></td>
-                            <td v-html="getString(process.client)"></td>
-                            <td v-html="getString(process.active)"></td>
-                            <td v-html="getString(process.locks)"></td>
-                            <td v-html="getString(process.waitingForLock)"></td>
-                            <td v-html="getString(process.secs_running)"></td>
-                            <td v-html="getString(process.opid)"></td>
-                            <td v-html="getString(process.clientMetadata)"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+        <div class="processes-inner">
+            <div v-if="errorMessage">{{ errorMessage }}</div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th colspan="11" class="title"><span v-text="showLanguage('server', 'processList')"></span> (db.$cmd.sys.inprog.find({$all:1}))</th>
+                    </tr>
+                    <tr class="trbg">
+                        <td v-text="showLanguage('server', 'processId')"></td>
+                        <td v-text="showLanguage('server', 'processThreadId')"></td>
+                        <td v-text="showLanguage('server', 'processNameSpace')"></td>
+                        <td v-text="showLanguage('server', 'processDescription')"></td>
+                        <td v-text="showLanguage('server', 'processClient')"></td>
+                        <td v-text="showLanguage('server', 'processActive')"></td>
+                        <td v-text="showLanguage('server', 'processLockType')"></td>
+                        <td v-text="showLanguage('server', 'processWaiting')"></td>
+                        <td v-text="showLanguage('server', 'processSeconds')"></td>
+                        <td v-text="showLanguage('server', 'processOperation')"></td>
+                        <td v-text="showLanguage('server', 'processClientMetadata')"></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-if="!processes">
+                        <td colspan="11">
+                            <span v-text="showLanguage('server', 'processesNone')"></span>
+                        </td>
+                    </tr>
+                    <tr class="tdrb" v-for="(process, index) in processes" :key="index" v-bind:process="process">
+                        <td v-html="getString(process.connectionId)"></td>
+                        <td v-html="getString(process.threadId)"></td>
+                        <td v-html="getString(process.ns)"></td>
+                        <td v-html="getString(process.desc)"></td>
+                        <td v-html="getString(process.client)"></td>
+                        <td v-html="getString(process.active)"></td>
+                        <td v-html="getString(process.locks)"></td>
+                        <td v-html="getString(process.waitingForLock)"></td>
+                        <td v-html="getString(process.secs_running)"></td>
+                        <td v-html="getString(process.opid)"></td>
+                        <td v-html="getString(process.clientMetadata)"></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>
