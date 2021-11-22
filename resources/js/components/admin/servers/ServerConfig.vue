@@ -18,6 +18,7 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
     .server-config {
+        overflow-x: auto;
         th {
             width: 250px;
         }
