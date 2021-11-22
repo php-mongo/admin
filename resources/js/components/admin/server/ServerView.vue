@@ -23,6 +23,9 @@
         width: 47%;
 
         .server-inner {
+            /* allow the tables within the scroll */
+            overflow-x: auto;
+
             table {
                 border: 1px solid $infoColor;
                 border-radius: 5px;
@@ -51,7 +54,7 @@
                 text-align: left;
             }
             table.bordered td.w50 {
-                min-width: 49.9%;
+                width: 50%;
                 text-align: right;
             }
             table.bordered td.title {
@@ -63,12 +66,29 @@
         }
     }
 
+    /* Small only - (max-width: 39.9375em) */
+    @media screen and (max-width: 768px) {
+        .pma-server-view {
+            float: none;
+            height: auto;
+            width: calc(93vw - 262px);
+
+            .server-space {
+                display: none;
+            }
+        }
+    }
+
     /* Medium only - (min-width: 40em) and (max-width: 63.9375em) */
     @media (min-width: 768px) and (max-width: 992px) {
         .pma-server-view {
             float: none;
             height: auto;
             width: calc(93vw - 262px);
+
+            .server-space {
+                display: none;
+            }
         }
     }
 </style>
@@ -89,7 +109,8 @@
         <div class="float-center text-center" v-if="getServerLoadStatus === 3">
             <p v-text="getServerErrorMessage"></p>
         </div>
-        <div>
+        <div class="server-space">
+            <p>&nbsp;</p>
             <p>&nbsp;</p>
         </div>
     </div>

@@ -36,7 +36,7 @@
                 display: inline-block;
                 float: left;
                 list-style-type: none;
-                padding: 0 10px;
+                padding: 0;
 
                 span {
                     font-weight: bold;
@@ -65,13 +65,20 @@
     }
 
     /* Small only - (max-width: 39.9375em) */
-    @media screen and (max-width: 769px) {
+    @media screen and (max-width: 7689px) {
         nav.panel-navigation {
+            ul.links {
+                li {
+                    span {
+                        padding: 4px;
+                    }
+                }
+            }
         }
     }
 
     /* Medium only - (min-width: 40em) and (max-width: 63.9375em) */
-    @media (min-width: 769px) and (max-width: 992px) {
+    @media (min-width: 768px) and (max-width: 992px) {
         nav.panel-navigation {
         }
     }

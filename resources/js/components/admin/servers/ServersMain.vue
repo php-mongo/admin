@@ -50,7 +50,6 @@
                 }
                 table.bordered td {
                     border-bottom: 1px solid $infoColor;
-                    min-width: 100px;
                     padding: 0 12px 0 12px;
                     text-align: left;
                     position: relative;
