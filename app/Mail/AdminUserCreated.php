@@ -42,7 +42,7 @@ class AdminUserCreated extends Mailable
      */
     public function build(): AdminUserCreated
     {
-        return $this->markdown('emails.adminUser')
+        return $this->markdown('email.adminUser')
             ->with([
                 'user' => $this->user,
             ]);
