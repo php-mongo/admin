@@ -22,12 +22,15 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use DateTime;
-use Firebase\JWT\JWT;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\ValidationException;
 use Ramsey\Uuid\Exception\DateTimeException;
 
 class ResetPasswordController extends Controller
@@ -128,5 +131,34 @@ class ResetPasswordController extends Controller
                 'validToken' => $this->checkTokenIsValid($email, $token)
             ]
         );
+    }
+
+    /**
+     * Over-ridden reset() method
+     *
+     * @param Request $request
+     * @return RedirectResponse|JsonResponse
+     * @throws ValidationException
+     */
+    public function reset(Request $request)
+    {
+        $request->validate($this->rules(), $this->validationErrorMessages());
+
+        // We also need to update the stored encrypted password
+        $response = $this->broker()->reset(
+            $this->credentials($request),
+            function ($user, $password) {
+                $this->resetPassword($user, $password);
+                $user->setAttribute('encrypted_password', Crypt::encryptString($password));
+                $user->save();
+            }
+        );
+
+        // If the password was successfully reset, we will redirect the user back to
+        // the application's home authenticated view. If there is an error we can
+        // redirect them back to where they came from with their error message.
+        return $response == Password::PASSWORD_RESET
+            ? $this->sendResetResponse($request, $response)
+            : $this->sendResetFailedResponse($request, $response);
     }
 }
