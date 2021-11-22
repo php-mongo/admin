@@ -53,6 +53,7 @@ use App\Helpers\MongoConnectionHelper;
  */
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\View\View;
 
 /**
@@ -92,6 +93,27 @@ class SetupController extends Controller
                         $attrs['username'],
                         $attrs['password']
                     );
+                }
+
+                if (count($servers) === 0) {
+                    // If the password cannot be decrypted no sense in continuing
+                    try {
+                        $password = Crypt::decryptString($user->getAttribute('encrypted_password'));
+                        $result = MongoConnectionHelper::checkConnectionConfig(
+                            27017,
+                            config('app.mongoDbHost'),
+                            $user->getAttribute('user'),
+                            $user->getAttribute('encrypted_password')
+                        );
+
+                    } catch (\Exception $e) {
+                        if ($e->getMessage() == 'The MAC is invalid.') {
+                            if (config('app.isDockerApp') === true) {
+                                // good chance the APP_KEY has been regenerated
+                                $result = true;
+                            }
+                        }
+                    }
                 }
             }
         }
