@@ -26,7 +26,7 @@ setup() {
   GLOBAL_SOURCE="./setup/apache/global/phpMongoAdmin.conf"
   #VIRTUAL_FILE="vhost_phpMongoAdmin"
   VIRTUAL_SOURCE="./setup/apache/virtualHost/vhost_phpMongoAdmin.conf"
-  DATABASE="/usr/share/phpMongoAdmin/database/sqlite/database.sqlite"
+  DATABASE="./database/sqlite/database.sqlite"
 
   COLOR_RED="$(tput setaf 1)"
   COLOR_NONE="$(tput sgr0)"
