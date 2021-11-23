@@ -78,14 +78,14 @@ setup() {
       ln -s /etc/apache2/conf-available/$GLOBAL_FILE  /etc/apache2/conf-enabled/$GLOBAL_FILE
       systemctl restart apache2
       FOUND='apache2'
-    fi
+    fi;
 
     if [ -e /etc/httpd ]; then
       echo "${COLOR_BLUE}Found /etc/httpd/~"
       cp $GLOBAL_SOURCE /etc/httpd/conf.d/$GLOBAL_FILE
       systemctl restart httpd
       FOUND='httpd'
-    fi
+    fi;
 
     if [ ! $FOUND ]; then
       echo "${COLOR_BLUE}Error: unable to find apache2 or httpd to complete the web setup"
@@ -96,7 +96,7 @@ setup() {
   startQueue() {
     if [ $FOUND ]; then
       echo "${COLOR_BLUE}Application ready for loading"
-    fi
+    fi;
 
     echo "${COLOR_BLUE}Starting queue worker: php artisan queue:work"
     php artisan queue:work
