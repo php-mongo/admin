@@ -67,25 +67,32 @@ pmasetup() {
     $($PHP $COMPOSER install)
   }
 
-  # Step 4: run migrations
+  # Step 4: create application key
+  generateKey() {
+    $PHP artisan key:generate --ansi
+  }
+
+  # Step 5: run migrations
   databaseMigrations() {
     echo "${COLOR_BLUE}Running migrations: php artisan migrate"
     $PHP artisan migrate
   }
 
-  # Step 5: install Passport
+  # Step 6: install Passport
   installPassport() {
     echo "${COLOR_BLUE}Installing passport: php artisan passport:install"
     $PHP artisan passport:install
   }
 
-  # Step 6: copy web config based on server found
+  # Step 7: copy web config based on server found
   # Limited to /etc/apache2 & /etc/httpd based installations
   copyApacheConfig() {
     # Set source based on provide context
-    if [ "$2" == public]; then
-          GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
+    if [ "$2" == "public"]; then
+      echo "${COLOR_BLUE}Create public config:"
+      GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
     else
+      echo "${COLOR_BLUE}Create local config:"
       GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE"
     fi;
 
@@ -116,13 +123,13 @@ pmasetup() {
     fi
   }
 
-  # Step 7: set app file permissions
+  # Step 8: set app file permissions
   setPermissions() {
     echo "${COLOR_BLUE}Setting application file ownership"
     chown -R www-data *
   }
 
-  # Step 8: start job worker
+  # Step 9: start job worker
   startQueue() {
     # Notify success
     if [ $FOUND ]; then
@@ -139,6 +146,7 @@ pmasetup() {
     copyEnvironment
     createDatabase
     composerInstall
+    generateKey
     databaseMigrations
     installPassport
     copyApacheConfig
