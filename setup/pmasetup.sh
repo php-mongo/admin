@@ -35,6 +35,9 @@ pmasetup() {
   COLOR_NONE="$(tput sgr0)"
   COLOR_BLUE="$(tput setaf 6)"
 
+  PHP=/usr/bin/php7.4
+  COMPOSER=/usr/bin/composer
+
   echo "${COLOR_BLUE}Global apache.conf : $GLOBAL_SOURCE"
   echo "${COLOR_BLUE}Virtual apache.conf : $VIRTUAL_SOURCE"
 
@@ -61,26 +64,26 @@ pmasetup() {
     echo "${COLOR_BLUE}Running: composer install"
     # Issues with PHP 8 when requirements are based on php7.2+
     # ToDo: Make this use a dynamic search for correct PHP location
-    $(/usr/bin/php7.4 /usr/bin/composer install)
+    $($PHP $COMPOSER install)
   }
 
   # Step 4: run migrations
   databaseMigrations() {
     echo "${COLOR_BLUE}Running migrations: php artisan migrate"
-    php artisan migrate
+    $PHP artisan migrate
   }
 
   # Step 5: install Passport
   installPassport() {
     echo "${COLOR_BLUE}Installing passport: php artisan passport:install"
-    php artisan passport:install
+    $PHP artisan passport:install
   }
 
   # Step 6: copy web config based on server found
   # Limited to /etc/apache2 & /etc/httpd based installations
   copyApacheConfig() {
     # Set source based on provide context
-    if [ "$2" == public]; then
+    if [[ "$2" == public]]; then
           GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
     else
       GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE"
@@ -113,7 +116,13 @@ pmasetup() {
     fi
   }
 
-  # Step 7: start job worker
+  # Step 7: set app file permissions
+  setPermissions() {
+    echo "${COLOR_BLUE}Setting application file ownership"
+    chown -R www-data *
+  }
+
+  # Step 8: start job worker
   startQueue() {
     # Notify success
     if [ $FOUND ]; then
@@ -121,7 +130,7 @@ pmasetup() {
     fi;
 
     echo "${COLOR_BLUE}Starting queue worker: php artisan queue:work"
-    php artisan queue:work
+    $PHP artisan queue:work
   }
 
   # Call this command to run all sequenced commands in order
@@ -133,6 +142,7 @@ pmasetup() {
     databaseMigrations
     installPassport
     copyApacheConfig
+    setPermissions
     startQueue
   }
 
@@ -161,7 +171,4 @@ pmasetup() {
   esac
 
   return 0
-}
-
-}
 }
