@@ -83,7 +83,7 @@ pmasetup() {
   # Limited to /etc/apache2 & /etc/httpd based installations
   copyApacheConfig() {
     # Set source based on provide context
-    if [[ "$2" == public]]; then
+    if [ "$2" == public]; then
           GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
     else
       GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE"
