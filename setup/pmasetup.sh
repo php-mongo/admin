@@ -86,9 +86,10 @@ pmasetup() {
 
   # Step 7: copy web config based on server found
   # Limited to /etc/apache2 & /etc/httpd based installations
+  # shellcheck disable=SC2120
   copyApacheConfig() {
     # Set source based on provide context
-    if [ "$2" == "public"]; then
+    if [ "$2" == "public" ]; then
       echo "${COLOR_BLUE}Create public config:"
       GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
     else
@@ -98,13 +99,13 @@ pmasetup() {
 
     # In case its not a default location
     echo "${COLOR_BLUE}Updating : $GLOBAL_CONFIG"
-    sed -i "s|/usr/share/phpMongoAdmin/|$PMA_DIR/|g" $GLOBAL_CONFIG
+    sed -i "s|/usr/share/phpMongoAdmin/|$PMA_DIR/|g" "$GLOBAL_CONFIG"
 
     # Copy config to correct location
     echo "${COLOR_BLUE}Copying web config:"
     if [ -e /etc/apache2 ]; then
       echo "${COLOR_BLUE}Found /etc/apache2/~"
-      cp $GLOBAL_CONFIG /etc/apache2/conf-available/$CONFIG_FILENAME
+      cp "$GLOBAL_CONFIG" /etc/apache2/conf-available/$CONFIG_FILENAME
       ln -s /etc/apache2/conf-available/$CONFIG_FILENAME  /etc/apache2/conf-enabled/$CONFIG_FILENAME
       systemctl restart apache2
       FOUND="apache2"
@@ -112,7 +113,7 @@ pmasetup() {
 
     if [ -e /etc/httpd ]; then
       echo "${COLOR_BLUE}Found /etc/httpd/~"
-      cp $GLOBAL_CONFIG /etc/httpd/conf.d/$CONFIG_FILENAME
+      cp "$GLOBAL_CONFIG" /etc/httpd/conf.d/$CONFIG_FILENAME
       systemctl restart httpd
       FOUND='httpd'
     fi;
