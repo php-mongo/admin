@@ -16,6 +16,9 @@
 #  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
 #  See COPYRIGHT.php for copyright notices and further details.
 #
+# To prompt for DB password in Docker:
+# read -s -p "Enter a Password for MongoDB root user: " x
+#
 
 # Need ti run 1 level up from the scripts location
 PMA_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd );
@@ -45,11 +48,39 @@ pmasetup() {
   CONTEXT=$2
   PUBLIC="public"
 
-  # Step 1: copy environment file
+  # Step 1: copy and setup environment file
   copyEnvironment() {
     echo "${COLOR_BLUE}Env source : $SOURCE"
     echo "${COLOR_BLUE}Env target : $TARGET"
     cp "$PMA_DIR/$SOURCE" "$PMA_DIR/$TARGET"
+
+    # set environment
+    echo "${COLOR_BLUE}Enter the preferred environment: production"
+    read env
+    sed -i "s|APP_ENV=local|APP_ENV=$env|" .env
+
+    # set debug mode
+    if [ $env == "production" ]; then
+      echo "${COLOR_BLUE}Enable debug mode: false (highly recommended for production)"
+    elif [ $env == "local" ]; then
+      echo "${COLOR_BLUE}Enable debug mode: true (recommended for local with URL: localhost)"
+    else
+      echo "${COLOR_BLUE}Enable debug mode: false (recommended)"
+    fi
+    echo "${COLOR_BLUE}Enable debug mode: false (recommended for production)"
+    read debug
+    sed -i "s|APP_DEBUG=true|$debug|" .env
+
+    # set URL
+    if [ $env == "production" ]; then
+          echo "${COLOR_BLUE}Enter the URL you will use to access the PhpMongoAdmin: https://myapp.com"
+    elif [ $env == "local" ]; then
+      echo "${COLOR_BLUE}Enter the APP URL: http://localhost (recommended for local environment)"
+    else
+      echo "${COLOR_BLUE}Enter the APP URL: https://some-domain/.co"
+    fi
+    read url
+    sed -i "s|http://localhost|$url|" .env
   }
 
   # Step 2: setup database
