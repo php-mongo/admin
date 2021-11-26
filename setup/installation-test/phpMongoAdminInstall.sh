@@ -22,7 +22,7 @@ COLOR_NONE="$(tput sgr0)"
 COLOR_BLUE="$(tput setaf 6)"
 
 # check is sudo
-if [[ $UID != 0 ]] ]; then
+if [[ $UID != 0 ]]; then
 	echo "${COLOR_RED}You must be 'sudo' to run this installation script"
 	exit 1
 fi
