@@ -45,7 +45,7 @@ mkdir phpMongoAdmin && cd phpMongoAdmin
 
 # confirm
 WDIR=$( cd "$( dirname )" && pwd );
-echo  echo "${COLOR_BLUE}Setup location: $WDIR"
+echo "${COLOR_BLUE}Setup location: $WDIR"
 
 # clone
 # ToDo: remember to update to 'master'
@@ -57,9 +57,9 @@ ls -la
 # run setup
 source setup/pmasetup.sh
 
-echo echo "${COLOR_BLUE}Will this be a publicly available installation? y"
-read p
-if $(grep "y" "$p")
+echo "${COLOR_BLUE}Will this be a publicly available installation? y|Y"
+read yes
+if ( ( "$yes" == "y" ) || ( "$yes" == "Y" ) );
 then
   pmasetup run public
 else

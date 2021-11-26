@@ -60,9 +60,9 @@ pmasetup() {
     sed -i "s|APP_ENV=local|APP_ENV=$env|" .env
 
     # set debug mode
-    if [ $env == "production" ]; then
+    if [ "$env" == "production" ]; then
       echo "${COLOR_BLUE}Enable debug mode: false (highly recommended for production)"
-    elif [ $env == "local" ]; then
+    elif [ "$env" == "local" ]; then
       echo "${COLOR_BLUE}Enable debug mode: true (recommended for local with URL: localhost)"
     else
       echo "${COLOR_BLUE}Enable debug mode: false (recommended)"
@@ -72,9 +72,9 @@ pmasetup() {
     sed -i "s|APP_DEBUG=true|$debug|" .env
 
     # set URL
-    if [ $env == "production" ]; then
+    if [ "$env" == "production" ]; then
           echo "${COLOR_BLUE}Enter the URL you will use to access the PhpMongoAdmin: https://myapp.com"
-    elif [ $env == "local" ]; then
+    elif [ "$env" == "local" ]; then
       echo "${COLOR_BLUE}Enter the APP URL: http://localhost (recommended for local environment)"
     else
       echo "${COLOR_BLUE}Enter the APP URL: https://some-domain/.co"
@@ -122,7 +122,7 @@ pmasetup() {
   copyApacheConfig() {
     # Set source based on provide context
     echo "${COLOR_BLUE}Context: $CONTEXT"
-    if [ "$CONTEXT" == $PUBLIC ]; then
+    if [ "$CONTEXT" == "$PUBLIC" ]; then
       echo "${COLOR_BLUE}Create public config:"
       GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
     else
