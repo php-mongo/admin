@@ -29,7 +29,7 @@ fi
 
 # check git is available
 silent grep 'git' whereis git
-if [ $> -ne 0 ]; then
+if [ $? -ne 0 ]; then
 	echo "${COLOR_RED}You must have 'git' installed to clone the repository"
 	exit 1
 fi
