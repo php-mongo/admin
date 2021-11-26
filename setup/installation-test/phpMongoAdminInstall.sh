@@ -35,10 +35,22 @@ then
 fi
 
 # go temp
-cd /tmp
+cd /usr/share
 
 # create working dir
-mkdir pmasetup && cd pmasetup
+mkdir phpMongoAdmin && cd phpMongoAdmin
 
-TMP_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd );
-echo  echo "${COLOR_RED}PWD: $TMP_DIR"
+# confirm
+WDIR=$( cd "$( dirname )" && pwd );
+echo  echo "${COLOR_BLUE}Setup location: $WDIR"
+
+# clone
+git clone --branch master https://github.com/php-mongo/admin .
+
+# list files
+ls -la
+
+# run setup
+source setup/pmasetup.sh
+
+pmasetup run public
