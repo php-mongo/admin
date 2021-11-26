@@ -59,11 +59,8 @@ source setup/pmasetup.sh
 
 # get response
   read -e -p -r "${COLOR_BLUE}Will this be a publicly available installation (y/n)? " -i "y" answer
-  case ${answer:0:1} in
-    y|Y )
-      pmasetup run public;
-    ;;
-    * )
-      pmasetup run;
-    ;;
-  esac
+  if [[ $answer == "y" || $answer == "Y" ]]; then
+      pmasetup run public
+  else
+      pmasetup run
+  fi
