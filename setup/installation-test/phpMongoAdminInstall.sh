@@ -28,9 +28,8 @@ if [[ $UID != 0 ]]; then
 fi
 
 # check git is available
-WIG=whereis git
-grep 'git' $WIG 1> /dev/null
-if [ $? -ne 0 ]; then
+if ! command -v git &> /dev/null
+then
 	echo "${COLOR_RED}You must have 'git' installed to clone the repository"
 	exit 1
 fi
