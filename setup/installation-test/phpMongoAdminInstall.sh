@@ -16,6 +16,9 @@
 #  See https://www.gnu.org/licenses/license-list.html for information on GNU General Public License v3.0
 #  See COPYRIGHT.php for copyright notices and further details.
 #
+#  Run to install:
+#  wget https://phpmongoadmin.com/installation/phpMongoAdminInstall.sh > bash
+#
 
 COLOR_RED="$(tput setaf 1)"
 COLOR_NONE="$(tput sgr0)"
@@ -45,7 +48,8 @@ WDIR=$( cd "$( dirname )" && pwd );
 echo  echo "${COLOR_BLUE}Setup location: $WDIR"
 
 # clone
-git clone --branch master https://github.com/php-mongo/admin .
+# ToDo: remember to update to 'master'
+git clone --branch testing https://github.com/php-mongo/admin .
 
 # list files
 ls -la
