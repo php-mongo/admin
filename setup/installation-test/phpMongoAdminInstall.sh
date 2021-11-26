@@ -58,10 +58,12 @@ ls -la
 source setup/pmasetup.sh
 
 # get response
-while true; do
-    read -p "${COLOR_BLUE}Will this be a publicly available installation? y|n" yn
-    case $yn in
-      [Yy]* ) pmasetup run public; break;;
-      [Nn[* ) pmasetup run; break;;
-    esac
-done
+  read -pr "${COLOR_BLUE}Will this be a publicly available installation (y/n? " answer
+  case {answer:0:1} in
+    y|Y )
+      pmasetup run public;
+    ;;
+    * )
+      pmasetup run;
+    ;;
+  esac
