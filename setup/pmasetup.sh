@@ -42,6 +42,7 @@ pmasetup() {
   echo "${COLOR_BLUE}Virtual apache.conf : $VIRTUAL_SOURCE"
 
   COMMAND=$1
+  CONTEXT=$2
   PUBLIC="public"
 
   # Step 1: copy environment file
@@ -89,7 +90,8 @@ pmasetup() {
   # shellcheck disable=SC2120
   copyApacheConfig() {
     # Set source based on provide context
-    if [ "$2" == "public" ]; then
+    echo "${COLOR_BLUE}Context: $CONTEXT"
+    if [ "$CONTEXT" == $PUBLIC ]; then
       echo "${COLOR_BLUE}Create public config:"
       GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
     else
