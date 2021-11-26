@@ -22,15 +22,16 @@ COLOR_NONE="$(tput sgr0)"
 COLOR_BLUE="$(tput setaf 6)"
 
 # check is sudo
-if [ ! whoami | grep 'root' ]; then
+if [[ $UID != 0 ]] ]; then
 	echo "${COLOR_RED}You must be 'sudo' to run this installation script"
-	return 0
+	exit 1
 fi
 
 # check git is available
-if [ ! whereis git | grep 'git' ]; then
+silent grep 'git' whereis git
+if [ $> -ne 0 ]; then
 	echo "${COLOR_RED}You must have 'git' installed to clone the repository"
-	return 0
+	exit 1
 fi
 
 # go temp
