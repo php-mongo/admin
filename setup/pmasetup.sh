@@ -41,8 +41,8 @@ pmasetup() {
   PHP=/usr/bin/php7.4
   COMPOSER=/usr/bin/composer
 
-  echo "${COLOR_BLUE}Global apache.conf : $GLOBAL_SOURCE"
-  echo "${COLOR_BLUE}Virtual apache.conf : $VIRTUAL_SOURCE"
+  echo -n "${COLOR_BLUE}Global apache.conf : $GLOBAL_SOURCE"
+  echo -n "${COLOR_BLUE}Virtual apache.conf : $VIRTUAL_SOURCE"
 
   COMMAND=$1
   CONTEXT=$2
@@ -50,42 +50,38 @@ pmasetup() {
 
   # Step 1: copy and setup environment file
   copyEnvironment() {
-    echo "${COLOR_BLUE}Env source : $SOURCE"
-    echo "${COLOR_BLUE}Env target : $TARGET"
+    echo -n "${COLOR_BLUE}Env source : $SOURCE"
+    echo -n "${COLOR_BLUE}Env target : $TARGET"
     cp "$PMA_DIR/$SOURCE" "$PMA_DIR/$TARGET"
 
     # set environment
-    echo "${COLOR_BLUE}Enter the preferred environment: production"
-    read env
+    read -p "${COLOR_BLUE}Enter the preferred environment: production" env
     sed -i "s|APP_ENV=local|APP_ENV=$env|" .env
 
     # set debug mode
     if [ "$env" == "production" ]; then
-      echo "${COLOR_BLUE}Enable debug mode: false (highly recommended for production)"
+      read -p "${COLOR_BLUE}Enable debug mode: false (highly recommended for production)" debug
     elif [ "$env" == "local" ]; then
-      echo "${COLOR_BLUE}Enable debug mode: true (recommended for local with URL: localhost)"
+      read -p "${COLOR_BLUE}Enable debug mode: true (recommended for local with URL: localhost)" debug
     else
-      echo "${COLOR_BLUE}Enable debug mode: false (recommended)"
-    fi
-    echo "${COLOR_BLUE}Enable debug mode: false (recommended for production)"
-    read debug
+      read -p "${COLOR_BLUE}Enable debug mode: false (recommended)" debug
+    fi;
     sed -i "s|APP_DEBUG=true|$debug|" .env
 
     # set URL
     if [ "$env" == "production" ]; then
-          echo "${COLOR_BLUE}Enter the URL you will use to access the PhpMongoAdmin: https://myapp.com"
+      read -p "${COLOR_BLUE}Enter the URL you will use to access the PhpMongoAdmin: https://myapp.com" url
     elif [ "$env" == "local" ]; then
-      echo "${COLOR_BLUE}Enter the APP URL: http://localhost (recommended for local environment)"
+      read -p "${COLOR_BLUE}Enter the APP URL: http://localhost (recommended for local environment)" url
     else
-      echo "${COLOR_BLUE}Enter the APP URL: https://some-domain/.co"
+      read -p "${COLOR_BLUE}Enter the APP URL: https://some-domain/.co" url
     fi
-    read url
     sed -i "s|http://localhost|$url|" .env
   }
 
   # Step 2: setup database
   createDatabase() {
-    echo "${COLOR_BLUE}Sqlite database path : $PMA_DIR/$DATABASE"
+    echo -n "${COLOR_BLUE}Sqlite database path : $PMA_DIR/$DATABASE"
     $(touch $PMA_DIR/$DATABASE)
     # update db path in .env
     sed -i "s|/usr/share/phpMongoAdmin/database/sqlite/database.sqlite|$PMA_DIR/$DATABASE|g" .env
@@ -93,7 +89,7 @@ pmasetup() {
 
   # Step 3: run composer install
   composerInstall() {
-    echo "${COLOR_BLUE}Running: composer install"
+    echo -n "${COLOR_BLUE}Running: composer install"
     # Issues with PHP 8 when requirements are based on php7.2+
     # ToDo: Make this use a dynamic search for correct PHP location
     $($PHP $COMPOSER install)
@@ -106,7 +102,7 @@ pmasetup() {
 
   # Step 5: run migrations
   databaseMigrations() {
-    echo "${COLOR_BLUE}Running migrations: php artisan migrate"
+    echo -n "${COLOR_BLUE}Running migrations: php artisan migrate"
     $PHP artisan migrate
   }
 
