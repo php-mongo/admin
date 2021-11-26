@@ -58,8 +58,8 @@ ls -la
 source setup/pmasetup.sh
 
 # get response
-  read -pr "${COLOR_BLUE}Will this be a publicly available installation (y/n? " answer
-  case {answer:0:1} in
+  read -pr "${COLOR_BLUE}Will this be a publicly available installation (y/n)? " answer
+  case ${answer:0:1} in
     y|Y )
       pmasetup run public;
     ;;
