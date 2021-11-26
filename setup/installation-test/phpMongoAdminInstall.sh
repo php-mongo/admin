@@ -28,7 +28,7 @@ if [[ $UID != 0 ]]; then
 fi
 
 # check git is available
-silent grep 'git' whereis git
+grep 'git' whereis git 1> /dev/null
 if [ $? -ne 0 ]; then
 	echo "${COLOR_RED}You must have 'git' installed to clone the repository"
 	exit 1
