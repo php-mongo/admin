@@ -22,7 +22,7 @@
 
 COLOR_RED="$(tput setaf 1)"
 COLOR_NONE="$(tput sgr0)"
-COLOR_BLUE="$(tput setaf 5)"
+COLOR_BLUE="$(tput setaf 4)"
 COLOR_GREEN="$(tput setaf 6)"
 
 # check is sudo
