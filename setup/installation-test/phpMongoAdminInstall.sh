@@ -24,6 +24,7 @@ COLOR_RED="$(tput setaf 1)"
 COLOR_NONE="$(tput sgr0)"
 COLOR_BLUE="$(tput setaf 4)"
 COLOR_GREEN="$(tput setaf 6)"
+COLOR_YBG="$(tput setab 3)"
 
 # check is sudo
 if [[ $UID != 0 ]]; then
@@ -59,7 +60,7 @@ ls -la
 #source setup/pmasetup.sh
 
 # Notify
-echo "${COLOR_BLUE}Stage 1 complete: application cloned to $WDIR"
+echo "${COLOR_BLUE}${COLOR_YBG}Stage 1 complete: application cloned to $WDIR"
 echo
 echo "${COLOR_BLUE}Switch to: $WDIR"
 echo "${COLOR_BLUE}type: cd $WDIR"
