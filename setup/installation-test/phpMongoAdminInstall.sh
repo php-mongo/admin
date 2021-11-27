@@ -57,10 +57,30 @@ ls -la
 # run setup
 source setup/pmasetup.sh
 
+# Notify
+echo "${COLOR_BLUE}Stage 1 complete: application cloned to $WDIR"
+echo
+echo "${COLOR_BLUE}Switch to: $WDIR"
+echo "${COLOR_BLUE}type: cd $WDIR"
+echo
+echo "${COLOR_BLUE}To complete the installation type a setup command option then hit enter to start:"
+echo
+echo "${COLOR_BLUE}Default (global) private install:"
+echo "${COLOR_BLUE}type: pmasetup run default"
+echo
+echo "${COLOR_BLUE}Default (global) public install:"
+echo "${COLOR_BLUE}type: pmasetup run default public"
+echo
+echo "${COLOR_BLUE}VirtualHost private install:"
+echo "${COLOR_BLUE}type: pmasetup run vhost"
+echo
+echo "${COLOR_BLUE}VirtualHost public install:"
+echo "${COLOR_BLUE}type: pmasetup run vhost public"
+
 # get response
-  read -e -p -r "${COLOR_BLUE}Will this be a publicly available installation (y/n)? " -i "y" answer
-  if [[ $answer == "y" || $answer == "Y" ]]; then
-      pmasetup run public
-  else
-      pmasetup run
-  fi
+#read -e -p -r "${COLOR_BLUE}Will this be a publicly available installation (y/n)? " -i "y" answer
+#if [[ $answer == "y" || $answer == "Y" ]]; then
+#    pmasetup run public
+#else
+#    pmasetup run
+#fi

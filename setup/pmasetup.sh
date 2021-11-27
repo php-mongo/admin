@@ -4,7 +4,7 @@
 # PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
 # @version      setup.sh 1001 23/11/21, 7:33 pm  Gilbert Rehling $
 # @package      PhpMongoAdmin\setup
-# @subpackage   setup.sh
+# @subpackage   pmasetup.sh
 # @link         https://github.com/php-mongo/admin PHP MongoDB Admin
 # @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
 # @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
@@ -20,7 +20,7 @@
 # read -s -p "Enter a Password for MongoDB root user: " x
 #
 
-# Need ti run 1 level up from the scripts location
+# Need to run 1 level up from the scripts location
 PMA_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd );
 
 pmasetup() {
@@ -46,7 +46,7 @@ pmasetup() {
 
   COMMAND=$1
   CONTEXT=$2
-  PUBLIC="public"
+  PUBLIC=$3
 
   # Step 1: copy and setup environment file
   copyEnvironment() {
@@ -55,16 +55,16 @@ pmasetup() {
     cp "$PMA_DIR/$SOURCE" "$PMA_DIR/$TARGET"
 
     # set environment
-    read -p "${COLOR_BLUE}Enter the preferred environment: production" env
+    read -p "${COLOR_BLUE}Enter the preferred environment: production" -i "local" env
     sed -i "s|APP_ENV=local|APP_ENV=$env|" .env
 
     # set debug mode
     if [ "$env" == "production" ]; then
-      read -p "${COLOR_BLUE}Enable debug mode: false (highly recommended for production)" debug
+      read -p "${COLOR_BLUE}Enable debug mode: false (highly recommended for production)" -i "false" debug
     elif [ "$env" == "local" ]; then
-      read -p "${COLOR_BLUE}Enable debug mode: true (recommended for local with URL: localhost)" debug
+      read -p "${COLOR_BLUE}Enable debug mode: true (recommended for local with URL: localhost)" -i "true" debug
     else
-      read -p "${COLOR_BLUE}Enable debug mode: false (recommended)" debug
+      read -p "${COLOR_BLUE}Enable debug mode: false (recommended)" -i "false" debug
     fi;
     sed -i "s|APP_DEBUG=true|$debug|" .env
 
@@ -72,7 +72,7 @@ pmasetup() {
     if [ "$env" == "production" ]; then
       read -p "${COLOR_BLUE}Enter the URL you will use to access the PhpMongoAdmin: https://myapp.com" url
     elif [ "$env" == "local" ]; then
-      read -p "${COLOR_BLUE}Enter the APP URL: http://localhost (recommended for local environment)" url
+      read -p "${COLOR_BLUE}Enter the APP URL: http://localhost (recommended for local environment)" -i "http://localhost" url
     else
       read -p "${COLOR_BLUE}Enter the APP URL: https://some-domain/.co" url
     fi
@@ -114,11 +114,12 @@ pmasetup() {
 
   # Step 7: copy web config based on server found
   # Limited to /etc/apache2 & /etc/httpd based installations
-  # shellcheck disable=SC2120
+  ##shellcheck#disable=SC2120
   copyApacheConfig() {
     # Set source based on provide context
+    # ToDo: add test and config for vitualhost
     echo "${COLOR_BLUE}Context: $CONTEXT"
-    if [ "$CONTEXT" == "$PUBLIC" ]; then
+    if [ "$PUBLIC" == "public" ]; then
       echo "${COLOR_BLUE}Create public config:"
       GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
     else
@@ -126,7 +127,7 @@ pmasetup() {
       GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE"
     fi;
 
-    # In case its not a default location
+    # In case its not a default location - update path inside the config
     echo "${COLOR_BLUE}Updating : $GLOBAL_CONFIG"
     sed -i "s|/usr/share/phpMongoAdmin/|$PMA_DIR/|g" "$GLOBAL_CONFIG"
 
