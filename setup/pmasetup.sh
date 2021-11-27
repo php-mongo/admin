@@ -36,13 +36,13 @@ pmasetup() {
 
   COLOR_RED="$(tput setaf 1)"
   COLOR_NONE="$(tput sgr0)"
-  COLOR_BLUE="$(tput setaf 6)"
+  COLOR_GREEN="$(tput setaf 6)"
 
   PHP=/usr/bin/php7.4
   COMPOSER=/usr/bin/composer
 
-  echo -n "${COLOR_BLUE}Global apache.conf : $GLOBAL_SOURCE"
-  echo -n "${COLOR_BLUE}Virtual apache.conf : $VIRTUAL_SOURCE"
+  echo -n "${COLOR_GREEN}Global apache.conf : $GLOBAL_SOURCE"
+  echo -n "${COLOR_GREEN}Virtual apache.conf : $VIRTUAL_SOURCE"
 
   COMMAND=$1
   CONTEXT=$2
@@ -50,38 +50,38 @@ pmasetup() {
 
   # Step 1: copy and setup environment file
   copyEnvironment() {
-    echo -n "${COLOR_BLUE}Env source : $SOURCE"
-    echo -n "${COLOR_BLUE}Env target : $TARGET"
+    echo -n "${COLOR_GREEN}Env source : $SOURCE"
+    echo -n "${COLOR_GREEN}Env target : $TARGET"
     cp "$PMA_DIR/$SOURCE" "$PMA_DIR/$TARGET"
 
     # set environment
-    read -p "${COLOR_BLUE}Enter the preferred environment: " -i "local" env
+    read -p "${COLOR_GREEN}Enter the preferred environment: " -i "local" env
     sed -i "s|APP_ENV=local|APP_ENV=$env|" .env
 
     # set debug mode
     if [ "$env" == "production" ]; then
-      read -p "${COLOR_BLUE}Enable debug mode: false (highly recommended for production): " -i "false" debug
+      read -p "${COLOR_GREEN}Enable debug mode: false (highly recommended for production): " -i "false" debug
     elif [ "$env" == "local" ]; then
-      read -p "${COLOR_BLUE}Enable debug mode: true (recommended for local with URL: localhost): " -i "true" debug
+      read -p "${COLOR_GREEN}Enable debug mode: true (recommended for local with URL: localhost): " -i "true" debug
     else
-      read -p "${COLOR_BLUE}Enable debug mode: false (recommended): " -i "false" debug
+      read -p "${COLOR_GREEN}Enable debug mode: false (recommended): " -i "false" debug
     fi;
     sed -i "s|APP_DEBUG=true|APP_DEBUG=$debug|" .env
 
     # set URL
     if [ "$env" == "production" ]; then
-      read -p "${COLOR_BLUE}Enter the URL you will use to access the PhpMongoAdmin (https://myapp.com) : " url
+      read -p "${COLOR_GREEN}Enter the URL you will use to access the PhpMongoAdmin (https://myapp.com) : " url
     elif [ "$env" == "local" ]; then
-      read -p "${COLOR_BLUE}Enter the APP URL: (http://localhost recommended for local environment): " -i "http://localhost" url
+      read -p "${COLOR_GREEN}Enter the APP URL: (http://localhost recommended for local environment): " -i "http://localhost" url
     else
-      read -p "${COLOR_BLUE}Enter the APP URL: https://some-domain/.co: " url
+      read -p "${COLOR_GREEN}Enter the APP URL: https://some-domain/.co: " url
     fi
     sed -i "s|http://localhost|$url|" .env
   }
 
   # Step 2: setup database
   createDatabase() {
-    echo -n "${COLOR_BLUE}Sqlite database path : $PMA_DIR/$DATABASE"
+    echo -n "${COLOR_GREEN}Sqlite database path : $PMA_DIR/$DATABASE"
     $(touch $PMA_DIR/$DATABASE)
     # update db path in .env
     sed -i "s|/usr/share/phpMongoAdmin/database/sqlite/database.sqlite|$PMA_DIR/$DATABASE|g" .env
@@ -89,7 +89,7 @@ pmasetup() {
 
   # Step 3: run composer install
   composerInstall() {
-    echo -n "${COLOR_BLUE}Running: composer install"
+    echo -n "${COLOR_GREEN}Running: composer install"
     # Issues with PHP 8 when requirements are based on php7.2+
     # ToDo: Make this use a dynamic search for correct PHP location
     $($PHP $COMPOSER install)
@@ -102,13 +102,13 @@ pmasetup() {
 
   # Step 5: run migrations
   databaseMigrations() {
-    echo -n "${COLOR_BLUE}Running migrations: php artisan migrate"
+    echo -n "${COLOR_GREEN}Running migrations: php artisan migrate"
     $PHP artisan migrate
   }
 
   # Step 6: install Passport
   installPassport() {
-    echo "${COLOR_BLUE}Installing passport: php artisan passport:install"
+    echo "${COLOR_GREEN}Installing passport: php artisan passport:install"
     $PHP artisan passport:install
   }
 
@@ -118,23 +118,23 @@ pmasetup() {
   copyApacheConfig() {
     # Set source based on provide context
     # ToDo: add test and config for vitualhost
-    echo "${COLOR_BLUE}Context: $CONTEXT"
+    echo "${COLOR_GREEN}Context: $CONTEXT"
     if [ "$PUBLIC" == "public" ]; then
-      echo "${COLOR_BLUE}Create public config:"
+      echo "${COLOR_GREEN}Create public config:"
       GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
     else
-      echo "${COLOR_BLUE}Create local config:"
+      echo "${COLOR_GREEN}Create local config:"
       GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE"
     fi;
 
     # In case its not a default location - update path inside the config
-    echo "${COLOR_BLUE}Updating : $GLOBAL_CONFIG"
+    echo "${COLOR_GREEN}Updating : $GLOBAL_CONFIG"
     sed -i "s|/usr/share/phpMongoAdmin/|$PMA_DIR/|g" "$GLOBAL_CONFIG"
 
     # Copy config to correct location
-    echo "${COLOR_BLUE}Copying web config:"
+    echo "${COLOR_GREEN}Copying web config:"
     if [ -e /etc/apache2 ]; then
-      echo "${COLOR_BLUE}Found /etc/apache2/~"
+      echo "${COLOR_GREEN}Found /etc/apache2/~"
       cp "$GLOBAL_CONFIG" /etc/apache2/conf-available/$CONFIG_FILENAME
       ln -s /etc/apache2/conf-available/$CONFIG_FILENAME  /etc/apache2/conf-enabled/$CONFIG_FILENAME
       systemctl restart apache2
@@ -142,7 +142,7 @@ pmasetup() {
     fi;
 
     if [ -e /etc/httpd ]; then
-      echo "${COLOR_BLUE}Found /etc/httpd/~"
+      echo "${COLOR_GREEN}Found /etc/httpd/~"
       cp "$GLOBAL_CONFIG" /etc/httpd/conf.d/$CONFIG_FILENAME
       systemctl restart httpd
       FOUND='httpd'
@@ -150,13 +150,13 @@ pmasetup() {
 
     # Notify error
     if [ ! $FOUND ]; then
-      echo "${COLOR_BLUE}Error: unable to find apache2 or httpd to complete the web setup"
+      echo "${COLOR_GREEN}Error: unable to find apache2 or httpd to complete the web setup"
     fi
   }
 
   # Step 8: set app file permissions
   setPermissions() {
-    echo "${COLOR_BLUE}Setting application file ownership"
+    echo "${COLOR_GREEN}Setting application file ownership"
     chown -R www-data *
   }
 
@@ -164,16 +164,16 @@ pmasetup() {
   startQueue() {
     # Notify success
     if [ $FOUND ]; then
-      echo "${COLOR_BLUE}Your application ready for loading in a browser"
+      echo "${COLOR_GREEN}Your application ready for loading in a browser"
     fi;
 
-    echo "${COLOR_BLUE}Starting queue worker: php artisan queue:work"
+    echo "${COLOR_GREEN}Starting queue worker: php artisan queue:work"
     $PHP artisan queue:work
   }
 
   # Call this command to run all sequenced commands in order
   setup() {
-    echo "${COLOR_BLUE}Working DIR : $PMA_DIR"
+    echo "${COLOR_GREEN}Working DIR : $PMA_DIR"
     copyEnvironment
     createDatabase
     composerInstall
@@ -193,7 +193,7 @@ pmasetup() {
 
     help)
       fmtHelp () {
-        echo "-- ${COLOR_BLUE}$1${COLOR_NONE}: $2"
+        echo "-- ${COLOR_GREEN}$1${COLOR_NONE}: $2"
       }
       HELP="Available actions:
         $(fmtHelp "run" "Starts the installation process")"

@@ -22,7 +22,8 @@
 
 COLOR_RED="$(tput setaf 1)"
 COLOR_NONE="$(tput sgr0)"
-COLOR_BLUE="$(tput setaf 6)"
+COLOR_BLUE="$(tput setaf 5)"
+COLOR_GREEN="$(tput setaf 6)"
 
 # check is sudo
 if [[ $UID != 0 ]]; then
@@ -45,7 +46,7 @@ mkdir phpMongoAdmin && cd phpMongoAdmin
 
 # confirm
 WDIR=$( cd "$( dirname )" && pwd );
-echo "${COLOR_BLUE}Setup location: $WDIR"
+echo "${COLOR_GREEN}Setup location: $WDIR"
 
 # clone
 # ToDo: remember to update to 'master'
