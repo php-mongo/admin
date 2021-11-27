@@ -31,9 +31,12 @@ Execute the following command as a sudo user:
   - Select an environment: ( production, staging, local are valid choices )
   - Turn debugging mode on|off ( off recommended for all environments except local )
   - The URL you will access the application with ( this is not strictly enforced - its mostly used for reference )
-- Once the process completes you can load the application and set-up the Control-User ( you will need to MongoDB credentials )
-- !! Never expose a MongoDB to the public without activating secure access !!
+- Once the process completes you can load the application and set-up the Control-User 
+  - ( you will need the MongoDB credentials )
+- !! Never expose a MongoDB server to the public domain without activating secure access !!
   - https://docs.mongodb.com/guides/server/auth/
+
+####PhpMongoAdmin can be installed in numerous configuration, with more to come. Read out [installation docs](https://phpmongoadmin.com/support) for more options
 
 ## PhpMongoAdmin Sponsors
 

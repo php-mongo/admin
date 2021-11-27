@@ -24,7 +24,6 @@ COLOR_NONE="$(tput sgr0)"
 COLOR_RED="$(tput setaf 1)"
 COLOR_BLUE="$(tput setaf 4)"
 COLOR_BLACK="$(tput setaf 0)"
-COLOR_NONE="$(tput sgr0)"
 COLOR_GREEN="$(tput setaf 6)"
 COLOR_YBG="$(tput setab 11)"
 COLOR_WBG="$(tput setab 15)"
@@ -55,7 +54,7 @@ echo "${COLOR_GREEN}Setup location: $WDIR"
 
 # clone
 # ToDo: remember to update to 'master'
-git clone --branch testing https://github.com/php-mongo/admin .
+git clone --branch staging https://github.com/php-mongo/admin .
 
 # list files
 ls -la
@@ -86,6 +85,10 @@ echo "${COLOR_BLUE}type: pmasetup run vhost"
 echo
 echo "${COLOR_BLUE}VirtualHost public install:"
 echo "${COLOR_BLUE}type: pmasetup run vhost public"
+echo
+echo "${COLOR_BLUE}During the setup process:"
+echo "${COLOR_BLUE}If you choose 'production' as the environment, when the 'php artisan migrate' command is triggerred you will be asked 'Do you really wish to run this command? (yes/no)' - you must enter yes so the first migration can complete"
+echo
 
 # get response
 #read -e -p -r "${COLOR_BLUE}Will this be a publicly available installation (y/n)? " -i "y" answer

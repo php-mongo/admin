@@ -38,8 +38,8 @@ pmasetup() {
   COLOR_RED="$(tput setaf 1)"
   COLOR_BLUE="$(tput setaf 4)"
   COLOR_BLACK="$(tput setaf 0)"
-  COLOR_NONE="$(tput sgr0)"
   COLOR_GREEN="$(tput setaf 6)"
+  COLOR_WHITE="$(tput setaf 15)"
   COLOR_YBG="$(tput setab 11)"
   COLOR_WBG="$(tput setab 15)"
   COLOR_BBG="$(tput setab 12)"
@@ -48,7 +48,7 @@ pmasetup() {
   COMPOSER=/usr/bin/composer
 
   echo
-  echo "${COLOR_BLUE}Global apache.conf : $GLOBAL_SOURCE"
+  echo "${COLOR_BLUE}${COLOR_WBG}Global apache.conf : $GLOBAL_SOURCE"
   echo "${COLOR_BLUE}Virtual apache.conf : $VIRTUAL_SOURCE"
 
   COMMAND=$1
@@ -57,7 +57,8 @@ pmasetup() {
 
   # Step 1: copy and setup environment file
   copyEnvironment() {
-    echo "${COLOR_GREEN}${COLOR_BBG})Env source : $SOURCE"
+
+    echo "${COLOR_GREEN}Env source : $SOURCE"
     echo "${COLOR_GREEN}Env target : $TARGET"
     cp "$PMA_DIR/$SOURCE" "$PMA_DIR/$TARGET"
 
