@@ -66,7 +66,7 @@ pmasetup() {
     else
       read -p "${COLOR_BLUE}Enable debug mode: false (recommended): " -i "false" debug
     fi;
-    sed -i "s|APP_DEBUG=true|$debug|" .env
+    sed -i "s|APP_DEBUG=true|APP_DEBUG=$debug|" .env
 
     # set URL
     if [ "$env" == "production" ]; then
