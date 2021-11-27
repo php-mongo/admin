@@ -27,6 +27,7 @@ pmasetup() {
   SOURCE="./.env.example"
   TARGET="./.env"
   CONFIG_FILENAME="phpMongoAdmin.conf"
+  VHOST_FILENAME="vhost_phpMongoAdmin.conf"
   GLOBAL_SOURCE="setup/apache/global/phpMongoAdmin.conf"
   GLOBAL_SOURCE_PUBLIC="setup/apache/global/phpMongoAdminPublic.conf"
   #VIRTUAL_FILE="vhost_phpMongoAdmin"
@@ -57,34 +58,8 @@ pmasetup() {
 
   # Step 1: copy and setup environment file
   copyEnvironment() {
-
-    echo "${COLOR_GREEN}Env source : $SOURCE"
-    echo "${COLOR_GREEN}Env target : $TARGET"
-    cp "$PMA_DIR/$SOURCE" "$PMA_DIR/$TARGET"
-
-    # set environment
-    read -p "${COLOR_GREEN}Enter an environment (production, staging, local): " -i "local" env
-    sed -i "s|APP_ENV=local|APP_ENV=$env|" .env
-
-    # set debug mode
-    if [ "$env" == "production" ]; then
-      read -n5 -p "${COLOR_GREEN}Enable debug mode: false (highly recommended for production): " -i "false" debug
-    elif [ "$env" == "local" ]; then
-      read -n5 -p "${COLOR_GREEN}Enable debug mode: true (recommended for local with URL: localhost): " -i "true" debug
-    else
-      read -n5 -p "${COLOR_GREEN}Enable debug mode: false (recommended): " -i "false" debug
-    fi;
-    sed -i "s|APP_DEBUG=true|APP_DEBUG=$debug|" .env
-
-    # set URL
-    if [ "$env" == "production" ]; then
-      read -p "${COLOR_GREEN}Enter the URL you will use to access the PhpMongoAdmin (https://myapp.com) : " url
-    elif [ "$env" == "local" ]; then
-      read -p "${COLOR_GREEN}Enter the APP URL: (http://localhost recommended for local environment): " -i "http://localhost" url
-    else
-      read -p "${COLOR_GREEN}Enter the APP URL: https://some-domain/.co: " url
-    fi
-    sed -i "s|http://localhost|$url|" .env
+    echo "${COLOR_GREEN}Environment setting file : $TARGET"
+    echo "${COLOR_GREEN}This script requires manual preparation of the .env file before proceeding"
   }
 
   # Step 2: setup database
@@ -126,32 +101,66 @@ pmasetup() {
   copyApacheConfig() {
     # Set source based on provide context
     # ToDo: add test and config for virtualhost
-    echo "${COLOR_GREEN}Context: $CONTEXT"
-    if [ "$PUBLIC" == "public" ]; then
-      echo "${COLOR_GREEN}Create public config:"
-      GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
+    if [ $CONTEXT == "default" ]; then
+      echo "${COLOR_GREEN}Default (global) context: $CONTEXT"
+      if [ "$PUBLIC" == "public" ]; then
+        echo "${COLOR_GREEN}Create public config:"
+        GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
+      else
+        echo "${COLOR_GREEN}Create local config:"
+        GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE"
+      fi;
     else
-      echo "${COLOR_GREEN}Create local config:"
-      GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE"
+      echo "${COLOR_GREEN}Default (global) context: $CONTEXT" for this application ()
+      if [ "$PUBLIC" == "public" ]; then
+        echo "${COLOR_GREEN}Create public config:"
+        GLOBAL_CONFIG="$PMA_DIR/$VIRTUAL_SOURCE_PUBLIC"
+      else
+        echo "${COLOR_GREEN}Create local config:"
+        GLOBAL_CONFIG="$PMA_DIR/$VIRTUAL_SOURCE"
+      fi;
     fi;
 
     # In case its not a default location - update path inside the config
     echo "${COLOR_GREEN}Updating : $GLOBAL_CONFIG"
-    sed -i "s|/usr/share/phpMongoAdmin/|$PMA_DIR/|g" "$GLOBAL_CONFIG"
+
+    if [ $CONTEXT == "vhost" ]; then
+      sed -i "s|/var/hosting/sites/phpmongoadmin.com/|$PMA_DIR/|g" "$GLOBAL_CONFIG"
+      read -p "Enter the host / domain name for this application (localhost, host.local, host.your-domain.com): " host
+      sed -i "s|/usr/share/phpMongoAdmin/|$PMA_DIR/|g" "$GLOBAL_CONFIG"
+    else
+      sed -i "s|/usr/share/phpMongoAdmin/|$PMA_DIR/|g" "$GLOBAL_CONFIG"
+    fi;
 
     # Copy config to correct location
     echo "${COLOR_GREEN}Copying web config:"
     if [ -e /etc/apache2 ]; then
       echo "${COLOR_GREEN}Found /etc/apache2/~"
-      cp "$GLOBAL_CONFIG" /etc/apache2/conf-available/$CONFIG_FILENAME
-      ln -s /etc/apache2/conf-available/$CONFIG_FILENAME  /etc/apache2/conf-enabled/$CONFIG_FILENAME
+      # default as Alias config
+      if [ $CONTEXT == "default" ]; then
+        cp "$GLOBAL_CONFIG" /etc/apache2/conf-available/$CONFIG_FILENAME
+        ln -s /etc/apache2/conf-available/$CONFIG_FILENAME  /etc/apache2/conf-enabled/$CONFIG_FILENAME
+      fi;
+      # vhost site configuration
+      if [ $CONTEXT == "vhost" ]; then
+        cp "$GLOBAL_CONFIG" /etc/apache2/sites-available/$VHOST_FILENAME
+        ln -s /etc/apache2/sites-available/$VHOST_FILENAME  /etc/apache2/sites-enabled/$VHOST_FILENAME
+      fi;
       systemctl restart apache2
       FOUND="apache2"
     fi;
 
     if [ -e /etc/httpd ]; then
       echo "${COLOR_GREEN}Found /etc/httpd/~"
-      cp "$GLOBAL_CONFIG" /etc/httpd/conf.d/$CONFIG_FILENAME
+      # default as Alias config
+      if [ $CONTEXT == "default" ]; then
+        cp "$GLOBAL_CONFIG" /etc/httpd/conf.d/$CONFIG_FILENAME
+      fi;
+      # vhost site configuration
+      if [ $CONTEXT == "vhost" ]; then
+        cp "$GLOBAL_CONFIG" /etc/httpd/sites-available/$VHOST_FILENAME
+        ln -s /etc/httpd/sites-available/$VHOST_FILENAME  /etc/httpd/sites-enabled/$VHOST_FILENAME
+      fi;
       systemctl restart httpd
       FOUND='httpd'
     fi;
