@@ -55,13 +55,16 @@ git clone --branch testing https://github.com/php-mongo/admin .
 ls -la
 
 # run setup
-source setup/pmasetup.sh
+#source setup/pmasetup.sh
 
 # Notify
 echo "${COLOR_BLUE}Stage 1 complete: application cloned to $WDIR"
 echo
 echo "${COLOR_BLUE}Switch to: $WDIR"
 echo "${COLOR_BLUE}type: cd $WDIR"
+echo
+echo "${COLOR_BLUE}Initialise the setup script (required):"
+echo "${COLOR_BLUE}type: source setup/pmasetup.sh"
 echo
 echo "${COLOR_BLUE}To complete the installation type a setup command option then hit enter to start:"
 echo

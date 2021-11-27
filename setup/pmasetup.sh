@@ -55,26 +55,26 @@ pmasetup() {
     cp "$PMA_DIR/$SOURCE" "$PMA_DIR/$TARGET"
 
     # set environment
-    read -p "${COLOR_BLUE}Enter the preferred environment: production" -i "local" env
+    read -p "${COLOR_BLUE}Enter the preferred environment: " -i "local" env
     sed -i "s|APP_ENV=local|APP_ENV=$env|" .env
 
     # set debug mode
     if [ "$env" == "production" ]; then
-      read -p "${COLOR_BLUE}Enable debug mode: false (highly recommended for production)" -i "false" debug
+      read -p "${COLOR_BLUE}Enable debug mode: false (highly recommended for production): " -i "false" debug
     elif [ "$env" == "local" ]; then
-      read -p "${COLOR_BLUE}Enable debug mode: true (recommended for local with URL: localhost)" -i "true" debug
+      read -p "${COLOR_BLUE}Enable debug mode: true (recommended for local with URL: localhost): " -i "true" debug
     else
-      read -p "${COLOR_BLUE}Enable debug mode: false (recommended)" -i "false" debug
+      read -p "${COLOR_BLUE}Enable debug mode: false (recommended): " -i "false" debug
     fi;
     sed -i "s|APP_DEBUG=true|$debug|" .env
 
     # set URL
     if [ "$env" == "production" ]; then
-      read -p "${COLOR_BLUE}Enter the URL you will use to access the PhpMongoAdmin: https://myapp.com" url
+      read -p "${COLOR_BLUE}Enter the URL you will use to access the PhpMongoAdmin (https://myapp.com) : " url
     elif [ "$env" == "local" ]; then
-      read -p "${COLOR_BLUE}Enter the APP URL: http://localhost (recommended for local environment)" -i "http://localhost" url
+      read -p "${COLOR_BLUE}Enter the APP URL: (http://localhost recommended for local environment): " -i "http://localhost" url
     else
-      read -p "${COLOR_BLUE}Enter the APP URL: https://some-domain/.co" url
+      read -p "${COLOR_BLUE}Enter the APP URL: https://some-domain/.co: " url
     fi
     sed -i "s|http://localhost|$url|" .env
   }
