@@ -20,11 +20,15 @@
 #  wget https://phpmongoadmin.com/installation/phpMongoAdminInstall.sh -O - | bash
 #
 
-COLOR_RED="$(tput setaf 1)"
 COLOR_NONE="$(tput sgr0)"
+COLOR_RED="$(tput setaf 1)"
 COLOR_BLUE="$(tput setaf 4)"
+COLOR_BLACK="$(tput setaf 0)"
+COLOR_NONE="$(tput sgr0)"
 COLOR_GREEN="$(tput setaf 6)"
-COLOR_YBG="$(tput setab 3)"
+COLOR_YBG="$(tput setab 11)"
+COLOR_WBG="$(tput setab 15)"
+COLOR_BBG="$(tput setab 12)"
 
 # check is sudo
 if [[ $UID != 0 ]]; then
@@ -60,6 +64,7 @@ ls -la
 #source setup/pmasetup.sh
 
 # Notify
+echo
 echo "${COLOR_BLUE}${COLOR_YBG}Stage 1 complete: application cloned to $WDIR"
 echo
 echo "${COLOR_BLUE}Switch to: $WDIR"

@@ -34,15 +34,22 @@ pmasetup() {
   VIRTUAL_SOURCE_PUBLIC="setup/apache/virtualHost/vhost_phpMongoAdminPublic.conf"
   DATABASE="database/sqlite/database.sqlite"
 
+  COLOR_NONE="$(tput sgr0)"
   COLOR_RED="$(tput setaf 1)"
+  COLOR_BLUE="$(tput setaf 4)"
+  COLOR_BLACK="$(tput setaf 0)"
   COLOR_NONE="$(tput sgr0)"
   COLOR_GREEN="$(tput setaf 6)"
+  COLOR_YBG="$(tput setab 11)"
+  COLOR_WBG="$(tput setab 15)"
+  COLOR_BBG="$(tput setab 12)"
 
   PHP=/usr/bin/php7.4
   COMPOSER=/usr/bin/composer
 
-  echo -n "${COLOR_GREEN}Global apache.conf : $GLOBAL_SOURCE"
-  echo -n "${COLOR_GREEN}Virtual apache.conf : $VIRTUAL_SOURCE"
+  echo
+  echo "${COLOR_BLUE}Global apache.conf : $GLOBAL_SOURCE"
+  echo "${COLOR_BLUE}Virtual apache.conf : $VIRTUAL_SOURCE"
 
   COMMAND=$1
   CONTEXT=$2
@@ -50,21 +57,21 @@ pmasetup() {
 
   # Step 1: copy and setup environment file
   copyEnvironment() {
-    echo -n "${COLOR_GREEN}Env source : $SOURCE"
-    echo -n "${COLOR_GREEN}Env target : $TARGET"
+    echo "${COLOR_GREEN}${COLOR_BBG})Env source : $SOURCE"
+    echo "${COLOR_GREEN}Env target : $TARGET"
     cp "$PMA_DIR/$SOURCE" "$PMA_DIR/$TARGET"
 
     # set environment
-    read -p "${COLOR_GREEN}Enter the preferred environment: " -i "local" env
+    read -p "${COLOR_GREEN}Enter an environment (production, staging, local): " -i "local" env
     sed -i "s|APP_ENV=local|APP_ENV=$env|" .env
 
     # set debug mode
     if [ "$env" == "production" ]; then
-      read -p "${COLOR_GREEN}Enable debug mode: false (highly recommended for production): " -i "false" debug
+      read -n5 -p "${COLOR_GREEN}Enable debug mode: false (highly recommended for production): " -i "false" debug
     elif [ "$env" == "local" ]; then
-      read -p "${COLOR_GREEN}Enable debug mode: true (recommended for local with URL: localhost): " -i "true" debug
+      read -n5 -p "${COLOR_GREEN}Enable debug mode: true (recommended for local with URL: localhost): " -i "true" debug
     else
-      read -p "${COLOR_GREEN}Enable debug mode: false (recommended): " -i "false" debug
+      read -n5 -p "${COLOR_GREEN}Enable debug mode: false (recommended): " -i "false" debug
     fi;
     sed -i "s|APP_DEBUG=true|APP_DEBUG=$debug|" .env
 
@@ -81,7 +88,7 @@ pmasetup() {
 
   # Step 2: setup database
   createDatabase() {
-    echo -n "${COLOR_GREEN}Sqlite database path : $PMA_DIR/$DATABASE"
+    echo "${COLOR_GREEN}Sqlite database path : $PMA_DIR/$DATABASE"
     $(touch $PMA_DIR/$DATABASE)
     # update db path in .env
     sed -i "s|/usr/share/phpMongoAdmin/database/sqlite/database.sqlite|$PMA_DIR/$DATABASE|g" .env
@@ -89,7 +96,7 @@ pmasetup() {
 
   # Step 3: run composer install
   composerInstall() {
-    echo -n "${COLOR_GREEN}Running: composer install"
+    echo "${COLOR_GREEN}Running: composer install"
     # Issues with PHP 8 when requirements are based on php7.2+
     # ToDo: Make this use a dynamic search for correct PHP location
     $($PHP $COMPOSER install)
@@ -102,7 +109,7 @@ pmasetup() {
 
   # Step 5: run migrations
   databaseMigrations() {
-    echo -n "${COLOR_GREEN}Running migrations: php artisan migrate"
+    echo "${COLOR_GREEN}Running migrations: php artisan migrate"
     $PHP artisan migrate
   }
 
