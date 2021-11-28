@@ -66,6 +66,9 @@ echo "${COLOR_RED}${COLOR_WBG}Then:"
 echo "${COLOR_RED}${COLOR_WBG}Initialise the custom setup script (required):"
 echo "${COLOR_RED}${COLOR_WBG}type: source setup/pmacustom.sh"
 echo
+echo "${COLOR_RED}If you intend to generate a self-signed SSL certificate on AWS please consult this documentation:"
+echo "${COLOR_RED}https://docs.aws.amazon.com/cloudhsm/latest/userguide/openssl-library-install.html"
+echo
 echo "${COLOR_RED}${COLOR_WBG}Or alternatively:"
 echo "${COLOR_RED}${COLOR_WBG}Use the default step-by-step script:"
 echo "${COLOR_RED}${COLOR_WBG}Initialise the default setup script (required):"

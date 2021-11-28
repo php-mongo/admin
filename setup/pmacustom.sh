@@ -144,29 +144,35 @@ pmainstall() {
 
           # prompt user for paths
           if [ "$answer" == "Yes" ]; then
-            # get key
+            # get key path
             read -p "Please provide the full path to the server key file: " key
             sed -i "s|/var/hosting/sites/phpmongoadmin/storage/certs/server.key|$key|g" "$GLOBAL_CONFIG"
 
-            # get certificate
+            # get certificate path
             read -p "Please provide the full path to the ssl certificate file: " cert
             sed -i "s|/var/hosting/sites/phpmongoadmin/storage/certs/pma-public.crt|$cert|g" "$GLOBAL_CONFIG"
             break;
           fi;
 
           # begin self signed process
+          CERTS="$PMA_DIR/storage/certs/"
           if [ "$answer" == "No" ]; then
             echo "${COLOR_BLUE}${COLOR_WBG}Beginning self-signed SSL generation for apache:"
             # this works on AWS
             # generate server key
-            openssl genrsa -engine cloudhsm -out pma-self-signed-csr.csr 2048
+            openssl genrsa -engine cloudhsm -out pma-self-signed-key.key 2048
             # generate server CSR
-            openssl req -engine cloudhsm -new -key pma-self-signed.key -out pma-self-signed-csr.csr
+            openssl req -engine cloudhsm -new -key pma-self-signed-key.key -out pma-self-signed-csr.csr
             # generate CERT
-            openssl x509 -engine cloudhsm -req -days 365 -in pma-self-signed-csr.csr -signkey pma-self-signed-csr.csr -out pma-self-signed.crt
+            openssl x509 -engine cloudhsm -req -days 365 -in pma-self-signed-csr.csr -signkey pma-self-signed-key.key -out pma-self-signed-cert.crt
             # update names
-            sed -i "s|fake-server.key|pma-self-signed.key|g" "$GLOBAL_CONFIG"
-            sed -i "s|pma-fake-cert.crt|pma-self-signed.crt|g" "$GLOBAL_CONFIG"
+            if [ -e "$CERTS/pma-self-signed-key.key" ]; then
+              sed -i "s|fake-server.key|pma-self-signed.key|g" "$GLOBAL_CONFIG"
+            fi;
+
+            if [ -e "$CERTS/pma-self-signed-cert.crt" ]; then
+              sed -i "s|pma-fake-cert.crt|pma-self-signed-cert.crt|g" "$GLOBAL_CONFIG"
+            fi;
             break;
           fi;
 
