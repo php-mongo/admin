@@ -160,11 +160,11 @@ pmainstall() {
             echo "${COLOR_BLUE}${COLOR_WBG}Beginning self-signed SSL generation for apache:"
             # this works on AWS
             # generate server key
-            openssl genrsa -engine cloudhsm -out pma-self-signed-key.key 2048
+            openssl genrsa 2048 > "$CERTS/pma-self-signed-key.key"
             # generate server CSR
-            openssl req -engine cloudhsm -new -key pma-self-signed-key.key -out pma-self-signed-csr.csr
+            openssl req -new -key "$CERTS/pma-self-signed-key.key" -out "$CERTS/pma-self-signed-csr.csr"
             # generate CERT
-            openssl x509 -engine cloudhsm -req -days 365 -in pma-self-signed-csr.csr -signkey pma-self-signed-key.key -out pma-self-signed-cert.crt
+            openssl x509 -req -days 365 -in "$CERTS/pma-self-signed-csr.csr" -signkey "$CERTS/pma-self-signed-key.key" -out "$CERTS/pma-self-signed-cert.crt"
             # update names
             if [ -e "$CERTS/pma-self-signed-key.key" ]; then
               sed -i "s|fake-server.key|pma-self-signed.key|g" "$GLOBAL_CONFIG"
