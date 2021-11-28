@@ -135,10 +135,11 @@ pmainstall() {
       if [ "$PUBLIC" == "public" ]; then
         echo "${COLOR_BLUE}${COLOR_WBG}Setting up SSL:"
         echo "${COLOR_BLUE}${COLOR_WBG}Do you already have an SSL certificate for the intended host?"
-        select answer in Yes No Cancel
+        select answer in Yes No Cancel;
         do
           echo $answer
-        done
+          break;
+        done;
 
       fi;
     else

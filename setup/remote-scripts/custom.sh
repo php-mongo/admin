@@ -56,15 +56,17 @@ ls -la
 # Notify
 echo
 echo "${COLOR_BLUE}${COLOR_YBG}Stage 1 complete: application cloned to $WDIR"
-echo
-echo "${COLOR_RED}${COLOR_WBG}The custom installation provide an option to manually copy and update the .env file."
+echo "${COLOR_RED}${COLOR_WBG} "
+echo "${COLOR_RED}${COLOR_WBG}This custom installation provides an option to manually copy and update the .env file."
 echo "${COLOR_RED}${COLOR_WBG}type: cp .env.example .env && nano .env"
 echo "${COLOR_RED}${COLOR_WBG}Please Note: the APP_KEY value will be auto generated during the installation"
 echo "${COLOR_RED}${COLOR_WBG}Update and save .env file"
+echo
 echo "${COLOR_RED}${COLOR_WBG}Then:"
 echo "${COLOR_RED}${COLOR_WBG}Initialise the custom setup script (required):"
 echo "${COLOR_RED}${COLOR_WBG}type: source setup/pmacustom.sh"
-echo "${COLOR_RED}${COLOR_WBG}Or:"
+echo
+echo "${COLOR_RED}${COLOR_WBG}Or alternatively:"
 echo "${COLOR_RED}${COLOR_WBG}Use the default step-by-step script:"
 echo "${COLOR_RED}${COLOR_WBG}Initialise the default setup script (required):"
 echo "${COLOR_RED}${COLOR_WBG}type: source setup/pmadefault.sh"
