@@ -60,9 +60,9 @@ git clone --branch staging https://github.com/php-mongo/admin .
 ls -la
 
 # Notify and present options
-echo
+echo "${COLOR_BLUE}${COLOR_YBG} "
 echo "${COLOR_BLUE}${COLOR_YBG}Stage 1 complete: application cloned to $WDIR"
-echo
+echo "${COLOR_BLUE}${COLOR_WBG} "
 echo "${COLOR_BLUE}Switch to: $WDIR"
 echo "${COLOR_BLUE}type: cd $WDIR"
 echo
