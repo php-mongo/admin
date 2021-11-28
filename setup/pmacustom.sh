@@ -137,10 +137,41 @@ pmainstall() {
         echo "${COLOR_BLUE}${COLOR_WBG}Do you already have an SSL certificate for the intended host?"
         select answer in Yes No Cancel;
         do
-          echo $answer
+          # if cancel no SSL will be available
+          if [ "$answer" == "Cancel" ]; then
+            break;
+          fi;
+
+          # prompt user for paths
+          if [ "$answer" == "Yes" ]; then
+            # get key
+            read -p "Please provide the full path to the server key file: " key
+            sed -i "s|/var/hosting/sites/phpmongoadmin/storage/certs/server.key|$key|g" "$GLOBAL_CONFIG"
+
+            # get certificate
+            read -p "Please provide the full path to the ssl certificate file: " cert
+            sed -i "s|/var/hosting/sites/phpmongoadmin/storage/certs/pma-public.crt|$cert|g" "$GLOBAL_CONFIG"
+            break;
+          fi;
+
+          # begin self signed process
+          if [ "$answer" == "No" ]; then
+            echo "${COLOR_BLUE}${COLOR_WBG}Beginning self-signed SSL generation for apache:"
+            # this works on AWS
+            # generate server key
+            openssl genrsa -engine cloudhsm -out pma-self-signed-csr.csr 2048
+            # generate server CSR
+            openssl req -engine cloudhsm -new -key pma-self-signed.key -out pma-self-signed-csr.csr
+            # generate CERT
+            openssl x509 -engine cloudhsm -req -days 365 -in pma-self-signed-csr.csr -signkey pma-self-signed-csr.csr -out pma-self-signed.crt
+            # update names
+            sed -i "s|server.key|pma-self-signed.key|g" "$GLOBAL_CONFIG"
+            sed -i "s|pma-public.crt|pma-self-signed.crt|g" "$GLOBAL_CONFIG"
+            break;
+          fi;
+
           break;
         done;
-
       fi;
     else
       sed -i "s|/usr/share/phpMongoAdmin/|$PMA_DIR/|g" "$GLOBAL_CONFIG"
