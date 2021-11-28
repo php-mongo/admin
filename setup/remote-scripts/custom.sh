@@ -3,8 +3,8 @@
 #
 # PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
 # @version      phpMongoAdminInstall.sh 1001 26/11/21, 6:44 pm  Gilbert Rehling $
-# @package      PhpMongoAdmin\resources
-# @subpackage   phpMongoAdminInstall.sh
+# @package      PhpMongoAdmin\setup\remote-scripts\
+# @subpackage   custom.sh
 # @link         https://github.com/php-mongo/admin PHP MongoDB Admin
 # @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
 # @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
@@ -17,7 +17,7 @@
 #  See COPYRIGHT.php for copyright notices and further details.
 #
 #  Run to install on Linux:
-#  wget https://phpmongoadmin.com/installation/phpMongoAdminInstall.sh -O - | bash
+#  wget https://phpmongoadmin.com/installation/custom.sh -O - | bash
 #
 
 COLOR_NONE="$(tput sgr0)"
@@ -42,49 +42,47 @@ then
 	exit 1
 fi
 
-# go temp
-cd /usr/share
-
-# create working dir
-mkdir phpMongoAdmin && cd phpMongoAdmin
-
 # confirm
 WDIR=$( cd "$( dirname )" && pwd );
 echo "${COLOR_GREEN}Setup location: $WDIR"
 
 # clone
 # ToDo: remember to update to 'master'
-git clone --branch staging https://github.com/php-mongo/admin .
+git clone --branch testing https://github.com/php-mongo/admin .
 
 # list files
 ls -la
-
-# run setup
-#source setup/pmasetup.sh
 
 # Notify
 echo
 echo "${COLOR_BLUE}${COLOR_YBG}Stage 1 complete: application cloned to $WDIR"
 echo
-echo "${COLOR_BLUE}Switch to: $WDIR"
-echo "${COLOR_BLUE}type: cd $WDIR"
+echo "${COLOR_RED}${COLOR_WBG}The custom installation provide an option to manually copy and update the .env file."
+echo "${COLOR_RED}${COLOR_WBG}type: cp .env.example .env && nano .env"
+echo "${COLOR_RED}${COLOR_WBG}Please Note: the APP_KEY value will be auto generated during the installation"
+echo "${COLOR_RED}${COLOR_WBG}Update and save .env file"
+echo "${COLOR_RED}${COLOR_WBG}Then:"
+echo "${COLOR_RED}${COLOR_WBG}Initialise the custom setup script (required):"
+echo "${COLOR_RED}${COLOR_WBG}type: source setup/pmacustom.sh"
+echo "${COLOR_RED}${COLOR_WBG}Or:"
+echo "${COLOR_RED}${COLOR_WBG}Use the default step-by-step script:"
+echo "${COLOR_RED}${COLOR_WBG}Initialise the default setup script (required):"
+echo "${COLOR_RED}${COLOR_WBG}type: source setup/pmadefault.sh"
+echo "${COLOR_BLUE} "
 echo
-echo "${COLOR_BLUE}Initialise the setup script (required):"
-echo "${COLOR_BLUE}type: source setup/pmasetup.sh"
-echo
-echo "${COLOR_BLUE}To complete the installation type a setup command option then hit enter to start:"
+echo "${COLOR_BLUE}To complete the installation choose a setup command option then copy/paste/enter to proceed:"
 echo
 echo "${COLOR_BLUE}Default (global) private install:"
-echo "${COLOR_BLUE}type: pmasetup run default"
+echo "${COLOR_BLUE}type: pmainstall run default"
 echo
 echo "${COLOR_BLUE}Default (global) public install:"
-echo "${COLOR_BLUE}type: pmasetup run default public"
+echo "${COLOR_BLUE}type: pmainstall run default public"
 echo
 echo "${COLOR_BLUE}VirtualHost private install:"
-echo "${COLOR_BLUE}type: pmasetup run vhost"
+echo "${COLOR_BLUE}type: pmainstall run vhost"
 echo
 echo "${COLOR_BLUE}VirtualHost public install:"
-echo "${COLOR_BLUE}type: pmasetup run vhost public"
+echo "${COLOR_BLUE}type: pmainstall run vhost public"
 echo
 echo "${COLOR_BLUE}During the setup process:"
 echo "${COLOR_BLUE}If you choose 'production' as the environment, when the 'php artisan migrate' command is triggerred you will be asked 'Do you really wish to run this command? (yes/no)' - you must enter yes so the first migration can complete"

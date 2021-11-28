@@ -131,6 +131,16 @@ pmainstall() {
       # set hostname
       read -p "Enter the host / domain name for this application (localhost, host.local, host.your-domain.com): " host
       sed -i "s|host.yourdomain.com|$host/|g" "$GLOBAL_CONFIG"
+
+      if [ "$PUBLIC" == "public" ]; then
+        echo "${COLOR_BLUE}${COLOR_WBG}Setting up SSL:"
+        echo "${COLOR_BLUE}${COLOR_WBG}Do you already have an SSL certificate for the intended host?"
+        select answer in Yes No Cancel
+        do
+          echo $answer
+        done
+
+      fi;
     else
       sed -i "s|/usr/share/phpMongoAdmin/|$PMA_DIR/|g" "$GLOBAL_CONFIG"
     fi;
@@ -174,13 +184,14 @@ pmainstall() {
     # Notify error
     if [ ! $FOUND ]; then
       echo "${COLOR_GREEN}Error: unable to find apache2 or httpd to complete the web setup"
+      exit 1
     fi
   }
 
   # Step 8: set app file permissions
   setPermissions() {
     echo "${COLOR_GREEN}Setting application file ownership"
-    chown -R www-data *
+    chown -R www-data ./*
   }
 
   # Step 9: start job worker
@@ -219,7 +230,10 @@ pmainstall() {
         echo "-- ${COLOR_GREEN}$1${COLOR_NONE}: $2"
       }
       HELP="Available actions:
-        $(fmtHelp "run" "Starts the installation process")"
+        $(fmtHelp "run default" "Starts a default installation meant for private networks or localhost deployment")
+        $(fmtHelp "run default public" "Starts th the default installation process for a public deployment")
+        $(fmtHelp "run vhost" "Starts the vhost <VirtualHost> installation process for private or localhost deployment")
+        $(fmtHelp "run vhost public" "Starts the vhost installation process for public deployment - includes SSL integration")"
 
       echo "${COLOR_NONE}$HELP"
       ;;
