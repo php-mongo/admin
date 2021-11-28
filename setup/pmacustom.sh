@@ -167,7 +167,7 @@ pmainstall() {
             openssl x509 -req -days 365 -in "$CERTS/pma-self-signed-csr.csr" -signkey "$CERTS/pma-self-signed-key.key" -out "$CERTS/pma-self-signed-cert.crt"
             # update names
             if [ -e "$CERTS/pma-self-signed-key.key" ]; then
-              sed -i "s|fake-server.key|pma-self-signed.key|g" "$GLOBAL_CONFIG"
+              sed -i "s|fake-server.key|pma-self-signed-key.key|g" "$GLOBAL_CONFIG"
             fi;
 
             if [ -e "$CERTS/pma-self-signed-cert.crt" ]; then
