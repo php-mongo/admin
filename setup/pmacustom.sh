@@ -165,8 +165,8 @@ pmainstall() {
             # generate CERT
             openssl x509 -engine cloudhsm -req -days 365 -in pma-self-signed-csr.csr -signkey pma-self-signed-csr.csr -out pma-self-signed.crt
             # update names
-            sed -i "s|server.key|pma-self-signed.key|g" "$GLOBAL_CONFIG"
-            sed -i "s|pma-public.crt|pma-self-signed.crt|g" "$GLOBAL_CONFIG"
+            sed -i "s|fake-server.key|pma-self-signed.key|g" "$GLOBAL_CONFIG"
+            sed -i "s|pma-fake-cert.crt|pma-self-signed.crt|g" "$GLOBAL_CONFIG"
             break;
           fi;
 
