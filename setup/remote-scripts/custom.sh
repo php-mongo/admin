@@ -54,8 +54,9 @@ git clone --branch testing https://github.com/php-mongo/admin .
 ls -la
 
 # Notify
-echo "${COLOR_BLUE}${COLOR_YBG} "
-echo "${COLOR_BLUE}${COLOR_YBG}Stage 1 complete: application cloned to $WDIR"
+echo "${COLOR_BLUE}${COLOR_YBG}---------------------------------------- "
+echo "${COLOR_BLUE}${COLOR_YBG}Stage 1 complete, application cloned to: $WDIR"
+echo "${COLOR_BLUE}${COLOR_YBG}---------------------------------------- "
 echo "${COLOR_RED}${COLOR_WBG} "
 echo "${COLOR_RED}${COLOR_WBG}This custom installation provides an option to manually copy and update the .env file."
 echo "${COLOR_RED}${COLOR_WBG}type: cp .env.example .env && nano .env"
