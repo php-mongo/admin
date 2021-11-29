@@ -27,12 +27,17 @@ pmainstall() {
   SOURCE="./.env.example"
   TARGET="./.env"
   CONFIG_FILENAME="phpMongoAdmin.conf"
+  NGINX_FILENAME="server_phpMongoAdmin.conf"
   VHOST_FILENAME="vhost_phpMongoAdmin.conf"
   GLOBAL_SOURCE="setup/apache/global/phpMongoAdmin.conf"
   GLOBAL_SOURCE_PUBLIC="setup/apache/global/phpMongoAdminPublic.conf"
+  GLOBAL_NGINX_SOURCE="setup/nginx/global/phpMongoAdmin.conf"
+  #GLOBAL_NGINX_SOURCE_PUBLIC="setup/apache/global/phpMongoAdminPublic.conf"
   #VIRTUAL_FILE="vhost_phpMongoAdmin"
   VIRTUAL_SOURCE="setup/apache/virtualHost/vhost_phpMongoAdmin.conf"
   VIRTUAL_SOURCE_PUBLIC="setup/apache/virtualHost/vhost_phpMongoAdminPublic.conf"
+  VIRTUAL_NGINX_SOURCE="setup/nginx/serverBlock/server_phpMongoAdmin.conf"
+  #VIRTUAL_NGINX_SOURCE_PUBLIC="setup/apache/virtualHost/vhost_phpMongoAdminPublic.conf"
   DATABASE="database/sqlite/database.sqlite"
 
   COLOR_NONE="$(tput sgr0)"
@@ -101,23 +106,39 @@ pmainstall() {
   copyApacheConfig() {
     # Set source based on provide context
     # ToDo: add test and config for virtualhost
-    if [ $CONTEXT == "default" ]; then
+    if [ "$CONTEXT" == "default" ]; then
       echo "${COLOR_GREEN}Default (global) context: $CONTEXT"
       if [ "$PUBLIC" == "public" ]; then
-        echo "${COLOR_GREEN}Create public config:"
-        GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
+        echo "${COLOR_GREEN}Sourcing public config:"
+        if [ -e /etc/nginx ]; then
+          GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_NGINX_SOURCE"
+        else
+          GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
+        fi;
       else
         echo "${COLOR_GREEN}Create local config:"
-        GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE"
+        if [ -e /etc/nginx ]; then
+          GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_NGINX_SOURCE"
+        else
+          GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE"
+        fi;
       fi;
     else
-      echo "${COLOR_GREEN}Default (global) context: $CONTEXT"
+      echo "${COLOR_GREEN}Virtual Host context: $CONTEXT"
       if [ "$PUBLIC" == "public" ]; then
         echo "${COLOR_GREEN}Create public config:"
-        GLOBAL_CONFIG="$PMA_DIR/$VIRTUAL_SOURCE_PUBLIC"
+        if [ -e /etc/nginx ]; then
+          GLOBAL_CONFIG="$PMA_DIR/$VIRTUAL_NGINX_SOURCE"
+        else
+          GLOBAL_CONFIG="$PMA_DIR/$VIRTUAL_SOURCE_PUBLIC"
+        fi;
       else
         echo "${COLOR_GREEN}Create local config:"
-        GLOBAL_CONFIG="$PMA_DIR/$VIRTUAL_SOURCE"
+        if [ -e /etc/nginx ]; then
+          GLOBAL_CONFIG="$PMA_DIR/$VIRTUAL_NGINX_SOURCE"
+        else
+          GLOBAL_CONFIG="$PMA_DIR/$VIRTUAL_SOURCE"
+        fi;
       fi;
     fi;
 
@@ -176,6 +197,15 @@ pmainstall() {
             break;
           fi;
 
+          # no SSl required??
+          if [ "$answer" == "Cancel" ]; then
+            echo "${COLOR_BLUE}${COLOR_WBG}SSL will not be set-up!"
+            # comment out the SSl definitions
+            sed -i "s|SSLCertificateKeyFile|#SSLCertificateKeyFile|g" "$GLOBAL_CONFIG"
+            sed -i "s|SSLCertificateFile|#SSLCertificateFile|g" "$GLOBAL_CONFIG"
+            break;
+          fi;
+
           break;
         done;
       fi;
@@ -219,9 +249,23 @@ pmainstall() {
       FOUND='httpd'
     fi;
 
+    if [ -e /etc/nginx ]; then
+      echo "${COLOR_GREEN}Found /etc/nginx/~"
+      # default as Alias config
+      #if [ "$CONTEXT" == "default" ]; then
+      #  cp "$GLOBAL_CONFIG" /etc/nginx/conf.d/$CONFIG_FILENAME
+      #fi;
+      # vhost site configuration
+      #if [ "$CONTEXT" == "vhost" ]; then
+        cp "$GLOBAL_CONFIG" /etc/nginx/conf.d/$NGINX_FILENAME
+      #fi;
+      systemctl restart httpd
+      FOUND='nginx'
+    fi;
+
     # Notify error
     if [ ! $FOUND ]; then
-      echo "${COLOR_GREEN}Error: unable to find apache2 or httpd to complete the web setup"
+      echo "${COLOR_GREEN}Error: unable to find apache2, httpd or nginx to complete the web setup"
       exit 1
     fi
   }
