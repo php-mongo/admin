@@ -66,14 +66,6 @@ pmainstall() {
     COMPOSER=/usr/bin/composer
   fi;
 
-  if [ -z ${COMPOSER+x} ]; then
-    echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
-    echo "${COLOR_RED}${COLOR_WBG}Composer was not found!"
-    echo "${COLOR_RED}${COLOR_WBG}Please check: https://getcomposer.org/"
-    echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
-    exit 1
-  fi;
-
   echo
   echo "${COLOR_BLUE}${COLOR_WBG}Global apache.conf : $GLOBAL_SOURCE"
   echo "${COLOR_BLUE}Virtual apache.conf : $VIRTUAL_SOURCE"
@@ -125,6 +117,13 @@ pmainstall() {
   # Step 3: run composer install
   composerInstall() {
     echo "${COLOR_GREEN}Running: composer install"
+    if [ ! -z "$COMPOSER" ]; then
+      echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
+      echo "${COLOR_RED}${COLOR_WBG}Composer was not found!"
+      echo "${COLOR_RED}${COLOR_WBG}Please check: https://getcomposer.org/"
+      echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
+      exit 1
+    fi;
     # Issues with PHP 8 when requirements are based on php7.2+
     # ToDo: Make this use a dynamic search for correct PHP location
     $($PHP $COMPOSER install)

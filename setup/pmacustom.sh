@@ -95,6 +95,7 @@ pmainstall() {
     echo "${COLOR_GREEN}Running: composer install"
     if [ ! -z "$COMPOSER" ]; then
       echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
+      echo "${COLOR_RED}${COLOR_WBG}COMPOSER: $COMPOSER "
       echo "${COLOR_RED}${COLOR_WBG}Composer was not found!"
       echo "${COLOR_RED}${COLOR_WBG}Please check: https://getcomposer.org/"
       echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
