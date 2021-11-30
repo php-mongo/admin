@@ -175,7 +175,7 @@ pmainstall() {
 
       # set hostname
       read -p "Enter the host / domain name for this application (localhost, host.local, host.your-domain.com): " host
-      sed -i "s|host.yourdomain.com|$host/|g" "$GLOBAL_CONFIG"
+      sed -i "s|host.yourdomain.com|$host|g" "$GLOBAL_CONFIG"
 
       if [ "$PUBLIC" == "public" ]; then
         echo "${COLOR_BLUE}${COLOR_WBG}Setting up SSL:"
