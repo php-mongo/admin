@@ -214,6 +214,7 @@ pmainstall() {
     fi;
 
     # Copy config to correct location
+    COUNT=0
     echo "${COLOR_GREEN}Copying web config:"
     if [ -e /etc/apache2 ]; then
       echo "${COLOR_GREEN}Found /etc/apache2/~"
@@ -230,8 +231,10 @@ pmainstall() {
         ln -s /etc/apache2/sites-available/$VHOST_FILENAME  /etc/apache2/sites-enabled/$VHOST_FILENAME
       fi;
 
-      systemctl restart apache2
+      #systemctl restart apache2
+      COUNT=$((COUNT+1))
       FOUND="apache2"
+      APACHE2="Apache"
     fi;
 
     if [ -e /etc/httpd ]; then
@@ -242,11 +245,17 @@ pmainstall() {
       fi;
       # vhost site configuration
       if [ "$CONTEXT" == "vhost" ]; then
-        cp "$GLOBAL_CONFIG" /etc/httpd/sites-available/$VHOST_FILENAME
-        ln -s /etc/httpd/sites-available/$VHOST_FILENAME  /etc/httpd/sites-enabled/$VHOST_FILENAME
+        if [ -e /etc/httpd/sites-available ]; then
+          cp "$GLOBAL_CONFIG" /etc/httpd/sites-available/$VHOST_FILENAME
+          ln -s /etc/httpd/sites-available/$VHOST_FILENAME  /etc/httpd/sites-enabled/$VHOST_FILENAME
+        else
+          cp "$GLOBAL_CONFIG" /etc/httpd/conf.d/$VHOST_FILENAME
+        fi;
       fi;
-      systemctl restart httpd
+      #systemctl restart httpd
+      COUNT=$((COUNT+1))
       FOUND='httpd'
+      HTTPD="Httpd"
     fi;
 
     if [ -e /etc/nginx ]; then
@@ -259,8 +268,10 @@ pmainstall() {
       #if [ "$CONTEXT" == "vhost" ]; then
         cp "$GLOBAL_CONFIG" /etc/nginx/conf.d/$NGINX_FILENAME
       #fi;
-      systemctl restart httpd
+      #systemctl restart nginx
+      COUNT=$((COUNT+1))
       FOUND='nginx'
+      NGINX="Nginx"
     fi;
 
     # Notify error
@@ -268,6 +279,48 @@ pmainstall() {
       echo "${COLOR_GREEN}Error: unable to find apache2, httpd or nginx to complete the web setup"
       exit 1
     fi
+
+    if [ "$COUNT" -gt 1 ]; then
+      echo "${COLOR_RED}Found more than one server: please select which service to restart?"
+      select restart in $APACHE2 $HTTPD $NGINX;
+      do
+        case $restart in
+          Nginx)
+            systemctl restart nginx
+            ;;
+
+          Httpd)
+            systemctl restart httpd
+            ;;
+
+          Apache2)
+            systemctl restart apache2
+            ;;
+
+          *)
+            return 1
+            ;;
+        esac;
+      done;
+    else
+      case $FOUND in
+        nginx)
+          systemctl restart nginx
+          ;;
+
+        httpd)
+          systemctl restart httpd
+          ;;
+
+        apache2)
+          systemctl restart apache2
+          ;;
+
+        *)
+          return 1
+          ;;
+      esac;
+    fi;
   }
 
   # Step 8: set app file permissions
