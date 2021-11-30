@@ -61,7 +61,18 @@ pmainstall() {
     PHP=/usr/bin/php
   fi;
 
-  COMPOSER=/usr/bin/composer
+  # find composer
+  if [ -e /usr/bin/composer ]; then
+    COMPOSER=/usr/bin/composer
+  fi;
+
+  if [ ! "$COMPOSER" ]; then
+    echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
+    echo "${COLOR_RED}${COLOR_WBG}Composer was not found!"
+    echo "${COLOR_RED}${COLOR_WBG}Please check: https://getcomposer.org/"
+    echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
+    exit 1
+  fi;
 
   echo
   echo "${COLOR_BLUE}${COLOR_WBG}Global apache.conf : $GLOBAL_SOURCE"
