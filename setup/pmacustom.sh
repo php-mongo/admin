@@ -33,7 +33,6 @@ pmainstall() {
   GLOBAL_SOURCE_PUBLIC="setup/apache/global/phpMongoAdminPublic.conf"
   GLOBAL_NGINX_SOURCE="setup/nginx/global/phpMongoAdmin.conf"
   #GLOBAL_NGINX_SOURCE_PUBLIC="setup/apache/global/phpMongoAdminPublic.conf"
-  #VIRTUAL_FILE="vhost_phpMongoAdmin"
   VIRTUAL_SOURCE="setup/apache/virtualHost/vhost_phpMongoAdmin.conf"
   VIRTUAL_SOURCE_PUBLIC="setup/apache/virtualHost/vhost_phpMongoAdminPublic.conf"
   VIRTUAL_NGINX_SOURCE="setup/nginx/serverBlock/server_phpMongoAdmin.conf"
@@ -50,7 +49,20 @@ pmainstall() {
   COLOR_WBG="$(tput setab 15)"
   COLOR_BBG="$(tput setab 12)"
 
-  PHP=/usr/bin/php7.4
+  # find PHP
+  if [ -e /usr/bin/php8.0 ]; then
+    PHP=/usr/bin/php8.0
+  fi;
+  if [ -e /usr/bin/php7.4 ]; then
+    PHP=/usr/bin/php7.4
+  fi;
+  if [ -e /usr/bin/php7.3 ]; then
+    PHP=/usr/bin/php7.3
+  fi;
+  if [ -e /usr/bin/php ]; then
+    PHP=/usr/bin/php
+  fi;
+
   COMPOSER=/usr/bin/composer
 
   echo
@@ -231,7 +243,6 @@ pmainstall() {
         ln -s /etc/apache2/sites-available/$VHOST_FILENAME  /etc/apache2/sites-enabled/$VHOST_FILENAME
       fi;
 
-      #systemctl restart apache2
       COUNT=$((COUNT+1))
       FOUND="apache2"
       APACHE2="Apache"
@@ -252,25 +263,19 @@ pmainstall() {
           cp "$GLOBAL_CONFIG" /etc/httpd/conf.d/$VHOST_FILENAME
         fi;
       fi;
-      #systemctl restart httpd
+
       COUNT=$((COUNT+1))
-      FOUND='httpd'
+      FOUND="httpd"
       HTTPD="Httpd"
     fi;
 
     if [ -e /etc/nginx ]; then
       echo "${COLOR_GREEN}Found /etc/nginx/~"
       # default as Alias config
-      #if [ "$CONTEXT" == "default" ]; then
-      #  cp "$GLOBAL_CONFIG" /etc/nginx/conf.d/$CONFIG_FILENAME
-      #fi;
-      # vhost site configuration
-      #if [ "$CONTEXT" == "vhost" ]; then
-        cp "$GLOBAL_CONFIG" /etc/nginx/conf.d/$NGINX_FILENAME
-      #fi;
-      #systemctl restart nginx
+      cp "$GLOBAL_CONFIG" /etc/nginx/conf.d/$NGINX_FILENAME
+
       COUNT=$((COUNT+1))
-      FOUND='nginx'
+      FOUND="nginx"
       NGINX="Nginx"
     fi;
 

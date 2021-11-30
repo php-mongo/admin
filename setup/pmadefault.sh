@@ -27,11 +27,14 @@ pmainstall() {
   SOURCE="./.env.example"
   TARGET="./.env"
   CONFIG_FILENAME="phpMongoAdmin.conf"
+  NGINX_FILENAME="server_phpMongoAdmin.conf"
+  VHOST_FILENAME="vhost_phpMongoAdmin.conf"
   GLOBAL_SOURCE="setup/apache/global/phpMongoAdmin.conf"
   GLOBAL_SOURCE_PUBLIC="setup/apache/global/phpMongoAdminPublic.conf"
-  #VIRTUAL_FILE="vhost_phpMongoAdmin"
+  GLOBAL_NGINX_SOURCE="setup/nginx/global/phpMongoAdmin.conf"
   VIRTUAL_SOURCE="setup/apache/virtualHost/vhost_phpMongoAdmin.conf"
   VIRTUAL_SOURCE_PUBLIC="setup/apache/virtualHost/vhost_phpMongoAdminPublic.conf"
+  VIRTUAL_NGINX_SOURCE="setup/nginx/serverBlock/server_phpMongoAdmin.conf"
   DATABASE="database/sqlite/database.sqlite"
 
   COLOR_NONE="$(tput sgr0)"
@@ -44,7 +47,20 @@ pmainstall() {
   COLOR_WBG="$(tput setab 15)"
   COLOR_BBG="$(tput setab 12)"
 
-  PHP=/usr/bin/php7.4
+  # find PHP
+  if [ -e /usr/bin/php8.0 ]; then
+    PHP=/usr/bin/php8.0
+  fi;
+  if [ -e /usr/bin/php7.4 ]; then
+    PHP=/usr/bin/php7.4
+  fi;
+  if [ -e /usr/bin/php7.3 ]; then
+    PHP=/usr/bin/php7.3
+  fi;
+  if [ -e /usr/bin/php ]; then
+    PHP=/usr/bin/php
+  fi;
+
   COMPOSER=/usr/bin/composer
 
   echo
@@ -140,27 +156,84 @@ pmainstall() {
     sed -i "s|/usr/share/phpMongoAdmin/|$PMA_DIR/|g" "$GLOBAL_CONFIG"
 
     # Copy config to correct location
+    COUNT=0
     echo "${COLOR_GREEN}Copying web config:"
     if [ -e /etc/apache2 ]; then
       echo "${COLOR_GREEN}Found /etc/apache2/~"
       cp "$GLOBAL_CONFIG" /etc/apache2/conf-available/$CONFIG_FILENAME
       ln -s /etc/apache2/conf-available/$CONFIG_FILENAME  /etc/apache2/conf-enabled/$CONFIG_FILENAME
-      systemctl restart apache2
+
+      COUNT=$((COUNT+1))
       FOUND="apache2"
+      APACHE2="Apache2"
     fi;
 
     if [ -e /etc/httpd ]; then
       echo "${COLOR_GREEN}Found /etc/httpd/~"
       cp "$GLOBAL_CONFIG" /etc/httpd/conf.d/$CONFIG_FILENAME
-      systemctl restart httpd
-      FOUND='httpd'
+
+      COUNT=$((COUNT+1))
+      FOUND="httpd"
+      HTTPD="Httpd"
+    fi;
+
+    if [ -e /etc/httpd ]; then
+      echo "${COLOR_GREEN}Found /etc/nginx/~"
+      cp "$GLOBAL_CONFIG" /etc/httpd/conf.d/$CONFIG_FILENAME
+
+      COUNT=$((COUNT+1))
+      FOUND="nginx"
+      NGINX="Nginx"
     fi;
 
     # Notify error
     if [ ! $FOUND ]; then
       echo "${COLOR_GREEN}Error: unable to find apache2 or httpd to complete the web setup"
       exit 1
-    fi
+    fi;
+
+    if [ "$COUNT" -gt 1 ]; then
+      echo "${COLOR_RED}Found more than one server: please select which service to restart?"
+      select restart in $APACHE2 $HTTPD $NGINX;
+      do
+        case $restart in
+          Nginx)
+            systemctl restart nginx
+            ;;
+
+          Httpd)
+            systemctl restart httpd
+            ;;
+
+          Apache2)
+            systemctl restart apache2
+            ;;
+
+          *)
+            return 1
+            ;;
+        esac;
+        break;
+      done;
+    else
+      case $FOUND in
+        nginx)
+          systemctl restart nginx
+          ;;
+
+        httpd)
+          systemctl restart httpd
+          ;;
+
+        apache2)
+          systemctl restart apache2
+          ;;
+
+        *)
+          return 1
+          ;;
+      esac;
+    fi;
   }
 
   # Step 8: set app file permissions
