@@ -68,7 +68,7 @@ pmainstall() {
     COMPOSER=/usr/bin/composer
   fi;
 
-  if [ ! "$COMPOSER" ]; then
+  if [ -z ${COMPOSER+x} ]; then
     echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
     echo "${COLOR_RED}${COLOR_WBG}Composer was not found!"
     echo "${COLOR_RED}${COLOR_WBG}Please check: https://getcomposer.org/"
