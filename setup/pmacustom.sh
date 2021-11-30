@@ -301,6 +301,7 @@ pmainstall() {
             return 1
             ;;
         esac;
+        break;
       done;
     else
       case $FOUND in
