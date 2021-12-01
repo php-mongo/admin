@@ -88,20 +88,20 @@ pmainstall() {
     fi;
 
     echo "${COLOR_GREEN}Have you pre-populated the .env file parameters?"
-    select done in Yes No;
+                              select done in Yes No;
     do
       if [ "$done" == "No" ]; then
         # set environment
-        read -p -e "${COLOR_GREEN}Enter an environment (production, staging, local): " -i "local" env
+        read -p -e "${COLOR_GREEN}Enter an environment (production, staging, local): " -i local env
         sed -i "s|APP_ENV=local|APP_ENV=$env|" .env
 
         # set debug mode
         if [ "$env" == "production" ]; then
-          read -n5 -p -e "${COLOR_GREEN}Enable debug mode: false (highly recommended for production): " -i "false" debug
+          read -n5 -p -e "${COLOR_GREEN}Enable debug mode: false (highly recommended for production): " -i false debug
         elif [ "$env" == "local" ]; then
-          read -n5 -p -e "${COLOR_GREEN}Enable debug mode: true (recommended for local with URL: localhost): " -i "true" debug
+          read -n5 -p -e "${COLOR_GREEN}Enable debug mode: true (recommended for local with URL: localhost): " -i true debug
         else
-          read -n5 -p =e "${COLOR_GREEN}Enable debug mode: false (recommended): " -i "false" debug
+          read -n5 -p =e "${COLOR_GREEN}Enable debug mode: false (recommended): " -i false debug
         fi;
         sed -i "s|APP_DEBUG=true|APP_DEBUG=$debug|" .env
 
@@ -109,9 +109,9 @@ pmainstall() {
         if [ "$env" == "production" ]; then
           read -p "${COLOR_GREEN}Enter the URL you will use to access the PhpMongoAdmin (https://myapp.com) : " url
         elif [ "$env" == "local" ]; then
-          read -p -e "${COLOR_GREEN}Enter the APP URL: (http://localhost recommended for local environment): " -i "http://localhost" url
+          read -p -e "${COLOR_GREEN}Enter the APP's URL: (http://localhost recommended for local environment): " -i "http://localhost" url
         else
-          read -p "${COLOR_GREEN}Enter the APP URL: https://some-domain/.co: " url
+          read -p "${COLOR_GREEN}Enter the APP's URL: https://some-domain/.co: " url
         fi
         sed -i "s|http://localhost|$url|" .env
       fi;
