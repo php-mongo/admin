@@ -394,19 +394,19 @@ pmainstall() {
         nginx)
           echo "${COLOR_GREEN}Restarting nginx"
           systemctl restart nginx
-          proc="$(ps -x | grep /usr/bin/nginx)"
+          proc="$(ps -x | grep /usr/sbin/nginx | grep -v grep)"
           ;;
 
         httpd)
           echo "${COLOR_GREEN}Restarting httpd"
           systemctl restart httpd
-          proc="$(ps -x | grep /usr/bin/httpd)"
+          proc="$(ps -x | grep /usr/sbin/httpd | grep -v grep)"
           ;;
 
         apache2)
           echo "${COLOR_GREEN}Restarting apache2"
           apachectl restart
-          proc="$(ps -x | grep /usr/bin/apache2)"
+          proc="$(ps -x | grep /usr/sbin/apache2 | grep -v grep)"
           ;;
 
         *)
