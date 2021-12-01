@@ -1,0 +1,43 @@
+### PmpMongoAdmin Setup Scripts
+
+### Files
+- apache/        (directory containing web server configurations)
+  - global/      (global: server wide nested apache configurations)
+    - phpMongoAdmin.conf
+      - configured for localhost and private directory access
+    - phpMongoAdminPublic.php
+      - configured for public access - requires security enhancements
+  - virtualHost/ (vhost configuration for public and private access)
+    - vhost_phpMongoAdmin.conf
+      - configured for localhost and private directory access
+    - vhost_phpMongoAdminPublic.conf
+      - configured for public access - requires security enhancements
+      - includes an SSL <VirtualHost> specification
+- remote-scripts/
+  - these scripts are meant for use on Linux distros
+  - custom.sh
+    - wget https://phpmongoadmin.com/install/custom.sh -O - | bash
+    - installs the application into the current directory
+    - option for manual setup of the .env by advanced users
+    - enables VirtualHost installations
+      - fully automated options available
+      - automated self-signed SSL certificate generation
+  - default.sh
+    - wget https://phpmongoadmin.com/install/default.sh -O - | bash
+    - installs the application to the default location
+      - (on linux distros) /usr/share/phpMongoAdmin
+      - installs the application for (global) nested access
+        - http://localhost/phpmongoadmin
+        - http://your-domains.co/phpmongoadmin
+- 
+- pmacustom.sh  (shell script - handles the custom installation option)
+  - to use:
+    - source setup/pmacustom.sh
+    - for help:
+      - pmainstall (without any options)
+- pmadefault.sh (shell script - handles the default application installation)
+  - to use:
+    - source setup/pmadefault.sh
+    - forhelp:
+      - pmainstall (without any options)
+- SETUP.md      (this README file)
