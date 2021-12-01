@@ -60,11 +60,12 @@ git clone --branch testing https://github.com/php-mongo/admin .
 ls -la
 
 # Notify and present options
-echo "${COLOR_BLUE}${COLOR_YBG} "
+echo "${COLOR_BLUE}${COLOR_YBG}"
 echo "${COLOR_BLUE}${COLOR_YBG}--------------------------------------- "
 echo "${COLOR_BLUE}${COLOR_YBG}Stage 1 complete, application cloned to: $WDIR"
 echo "${COLOR_BLUE}${COLOR_YBG}--------------------------------------- "
-echo "${COLOR_BLUE}${COLOR_WBG} "
+echo "${COLOR_BLUE}${COLOR_WBG}"
+echo
 echo "${COLOR_BLUE}Change directory to: $WDIR"
 echo "${COLOR_BLUE}type: cd $WDIR"
 echo "${COLOR_BLUE}Enter.."
