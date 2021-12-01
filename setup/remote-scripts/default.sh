@@ -61,6 +61,7 @@ ls -la
 
 # Notify and present options
 echo "${COLOR_BLUE}${COLOR_YBG}"
+echo
 echo "${COLOR_BLUE}${COLOR_YBG}--------------------------------------- "
 echo "${COLOR_BLUE}${COLOR_YBG}Stage 1 complete, application cloned to: $WDIR"
 echo "${COLOR_BLUE}${COLOR_YBG}--------------------------------------- "
