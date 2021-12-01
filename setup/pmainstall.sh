@@ -244,7 +244,7 @@ pmainstall() {
 
             # get certificate path
             read -p "Please provide the full path to the ssl certificate file: " cert
-            sed -i "s|$PMA_DIR/storage/certs/pma-fake.crt|$cert|g" "$GLOBAL_CONFIG"
+            sed -i "s|$PMA_DIR/storage/certs/pma-fake-cert.crt|$cert|g" "$GLOBAL_CONFIG"
             break;
           fi;
 
