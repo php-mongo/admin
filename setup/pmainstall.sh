@@ -394,22 +394,33 @@ pmainstall() {
         nginx)
           echo "${COLOR_GREEN}Restarting nginx"
           systemctl restart nginx
+          proc="$(ps -x | grep /usr/bin/nginx)"
           ;;
 
         httpd)
           echo "${COLOR_GREEN}Restarting httpd"
           systemctl restart httpd
+          proc="$(ps -x | grep /usr/bin/httpd)"
           ;;
 
         apache2)
           echo "${COLOR_GREEN}Restarting apache2"
-          systemctl restart apache2
+          apachectl restart
+          proc="$(ps -x | grep /usr/bin/apache2)"
           ;;
 
         *)
           return 1
           ;;
       esac;
+
+      if [ -x "$proc" ]; then
+          echo "${COLOR_RED}${COLOR_WHITE} Could not restart: $FOUND"
+          echo "${COLOR_RED}${COLOR_WHITE}Try a manual restart:"
+          echo "${COLOR_RED}${COLOR_WHITE}systemctl restart nginx:"
+          echo "${COLOR_RED}${COLOR_WHITE}systemctl restart httpd"
+          echo "${COLOR_RED}${COLOR_WHITE}systemctl restart apache2"
+      fi;
     fi;
   }
 
