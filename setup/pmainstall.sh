@@ -240,11 +240,11 @@ pmainstall() {
           if [ "$answer" == "Yes" ]; then
             # get key path
             read -p "Please provide the full path to the server key file: " key
-            sed -i "s|/var/hosting/sites/phpmongoadmin/storage/certs/server.key|$key|g" "$GLOBAL_CONFIG"
+            sed -i "s|$PMA_DIR/storage/certs/fake-server.key|$key|g" "$GLOBAL_CONFIG"
 
             # get certificate path
             read -p "Please provide the full path to the ssl certificate file: " cert
-            sed -i "s|/var/hosting/sites/phpmongoadmin/storage/certs/pma-public.crt|$cert|g" "$GLOBAL_CONFIG"
+            sed -i "s|$PMA_DIR/storage/certs/pma-fake.crt|$cert|g" "$GLOBAL_CONFIG"
             break;
           fi;
 
