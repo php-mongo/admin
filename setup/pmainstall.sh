@@ -78,8 +78,45 @@ pmainstall() {
 
   # Step 1: copy and setup environment file
   copyEnvironment() {
-    echo "${COLOR_GREEN}Environment setting file : $TARGET"
-    echo "${COLOR_GREEN}This script requires manual preparation of the .env file before proceeding"
+    # check .env has been copied
+    if [ -e .env ]; then
+      echo "${COLOR_GREEN}Environment settings file : $TARGET"
+    else
+      echo "${COLOR_GREEN}Environment source : $SOURCE"
+      echo "${COLOR_GREEN}Environment target : $TARGET"
+      cp "$PMA_DIR/$SOURCE" "$PMA_DIR/$TARGET"
+    fi;
+
+    echo "${COLOR_GREEN}Have you pre-populated the .env file parameters?"
+    select done in Yes No;
+    do
+      if [ "$done" == "No" ]; then
+        # set environment
+        read -p -e "${COLOR_GREEN}Enter an environment (production, staging, local): " -i "local" env
+        sed -i "s|APP_ENV=local|APP_ENV=$env|" .env
+
+        # set debug mode
+        if [ "$env" == "production" ]; then
+          read -n5 -p -e "${COLOR_GREEN}Enable debug mode: false (highly recommended for production): " -i "false" debug
+        elif [ "$env" == "local" ]; then
+          read -n5 -p -e "${COLOR_GREEN}Enable debug mode: true (recommended for local with URL: localhost): " -i "true" debug
+        else
+          read -n5 -p =e "${COLOR_GREEN}Enable debug mode: false (recommended): " -i "false" debug
+        fi;
+        sed -i "s|APP_DEBUG=true|APP_DEBUG=$debug|" .env
+
+        # set URL
+        if [ "$env" == "production" ]; then
+          read -p "${COLOR_GREEN}Enter the URL you will use to access the PhpMongoAdmin (https://myapp.com) : " url
+        elif [ "$env" == "local" ]; then
+          read -p -e "${COLOR_GREEN}Enter the APP URL: (http://localhost recommended for local environment): " -i "http://localhost" url
+        else
+          read -p "${COLOR_GREEN}Enter the APP URL: https://some-domain/.co: " url
+        fi
+        sed -i "s|http://localhost|$url|" .env
+      fi;
+      break;
+    done;
   }
 
   # Step 2: setup database
@@ -93,6 +130,16 @@ pmainstall() {
   # Step 3: run composer install
   composerInstall() {
     echo "${COLOR_GREEN}Running: composer install"
+
+    if [ -z "$COMPOSER" ]; then
+      echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
+      echo "${COLOR_RED}${COLOR_WBG}PHP: $PHP "
+      echo "${COLOR_RED}${COLOR_WBG}PHP was not found!"
+      echo "${COLOR_RED}${COLOR_WBG}Please check: https://www.php.net/manual/en/install.php"
+      echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
+      exit 1
+    fi;
+
     if [ -z "$COMPOSER" ]; then
       echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
       echo "${COLOR_RED}${COLOR_WBG}COMPOSER: $COMPOSER "
@@ -102,8 +149,7 @@ pmainstall() {
       exit 1
     fi;
 
-    # Issues with PHP 8 when requirements are based on php7.2+
-    # ToDo: Make this use a dynamic search for correct PHP location
+    # Issues occurred when PHP 8 is installed for CLI and composer requirements are based on php7.*
     $($PHP $COMPOSER install)
   }
 
@@ -125,16 +171,15 @@ pmainstall() {
   }
 
   # Step 7: copy web config based on server found
-  # Limited to /etc/apache2 & /etc/httpd based installations
-  ##shellcheck#disable=SC2120
+  # Limited to /etc/apache2, /etc/httpd and /etc/nginx based installations
   copyApacheConfig() {
     # Set source based on provide context
-    # ToDo: add test and config for virtualhost
     if [ "$CONTEXT" == "default" ]; then
       echo "${COLOR_GREEN}Default (global) context: $CONTEXT"
       if [ "$PUBLIC" == "public" ]; then
         echo "${COLOR_GREEN}Sourcing public config:"
         if [ -e /etc/nginx ]; then
+          # ToDo: create public and private Nginx versions
           GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_NGINX_SOURCE"
         else
           GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
@@ -344,14 +389,25 @@ pmainstall() {
   # Step 8: set app file permissions
   setPermissions() {
     echo "${COLOR_GREEN}Setting application file ownership"
-    chown -R www-data ./*
+    # for nginx
+    if [ -e /etc/nginx ]; then
+      chown -R nginx ./*
+    else
+      chown -R www-data ./*
+    fi;
+
+    # If using Nginx and permission errors persists - try
+    # Ensure the directories above the site root are set like this:
+    # find ./ -type f exec chmod 664 {} \;
+    # find ./ -type d exec chmod 775 {} \;
+    # chgrp -R nginx ./< parent directory >
   }
 
   # Step 9: start job worker
   startQueue() {
     # Notify success
     if [ $FOUND ]; then
-      echo "${COLOR_GREEN}Your application ready for loading in a browser"
+      echo "${COLOR_GREEN}Your application is ready for loading in a browser"
     fi;
 
     echo "${COLOR_GREEN}Starting queue worker: php artisan queue:work"

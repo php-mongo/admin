@@ -68,8 +68,8 @@ echo "${COLOR_BLUE}Change directory to: $WDIR"
 echo "${COLOR_BLUE}type: cd $WDIR"
 echo "${COLOR_BLUE}Enter.."
 echo
-echo "${COLOR_BLUE}Initialise the default setup script (required):"
-echo "${COLOR_BLUE}type: source setup/pmadefault.sh"
+echo "${COLOR_BLUE}Initialise the setup script (required):"
+echo "${COLOR_BLUE}type: source setup/pmainstall.sh"
 echo
 echo "${COLOR_BLUE}To complete the installation type a choose command option then copy/paste/enter to proceed:"
 echo
