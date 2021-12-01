@@ -67,11 +67,11 @@ echo "${COLOR_BLUE}${COLOR_YBG}Stage 1 complete, application cloned to: $WDIR"
 echo "${COLOR_BLUE}${COLOR_YBG}--------------------------------------- "
 echo "${COLOR_BLUE}${COLOR_WBG}"
 echo
-echo "${COLOR_BLUE}Change directory to: $WDIR"
+echo "${COLOR_BLUE}Change directory to (required step): $WDIR "
 echo "${COLOR_BLUE}type: cd $WDIR"
 echo "${COLOR_BLUE}Enter.."
 echo
-echo "${COLOR_BLUE}Initialise the setup script (required):"
+echo "${COLOR_BLUE}Initialise the setup script (required step):"
 echo "${COLOR_BLUE}type: source setup/pmainstall.sh"
 echo
 echo "${COLOR_BLUE}To complete the installation choose a command option, then copy/paste/enter to proceed:"
