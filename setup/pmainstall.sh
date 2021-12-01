@@ -57,11 +57,11 @@ pmainstall() {
     PHP=/usr/bin/php7.3
     echo "${COLOR_BLUE}Found php7.3"
   elif [ -e /usr/bin/php7.2 ]; then
-      PHP=/usr/bin/php7.2
-      echo "${COLOR_BLUE}Found php7.2"
+    PHP=/usr/bin/php7.2
+    echo "${COLOR_BLUE}Found php7.2"
   elif [ -e /usr/bin/php ]; then
-        PHP=/usr/bin/php
-        echo "${COLOR_BLUE}Found php?"
+    PHP=/usr/bin/php
+    echo "${COLOR_BLUE}Found php?"
   elif [ -e /usr/bin/php8.0 ]; then
     PHP=/usr/bin/php8.0
     echo "${COLOR_BLUE}Found php8.0"
@@ -92,7 +92,7 @@ pmainstall() {
     fi;
 
     echo "${COLOR_GREEN}Have you pre-populated the .env file parameters?"
-                              select done in Yes No;
+    select done in Yes No;
     do
       if [ "$done" == "No" ]; then
         # set environment
@@ -135,7 +135,7 @@ pmainstall() {
   composerInstall() {
     echo "${COLOR_GREEN}Running: composer install"
 
-    if [ -z "$COMPOSER" ]; then
+    if [ -z "$PHP" ]; then
       echo "${COLOR_RED}${COLOR_WBG}-----------------------------------"
       echo "${COLOR_RED}${COLOR_WBG}PHP: $PHP "
       echo "${COLOR_RED}${COLOR_WBG}PHP was not found!"
@@ -344,8 +344,28 @@ pmainstall() {
     if [ ! $FOUND ]; then
       echo "${COLOR_GREEN}Error: unable to find apache2, httpd or nginx to complete the web setup"
       exit 1
-    fi
+    fi;
+  }
 
+  # Step 8: set app file permissions
+  setPermissions() {
+    echo "${COLOR_GREEN}Setting application file ownership"
+    # for nginx
+    if [ -e /etc/nginx ]; then
+      chown -R nginx ./*
+    else
+      chown -R www-data ./*
+    fi;
+
+    # If using Nginx and permission errors persists - try
+    # Ensure the directories above the site root are set like this:
+    # find ./ -type f exec chmod 664 {} \;
+    # find ./ -type d exec chmod 775 {} \;
+    # chgrp -R nginx ./< parent directory >
+  }
+
+  # Step 9: restart the correct server
+  restartServer() {
     if [ "$COUNT" -gt 1 ]; then
       echo "${COLOR_RED}Found more than one server: please select which service to restart?"
       select restart in $APACHE2 $HTTPD $NGINX;
@@ -372,14 +392,17 @@ pmainstall() {
     else
       case $FOUND in
         nginx)
+          echo "${COLOR_GREEN}Restarting nginx"
           systemctl restart nginx
           ;;
 
         httpd)
+          echo "${COLOR_GREEN}Restarting httpd"
           systemctl restart httpd
           ;;
 
         apache2)
+          echo "${COLOR_GREEN}Restarting apache2"
           systemctl restart apache2
           ;;
 
@@ -390,24 +413,7 @@ pmainstall() {
     fi;
   }
 
-  # Step 8: set app file permissions
-  setPermissions() {
-    echo "${COLOR_GREEN}Setting application file ownership"
-    # for nginx
-    if [ -e /etc/nginx ]; then
-      chown -R nginx ./*
-    else
-      chown -R www-data ./*
-    fi;
-
-    # If using Nginx and permission errors persists - try
-    # Ensure the directories above the site root are set like this:
-    # find ./ -type f exec chmod 664 {} \;
-    # find ./ -type d exec chmod 775 {} \;
-    # chgrp -R nginx ./< parent directory >
-  }
-
-  # Step 9: start job worker
+  # Step 10: start job worker
   startQueue() {
     # Notify success
     if [ $FOUND ]; then
@@ -429,6 +435,7 @@ pmainstall() {
     installPassport
     copyApacheConfig
     setPermissions
+    restartServer
     startQueue
   }
 
