@@ -74,7 +74,7 @@ echo
 echo "${COLOR_BLUE}Initialise the setup script (required):"
 echo "${COLOR_BLUE}type: source setup/pmainstall.sh"
 echo
-echo "${COLOR_BLUE}To complete the installation type a choose command option then copy/paste/enter to proceed:"
+echo "${COLOR_BLUE}To complete the installation choose a command option, then copy/paste/enter to proceed:"
 echo
 echo "${COLOR_BLUE}Default (global) private install:"
 echo "${COLOR_BLUE}type: pmainstall run default"
@@ -82,12 +82,12 @@ echo
 echo "${COLOR_BLUE}Default (global) public install:"
 echo "${COLOR_BLUE}type: pmainstall run default public"
 echo
-echo "${COLOR_BLUE}VirtualHost private install:"
+echo "${COLOR_BLUE}VirtualHost (server) private install:"
 echo "${COLOR_BLUE}type: pmainstall run vhost"
 echo
-echo "${COLOR_BLUE}VirtualHost public install:"
+echo "${COLOR_BLUE}VirtualHost (server) public install:"
 echo "${COLOR_BLUE}type: pmainstall run vhost public"
 echo
 echo "${COLOR_BLUE}During the setup process:"
-echo "${COLOR_BLUE}If you choose 'production' as the environment, when the 'php artisan migrate' command is triggerred you will be asked 'Do you really wish to run this command? (yes/no)' - you must enter yes so the first migration can complete"
+echo "${COLOR_BLUE}If you choose 'production' as the environment, when the 'php artisan migrate' command is triggerred you will be asked 'Do you really wish to run this command? (yes/no)' - you must enter 'yes' so the first migration can complete"
 echo
