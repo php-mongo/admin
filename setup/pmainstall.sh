@@ -50,16 +50,21 @@ pmainstall() {
   COLOR_BBG="$(tput setab 12)"
 
   # find PHP
-  if [ -e /usr/bin/php ]; then
-      PHP=/usr/bin/php
-  elif [ -e /usr/bin/php7.4 ]; then
+  if [ -e /usr/bin/php7.4 ]; then
     PHP=/usr/bin/php7.4
+    echo "${COLOR_BLUE}Found php7.4"
   elif [ -e /usr/bin/php7.3 ]; then
     PHP=/usr/bin/php7.3
+    echo "${COLOR_BLUE}Found php7.3"
   elif [ -e /usr/bin/php7.2 ]; then
       PHP=/usr/bin/php7.2
+      echo "${COLOR_BLUE}Found php7.2"
+  elif [ -e /usr/bin/php ]; then
+        PHP=/usr/bin/php
+        echo "${COLOR_BLUE}Found php?"
   elif [ -e /usr/bin/php8.0 ]; then
     PHP=/usr/bin/php8.0
+    echo "${COLOR_BLUE}Found php8.0"
   fi;
 
   # find composer
