@@ -54,12 +54,14 @@ git clone --branch testing https://github.com/php-mongo/admin .
 ls -la
 
 # Notify
+echo "${COLOR_RED}${COLOR_WBG}"
 echo "${COLOR_BLUE}${COLOR_YBG}---------------------------------------- "
 echo "${COLOR_BLUE}${COLOR_YBG}Stage 1 complete, application cloned to: $WDIR"
 echo "${COLOR_BLUE}${COLOR_YBG}---------------------------------------- "
-echo "${COLOR_RED}${COLOR_WBG} "
+echo "${COLOR_RED}${COLOR_WBG}"
 echo "${COLOR_RED}${COLOR_WBG}This custom installation provides an option to manually copy and update the .env file."
 echo "${COLOR_RED}${COLOR_WBG}type: cp .env.example .env && nano .env"
+echo
 echo "${COLOR_RED}${COLOR_WBG}Please Note: the APP_KEY value will be auto generated during the installation"
 echo "${COLOR_RED}${COLOR_WBG}Update and save .env file"
 echo "${COLOR_RED}${COLOR_WBG}Alternatively, choose 'No' when prompted and provide your .env settings."
@@ -71,7 +73,6 @@ echo
 echo "${COLOR_RED}If you intend to generate a self-signed SSL certificate on AWS please consult this documentation:"
 echo "${COLOR_RED}https://docs.aws.amazon.com/cloudhsm/latest/userguide/openssl-library-install.html"
 echo "${COLOR_RED}This script will 'not' use the 'cloudhsm' library due to over complexity of setup requirements"
-echo
 echo "${COLOR_BLUE} "
 echo
 echo "${COLOR_BLUE}To complete the installation choose a setup command option then copy/paste/enter to proceed:"
