@@ -50,9 +50,6 @@ pmainstall() {
   COLOR_BBG="$(tput setab 12)"
 
   # find PHP
-  if [ -e /usr/bin/php8.0 ]; then
-    PHP=/usr/bin/php8.0
-  fi;
   if [ -e /usr/bin/php7.4 ]; then
     PHP=/usr/bin/php7.4
   fi;
@@ -61,6 +58,9 @@ pmainstall() {
   fi;
   if [ -e /usr/bin/php ]; then
     PHP=/usr/bin/php
+  fi;
+  if [ -e /usr/bin/php8.0 ]; then
+    PHP=/usr/bin/php8.0
   fi;
 
   # find composer
@@ -97,11 +97,11 @@ pmainstall() {
 
         # set debug mode
         if [ "$env" == "production" ]; then
-          read -n5 -p "${COLOR_GREEN}Enable debug mode: false (highly recommended for production): " -i "false" debug
+          read -e -n5 -p "${COLOR_GREEN}Enable debug mode: false (highly recommended for production): " -i "false" debug
         elif [ "$env" == "local" ]; then
-          read -n5 -p "${COLOR_GREEN}Enable debug mode: true (recommended for local with URL: localhost): " -i "true" debug
+          read -e -n5 -p "${COLOR_GREEN}Enable debug mode: true (recommended for local with URL: localhost): " -i "true" debug
         else
-          read -n5 -p "${COLOR_GREEN}Enable debug mode: false (recommended): " -i "false" debug
+          read -e -n5 -p "${COLOR_GREEN}Enable debug mode: false (recommended): " -i "false" debug
         fi;
         sed -i "s|APP_DEBUG=true|APP_DEBUG=$debug|" .env
 
