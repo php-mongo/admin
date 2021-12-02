@@ -358,10 +358,18 @@ pmainstall() {
     fi;
 
     # If using Nginx and permission errors persists - try
-    # Ensure the directories above the site root are set like this:
+    # Run these on the application root's parent directory:
+    ## !! NEVER RUN THIS ON THE SERVERS ROOT DIRECTORY !! ##
     # find ./ -type f exec chmod 664 {} \;
     # find ./ -type d exec chmod 775 {} \;
     # chgrp -R nginx ./< parent directory >
+    ## or if you dont need write access for a user
+    # chown -R nginx:nginx ./< parent directory >
+    #
+    ## For Apache
+    # chgrp -R www-data ./< parent directory >
+    ## or
+    # chown -R www-data:www-data ./< parent directory >
   }
 
   # Step 9: restart the correct server
