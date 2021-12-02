@@ -1,7 +1,7 @@
 ### PmpMongoAdmin Setup Scripts
 
 ### Files
-- apache/        (directory containing web server configurations)
+- apache/        (directory containing apache server configurations)
   - global/      (global: server wide nested apache configurations)
     - phpMongoAdmin.conf
       - configured for localhost and private directory access
@@ -13,22 +13,39 @@
     - vhost_phpMongoAdminPublic.conf
       - configured for public access - requires security enhancements
       - includes an SSL <VirtualHost> specification
+-nginx/          (directory containing apache server configurations)
+  - global/      (global: server wide nested apache configurations)
+    - phpMongoAdminPublic.php
+      - configured for localhost and private directory access
+  - serverBlock/ (Nginx version of VirtualHost)
+    - server_phpMongoAdmin.com
+      - configured as an Nginx server: equivalent to Apache's virtualhost
 - remote-scripts/
   - these scripts are meant for use on Linux distros
   - custom.sh
     - wget https://phpmongoadmin.com/install/custom.sh -O - | bash
-    - installs the application into the current directory
-    - option for manual setup of the .env by advanced users
-    - enables VirtualHost installations
-      - fully automated options available
-      - automated self-signed SSL certificate generation
+    - installs the application into the current working directory
+      - provides multiple options for installing phpMongoAdmin including:
+        - install the application for (global) nested access
+        - http://localhost/phpmongoadmin
+        - http://your-domains.co/phpmongoadmin
+        - VirtualHost for Apache or ServerBlock for Nginx
+        - Automatic self signed SSL certificate generation
   - default.sh
     - wget https://phpmongoadmin.com/install/default.sh -O - | bash
     - installs the application to the default location
       - (on linux distros) /usr/share/phpMongoAdmin
-      - installs the application for (global) nested access
-        - http://localhost/phpmongoadmin
-        - http://your-domains.co/phpmongoadmin
+      - all setup options as listed for custom install
+  - docker-all.sh
+    - wget https://phpmongoadmin.com/install/docker-all.sh -O - | bash
+    - installs the docker-compose-full repository to the current working directory
+    - sets up Apache2, MongoDB and PhpMongoAdmin
+    - provides initialisation of the docker setup script
+  - docker-app.sh
+    - wget https://phpmongoadmin.com/install/docker-app.sh -O - | bash
+    - installs the docker-compose-app repository to the current working directory
+    - sets up Apache2 and PhpMongoAdmin only
+    - provides initialisation of the docker setup script
 - 
 - pmacustom.sh  (shell script - handles the custom installation option)
   - to use:
@@ -36,8 +53,14 @@
     - for help:
       - pmainstall (without any options)
 - pmadefault.sh (shell script - handles the default application installation)
+  - @deprecated
+    - to use:
+      - source setup/pmadefault.sh
+      - forhelp:
+        - pmainstall (without any options)
+- pmainstall.sh (shell script - provide multiple installation options)
   - to use:
-    - source setup/pmadefault.sh
-    - forhelp:
+    - source setup/pmainstall.sh
+    - for help:
       - pmainstall (without any options)
 - SETUP.md      (this README file)
