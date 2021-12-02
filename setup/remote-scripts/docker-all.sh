@@ -4,7 +4,7 @@
 # PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
 # @version      phpMongoAdminInstall.sh 1001 26/11/21, 6:44 pm  Gilbert Rehling $
 # @package      PhpMongoAdmin\setup\remote-scripts\
-# @subpackage   custom.sh
+# @subpackage   docker-all.sh
 # @link         https://github.com/php-mongo/admin PHP MongoDB Admin
 # @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
 # @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
@@ -42,13 +42,20 @@ then
 	exit 1
 fi
 
+# check docker-compose is available
+if ! command -v docker-composer &> /dev/null
+then
+	echo "${COLOR_RED}You must have 'docker & docker-compose' installed to use this installation"
+	exit 1
+fi
+
 # confirm
 WDIR=$( cd "$( dirname )" && pwd );
 echo "${COLOR_GREEN}Setup location: $WDIR"
 
 # clone
 # ToDo: remember to update to 'master'
-git clone --branch testing https://github.com/php-mongo/admin .
+git clone --branch master https://github.com/php-mongo/docker-compose-all .
 
 # list files
 ls -la
@@ -59,7 +66,10 @@ echo "${COLOR_BLUE}${COLOR_YBG}---------------------------------------- "
 echo "${COLOR_BLUE}${COLOR_YBG}Stage 1 complete, application cloned to: $WDIR"
 echo "${COLOR_BLUE}${COLOR_YBG}---------------------------------------- "
 echo "${COLOR_RED}${COLOR_WBG}"
-echo "${COLOR_RED}${COLOR_WBG}This custom installation provides an option to manually copy and prepare the .env file."
+echo "${COLOR_RED}${COLOR_WBG}Docker Compose All: installs Apache2, MongoDD and PhpMongoAdmin"
+echo "${COLOR_RED}${COLOR_WBG}PhpMongoAdmin's location within docker host container: /usr/share/phpMongoAdmin"
+echo
+echo "${COLOR_RED}${COLOR_WBG}This installation method provides an option to manually copy and prepare the .env file."
 echo "${COLOR_RED}${COLOR_WBG}type: cp .env.example .env && nano .env"
 echo
 echo "${COLOR_RED}${COLOR_WBG}Please Note: the APP_KEY value will be auto generated during the installation."
@@ -68,26 +78,17 @@ echo "${COLOR_RED}${COLOR_WBG}Alternatively, choose 'No' when prompted and provi
 echo
 echo "${COLOR_RED}${COLOR_WBG}Then:"
 echo "${COLOR_RED}${COLOR_WBG}Initialise the setup script (required):"
-echo "${COLOR_RED}${COLOR_WBG}type: source setup/pmainstall.sh"
+echo "${COLOR_RED}${COLOR_WBG}type: source docker/pmasetup.sh"
 echo
 echo "${COLOR_RED}If you intend to generate a self-signed SSL certificate on AWS please consult this documentation:"
 echo "${COLOR_RED}https://docs.aws.amazon.com/cloudhsm/latest/userguide/openssl-library-install.html"
 echo "${COLOR_RED}This script will 'not' use the 'cloudhsm' library due to over complexity of setup requirements."
 echo "${COLOR_BLUE} "
 echo
-echo "${COLOR_BLUE}To complete the installation, choose a setup command option, then copy/paste/enter to proceed:"
+echo "${COLOR_BLUE}To complete the installation run the setup command, copy/paste/enter to proceed:"
 echo
-echo "${COLOR_BLUE}Default (global) private install:"
-echo "${COLOR_BLUE}type: pmainstall run default"
-echo
-echo "${COLOR_BLUE}Default (global) public install:"
-echo "${COLOR_BLUE}type: pmainstall run default public"
-echo
-echo "${COLOR_BLUE}VirtualHost private install:"
-echo "${COLOR_BLUE}type: pmainstall run vhost"
-echo
-echo "${COLOR_BLUE}VirtualHost public install:"
-echo "${COLOR_BLUE}type: pmainstall run vhost public"
+echo "${COLOR_BLUE}Default docker-compose (all) install:"
+echo "${COLOR_BLUE}type: pmasetup run"
 echo
 echo "${COLOR_BLUE}During the setup process:"
 echo "${COLOR_BLUE}If you choose 'production' as the environment, when the 'php artisan migrate' command is triggerred you will be asked 'Do you really wish to run this command? (yes/no)' - you must enter yes so the first migration can complete"
