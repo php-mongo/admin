@@ -54,7 +54,7 @@ echo "${COLOR_GREEN}Setup location: $WDIR"
 
 # clone
 # ToDo: remember to update to 'master'
-git clone --branch testing https://github.com/php-mongo/admin .
+git clone --branch staging https://github.com/php-mongo/admin .
 
 # list files
 ls -la
