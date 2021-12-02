@@ -51,7 +51,7 @@ use App\Helpers\MongoConnectionHelper;
 /**
  * Facades
  */
-use Illuminate\Contracts\View\Factory;
+//use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\View\View;
@@ -141,7 +141,7 @@ class SetupController extends Controller
     /**
      * Loads the initial setup layout
      *
-     * @return Factory|View
+     * @return View
      */
     public function getSetup(Request $request)
     {
