@@ -43,7 +43,7 @@ then
 fi
 
 # confirm
-WDIR=$( cd "$( dirname )" && pwd );
+WDIR=$( cd "$( dirname . )" && pwd );
 echo "${COLOR_GREEN}Setup location: $WDIR"
 
 # clone
