@@ -274,8 +274,12 @@ pmainstall() {
           if [ "$answer" == "Cancel" ]; then
             echo "${COLOR_BLUE}${COLOR_WBG}SSL will not be set-up!"
             # comment out the SSl definitions
-            sed -i "s|SSLCertificateKeyFile|#SSLCertificateKeyFile|g" "$GLOBAL_CONFIG"
-            sed -i "s|SSLCertificateFile|#SSLCertificateFile|g" "$GLOBAL_CONFIG"
+            if [ -e /etc/nginx ]; then
+              sed -i "s|ssl_|#ssl_|g" "$GLOBAL_CONFIG"
+            else
+              sed -i "s|SSLCertificateKeyFile|#SSLCertificateKeyFile|g" "$GLOBAL_CONFIG"
+              sed -i "s|SSLCertificateFile|#SSLCertificateFile|g" "$GLOBAL_CONFIG"
+            fi;
             break;
           fi;
 
