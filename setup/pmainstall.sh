@@ -32,11 +32,11 @@ pmainstall() {
   GLOBAL_SOURCE="setup/apache/global/phpMongoAdmin.conf"
   GLOBAL_SOURCE_PUBLIC="setup/apache/global/phpMongoAdminPublic.conf"
   GLOBAL_NGINX_SOURCE="setup/nginx/global/phpMongoAdmin.conf"
-  #GLOBAL_NGINX_SOURCE_PUBLIC="setup/apache/global/phpMongoAdminPublic.conf"
+  GLOBAL_NGINX_SOURCE_PUBLIC="setup/apache/global/phpMongoAdminPublic.conf"
   VIRTUAL_SOURCE="setup/apache/virtualHost/vhost_phpMongoAdmin.conf"
   VIRTUAL_SOURCE_PUBLIC="setup/apache/virtualHost/vhost_phpMongoAdminPublic.conf"
   VIRTUAL_NGINX_SOURCE="setup/nginx/serverBlock/server_phpMongoAdmin.conf"
-  #VIRTUAL_NGINX_SOURCE_PUBLIC="setup/apache/virtualHost/vhost_phpMongoAdminPublic.conf"
+  VIRTUAL_NGINX_SOURCE_PUBLIC="setup/apache/virtualHost/vhost_phpMongoAdminPublic.conf"
   DATABASE="database/sqlite/database.sqlite"
 
   COLOR_NONE="$(tput sgr0)"
@@ -60,6 +60,7 @@ pmainstall() {
     PHP=/usr/bin/php7.2
     echo "${COLOR_BLUE}Found php7.2"
   elif [ -e /usr/bin/php ]; then
+    # ToDo: probably should be last
     PHP=/usr/bin/php
     echo "${COLOR_BLUE}Found php?"
   elif [ -e /usr/bin/php8.0 ]; then
@@ -68,6 +69,7 @@ pmainstall() {
   fi;
 
   # find composer
+  ## ToDo: this may need expansion to be complete
   if [ -e /usr/bin/composer ]; then
     COMPOSER=/usr/bin/composer
   fi;
@@ -76,8 +78,13 @@ pmainstall() {
   echo "${COLOR_BLUE}${COLOR_WBG}Global apache.conf : $GLOBAL_SOURCE"
   echo "${COLOR_BLUE}Virtual apache.conf : $VIRTUAL_SOURCE"
 
+  # generally this will always be 'run'
   COMMAND=$1
+
+  # this param defines the install context which can be 'default' (Alias Directory/Rewrite) or 'vhost' (VirtualHost / ServerBlock)
   CONTEXT=$2
+
+  # this params defines the application visibility, restricted (the default) or public
   PUBLIC=$3
 
   # Step 1: copy and setup environment file
@@ -184,7 +191,7 @@ pmainstall() {
         echo "${COLOR_GREEN}Sourcing public config:"
         if [ -e /etc/nginx ]; then
           # ToDo: create public and private Nginx versions
-          GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_NGINX_SOURCE"
+          GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_NGINX_SOURCE_PUBLIC"
         else
           GLOBAL_CONFIG="$PMA_DIR/$GLOBAL_SOURCE_PUBLIC"
         fi;
@@ -201,7 +208,7 @@ pmainstall() {
       if [ "$PUBLIC" == "public" ]; then
         echo "${COLOR_GREEN}Create public config:"
         if [ -e /etc/nginx ]; then
-          GLOBAL_CONFIG="$PMA_DIR/$VIRTUAL_NGINX_SOURCE"
+          GLOBAL_CONFIG="$PMA_DIR/$VIRTUAL_NGINX_SOURCE_PUBLIC"
         else
           GLOBAL_CONFIG="$PMA_DIR/$VIRTUAL_SOURCE_PUBLIC"
         fi;
