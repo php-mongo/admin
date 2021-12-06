@@ -90,8 +90,11 @@ echo "${COLOR_BLUE}"
 echo
 echo "${COLOR_BLUE}To complete the installation run the setup command, copy/paste/enter to proceed:"
 echo
-echo "${COLOR_BLUE}Default docker-compose (all) install:"
-echo "${COLOR_BLUE}type: pmasetup run build"
+echo "${COLOR_BLUE}Default docker-compose (app) install:"
+echo "${COLOR_BLUE}On Linux based:"
+echo "${COLOR_BLUE}type: pmasetup build"
+echo "${COLOR_BLUE}On Windows:"
+echo "${COLOR_BLUE}type: pmasetup win-build"
 echo
 echo "${COLOR_BLUE}During the setup process:"
 echo "${COLOR_BLUE}If you choose 'production' as the environment, when the 'php artisan migrate' command is triggerred you will be asked 'Do you really wish to run this command? (yes/no)' - you must enter yes so the first migration can complete"
