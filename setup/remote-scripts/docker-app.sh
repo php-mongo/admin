@@ -32,9 +32,10 @@ COLOR_BBG="$(tput setab 12)"
 # check is sudo
 if [[ $UID != 0 ]]; then
 	# check for windows bash path
-  P=$(echo $0);
-  echo "P equals: $P";
-  if [ $P != "/usr/bin/bash" ]; then
+  #P=$(echo $0);
+  #echo "P equals: $P";
+  #if [ $P != "/usr/bin/bash" ]; then
+  if [ ! -e "C:\Windows" ]; then
     echo "${COLOR_RED}You must be 'sudo' to run this installation script"
     exit 1
   fi;
