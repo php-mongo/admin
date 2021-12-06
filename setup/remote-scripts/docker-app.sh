@@ -31,9 +31,8 @@ COLOR_BBG="$(tput setab 12)"
 
 # check is sudo
 if [[ $UID != 0 ]]; then
-	# check for windows bash path
-  P=$(echo $0);
-  if [ $P != "/usr/bin/bash" ]; then
+	# check for windows path
+  if [ ! -e "C:\Windows" ]; then
     echo "${COLOR_RED}You must be 'sudo' to run this installation script"
     exit 1
   fi;
@@ -47,7 +46,7 @@ then
 fi
 
 # check docker-compose is available
-if ! command -v docker-composer &> /dev/null
+if ! command -v docker-compose &> /dev/null
 then
 	echo "${COLOR_RED}You must have 'docker & docker-compose' installed to use this installation"
 	exit 1
@@ -91,8 +90,11 @@ echo "${COLOR_BLUE}"
 echo
 echo "${COLOR_BLUE}To complete the installation run the setup command, copy/paste/enter to proceed:"
 echo
-echo "${COLOR_BLUE}Default docker-compose (all) install:"
-echo "${COLOR_BLUE}type: pmasetup run"
+echo "${COLOR_BLUE}Default docker-compose (app) install:"
+echo "${COLOR_BLUE}On Linux based:"
+echo "${COLOR_BLUE}type: pmasetup build"
+echo "${COLOR_BLUE}On Windows:"
+echo "${COLOR_BLUE}type: pmasetup win-build"
 echo
 echo "${COLOR_BLUE}During the setup process:"
 echo "${COLOR_BLUE}If you choose 'production' as the environment, when the 'php artisan migrate' command is triggerred you will be asked 'Do you really wish to run this command? (yes/no)' - you must enter yes so the first migration can complete"
