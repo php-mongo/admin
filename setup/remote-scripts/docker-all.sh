@@ -31,8 +31,12 @@ COLOR_BBG="$(tput setab 12)"
 
 # check is sudo
 if [[ $UID != 0 ]]; then
-	echo "${COLOR_RED}You must be 'sudo' to run this installation script"
-	exit 1
+  # check for windows bash path
+  P=$(echo $0);
+  if [ $P != "/usr/bin/bash" ]; then
+	  echo "${COLOR_RED}You must be 'sudo' to run this installation script"
+	  exit 1
+	fi;
 fi
 
 # check git is available
