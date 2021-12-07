@@ -88,7 +88,7 @@
             return {
                 errorMessage: null,
                 index: 0,
-                limit: 50,
+                limit: 100,
                 show: true
             }
         },
