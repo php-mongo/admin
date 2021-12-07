@@ -1,4 +1,4 @@
-## About PhpMongoAdmin
+## About PhpMongoAdmin (PMDbA)
 
 PhpMongoAdmin is a Web-based MongoDb management console, written in PHP and leveraging great tools like Laravel and Vue.
 The familiar interface allows you to manage many aspects of your MongoDB installation:

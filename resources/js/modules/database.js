@@ -707,7 +707,7 @@ export const database = {
          *  Return the read, write, create and drop boolean values
          */
         getCanUserReadDatabase( state ) {
-            // if this returns false >> the user has no usable roles
+            // if this returns false >> the user has no read roles
             return state.canUserReadDatabase;
         },
 
