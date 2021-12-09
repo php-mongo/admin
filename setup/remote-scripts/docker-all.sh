@@ -58,7 +58,7 @@ echo "${COLOR_GREEN}Setup location: $WDIR"
 
 # clone
 # ToDo: remember to update to 'master'
-git clone --branch master https://github.com/php-mongo/docker-compose-all .
+git clone --branch master https://github.com/php-mongo/docker-compose-full.git .
 
 # list files
 ls -la
