@@ -41,17 +41,22 @@
                 </select>
                 <br>
                 <button class="button" v-on:click="sendCommand" v-text="showLanguage('command', 'execute')"></button>
-                <button class="button warning" v-on:click="clear" v-text="showLanguage('global', 'clear')"></button>
+                <button class="button warning" v-on:click="reset" v-text="showLanguage('global', 'clear')"></button>
             </form>
             <p v-show="errorMessage || message">
             <span class="msg">
-                <span class="error">{{ errorMessage }}</span>
                 <span class="action">{{ message }}</span>
+                <br><span class="form-error">{{ errorMessage }}</span>
             </span>
             </p>
-            <div v-if="results">
+            <div v-if="results && typeof results === 'object'">
                 <div v-for="(result, key) in results" v-bind:result="result" v-bind:key="key">
                     <p v-html="highlight(key, result)"></p>
+                </div>
+            </div>
+            <div v-if="results && typeof results !== 'object'">
+                <div v-bind:result="results" v-bind:key="key">
+                    <p>{{ result }}</p>
                 </div>
             </div>
         </div>
@@ -113,31 +118,60 @@
                 this.form.database = this.$store.getters.getActiveDatabase;
             },
 
-            clear() {
+            reset() {
+                this.message = '';
                 this.errorMessage = '';
-                this.form.database = null;
+                this.results = null;
+                this.form = {
+                    command: '{\n\t"listCommands": 1\n}',
+                        database: null,
+                        format: 'json'
+                }
+            },
+
+            clear() {
+                this.message = '';
+                this.errorMessage = '';
                 this.results = null;
             },
 
-            sendCommand() {
-                this.errorMessage = '';
-                if (this.form.command) {
-                    if (this.form.database) {
-                        let command = this.$convObj().minify( this.form.command );
-                        let data = {
-                            database: this.form.database,
-                            params: {
-                                format: this.form.format,
-                                command: command,
-                                database: this.form.database
-                            }
-                        };
-                        this.$store.dispatch('databaseCommand', data);
-                        this.handleCommand();
+            returnError(error) {
+                this.errorMessage = error;
+                return false
+            },
 
-                    } else {
-                        this.errorMessage = this.showLanguage('command', 'selectDb');
+            validate() {
+                let command = this.form.command;
+                if (command && command.replace(/\s/g, "") !== '{}')  {
+                    if (this.form.database) {
+                        if (command.indexOf(':') !== -1) {
+                            let split = command.split(":");
+                            if (split[1].replace(/\s/g,"").replace("}", "").length >= 1) {
+                                return true
+                            }
+                            return this.returnError('A command must have at least 1 parameter. "command-name" : "parameter')
+                        }
+                        return this.returnError('A command must have at least 2 parts separated by a colon. "command-name" : 1')
                     }
+                    return this.returnError(this.showLanguage('command', 'selectDb'))
+                }
+                return this.returnError('No command provided')
+            },
+
+            sendCommand() {
+                this.clear();
+                if (this.validate()) {
+                    let command = this.$convObj().minify( this.form.command );
+                    let data = {
+                        database: this.form.database,
+                        params: {
+                            format: this.form.format,
+                            command: command,
+                            database: this.form.database
+                        }
+                    };
+                    this.$store.dispatch('databaseCommand', data);
+                    this.handleCommand();
                 }
             },
 
@@ -150,17 +184,12 @@
                     }, 250);
                 }
                 if (status === 2) {
-                    let results  = this.$store.getters.getCommandResults,
-                        x;
-                    for (x in results) {
-                        this.results = results[x];
-                        this.key = x;
-                        break;
-                    }
+                    this.results = this.$store.getters.getCommandResults;
+                    // ToDo: there was a for (x in results) to remove the "ok" : 1
                 }
                 if (status === 3) {
-                    this.errorMessage = 'An error occurred running the command - try reformatting the query';
-                    this.results = this.$store.getters.getErrorData;
+                    this.message = 'An error occurred running the command: try reformatting the query, ensure all braces and brackets are closed';
+                    this.errorMessage = this.$store.getters.getErrorData;
                 }
             },
 
