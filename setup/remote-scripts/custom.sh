@@ -47,7 +47,7 @@ WDIR=$( cd "$( dirname . )" && pwd );
 echo "${COLOR_GREEN}Setup location: $WDIR"
 
 # clone
-git clone --branch master https://github.com/php-mongo/admin .
+git clone --branch master https://github.com/php-mongo/admin.git .
 
 # list files
 ls -la
