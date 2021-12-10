@@ -145,10 +145,14 @@ export default function makeConvObj() {
                  let divAreaH = ''; // target for div area output
                  // divAreaH  = str.replace('ObjectId', )
                  let openB    = 0;  // track open braces & brackets ( { & [ )
+                 let openQ    = false; // track quote open and close
                  let tab      = "&nbsp;&nbsp;&nbsp;&nbsp;";
                  let i        = 0;  // indexing
                  let x        = null;
                  for (x in str) {
+                     if (str[x] === '"') {
+                         openQ = !openQ;
+                     }
                      if (str[x] === '~' || str[x] === '`') {
                          divAreaH += str[x];
                      }
@@ -173,7 +177,7 @@ export default function makeConvObj() {
                      else if (str[x] === '(' || str[x] === ')') {
                          divAreaH += '<span style="color: blue">' + str[x] + '</span>';
                      }
-                     else if (str[x] === ',') {
+                     else if (str[x] === ',' && !openQ) {
                          divAreaH += '<span style="color: green">' + str[x] + '</span>' + '<br>';
 
                          for (i = 0; i < openB; i += 1) {
@@ -191,8 +195,8 @@ export default function makeConvObj() {
                      }
                  }
 
-                 divAreaH = divAreaH.replace('~', ' <span style="color: blue">false</span>');
-                 divAreaH = divAreaH.replace('`', ' <span style="color: blue">true</span>');
+                 divAreaH = divAreaH.replace(/~/g, ' <span style="color: blue">false</span>');
+                 divAreaH = divAreaH.replace(/`/g, ' <span style="color: blue">true</span>');
 
                  return divAreaH;
              },
