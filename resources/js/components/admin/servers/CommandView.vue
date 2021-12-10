@@ -50,13 +50,13 @@
             </span>
             </p>
             <div v-if="results && typeof results === 'object'">
-                <div v-for="(result, key) in results" v-bind:result="result" v-bind:key="key">
-                    <p v-html="highlight(key, result)"></p>
+                <div v-for="(data, key) in results" v-bind:data="data" v-bind:key="key">
+                    <p v-html="highlight(key, data)"></p>
                 </div>
             </div>
             <div v-if="results && typeof results !== 'object'">
-                <div v-bind:result="results" v-bind:key="key">
-                    <p>{{ result }}</p>
+                <div v-bind:results="results" v-bind:key="key">
+                    <p>{{ results }}</p>
                 </div>
             </div>
         </div>
@@ -193,12 +193,12 @@
                 }
             },
 
-            highlight( command, input ) {
-                let object = { [command] : input };
-                input = JSON.stringify(object);
-                input = input.replace('false', '~');
-                input = input.replace('true', '`');
-                return this.$convObj().jsonH( input );
+            highlight( key,data ) {
+                let object = { [key] : data };
+                data = JSON.stringify(object);
+                data = data.replace('false', '~');
+                data = data.replace('true', '`');
+                return this.$convObj().jsonH( data );
             },
 
             /*
