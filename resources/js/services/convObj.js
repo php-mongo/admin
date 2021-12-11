@@ -147,8 +147,11 @@ export default function makeConvObj() {
                  let openB    = 0;  // track open braces & brackets ( { & [ )
                  let openQ    = false; // track quote open and close
                  let tab      = "&nbsp;&nbsp;&nbsp;&nbsp;";
+                 let tabs     = false;
                  let i        = 0;  // indexing
                  let x        = null;
+                 let dreg     = new RegExp('^[0-9]$');
+                 let cc       = ''; // track current color
                  for (x in str) {
                      if (str[x] === '"') {
                          openQ = !openQ;
@@ -156,42 +159,106 @@ export default function makeConvObj() {
                      if (str[x] === '~' || str[x] === '`') {
                          divAreaH += str[x];
                      }
+                     else if (dreg.test(str[x])) {
+                         if (cc === 'blue') {
+                             divAreaH += str[x];
+                         } else {
+                             if (cc === 'red') {
+                                 divAreaH += '</span>';
+                             }
+                             cc = 'blue';
+                             divAreaH += '<span style="color: ' + cc + '">' + str[x];
+                         }
+                     }
                      else if (str[x] === '{' || str[x] === '[') {
-                         openB += 1;
-                         divAreaH += '<span style="color: green">' + str[x] + '</span>' + '<br>';
-                         for (i = 0; i < openB; i += 1) {
-                             divAreaH += tab;
+                         if (openQ) {
+                             divAreaH += str[x];
+                         } else {
+                             if (cc === 'red' || cc === 'blue') {
+                                 divAreaH += '</span>';
+                             }
+                             openB += 1;
+                             cc = 'green';
+                             divAreaH += '<span style="color: ' + cc + '">' + str[x] + '</span>' + '<br>';
+
+                             for (i = 0; i < openB; i += 1) {
+                                 divAreaH += tab;
+                             }
                          }
                      }
                      else if (str[x] === '}' || str[x] === ']') {
-                         divAreaH += '<br>';
+                         if (openQ) {
+                             if (cc === 'blue') {
+                                 cc = 'red';
+                                 divAreaH += '</span><span style="color: ' + cc + '">';
+                             }
+                             divAreaH += str[x];
+                         } else {
+                             if (cc === 'red' || cc === 'blue') {
+                                 divAreaH += '</span>';
+                             }
 
-                         if (openB > 0) {
-                             openB -= 1;
+                             if (str[(x + 1)] !== '"') {
+                                 divAreaH += '<br>';
+                             }
+
+                             if (openB > 0) {
+                                 openB -= 1;
+                             }
+                             for (i = 0; i < openB; i += 1) {
+                                 divAreaH += tab;
+                             }
+                             cc = 'green';
+                             divAreaH += '<span style="color: ' + cc + '">' + str[x] + '</span>';
                          }
-                         for (i = 0; i < openB; i += 1) {
-                             divAreaH += tab;
-                         }
-                         divAreaH += '<span style="color: green">' + str[x] + '</span>';
                      }
                      else if (str[x] === '(' || str[x] === ')') {
-                         divAreaH += '<span style="color: blue">' + str[x] + '</span>';
+                         if (cc === 'red' || cc === 'blue') {
+                             divAreaH += '</span>';
+                         }
+                         cc = 'blue';
+                         divAreaH += '<span style="color: ' + cc + '">' + str[x] + '</span>';
                      }
                      else if (str[x] === ',' && !openQ) {
-                         divAreaH += '<span style="color: green">' + str[x] + '</span>' + '<br>';
+                         if (cc === 'red') {
+                             // include comma inside a string
+                             divAreaH += str[x]
+                         } else {
+                             cc = 'green'
+                             divAreaH += '<span style="color: ' + cc + '">' + str[x] + '</span>' + '<br>';
 
-                         for (i = 0; i < openB; i += 1) {
-                             divAreaH += tab;
+                             for (i = 0; i < openB; i += 1) {
+                                 divAreaH += tab;
+                             }
                          }
                      }
                      else if (str[x] === ':') {
-                         divAreaH += ' <span class="colon" style="color: green">' + str[x] + '</span> ';
+                         if (cc === 'red') {
+                             // include comma inside a string
+                             divAreaH += str[x]
+                         } else {
+                             cc = 'green'
+                             divAreaH += ' <span class="colon" style="color: ' + cc + '">' + str[x] + '</span> ';
+                         }
                      }
                      else if (str[x] === '"') {
-                         divAreaH += '<span style="color: #800000">' + str[x] + '</span>';
+                         if (cc === 'red' || cc === 'blue') {
+                             divAreaH += '</span>';
+                         }
+                         cc = 'black';
+                         divAreaH += '<span style="color: ' + cc + '">' + str[x] + '</span>';
                      }
                      else {
-                         divAreaH += '<span style="color: red">' + str[x] + '</span>';
+                         if (cc === 'red') {
+                             // continue with current color
+                             divAreaH += str[x];
+                         } else {
+                             if (cc === 'blue') {
+                                 divAreaH += '</span>';
+                             }
+                             cc = 'red';
+                             divAreaH += '<span style="color: ' + cc + '">' + str[x];
+                         }
                      }
                  }
 

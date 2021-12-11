@@ -196,8 +196,8 @@
             highlight( key,data ) {
                 let object = { [key] : data };
                 data = JSON.stringify(object);
-                data = data.replace('false', '~');
-                data = data.replace('true', '`');
+                data = data.replace(/false/g, '~');
+                data = data.replace(/true/g, '`');
                 return this.$convObj().jsonH( data );
             },
 
