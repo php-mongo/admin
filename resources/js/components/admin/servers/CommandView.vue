@@ -95,11 +95,11 @@
 
         computed: {
             getDatabases() {
-                return this.$store.getters.getDatabases;
+                return this.$store.getters.getDatabases
             },
 
             watchActiveDatabase() {
-                return this.$store.getters.getActiveDatabase;
+                return this.$store.getters.getActiveDatabase
             }
         },
 
@@ -109,13 +109,13 @@
             */
             showLanguage( context, key, str ) {
                 if (str) {
-                    return this.$store.getters.getLanguageString( context, key ).replace("%s", str);
+                    return this.$store.getters.getLanguageString( context, key ).replace("%s", str)
                 }
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             getActiveDatabase() {
-                this.form.database = this.$store.getters.getActiveDatabase;
+                this.form.database = this.$store.getters.getActiveDatabase
             },
 
             reset() {
@@ -132,7 +132,7 @@
             clear() {
                 this.message = '';
                 this.errorMessage = '';
-                this.results = null;
+                this.results = null
             },
 
             returnError(error) {
@@ -180,39 +180,39 @@
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     setTimeout(() => {
-                        this.handleCommand();
-                    }, 250);
+                        this.handleCommand()
+                    }, 250)
                 }
                 if (status === 2) {
-                    this.results = this.$store.getters.getCommandResults;
+                    this.results = this.$store.getters.getCommandResults
                     // ToDo: there was a for (x in results) to remove the "ok" : 1
                 }
                 if (status === 3) {
                     this.message = 'An error occurred running the command: try reformatting the query, ensure all braces and brackets are closed';
-                    this.errorMessage = this.$store.getters.getErrorData;
+                    this.errorMessage = this.$store.getters.getErrorData
                 }
             },
 
-            highlight( key,data ) {
+            highlight( key, data ) {
                 let object = { [key] : data };
                 data = JSON.stringify(object);
                 data = data.replace(/false/g, '~');
                 data = data.replace(/true/g, '`');
-                return this.$convObj().jsonH( data );
+                return this.$convObj().jsonH( data )
             },
 
             /*
             *   Show component
             */
             showComponent() {
-                this.show = true;
+                this.show = true
             },
 
             /*
             *   Hide component
             */
             hideComponent() {
-                this.show = false;
+                this.show = false
             }
         },
 
@@ -224,14 +224,14 @@
             *    Hide this component
             */
             EventBus.$on('hide-panels', () => {
-                this.hideComponent();
+                this.hideComponent()
             });
 
             /*
             *    Show this component
             */
             EventBus.$on('show-command', () => {
-                this.showComponent();
+                this.showComponent()
             });
         },
 
