@@ -36,17 +36,22 @@
             </select>
             <br>
             <button class="button" v-on:click="sendCommand" v-text="showLanguage('command', 'execute')"></button>
-            <button class="button warning" v-on:click="clear" v-text="showLanguage('global', 'clear')"></button>
+            <button class="button warning" v-on:click="reset" v-text="showLanguage('global', 'clear')"></button>
         </form>
         <p v-show="errorMessage || message">
             <span class="msg">
-                <span class="error">{{ errorMessage }}</span>
                 <span class="action">{{ message }}</span>
+                <span class="error">{{ errorMessage }}</span>
             </span>
         </p>
-        <div v-if="results">
-            <div v-for="(result, key) in results" v-bind:result="result" v-bind:key="key">
-                <p v-html="highlight(key, result)"></p>
+        <div v-if="results && typeof results === 'object'">
+            <div v-for="(data, key) in results" v-bind:data="data" v-bind:key="key">
+                <p v-html="highlight(key, data)"></p>
+            </div>
+        </div>
+        <div v-if="results && typeof results !== 'object'">
+            <div v-bind:results="results" v-bind:key="key">
+                <p>{{ results }}</p>
             </div>
         </div>
     </div>
@@ -81,11 +86,11 @@
 
         computed: {
             getDatabases() {
-                return this.$store.getters.getDatabases;
+                return this.$store.getters.getDatabases
             },
 
             watchActiveDatabase() {
-                return this.$store.getters.getActiveDatabase;
+                return this.$store.getters.getActiveDatabase
             }
         },
 
@@ -95,23 +100,53 @@
             */
             showLanguage( context, key, str ) {
                 if (str) {
-                    return this.$store.getters.getLanguageString( context, key ).replace("%s", str);
+                    return this.$store.getters.getLanguageString( context, key ).replace("%s", str)
                 }
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             getActiveDatabase() {
-                this.form.database = this.$store.getters.getActiveDatabase;
+                this.form.database = this.$store.getters.getActiveDatabase
+            },
+
+            reset() {
+                this.message = '';
+                this.errorMessage = '';
+                this.results = null;
+                this.form = {
+                    command: '{\n\t"listCommands": 1\n}',
+                    database: null,
+                    format: 'json'
+                }
             },
 
             clear() {
+                this.message = '';
                 this.errorMessage = '';
-                this.form.database = null;
-                this.results = null;
+                this.results = null
+            },
+
+            validate() {
+                let command = this.form.command;
+                if (command && command.replace(/\s/g, "") !== '{}')  {
+                    if (this.form.database) {
+                        if (command.indexOf(':') !== -1) {
+                            let split = command.split(":");
+                            if (split[1].replace(/\s/g,"").replace("}", "").length >= 1) {
+                                return true
+                            }
+                            return this.returnError('A command must have at least 1 parameter. "command-name" : "parameter')
+                        }
+                        return this.returnError('A command must have at least 2 parts separated by a colon. "command-name" : 1')
+                    }
+                    return this.returnError(this.showLanguage('command', 'selectDb'))
+                }
+                return this.returnError('No command provided')
             },
 
             sendCommand() {
-                if (this.form.command) {
+                this.clear();
+                if (this.validate()) {
                     let command = this.$convObj().minify( this.form.command );
                     let data = {
                         database: this.form.database,
@@ -122,7 +157,7 @@
                         }
                     };
                     this.$store.dispatch('databaseCommand', data);
-                    this.handleCommand();
+                    this.handleCommand()
                 }
             },
 
@@ -131,44 +166,38 @@
                 if (status === 1 && this.index < this.limit) {
                     this.index += 1;
                     setTimeout(() => {
-                        this.handleCommand();
-                    }, 250);
+                        this.handleCommand()
+                    }, 250)
                 }
                 if (status === 2) {
-                    let results  = this.$store.getters.getCommandResults,
-                        x;
-                    for (x in results) {
-                        this.results = results[x];
-                        this.key = x;
-                        break;
-                    }
+                    this.results = this.$store.getters.getCommandResults
                 }
                 if (status === 3) {
-                    this.errorMessage = 'An error occurred running the command - try reformatting the query';
-                    this.results = this.$store.getters.getErrorData;
+                    this.message = 'An error occurred running the command: try reformatting the query, ensure all braces and brackets are closed';
+                    this.errorMessage = this.$store.getters.getErrorData
                 }
             },
 
-            highlight( command, input ) {
-                let object = { [command] : input };
-                input = JSON.stringify(object);
-                input = input.replace('false', '~');
-                input = input.replace('true', '`');
-                return this.$convObj().jsonH( input );
+            highlight( key, data ) {
+                let object = { [key] : data };
+                data = JSON.stringify(object);
+                data = data.replace('false', '~');
+                data = data.replace('true', '`');
+                return this.$convObj().jsonH( data )
             },
 
             /*
             *   Show component
             */
             showComponent() {
-                this.show = true;
+                this.show = true
             },
 
             /*
             *   Hide component
             */
             hideComponent() {
-                this.show = false;
+                this.show = false
             }
         },
 
@@ -177,24 +206,21 @@
             *    Hide this component
             */
             EventBus.$on('hide-panels', () => {
-                this.hideComponent();
-
+                this.hideComponent()
             });
 
             /*
             *    Hide this component
             */
             EventBus.$on('hide-database-panels',() => {
-                this.hideComponent();
-
+                this.hideComponent()
             });
 
             /*
             *    Show this component
             */
             EventBus.$on('show-database-command', () => {
-                this.showComponent();
-
+                this.showComponent()
             });
         },
 
