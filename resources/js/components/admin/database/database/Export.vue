@@ -17,6 +17,18 @@
 
 <style lang="scss">
    /* @import '~@/abstracts/_variables.scss'; */
+   .panel-form {
+       max-width: 767px;
+
+       .collection-title {
+           font-size: 1.2rem;
+           padding-left: 10px;
+
+           .collection-all {
+               padding-right: 10px !important;
+           }
+       }
+   }
 </style>
 
 <template>
@@ -32,9 +44,19 @@
         </div>
         <form class="panel-form">
             <div style="padding-top: 20px;" ref="collection">
-                <h3 class="collection-title"><span v-text="showLanguage('export', 'collections')"></span> [<label><span v-text="showLanguage('export', 'all')"></span> <input type="checkbox" v-on:click="checkAll()" v-model="form.all"></label>]</h3>
+                <h3 class="collection-title">
+                    <span v-text="showLanguage('export', 'collections')"></span>
+                    [<label class="collection-all">
+                        <span v-text="showLanguage('export', 'all')"></span> <input type="checkbox" v-on:click="checkAll()" v-model="form.all">
+                    </label>]
+                </h3>
                 <ul class="list">
-                    <li v-for="(coll, index) in collections" :key="index" v-bind:coll="coll"><label :for="'index_' + index"><input :id="'index_' + index" type="checkbox" @change="checkCollection" v-model="form.collections" :value="coll.collection.name"> {{ coll.collection.name }}</label></li>
+                    <li v-for="(coll, index) in collections" :key="index" v-bind:coll="coll">
+                        <label :for="'index_' + index">
+                            <input :id="'index_' + index" type="checkbox" @change="checkCollection" v-model="form.collections" :value="coll.collection.name">
+                            {{ coll.collection.name }}
+                        </label>
+                    </li>
                 </ul>
                 <div class="clear"></div>
             </div>
@@ -64,10 +86,10 @@
                 <button class="button pl135" v-on:click="runExport($event)" v-text="showLanguage('export', 'export')"></button>
                 <p>&nbsp;</p>
             </div>
-            <div v-if="exportData" style="margin-top: 20px;">
-                <textarea ref="export" v-model="exportData" class="export-data"></textarea>
-            </div>
         </form>
+        <div v-if="exportData" style="margin-top: 20px;">
+            <textarea ref="export" v-model="exportData" class="export-data"></textarea>
+        </div>
     </div>
 </template>
 
@@ -85,6 +107,7 @@
                 actionMessage: null,
                 collections: null,
                 collection: null,
+                data: null,
                 database: null,
                 errorMessage: null,
                 exportData: null,
@@ -115,27 +138,12 @@
             },
 
             /*
-            *   Show component
-            */
-            showComponent() {
-                this.show = true;
-            },
-
-            /*
-            *   Hide component
-            */
-            hideComponent() {
-                this.show = false;
-            },
-
-            /*
              *  Check all or reset to default
              */
             checkAll() {
                 setTimeout( () => {
                     if (this.form.all === false) {
                         this.form.collections = [];
-                        //this.form.collections.push(this.collections);
                     }
                     if (this.form.all === true) {
                         this.form.json = false;
@@ -164,14 +172,15 @@
 
             /*
              *  Set the component data on call
+             *  This method is from the Component / Export view - not required here
              */
-            setData(data) {
+            /*setData(data) {
                 this.clearData();
                 this.database    = data.db;
                 this.collection  = data.coll;
                 this.collections = this.$store.getters.getCollections;
                 this.form.collections.push(data.coll);
-            },
+            },*/
 
             checkCollection() {
                 if (this.form.collections.length >= 1)  {
@@ -188,9 +197,27 @@
                 this.data = this.$store.getters.getDatabase;
                 if (this.data) {
                     this.collections = this.data.collections;
-                    this.form.database = this.data.db.databaseName;
                     this.database = this.data.db.databaseName;
                 }
+            },
+
+            /*
+             *  Ensure the database is set and at least 1 collection selected
+             */
+            validate() {
+                if (this.form.collections.length === 0) {
+                    this.$jqf(this.$refs.collection).replace(["success", "has-error"]);
+                    this.errorMessage = this.showLanguage('errors', 'export.collectionsError');
+                    return false
+                }
+                if (!this.database) {
+                    if (!this.data.db) {
+                        this.errorMessage = this.showLanguage('errors', 'export.databaseError');
+                        return false
+                    }
+                    this.database = this.data.db.databaseName
+                }
+                return true
             },
 
             /*
@@ -198,16 +225,16 @@
              */
             runExport(event) {
                 event.preventDefault();
-                if (this.form.collections.length === 0) {
-                    this.$jqf(this.$refs.collection).replace(["success", "has-error"]);
-                    this.errorMessage = this.showLanguage('export', 'collectionsError');
-                    return;
+                if (this.validate()) {
+                    let data = { database: this.database, params: this.form };
+                    this.$store .dispatch('exportCollection', data);
+                    this.handleExport();
                 }
-                let data = {database: this.database, params: this.form };
-                this.$store .dispatch('exportCollection', data);
-                this.handleExport();
             },
 
+            /*
+             *  Monitor and handle the export status
+             */
             handleExport() {
                 let status = this.$store.getters.getExportCollectionStatus;
                 if (status === 1 && this.index < this.limit) {
@@ -233,6 +260,20 @@
                 else if (status === 3) {
                     this.errorMessage = "An error occurred during export";
                 }
+            },
+
+            /*
+            *   Show component
+            */
+            showComponent() {
+                this.show = true;
+            },
+
+            /*
+            *   Hide component
+            */
+            hideComponent() {
+                this.show = false;
             },
         },
 

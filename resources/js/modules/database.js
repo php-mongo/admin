@@ -477,6 +477,26 @@ export const database = {
             state.database  = databases.find(db => db.db.name === database)
         },
 
+        updateCached( state, database ) {
+            let databases = state.databases;
+            let arr = [];
+            let found = false;
+            databases.forEach((db) => {
+                if (db.db.name === database.db.name) {
+                    found = true;
+                    // replace cached
+                    arr.push(database)
+                } else {
+                    arr.push(db)
+                }
+            });
+            if (!found) {
+                // add to cache
+                arr.push(database)
+            }
+            state.databases = arr;
+        },
+
         /*
         *   Set the database load status
         */
