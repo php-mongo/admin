@@ -26,7 +26,9 @@ namespace App\Helpers;
  * We are handling MongoDB based functionality
  */
 
+use App\Exceptions\NoServerConfigurationException;
 use App\Exceptions\UnableToDeleteUserException;
+use App\Exceptions\UnableToImportDataException;
 use App\Http\Classes\MongoConnection;
 use MongoDB;
 
@@ -101,11 +103,34 @@ class MongoHelper
     }
 
     /**
+     * @param $string
+     * @return string
+     */
+    public static function replaceObjectIdWithOid($string): string
+    {
+        // break into parts
+        $arr = explode(")", $string);
+        $first = str_replace("ObjectId(", "", $arr[0]);
+
+        // preserve last section
+        $last = $arr[1];
+        $arr = explode(":", $first);
+
+        // reuse value from ObjectId()
+        // is some cases the ObjectId() is wrapped in quotes
+        $first = $arr[0] . ":{\"oid\":" . str_replace('""', '"', $arr[1]) . "}";
+
+        // $last will have a leading double-quote that need to be stripped
+        return $first . trim($last, '"');
+    }
+
+    /**
      * Generic static function to create a MongoDB user
      *
      * @param MongoConnection $mongoDb
      * @param array $data
      * @return array|string
+     * @throws NoServerConfigurationException
      */
     public static function generateMongoDbUser(MongoConnection $mongoDb, array $data)
     {
@@ -163,8 +188,9 @@ class MongoHelper
      * @param MongoConnection $mongoDb
      * @param array $data
      * @return array[]|null[]
+     * @throws NoServerConfigurationException
      */
-    public static function updateMongodbUser(MongoConnection $mongoDb, array $data)
+    public static function updateMongodbUser(MongoConnection $mongoDb, array $data): ?array
     {
         if ($mongoDb->checkConfig()) {
             $mongoDb->connectClient();
@@ -222,12 +248,12 @@ class MongoHelper
         return array('keys' => null);
     }
 
-
     /**
      * Generic method to fetch MongoDB users
      *
      * @param MongoConnection $mongoDb
      * @return array
+     * @throws NoServerConfigurationException
      */
     public static function getMongoDbUsers(MongoConnection $mongoDb): array
     {
@@ -258,11 +284,12 @@ class MongoHelper
     }
 
     /**
-     * @param   MongoConnection $mongoDb
-     * @param   string|null $oid
-     * @return  bool|void
+     * @param MongoConnection $mongoDb
+     * @param string|null $oid
+     * @return  bool
+     * @throws UnableToDeleteUserException|NoServerConfigurationException
      */
-    public static function deleteMongoDbUser(MongoConnection $mongoDb, ?string $oid)
+    public static function deleteMongoDbUser(MongoConnection $mongoDb, ?string $oid): bool
     {
         $arr        = explode(".", $oid);
         $targetDb   = $arr[0];
@@ -293,7 +320,7 @@ class MongoHelper
      * @param   mixed   $from
      * @param   mixed   $len
      *
-     * @return  mixed
+     * @return  array|string|string[]|null
      *
      * @author sajjad at sajjad dot biz (copied from PHP manual)
      */
@@ -815,7 +842,106 @@ class MongoHelper
     }
 
     /**
-     * This is used in the IMPORT method
+     * Strip new lines and spaces to de-indent JS exports
+     *
+     * @param string $body
+     * @return false|string[]
+     */
+    public static function deIndentBody(string $body)
+    {
+        $body = str_replace([" ", "\\n"], "", $body);
+        $body = trim(preg_replace('/\s+/', '', $body));
+
+        // explode the body into an array - we'll use this for both file formats
+        return explode(";", $body);
+    }
+
+    public static function getCollectionNameFromString($string)
+    {
+        // first string variant
+        if (strpos($string, "db") !== false && strpos($string, "drop") !== false) {
+            return str_replace(["db.", ".drop();"], "", $string);
+        }
+        return 'collectionNotFound';
+    }
+
+    /**
+     * Strip out the inserts from: db.collectionName.insertMany([]) array
+     *
+     * @param string $string
+     * @param $insertArray
+     * @param string $collection   Default collection if none found
+     */
+    public static function getInsertManyContent(string $string, &$insertArray, string $collection): void
+    {
+        // in case this has been indented
+        if (strpos($string, "\t") !== false) {
+            $array = [];
+            $arr = self::deIndentBody($string);
+            if ($arr[1] !== "" || count($arr) === 3) {
+                // let see what we got
+                if (strpos($arr[0], 'getSiblingDB') !== false) {
+                    // has db definition
+                    $array[] = $arr[0];
+                }
+                if (strpos($arr[1], 'collectionName') !== false) {
+                    // has collection definition
+                    $array[] = $arr[1];
+                }
+                if (isset($arr[2])) {
+                    // insert data should be here
+                    $input = $arr[2];
+                }
+                // unlikely but just in case case1 or case2 are missing
+                if (empty($input) && strpos($arr[1], "},{") !== false) {
+                    // looks like insert data
+                    $input = $arr[1];
+                }
+            }
+            // if nothing processed above pass the first index
+            $input = $input ?? $arr[0];
+            // in most cases there will be a trailing ';' so we want the first indexed results
+            $string = ltrim(rtrim(strstr($input, "["), "])"), "[");
+            $lines = explode("},{", $string);
+
+            for ($i = 0; $i < count($lines); $i++) {
+                if ($i === 0) {
+                    // add trailing brace
+                    $array[] = $lines[$i] . "}";
+                    continue;
+                }
+                if (($i + 1) === count($lines)) {
+                    // add preceeding brace
+                    $line = "{" . $lines[$i];
+                    $array[] = $line;
+                    continue;
+                }
+                $array[] = "{" . $lines[$i] . "}";
+            }
+        }
+        // create an array - split by new lines
+        $arr = $array ?? preg_split("/[\r\n]+/", $string);
+        for ($i = 0; $i < count($arr); $i++) {
+            if (strpos($arr[$i], 'getSiblingDB') !== false) {
+                // dont need this: db.getSiblingDB("db-name")
+                continue;
+            }
+            if (strpos($arr[$i], 'collectionName') !== false) {
+                // get the collection from: db.collectionName.drop()
+                $collection = self::getCollectionNameFromString($arr[$i]);
+                continue;
+            }
+            if (strpos($arr[$i], "insertMany") !== false || $arr[$i] === "]);") {
+                // don't want this: insertMany([ or ]);
+                continue;
+            }
+            $insertArray[$collection][] = rtrim($arr[$i], ",");
+        }
+    }
+
+    /**
+     * This is used during the IMPORT process
+     * Called from Controller
      *
      * @param   string  $insert
      * @return  string|string[]
@@ -827,15 +953,43 @@ class MongoHelper
     }
 
     /**
-     * Ths is used in the IMPORT method
+     * Ths is used during the IMPORT process
+     * Called from Controller
      *
      * @param $insert
-     * @return string|string[]
+     * @return string
      */
-    public static function getDateFromInsert($insert)
+    public static function getDataFromInsert($insert): string
     {
+        // this removes the 'insert' statement and opening parentheses
         $str = substr($insert, strpos($insert, "{"), strlen($insert));
-        return str_replace(array(');', ''), "", $str);
+        // strip trailing and return
+        return trim($str, ")");
+    }
+
+    /**
+     * Handles JS exports that have an insert for each line
+     *
+     * @param string $body
+     * @param $insertArray
+     */
+    public static function getInserts(string $body, &$insertArray)
+    {
+        // create an array - split by new lines
+        $arr = self::deIndentBody($body);
+
+        // iterate array, disassemble and reassemble into organised insert array
+        for ($i = 0; $i < count($arr); $i++) {
+            if ($i === 0) {
+                // ignore: db.getCollection("collectionName").ensureIndex({"_id":NumberInt(1)},[]
+                continue;
+            }
+            if (false !== strpos($arr[$i], "insert")) {
+                $insert = preg_replace('!/\*\*.*?\*\*/!s', '', stripslashes($arr[$i]));
+                $insertArray[ self::getCollectionNameFromInsert($insert) ][] =
+                    self::getDataFromInsert($insert);
+            }
+        }
     }
 
     /**
@@ -854,32 +1008,45 @@ class MongoHelper
      * Handle Bulk Inserts
      *
      * @param MongoDB\Driver\Manager $manager
-     * @param string                 $database
-     * @param array                  $array
-     * @param string                 $collection
-     * @param boolean                $useCollection
-     * @param integer                $inserted
-     * @param boolean                $isJson         Enforces use of the provided $collection value
+     * @param string    $database
+     * @param array     $array
+     * @param string    $collection
+     * @param bool      $useImportColl
+     * @param integer   $inserted
+     * @param boolean   $isJson Enforces use of the provided $collection value
+     * @throws UnableToImportDataException
      */
     public static function handleBulkInsert(
         MongoDB\Driver\Manager $manager,
         string $database,
         array $array,
         string $collection,
-        bool $useCollection,
+        bool $useImportColl,
         int &$inserted,
-        bool $isJson = false
+        bool $isJson
     ): void {
+        // track insert ID's to rey and avoid duplicate errors
+        $insertIds = [];
+
+        // iterate array - collection => inserts
         foreach ($array as $coll => $inserts) {
             // renew for each collection insert
             $bulk = new MongoDB\Driver\BulkWrite();
 
-            // If $useCollection is TRUE : all inserts will use the 'current collection' in the namespace
+            // If $useImportColl is TRUE : all inserts will use the collection provided in the script
             // If $isJson is TRUE we must use the provided $collection
-            $ns = false == $useCollection && false == $isJson ? self::ns($database, $coll) : self::ns($database, $collection);
+            switch (true) {
+                case $isJson === true || $useImportColl === false:
+                    $ns = self::ns($database, $collection);
+                    break;
+
+                default:
+                    $ns = self::ns($database, $coll);
+                    break;
+            }
 
             if ($isJson) {
-                // form JSON insert use only the internal iteration
+                // for JSON insert use only the internal iteration
                 $inserts = $array;
             }
 
@@ -887,21 +1054,45 @@ class MongoHelper
                 // iterate the insert and add to the $bulk write object
                 foreach ($inserts as $insert) {
                     if (is_string($insert)) {
-                        // decode the insert only is its a string
-                        $insert = json_decode($insert, true);
+                        // decode the insert only is it's a string
+                        try {
+                            $insert = json_decode($insert, true, 512, JSON_THROW_ON_ERROR);
+                        } catch (Exception $e) {
+                            // try again
+                            if (strpos($insert, "ObjectId(") !== false) {
+                                $insert = self::replaceObjectIdWithOid($insert);
+                                try {
+                                    $insert = json_decode($insert, true, 512, JSON_THROW_ON_ERROR);
+                                } catch (Exception $e) {
+                                    throw new  UnableToImportDataException('Unable to import due to unhandled syntax');
+                                }
+                            }
+                        }
                     }
-                    // if the ObjectId has been included as $oid => 'blah blah blah'
-                    $isOID = $insert['_id'] instanceof MongoDB\BSON\ObjectId;
-                    // this fits our local admin export
-                    if (false == $isOID && isset($insert['_id']['oid'])) {
-                        $insert['_id'] = new MongoDB\BSON\ObjectId($insert['_id']['oid']);
-                    } elseif (is_array($insert['_id']) && isset($insert['_id']['$oid'])) {
-                        // this fits the Compass JSON export
-                        $insert['_id'] = new MongoDB\BSON\ObjectId($insert['_id']['$oid']);
+
+                    // run only if $insert['_id'] is set
+                    if (isset($insert['_id'])) {
+                        // if the ObjectId has been included as $oid => 'blah blah blah'
+                        $isOID = isset($insert['_id']) && $insert['_id'] instanceof MongoDB\BSON\ObjectId;
+
+                        // this fits our local admin export
+                        if (false === $isOID && isset($insert['_id']['oid'])) {
+                            $insert['_id'] = new MongoDB\BSON\ObjectId($insert['_id']['oid']);
+
+                        } elseif (is_array($insert['_id']) && isset($insert['_id']['$oid'])) {
+                            // this fits the Compass JSON export
+                            $insert['_id'] = new MongoDB\BSON\ObjectId($insert['_id']['$oid']);
+                        }
                     }
-                    // expects an array
-                    $bulk->insert($insert);
-                    $inserted++;
+
+                    if ($insert && is_array($insert) && !in_array($insert['_id'], $insertIds)) {
+                        if (isset($insert['_id'])) {
+                            $insertIds[] = $insert['_id'];
+                        }
+                        // expects an array
+                        $bulk->insert($insert);
+                        $inserted++;
+                    }
                 }
                 $manager->executeBulkWrite($ns, $bulk);
 

@@ -44,7 +44,8 @@
         "laravel/framework": "^7.18.0",
         "laravel/passport": "^9.3",
         "laravel/tinker": "^2.0",
-        "mongodb/mongodb": "^1.6"
+        "mongodb/mongodb": "^1.6",
+        "ext-readline": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

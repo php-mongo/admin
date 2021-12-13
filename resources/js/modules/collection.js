@@ -282,7 +282,7 @@ export const collection = {
                 })
                 .catch( (error) => {
                     commit('setImportCollectionStatus', 3);
-                    commit( 'setErrorData', error.response);
+                    commit( 'setErrorData', error.toJSON().message);
                     dispatch( 'setErrorData', error.response.data );
                     console.log(error.toJSON())
                 })

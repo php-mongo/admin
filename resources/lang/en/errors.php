@@ -63,11 +63,23 @@ return [
         "updateError" => "Document with id %s was not updated",
     ],
 
+    "export" => [
+        "collectionsError" => "Please select one or more collections before submitting",
+        "databaseError" => "Unable to determine current database - please refresh the view",
+    ],
+
     "global" => [
         "passwordLength" => "Your password must be at least %s characters in length",
         "passwordMatch" => "Your passwords do not match",
         "passwordRequired" => "Please enter a password, min length ",
         "userRequired" => "Username is a required field",
+    ],
+
+    "import" => [
+        "default" => "An error occurred during import",
+        "database" => "Unable to find or set active database correctly! Please try refreshing the view",
+        "file" => "Please select a file first",
+        "type" => "Import file type was not set correctly"
     ],
 
     "servers" =>[

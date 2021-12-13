@@ -27,7 +27,6 @@
 return [
 
     "all" => "All",
-    "collectionsError" => "Please select one or more collections before submitting",
     "collections" => "Collections",
     "compress" => "GZIP (compress)",
     "export" => "Export",

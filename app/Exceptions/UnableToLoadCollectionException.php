@@ -3,7 +3,7 @@
 /*
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      UnableToLoadCollectionException.php 1001 25/8/21, 8:37 pm  Gilbert Rehling $
- * @package      PhpMongoAdmin\resources
+ * @package      PhpMongoAdmin\app
  * @subpackage   UnableToLoadCollectionException.php
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
  * @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
