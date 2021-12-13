@@ -4,7 +4,7 @@
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      UnableToDeleteUserException.php 1001 12/8/21, 9:53 pm  Gilbert Rehling $
  * @package      PhpMongoAdmin\app
- * @subpackage   UnableToDeleteUserException.php
+ * @subpackage   UnableToImportDataException.php
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
  * @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)
  * @licence      PhpMongoAdmin is an Open Source Project released under the GNU GPLv3 license model.
@@ -21,14 +21,14 @@ namespace App\Exceptions;
 
 use Exception;
 
-class NoServerConfigurationException extends Exception
+class UnableToImportDataException extends Exception
 {
     /**
      * Report or log an exception.
      *
      * @return string
      */
-    public function message($msg = 'Unable to find server configuration')
+    public function message($msg = 'Unable to import data')
     {
         return $msg;
     }

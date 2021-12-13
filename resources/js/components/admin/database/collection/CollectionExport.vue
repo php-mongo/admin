@@ -115,9 +115,9 @@
             showLanguage( context, key, str ) {
                 if (str) {
                     let string = this.$store.getters.getLanguageString( context, key );
-                    return string.replace("%s", str);
+                    return string.replace("%s", str)
                 }
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             /*
@@ -127,16 +127,16 @@
                 setTimeout( () => {
                     if (this.form.all === false) {
                         this.form.collections = [];
-                        this.form.collections.push(this.collection);
+                        this.form.collections.push(this.collection)
                     }
                     if (this.form.all === true) {
                         this.form.json = false;
                         this.form.collections = [];
                         this.collections.forEach( (collection, index) => {
-                            this.form.collections.push(collection.collection.name);
-                        });
+                            this.form.collections.push(collection.collection.name)
+                        })
                     }
-                }, 500);
+                }, 500)
             },
 
             /*
@@ -162,24 +162,48 @@
                 this.database    = data.db;
                 this.collection  = data.coll;
                 this.collections = this.$store.getters.getCollections;
-                this.form.collections.push(data.coll);
+                this.form.collections.push(data.coll)
+            },
+
+            /*
+             *  Ensure the database is set and at least 1 collection selected
+             */
+            validate() {
+                if (this.form.collections.length === 0) {
+                    this.$jqf(this.$refs.collection).replace(["success", "has-error"]);
+                    this.errorMessage = this.showLanguage('errors', 'export.collectionsError');
+                    return false
+                }
+                if (!this.database) {
+                    if (!this.data.db) {
+                        this.errorMessage = this.showLanguage('errors', 'export.databaseError');
+                        return false
+                    }
+                    this.database = this.data.db.databaseName
+                }
+                return true
             },
 
             /*
              *  Send to API
              */
             runExport() {
-                let data = { database: this.database, params: this.form };
-                this.$store .dispatch('exportCollection', data);
-                this.handleExport();
+                if (this.validate()) {
+                    let data = { database: this.database, params: this.form };
+                    this.$store .dispatch('exportCollection', data);
+                    this.handleExport()
+                }
             },
 
+            /*
+             *  Monitor and handle the export status
+             */
             handleExport() {
                 let status = this.$store.getters.getExportCollectionStatus;
                 if (status === 1 && this.index < this.limit) {
                     setTimeout(() => {
-                        this.handleExport();
-                    },100);
+                        this.handleExport()
+                    },100)
                 }
                 else if(status === 2) {
                     if (this.form.download === true) {
@@ -192,12 +216,12 @@
                         let rows   = parseInt(arr.length + 4);
                         let height = parseInt(rows * 25);
                         setTimeout(() => {
-                            this.$jqf(this.$refs.export).css('height', height + 'px');
-                        }, 250);
+                            this.$jqf(this.$refs.export).css('height', height + 'px')
+                        }, 250)
                     }
                 }
                 else if (status === 3) {
-                    this.errorMessage = "An error occurred during export";
+                    this.errorMessage = "An error occurred during export"
                 }
             },
 
@@ -205,14 +229,15 @@
              *   Show component
              */
             showComponent() {
-                this.show = true;
+                this.show = true
             },
 
             /*
              *   Hide component
              */
             hideComponent() {
-                this.show = false;
+                this.clearData();
+                this.show = false
             },
 
             /*
@@ -220,7 +245,7 @@
              */
             closeDialogOutside( event ) {
                 if ($(event.target).is('#panel-modal-export')) {
-                    this.hideComponent();
+                    this.hideComponent()
                 }
             }
         },
@@ -234,7 +259,7 @@
              */
             EventBus.$on('show-document-export', ( data ) => {
                 this.setData(data);
-                this.showComponent();
+                this.showComponent()
             });
         }
     }

@@ -25,7 +25,7 @@
                 <div class="modal-header">
                     <span class="msg" v-show="errorMessage || actionMessage">
                         <span class="error">{{ errorMessage }}</span>
-                        <span class="action">{{ actionMessage }}</span>
+                        &nbsp;<span class="action">{{ actionMessage }}</span>
                     </span>
                     <span class="close u-pull-right" v-on:click="hideComponent">
                         <img src="img/icon/cross-red.png" />
@@ -55,7 +55,7 @@
                 </p>
                 <p>
                     <label>
-                        <input type="checkbox" v-model="form.useCurrentCollection" >
+                        <input type="checkbox" v-model="form.useImportCollection" >
                         <span v-text="showLanguage('collection', 'useCurrent', collection)"></span>
                     </label>
                 </p>
@@ -97,7 +97,7 @@
                         admin: false,
                         mongo: false
                     },*/
-                    useCurrentCollection: true
+                    useImportCollection: true
                 }
             }
         },
@@ -109,54 +109,83 @@
             showLanguage( context, key, str ) {
                 if (str) {
                     let string = this.$store.getters.getLanguageString( context, key );
-                    return string.replace("%s", str);
+                    return string.replace("%s", str)
                 }
-                return this.$store.getters.getLanguageString( context, key );
+                return this.$store.getters.getLanguageString( context, key )
             },
 
             /*
              *  Set the component data on call
              */
             setData(data) {
-                this.database    = data.db;
-                this.collection  = data.coll;
+                this.actionMessage = '';
+                this.database   = data.db;
+                this.collection = data.coll
             },
 
             setFile(event) {
-                let name             = event.target.name;
-                this.form.type = name; //[name] = true;
-                this.form.selected   = name;
-                this.form.file       = event.target.files[0];
+                let name            = event.target.name;
+                this.form.type      = name;
+                this.form.selected  = name;
+                this.form.file      = event.target.files[0]
+            },
+
+            /*
+             *  Simple validation
+             */
+            validate() {
+                if (!this.form.file) {
+                    this.errorMessage = this.showLanguage('errors', 'import.file');
+                    return false
+                }
+                if (!this.form.type) {
+                    this.errorMessage = this.showLanguage('errors', 'import.type');
+                    return false
+                }
+                if (!this.database) {
+                    // try and get the active DB
+                    this.database = this.$store.getters.getActiveDatabase;
+                    if (!this.database) {
+                        // give up!!
+                        this.errorMessage = this.showLanguage('errors', 'import.database');
+                        return false
+                    }
+                }
+                return true
             },
 
             /*
              *  Send to API
              */
             runImport() {
-                this.actionMessage = null;
-                this.errorMessage  = null;
-                let data = {database: this.database, collection: this.collection, params: this.form };
-                this.$store .dispatch('importCollection', data);
-                this.handleImport();
+                if (this.validate()) {
+                    this.actionMessage = null;
+                    this.errorMessage  = null;
+                    this.form.useImportCollection = !this.form.useImportCollection; // flip this logic
+                    let data = { database: this.database, collection: this.collection, params: this.form };
+                    this.$store .dispatch('importCollection', data);
+                    this.handleImport()
+                }
             },
 
             handleImport() {
                 let status = this.$store.getters.getImportCollectionStatus;
                 if (status === 1 && this.index < this.limit) {
                     setTimeout(() => {
-                        this.handleImport();
-                    },100);
+                        this.handleImport()
+                    },100)
                 }
                 else if(status === 2) {
-                    this.actionMessage = "Import success";
-                    if (this.form.useCurrentCollection === true) {
-                        let data = {database: this.database, collection: this.collection};
-                        this.$store.dispatch('loadCollection', data);
+                    this.actionMessage = this.showLanguage('import', 'actionSuccess');
+                    if (this.form.useImportCollection === false) {
+                        let data = { database: this.database, collection: this.collection};
+                        this.$store.dispatch('loadCollection', data)
                     }
                 }
                 else if (status === 3) {
+                    this.actionMessage = this.showLanguage('import', 'actionDefault');
                     let error = this.$store.getters.getCollectionErrorData;
-                    this.errorMessage = error ? error : "An error occurred during import";
+                    this.errorMessage = error ? error : this.showLanguage('errors', 'import.default')
                 }
             },
 
@@ -166,11 +195,7 @@
                     gzip: false,
                     selected: null,
                     type: null,
-                    /*type: {
-                        admin: false,
-                        mongo: false
-                    },*/
-                    useCurrentCollection: true
+                    useImportCollection: true
                 }
             },
 
@@ -178,14 +203,14 @@
              *   Show component
              */
             showComponent() {
-                this.show = true;
+                this.show = true
             },
 
             /*
              *   Hide component
              */
             hideComponent() {
-                this.show = false;
+                this.show = false
             },
 
             /*
@@ -193,7 +218,7 @@
              */
             closeDialogOutside( event ) {
                 if ($(event.target).is('#panel-modal-import')) {
-                    this.hideComponent();
+                    this.hideComponent()
                 }
             }
         },
@@ -207,7 +232,7 @@
              */
             EventBus.$on('show-document-import', ( data ) => {
                 this.setData(data);
-                this.showComponent();
+                this.showComponent()
             });
         }
     }
