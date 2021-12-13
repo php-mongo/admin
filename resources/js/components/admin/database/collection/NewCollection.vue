@@ -144,13 +144,6 @@
                     count: 1,
                     db: null
                 },
-                skel: {
-                    name: null,
-                    capped: false,
-                    size: 1,
-                    count: 1,
-                    db: null
-                },
                 message: null,
                 error: null,
                 indexes: 0
@@ -226,17 +219,17 @@
                         this.handleCreateStatus()
                     }, 50)
                 }
-                else if (status === 2) {
+                if (status === 2) {
                     // all good
                     EventBus.$emit('show-success', { notification: this.showLanguage('collection', 'createSuccess', this.form.name) });
                     let db = this.form.db;
-                    this.form = this.skel;
                     setTimeout( () => {
+                        this.reset();
                         this.show = false;
                         EventBus.$emit('load-database-panel', { panel: 'database', value: db })
                     }, 1000)
                 }
-                else if (status === 3) {
+                if (status === 3) {
                     // opps a lot!
                     EventBus.$emit('show-error', { notification: this.showLanguage('errors', 'collection.createError', this.form.name) });
                     this.error = 'An error has occurred...'
@@ -245,6 +238,17 @@
 
             setActiveDatabase() {
                 this.form.db = this.$store.getters.getActiveDatabase
+            },
+
+            reset() {
+                this.message = '';
+                this.form = {
+                    name: null,
+                    capped: false,
+                    size: 1,
+                    count: 1,
+                    db: null
+                }
             }
         },
 
@@ -278,6 +282,10 @@
             getActiveDatabase() {
                 this.setActiveDatabase()
             }
+        },
+
+        destroyed() {
+            this.reset()
         }
     }
 </script>

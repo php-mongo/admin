@@ -115,7 +115,7 @@ export default {
         formData.append('type', data.params.selected);
         formData.append('gzip', data.params.gzip);
         formData.append('replace', data.params.replace);
-        formData.append('useCurrentCollection', data.params.useCurrentCollection);
+        formData.append('useImportCollection', data.params.useImportCollection);
         formData.append('useCurrentDatabase', data.params.useCurrentDatabase);
         formData.append('_token',  window.axios.defaults.headers.common['X-CSRF-TOKEN']);
         return window.axios.post(MONGO_CONFIG.API_URL + '/collection/import',

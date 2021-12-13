@@ -203,7 +203,7 @@ class ExportClass
         $cutLength  = 150;
         foreach ($arr as $key => $value) {
             if (is_string($key)) {
-                $newKey = $prev . ($prev === ""?"":".") . "field." . $key;
+                $newKey = $prev . ($prev === "" ? "" : ".") . "field." . $key;
                 if (is_string($value) && strlen($value) > $cutLength) {
                     $value = MongoHelper::utf8Substr($value, 0, $cutLength);
                     $value = $value . " __more.{$newKey}.more__";
@@ -219,34 +219,6 @@ class ExportClass
         return $ret;
     }
 
-    /*
-     * @param $arr
-     * @param string $prev
-     * @return array
-     *
-    private function addLabelToArray($arr, $prev = "")
-    {
-        $ret        = array();
-        $cutLength  = 150;
-        foreach ($arr as $key => $value) {
-            if (is_string($key)) {
-                $newKey = $prev . ($prev === ""?"":".") . "field." . $key;
-                if (is_string($value) && strlen($value) > $cutLength) {
-                    $value = MongoHelper::utf8Substr($value, 0, $cutLength);
-                    $value = $value . " __more.{$newKey}.more__";
-                }
-                $ret[$newKey . ".field"] = $value;
-                if (is_array($value)) {
-                    $ret[$newKey . ".field"] = $this->addLabelToArray($value, $newKey);
-                }
-            } else {
-                $ret[$key] = $value;
-            }
-        }
-        return $ret;
-    } */
-
-
     /**
      * @param $var
      * @return array|string
@@ -259,7 +231,7 @@ class ExportClass
                     if (class_exists("MongoInt32")) {
                         // producing MongoInt32 to keep type unchanged (Kyryl Bilokurov <kyryl.bilokurov@gmail.com>)
                         $this->paramIndex ++;
-                        $this->phpParams[$this->paramIndex] = 'new MongoInt32(' . $var . ')';
+                        $this->phpParams[$this->paramIndex] = new MongoInt32(' . $var . ');
                         return $this->param($this->paramIndex);
                     }
                 // fall through to default if no class found
@@ -326,80 +298,6 @@ class ExportClass
         }
         return $var;
     }
-
-    /*private function formatVar($var)
-   {
-       if (is_scalar($var) || is_null($var)) {
-           switch (gettype($var)) {
-               case "integer":
-                   if (class_exists("MongoInt32")) {
-                       // producing MongoInt32 to keep type unchanged (Kyryl Bilokurov <kyryl.bilokurov@gmail.com>)
-                       $this->paramIndex ++;
-                       $this->phpParams[$this->paramIndex] = 'new MongoInt32(' . $var . ')';
-                       return $this->param($this->paramIndex);
-                   }
-               default:
-                   return $var;
-           }
-       }
-       if (is_array($var)) {
-           foreach ($var as $index => $value) {
-               $var[$index] = $this->formatVar($value);
-           }
-           return $var;
-       }
-       if (is_object($var)) {
-           $this->paramIndex ++;
-           switch (get_class($var)) {
-               case "stdClass":
-                   $this->phpParams[$this->paramIndex] = array();
-                   return $this->param($this->paramIndex);
-
-               case "MongoId":
-                   $this->phpParams[$this->paramIndex] = 'new MongoId("' . $var->__toString() . '")';
-                   return $this->param($this->paramIndex);
-
-               case "MongoInt32":
-                   $this->phpParams[$this->paramIndex] = 'new MongoInt32(' . $var->__toString() . ')';
-                   return $this->param($this->paramIndex);
-
-               case "MongoInt64":
-                   $this->phpParams[$this->paramIndex] = 'new MongoInt64(' . $var->__toString() . ')';
-                   return $this->param($this->paramIndex);
-
-               case "MongoDate":
-                   $this->phpParams[$this->paramIndex] = 'new MongoDate(' . $var->sec . ', ' . $var->usec . ')';
-                   return $this->param($this->paramIndex);
-
-               case "MongoRegex":
-                   $this->phpParams[$this->paramIndex] = 'new MongoRegex(\'/' . $var->regex . '/' . $var->flags . '\')';
-                   return $this->param($this->paramIndex);
-
-               case "MongoTimestamp":
-                   $this->phpParams[$this->paramIndex] = 'new MongoTimestamp(' . $var->sec . ', ' . $var->inc . ')';
-                   return $this->param($this->paramIndex);
-
-               case "MongoMinKey":
-                   $this->phpParams[$this->paramIndex] = 'new MongoMinKey()';
-                   return $this->param($this->paramIndex);
-
-               case "MongoMaxKey":
-                   $this->phpParams[$this->paramIndex] = 'new MongoMaxKey()';
-                   return $this->param($this->paramIndex);
-
-               case "MongoCode":
-                   $this->phpParams[$this->paramIndex] =
-                        'new MongoCode("' . addcslashes($var->code, '"') . '", ' . var_export($var->scope, true) . ')';
-                   return $this->param($this->paramIndex);
-
-               default:
-                   if (method_exists($var, "__toString")) {
-                       return $var->__toString();
-                   }
-           }
-       }
-       return $var;
-   }*/
 
     /**
      * @param   mixed $var
