@@ -45,9 +45,9 @@ class EditServerRequest extends FormRequest
             'id'            => 'sometimes|integer',
             'mongo_cloud'   => 'sometimes|boolean',
             'mongo_cloud_database'   => 'required_if:mongo_cloud,true|string|nullable',
-            'password'      => 'sometimes|string|min:' . config('app.minPwdLength'),
+            'password'      => 'sometimes|string|min:' . config('app.minSrvPwdLength'),
             'port'          => 'required|integer|min:5',
-            'username'      => 'required|string|min:5|max:100',
+            'username'      => 'sometimes|string|max:100',
             'user_id'       => 'sometimes|integer'
         ];
     }
