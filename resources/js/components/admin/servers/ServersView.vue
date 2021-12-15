@@ -370,20 +370,28 @@
                         return false
                     }
                     if (!this.form.username) {
-                        this.error = this.showLanguage('errors', 'global.userRequired');
-                        return false
+                        if (this.form.host !== 'localhost') {
+                            this.error = this.showLanguage('errors', 'global.userRequired');
+                            return false
+                        }
                     }
                     if (!this.form.password) {
-                        this.error = this.showLanguage('errors', 'global.passwordRequired');
-                        return false
+                        if (this.form.host !== 'localhost') {
+                            this.error = this.showLanguage('errors', 'global.passwordRequired');
+                            return false
+                        }
                     }
                 }
-                if ((this.editing && this.form.password) || this.createNew) {
-                    if (this.form.password.length < this.$store.getters.getMinPwdLength) {
+                // only enforce the password
+                if (
+                    (this.editing && this.form.password) ||
+                    (this.createNew && (this.form.host !== 'localhost' || this.form.password))
+                ) {
+                    if (this.form.password.length < this.$store.getters.getMinPwdLength && this.form.host !== 'localhost') {
                         this.error = this.showLanguage('errors', 'global.passwordLength', this.$store.getters.getMinPwdLength);
                         return false
                     }
-                    if (this.form.password !== this.form.password2) {
+                    if (this.form.password !== this.form.password2 && this.form.host !== 'localhost') {
                         this.error = this.showLanguage('errors', 'global.passwordMatch');
                         return false
                     }

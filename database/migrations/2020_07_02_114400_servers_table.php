@@ -33,8 +33,9 @@ class ServersTable extends Migration
             $table->foreignId('user_id');
             $table->string('host');
             $table->string('port');
-            $table->string('username');
-            $table->string('password');
+            /* Cater for insecure localhost connections */
+            $table->string('username')->nullable();
+            $table->string('password')->nullable();
             $table->timestamps();
         });
     }
