@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      EditServerRequest.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -45,9 +46,9 @@ class EditServerRequest extends FormRequest
             'id'            => 'sometimes|integer',
             'mongo_cloud'   => 'sometimes|boolean',
             'mongo_cloud_database'   => 'required_if:mongo_cloud,true|string|nullable',
-            'password'      => 'sometimes|string|min:' . config('app.minSrvPwdLength'),
+            'password'      => 'sometimes|nullable|string|min:' . config('app.minSrvPwdLength'),
             'port'          => 'required|integer|min:5',
-            'username'      => 'sometimes|string|max:100',
+            'username'      => 'required_unless:host,==,localhost|nullable|string|max:100',
             'user_id'       => 'sometimes|integer'
         ];
     }
