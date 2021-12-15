@@ -35,7 +35,9 @@ export const application = {
     state: {
         activeNav: null,
         appConfig: {
-            'minPwdLength': 5
+            /* ideally these should be getting set from an API call */
+            'minPwdLength': 5,
+            'ninSrvPwdLength': 5 // unless host = 'localhost'
         },
         connectionConfirmed: null,
         currentLocation: {},

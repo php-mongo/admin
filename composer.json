@@ -34,18 +34,19 @@
         "ext-json": "*",
         "ext-mongo": "*",
         "ext-mongodb": "*",
+        "ext-readline": "*",
         "ext-zlib": "*",
+        "doctrine/dbal": "^3.2",
         "eloquent/composer-config-reader": "^2.1",
         "fideloper/proxy": "^4.2",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^6.3",
-        "illuminate/events": "^7.18",
+        "illuminate/events": "7.30.6",
         "ipinfo/ipinfo": "1.1.*",
         "laravel/framework": "^7.18.0",
         "laravel/passport": "^9.3",
         "laravel/tinker": "^2.0",
-        "mongodb/mongodb": "^1.6",
-        "ext-readline": "*"
+        "mongodb/mongodb": "^1.6"
     },
     "require-dev": {
         "facade/ignition": "^2.0",
