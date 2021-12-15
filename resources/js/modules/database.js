@@ -429,6 +429,9 @@ export const database = {
             commit( 'setCanUserWriteDatabase', writeAllowed);
             commit( 'setCanUserCreateDatabase', createAllowed);
             commit( 'setCanUserDropDatabase', dropAllowed);
+            if (roles.isAnonymous && roles.isAnonymous === true) {
+                dispatch( 'setErrorData', { errors: 'Your MongoDB is not secured! You are connected with an anonymous user!'} );
+            }
         }
     },
 

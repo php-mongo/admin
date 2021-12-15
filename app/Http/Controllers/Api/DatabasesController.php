@@ -184,7 +184,6 @@ class DatabasesController extends Controller
     {
         // get the databases
         $databases = $this->getAllDatabases();
-
         if ($error = $this->getErrorMessage()) {
             // this can occur if there is no Server config
             return response()->error('failed', array('error' => $error));

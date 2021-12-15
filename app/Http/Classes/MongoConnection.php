@@ -33,6 +33,7 @@ use App\Http\Traits\PrivilegesTrait;
 use App\Models\User;
 use App\Models\Server;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 use MongoDB;
 
 /**
@@ -118,6 +119,20 @@ class MongoConnection
 
     /** @var string */
     private $userName;
+
+    /**
+     * Force verification
+     * In case this application connects to a new or insecure mongodb server
+     * @var bool
+     */
+    private $verifyAnonymousConnection;
+
+    /**
+     * Track verification result
+     * In case this application connects to a new or insecure mongodb server
+     * @var bool
+     */
+    private $isAnonymous = false;
 
     /** @var string $userDb This defines the scope of the current users privileges */
     private $userDb;
@@ -242,11 +257,20 @@ class MongoConnection
      * We need to store this for reference
      * Need to track the DB username used by the current login user
      *
-     * @return  string
+     * @return  string|null
      */
-    public function getUserName(): string
+    public function getUserName(): ?string
     {
         return $this->userName;
+    }
+
+    /**
+     * Checks both isAnonymous settings
+     * @return bool
+     */
+    public function getIsAnonymous(): bool
+    {
+        return $this->isAnonymous && $this->userRoles['isAnonymous'];
     }
 
     /**
@@ -305,25 +329,17 @@ class MongoConnection
      * Method sets up the current local application user
      * Stores current user roles for permission checks
      * ToDo: update to also fetch the users privileges and use those for verification
+     *
+     * @param bool $anonymous
      */
-    private function prepareLocalUser(): void
+    private function prepareLocalUser(bool $anonymous): void
     {
         try {
-            $this->connectManager();
-            $manager = $this->getManager();
-            $command = array(
-                'usersInfo' => array(
-                    'user' => $this->getUserName(),
-                    'db' => 'admin'
-                )
-            );
-            $cursor = $manager->executeCommand(
-                'admin',
-                new MongoDb\Driver\Command($command)
-            );
+            $user = $this->getUserInfo();
+            // ToDo: save this for later
+            //$rolesInfo = $this->getRolesInfo();
 
-            $user = $cursor->toArray()[0];
-            if ($user->ok == 1) {
+            if ($user->ok == 1 && !$anonymous) {
                 $this->setUserDb($user->users[0]->db);
                 $roles = $user->users[0]->roles;
                 $arr = array(
@@ -343,9 +359,45 @@ class MongoConnection
                 }
                 $this->setUserRoles($arr);
             }
-        } catch (MongoDB\Driver\Exception\Exception $e) {
+
+            if ($anonymous) {
+                // for anonymous insecure access assume the worst!!
+                $this->setUserRoles(
+                    [
+                        'isAnonymous' => $anonymous,
+                        'hasRoot' => true,
+                        'roles' => [
+                            [
+                                'db' => 'admin',
+                                'role' => 'root'
+                            ]
+                        ]
+                    ]
+                );
+            }
+
+        } catch (NoServerConfigurationException | MongoDB\Driver\Exception\Exception $e) {
             // todo: implement some logging for all of these cases
+            Log::debug($e->getMessage());
         }
+    }
+
+    /**
+     * Fetches the list of databases
+     * If the 'admin' database is included good chance we have an anonymous root connection active
+     *
+     * @return bool
+     */
+    public function testAnonymousAccess(): bool
+    {
+        $databases = $this->client->listDatabases();
+        foreach ($databases as $database) {
+            if ('admin' === $database->getName()) {
+                $this->isAnonymous = true;
+                break;
+            }
+        }
+        return $this->isAnonymous;
     }
 
     /**
@@ -415,6 +467,12 @@ class MongoConnection
     public function checkConfig(): bool
     {
         $config = $this->getServer();
+        if ($config['host'] === 'localhost') {
+            // we need allow connections to insecure local servers
+            // ToDo: it would be nice to create a process to secure a new installation from within the application
+            $this->verifyAnonymousConnection = (empty($config['username']) && empty($config['password']));
+            return (isset($config['host'], $config['port']));
+        }
         return (isset($config['host'], $config['port'], $config['username'], $config['password']));
     }
 
@@ -431,8 +489,11 @@ class MongoConnection
                 new MongoDB\Client($prep['uri'], $prep['options']);
         }
 
+        // if anonymous connection test and notify
+        $anonymous = $this->verifyAnonymousConnection && $this->testAnonymousAccess();
         // prepare the local user permissions data
-        $this->prepareLocalUser();
+
+        $this->prepareLocalUser($anonymous);
     }
 
     /**

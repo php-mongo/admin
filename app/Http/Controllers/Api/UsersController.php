@@ -25,6 +25,8 @@ namespace App\Http\Controllers\Api;
 /**
  *  Defines the controllers used by controller.
  */
+
+use App\Exceptions\NoServerConfigurationException;
 use App\Http\Controllers\Controller;
 
 /**
@@ -168,7 +170,7 @@ class UsersController extends Controller
 
     /**
      * Get all Users
-     * ToDo: currently only applied to admin users
+     * ToDo: currently only available to admin users
      *
      * URL:            /api/v1/user/all
      * Method:         GET
@@ -176,6 +178,7 @@ class UsersController extends Controller
      *
      * @param Request $request
      * @return Response
+     * @throws NoServerConfigurationException
      */
     public function index(Request $request): Response
     {
