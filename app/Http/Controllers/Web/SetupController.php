@@ -51,9 +51,9 @@ use App\Helpers\MongoConnectionHelper;
 /**
  * Facades
  */
-use Illuminate\Contracts\View\Factory;
+//use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Contracts\View\Factory;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\View\View;
 
 /**
@@ -76,14 +76,14 @@ class SetupController extends Controller
 
     /**
      * @param Collection|null $users
-     * @param Collection|null $Servers
      * @return bool
      */
-    private function checkStatus(?Collection $users, ?Collection $Servers): bool
+    private function checkStatus(?Collection $users): bool
     {
         $result = false;
         foreach ($users as $user) {
             if ($user->exists && $user->isControlUser()) {
+                /** @var Server $servers */
                 $servers = $user->servers()->where('active', 1)->get();
                 foreach ($servers as $server) {
                     $attrs = $server->getAttributes();
@@ -93,6 +93,27 @@ class SetupController extends Controller
                         $attrs['username'],
                         $attrs['password']
                     );
+                }
+
+                if (count($servers) === 0) {
+                    // If the password cannot be decrypted no sense in continuing
+                    try {
+                        $password = Crypt::decryptString($user->getAttribute('encrypted_password'));
+                        $result = MongoConnectionHelper::checkConnectionConfig(
+                            27017,
+                            config('app.mongoDbHost'),
+                            $user->getAttribute('user'),
+                            $user->getAttribute('encrypted_password')
+                        );
+
+                    } catch (\Exception $e) {
+                        if ($e->getMessage() == 'The MAC is invalid.') {
+                            if (config('app.isDockerApp') === true) {
+                                // good chance the APP_KEY has been regenerated
+                                $result = true;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -120,7 +141,7 @@ class SetupController extends Controller
     /**
      * Loads the initial setup layout
      *
-     * @return Factory|View
+     * @return View
      */
     public function getSetup(Request $request)
     {
@@ -128,7 +149,7 @@ class SetupController extends Controller
         return view(
             'public.setup',
             [
-                'completed' => $this->checkStatus(User::all(), Server::all()),
+                'completed' => $this->checkStatus(User::all()),
                 'success' => $success
             ]
         );

@@ -26,6 +26,7 @@ namespace App\Helpers;
  * We are handling MongoDB based functionality
  */
 use App\Http\Classes\MongoConnection;
+use Illuminate\Support\Facades\Crypt;
 use MongoDB;
 
 /**
@@ -48,22 +49,26 @@ class MongoConnectionHelper
      */
     public static function checkConnectionConfig(int $port, string $host, string $username, string $password): bool
     {
-        $prefix = false !== strpos($host, 'localhost') ? 'mongodb' : 'mongodb+srv';
+        $prefix = (new MongoConnection(null))->getPrefix($host);
         // create the URI
         $uri = $prefix . '://' . $host . ':' . $port;
         $options = array(
             'username' => $username,
-            'password' => $password
+            'password' => Crypt::decryptString($password)
         );
 
         /** @var MongoDB\Client $client */
         $client = new MongoDB\Client($uri, $options);
 
-        // return a boolean
-        /** @var MongoDB\Model\DatabaseInfoLegacyIterator $databases */
-        $databases = $client->listDatabases();
+        try {
+            // return a boolean
+            /** @var MongoDB\Model\DatabaseInfoLegacyIterator $databases */
+            $databases = $client->listDatabases();
 
-        return is_string($databases->current()->getName());
+            return is_string($databases->current()->getName());
+        } catch (Exception $e) {
+            return false;
+        }
     }
 
     /**

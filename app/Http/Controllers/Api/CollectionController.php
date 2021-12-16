@@ -173,9 +173,8 @@ class CollectionController extends Controller
 
     /**
      * Mostly we don't need this as we want to strip out all the bits individually
-     * In most cases ->getArrayCopy() or ->__toString() suffice
+     * In most ces ->getArrayCopy() or ->__toString() will suffice
      *
-     * @inheritDoc
      */
     public function bsonUnserialize(string $data)
     {
@@ -432,8 +431,10 @@ class CollectionController extends Controller
             $collection     = $request->get('collection');
             $type           = $request->get('type', 'admin');
             $gzip           = $request->get('gzip', false);
-            $useCollection  = $request->get('useCurrentCollection', false);
+            $useImportColl  = boolval($request->boolean('useImportCollection', false));
             $fileName       = $request->file('file')->getClientOriginalName();
+            // ToDo: implement this behaviour/action
+            //$replace        = $request->boolean('replace', false);
 
             if (isset($database, $type)) {
                 // get the file
@@ -455,29 +456,32 @@ class CollectionController extends Controller
                 // return the inserted count to the front-end
                 $inserted = 0;
 
-                // explode the body into an array - we'll use this for both file formats
-                $arr = explode("\n", $body);
-
-                // this is for file exported from PhpMongoAdmin *.js
+                // ToDo: build some Imports classes and traits to move this all away from MongoHelper
+                // this is for files exported from PhpMongoAdmin *.js or default JS import scripts
                 // our JSON export will only produce a single element array
-                if ('admin' == $type && count($arr) >= 3) {
+                if ('admin' == $type) {
                     $insertArray = [];
 
-                    // iterate the import array
-                    foreach ($arr as $insert) {
-                        // ignore the comments, index insert etc
-                        if (false !== strpos($insert, "insert")) {
-                            // we're good to go! get the collection(s)
-                            // create array using collections as primary array key
-                            $insertArray[ MongoHelper::getCollectionNameFromInsert($insert) ][] =
-                                MongoHelper::getDateFromInsert($insert);
-                        }
+                    // run the correct method to retrieve the inserts
+                    if (strpos($body, "insertMany") !== false) {
+                        MongoHelper::getInsertManyContent($body, $insertArray, $collection);
+                    }
+
+                    if (strpos($body, "getCollection") !== false) {
+                        MongoHelper::getInserts($body, $insertArray);
                     }
 
                     // this will handle multiple collection inserts
-                    MongoHelper::handleBulkInsert($manager, $database, $insertArray, $collection, $useCollection, $inserted);
+                    MongoHelper::handleBulkInsert($manager, $database, $insertArray, $collection, $useImportColl, $inserted, false);
 
                 } else {
+                    // remove spaces and new lines
+                    $body = str_replace([" ", "\\n"], "", $body);
+                    $body = trim(preg_replace('/\s+/', '', $body));
+
+                    // explode the body into an array - we'll use this for both file formats
+                    $arr = explode(";", $body);
+
                     // ToDo: !! for now - we accept the JSON file exported by PhpMongoAdmin and also JSON export from Compass
                     if (strpos($fileName, ".json")) {
                         $arr = json_decode(trim($body, '"'), true);
@@ -485,7 +489,7 @@ class CollectionController extends Controller
                         $arr = $arr[0];
                         $arr = json_decode($arr, true);
                     }
-                    MongoHelper::handleBulkInsert($manager, $database, $arr, $collection, $useCollection, $inserted, true);
+                    MongoHelper::handleBulkInsert($manager, $database, $arr, $collection, $useImportColl, $inserted, true);
                 }
                 return response()->success('success', array('import' => $inserted ));
             }
@@ -1049,9 +1053,8 @@ class CollectionController extends Controller
                         $result = $collection->drop();
 
                         // ToDo: !! getting an odd error from front-end - request is sent twice
-                        if ($result->errmsg) {
+                        if (isset($result->errmsg)) {
                             return response()->error('failed', array('message' => $result->errmsg));
-
                         } else {
                             $status[] = $this->setDeleteStatus($name, $result->getArrayCopy(), $ns);
                         }

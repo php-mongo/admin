@@ -25,6 +25,8 @@ namespace App\Http\Controllers\Api;
 /**
  *  Defines the controllers used by controller.
  */
+
+use App\Exceptions\NoServerConfigurationException;
 use App\Http\Controllers\Controller;
 
 /**
@@ -103,11 +105,15 @@ class UsersController extends Controller
         }
     }
 
-    private function isUserCreateAllowed()
+    /**
+     * Used to evaluate restrictions on creating user accounts
+     * @return bool
+     */
+    private function isUserCreateAllowed(): bool
     {
-        $env     = config('app.env');
-        $setting = explode(",", config('app.deny_env_add_users'));
-        return empty($setting) || !in_array($env, $setting);
+        $env = config('app.env');
+        $environments = explode(",", config('app.deny_env_add_users'));
+        return empty($environments) || !in_array($env, $environments);
     }
 
     /**
@@ -164,7 +170,7 @@ class UsersController extends Controller
 
     /**
      * Get all Users
-     * ToDo: currently only applied to admin users
+     * ToDo: currently only available to admin users
      *
      * URL:            /api/v1/user/all
      * Method:         GET
@@ -172,6 +178,7 @@ class UsersController extends Controller
      *
      * @param Request $request
      * @return Response
+     * @throws NoServerConfigurationException
      */
     public function index(Request $request): Response
     {

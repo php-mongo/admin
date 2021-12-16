@@ -154,6 +154,10 @@ return [
 
     'dbQueryLog' => env('DB_QUERY_LOGS', false),
 
+    'mongoDbHost' => env('MONGODB_HOST', 'localhost'),
+
+    'isDockerApp' => env('IS_DOCKER_APP', false),
+
     /*
      * Custom configs currently used for the demo website
      *
@@ -170,6 +174,7 @@ return [
      * Other custom app settings
      */
     'minPwdLength' => env('APP_MIN_PWD_LENGTH', 5),
+    'minSrvPwdLength' => env('SERVER_MIN_PWD_LENGTH', 5),
 
     'ipinfo_enabled' => env('IPINFO_ENABLED', true),
     'ipinfo_address' => env('IPINFO_ADDRESS', $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'),

@@ -19,7 +19,7 @@
     @import '~@/abstracts/_variables.scss';
     .pma-databases-view {
         float: left;
-        width: 48%;
+        width: auto;
 
         .database-inner {
             form {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      EditServerRequest.php 1001 6/8/20, 8:53 pm  Gilbert Rehling $
@@ -27,7 +28,7 @@ class EditServerRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -37,17 +38,17 @@ class EditServerRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             'active'        => 'required|boolean',
             'host'          => 'required|string|max:200',
             'id'            => 'sometimes|integer',
-            'mongo_cloud'   => 'required|boolean',
+            'mongo_cloud'   => 'sometimes|boolean',
             'mongo_cloud_database'   => 'required_if:mongo_cloud,true|string|nullable',
-            'password'      => 'sometimes|string|min:5',
+            'password'      => 'sometimes|nullable|string|min:' . config('app.minSrvPwdLength'),
             'port'          => 'required|integer|min:5',
-            'username'      => 'required|string|min:5|max:100',
+            'username'      => 'required_unless:host,==,localhost|nullable|string|max:100',
             'user_id'       => 'sometimes|integer'
         ];
     }
@@ -57,13 +58,13 @@ class EditServerRequest extends FormRequest
      *
      * @return array
      */
-    public function messages()
+    public function messages(): array
     {
         return [
             'host'     => 'Please enter a valid db server host name',
             'port'     => 'Please enter a valid mongodb port value',
             'username' => 'Please enter a valid username',
-            'password' => 'Your password must contain at least 5 characters',
+            'password' => 'Your password must contain at least ' . config('app.minPwdLength') . ' characters',
             'active'   => 'A valid configuration status was not found',
             'user_id'  => 'The selected user ID is invalid'
         ];

@@ -26,14 +26,20 @@
 */
 return [
 
+    "actionDefault" => "Please ensure the correct file type is selected.",
+    "actionSuccess" => "Import was successful",
     "compressed" => "GZIPED (compressed) : is this file a *.gz file?",
-    "current" => "The current database (%s) will be used for all imported collections",
+    "current" => "The current database (%s) will be used for all imported collections.",
+    "default" => "The collection (%s) will be used for JSON imports and for *.js imports where the import target collection is deselected.",
     "file" => "Choose File",
-    "fileAdmin" => "Choose a *.js file exported from PhpMongoAdmin",
+    "fileAdmin" => "Choose a *.js file exported from PhpMongoAdmin or JS with seperated inserts",
     "fileMongo" => "Choose a *.json file exported from MongoDB Shell",
+    "jsonContent" => "JSON content will be added to an existing collection",
     "import" => "Import",
     "indexes" => "Indexes",
     "replace" => "Replace any existing (duplicate) collections",
     "title" => "Database Import",
+    "useImportCollection" => "Use collection defined in Import? Uncheck to use default (1st) collection",
+    "useSelectedCollection" => "Use the pre-selected target collection or select another"
 
 ];

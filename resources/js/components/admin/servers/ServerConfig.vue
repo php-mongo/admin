@@ -18,6 +18,7 @@
 <style lang="scss">
     @import '~@/abstracts/_variables.scss';
     .server-config {
+        overflow-x: auto;
         th {
             width: 250px;
         }
@@ -42,9 +43,17 @@
         <table class="bordered">
             <tr>
                 <th class="bb" v-text="showLanguage('servers', 'host')"></th>
-                <td>{{ server.host }}</td>
+                <td v-on:click="collapseServer">
+                    {{ server.host }}
+                    <span class="user-collapse u-pull-right" v-show="collapsed" :title="showLanguage('servers', 'expand')">
+                        <img src="img/sort-asc-dark.svg" alt="Expand server" />
+                    </span>
+                    <span class="user-collapse u-pull-right" v-show="!collapsed" :title="showLanguage('servers', 'collapse')">
+                        <img src="img/sort-desc-dark.svg" alt="Collapse server" />
+                    </span>
+                </td>
             </tr>
-            <tr>
+            <tr v-show="!collapsed">
                 <th class="bb" v-text="showLanguage('servers', 'port')"></th>
                 <td>{{ server.port }}</td>
             </tr>
@@ -52,7 +61,7 @@
                 <th class="bb" v-text="showLanguage('servers', 'username')"></th>
                 <td>{{ server.username }}</td>
             </tr>
-            <tr>
+            <tr v-show="!collapsed">
                 <th class="bb" v-text="showLanguage('servers', 'password')"></th>
                 <td>*****</td>
             </tr>
@@ -65,11 +74,11 @@
                 </span>
                 </td>
             </tr>
-            <tr>
+            <tr v-show="!collapsed">
                 <th class="bb" v-text="showLanguage('servers', 'created')"></th>
                 <td>{{ server.created_at}}</td>
             </tr>
-            <tr>
+            <tr v-show="!collapsed">
                 <th class="bb" v-text="showLanguage('servers', 'mongoCloudTitle')"></th>
                 <td>{{ showBool(server.mongo_cloud) }}</td>
             </tr>
@@ -126,7 +135,8 @@
         data() {
             return {
                 activate: null,
-                connection: null
+                connection: null,
+                collapsed: true
             }
         },
 
@@ -183,6 +193,10 @@
                 if (this.activate === true) {
                     this.$emit('activate-server', id);
                 }
+            },
+
+            collapseServer() {
+                this.collapsed = !this.collapsed
             },
 
             showConnection() {

@@ -56,8 +56,8 @@
 
 <template>
     <div ref="pmaTopPanel" class="pma-top-panel">
-        <top @collapseNav="collapseNav($event)" @clearError="clearError" v-bind:error="error" v-bind:user="user"></top>
-        <top-nav v-bind:collapsed="collapsed" v-bind:user="user"></top-nav>
+        <top @collapseNav="collapseNav($event)" @clearError="clearError" v-bind:error="error" v-bind:user="getUser"></top>
+        <top-nav v-bind:collapsed="collapsed" v-bind:user="getUser"></top-nav>
     </div>
 </template>
 <script>
@@ -99,6 +99,13 @@
             watchError() {
                 return this.$store.getters.getAppErrorData
             },
+
+            /*
+            *   Retrieves the User from Vuex
+            */
+            getUser() {
+                return this.$store.getters.getUser
+            },
         },
 
         /*
@@ -134,13 +141,15 @@
              */
             setError(error) {
                 if (error) {
-                    this.error = { error: error};
+                    this.error = { error: error };
                     return
                 }
                 let errorData = this.$store.getters.getAppErrorData
-                this.error = errorData.errors ?
-                    errorData.errors :
-                    { error: 'Unhandled errors occurred' }
+                if (errorData) {
+                    this.error = errorData.errors ?
+                        errorData.errors :
+                        { error: 'Unhandled errors occurred' }
+                }
             },
 
             setPermissionError() {
@@ -160,20 +169,20 @@
                 this.error = null
             },
 
-            /*
-            *   Retrieves the User from Vuex
-            */
-            getUser() {
-                this.user = this.$store.getters.getUser
-            },
-
-            handleGetUser() {
-                if (!this.user.id && this.retries < this.limit) {
+            handleCheckUser() {
+                let status = this.$store.getters.getUserLoadStatus;
+                if (status === 1 && this.index < this.limit) {
+                    this.index++;
                     setTimeout(() => {
-                        this.user = this.$store.getters.getUser
+                        this.handleCheckUser()
                     }, 100)
-                } else {
+                }
+                if (status === 2) {
+                    console.log("user loaded - checking permissions");
                     this.setPermissionError()
+                }
+                if (status === 3) {
+                    // user not authorized or other error
                 }
             },
 
@@ -189,7 +198,7 @@
                         this.retries = 0;
                         this.retryInterval = null
                     }
-                }, 5000 )
+                }, 5000)
             },
 
             retry()  {
@@ -202,11 +211,6 @@
          * get on ur bikes and ride !!
          */
         mounted() {
-            // we pass the user to child components as props
-            setTimeout(() => {
-                this.getUser();
-            }, 250)
-
             EventBus.$on('collapse-left-nav', () => {
                 this.watchLeftNav()
             });
@@ -215,13 +219,9 @@
                 this.watchLeftNav()
             });
 
-           /* setTimeout(() => {
-                if (!this.user.id) {
-                    this.getUser()
-                }
-                this.setPermissionError()
-            }, 500)
-*/
+            setTimeout(() => {
+                this.handleCheckUser()
+            }, 100)
         },
 
         watch: {

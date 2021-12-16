@@ -30,7 +30,7 @@ class Server extends Model
      * @var array
      */
     protected $fillable = [
-        'host', 'port', 'username', 'password', 'user_id', 'is_current', 'mongo_cloud',
+        'host', 'port', 'username', 'password', 'user_id', 'is_current', 'mongo_cloud', 'mongo_cloud_database',
     ];
 
     /**

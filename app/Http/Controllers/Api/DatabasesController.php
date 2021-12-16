@@ -108,6 +108,12 @@ class DatabasesController extends Controller
     private $excludedAll = ['admin', 'config', 'local'];
 
     /**
+     * ToDo: in the docker stand alone the 'config -> system.session collection' is causing issues
+     * @var array $excludedAll DB's for exclusion for (root) user
+     */
+    private $excludedRoot = ['config'];
+
+    /**
      * Use this to track exception on attempts to load databases
      * @var array
      */
@@ -318,7 +324,6 @@ class DatabasesController extends Controller
     {
         // get the databases
         $databases = $this->getAllDatabases();
-
         if ($error = $this->getErrorMessage()) {
             // this can occur if there is no Server config
             return response()->error('failed', array('error' => $error));

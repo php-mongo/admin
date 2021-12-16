@@ -22,12 +22,13 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use DateTime;
-use Firebase\JWT\JWT;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Foundation\Auth\ResetsPasswords;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Ramsey\Uuid\Exception\DateTimeException;
 
 class ResetPasswordController extends Controller
@@ -128,5 +129,25 @@ class ResetPasswordController extends Controller
                 'validToken' => $this->checkTokenIsValid($email, $token)
             ]
         );
+    }
+
+    /**
+     * Over-ridden resetPassword()
+     * Reset the given user's password.
+     *
+     * @param  CanResetPassword  $user
+     * @param  string  $password
+     * @return void
+     */
+    protected function resetPassword($user, $password)
+    {
+        $this->setUserPassword($user, $password);
+        $user->save();
+
+        // We also need to update the stored encrypted password
+        $user = User::where("id", "=", $user->id)->get()[0];
+        $user->setRememberToken(Str::random(60));
+        $user->setAttribute('encrypted_password', Crypt::encryptString($password));
+        $user->save();
     }
 }

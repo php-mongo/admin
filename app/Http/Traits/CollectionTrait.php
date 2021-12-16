@@ -173,10 +173,12 @@ trait CollectionTrait
             $docExport->setVar($obj);
             $docExport->setParams([]);
 
-            /** @var MongoDB\BSON\ObjectId $id */
-            $id         = $obj['_id'];
-            if (is_object($id)) {
-                $obj['_id'] = $id->__toString();
+            if (isset($obj['_id'])) {
+                /** @var MongoDB\BSON\ObjectId $id */
+                $id         = $obj['_id'];
+                if (is_object($id)) {
+                    $obj['_id'] = $id->__toString();
+                }
             }
 
             // we need a raw version - easier to updated and manipulates with JS

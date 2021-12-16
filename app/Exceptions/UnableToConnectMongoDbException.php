@@ -1,8 +1,9 @@
 <?php
+
 /*
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      UnableToDeleteUserException.php 1001 12/8/21, 9:53 pm  Gilbert Rehling $
- * @package      PhpMongoAdmin\resources
+ * @package      PhpMongoAdmin\app
  * @subpackage   UnableToDeleteUserException.php
  * @link         https://github.com/php-mongo/admin PHP MongoDB Admin
  * @copyright    Copyright (c) 2021. Gilbert Rehling of MMFAW. All rights reserved. (www.mfmaw.com)

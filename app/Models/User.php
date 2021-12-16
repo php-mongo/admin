@@ -58,6 +58,14 @@ class User extends Authenticatable
     ];
 
     /**
+     * @return mixed
+     */
+    public function getEmail()
+    {
+        return $this->getAttribute('email');
+    }
+
+    /**
      * @return bool
      */
     public function isControlUser(): bool

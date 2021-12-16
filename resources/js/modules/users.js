@@ -491,6 +491,21 @@ export const users = {
             return (state.user.admin_user === "1")
         },
 
+        /*
+         *  Shortcut to check if its an anonymous connection
+         */
+        getIsAnonymous( state ) {
+            return (state.user.user_role && state.user.user_role.isAnonymous && state.user.user_role.isAnonymous === true)
+        },
+
+        /*
+         *  Shortcut to check for a Control User
+         *  It will be assumed that the Control USer should have most basic roles available
+         */
+        getIsControlUser( state ) {
+            return (state.user.control_user === "1")
+        },
+
         getUserRoles( state ) {
             return state.user.user_role ? state.user.user_role.roles : []
         },

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * PhpMongoAdmin (www.phpmongoadmin.com) by Masterforms Mobile & Web (MFMAW)
  * @version      PrivilegesTrait.php 1001 25/8/21, 8:12 pm  Gilbert Rehling $
@@ -19,6 +21,10 @@
 
 namespace App\Http\Traits;
 
+use App\Exceptions\NoServerConfigurationException;
+use MongoDB\Driver\Exception\Exception;
+use MongoDB;
+
 trait PrivilegesTrait
 {
     /**
@@ -26,7 +32,7 @@ trait PrivilegesTrait
      */
     public function hasRootRole(): bool
     {
-        return $this->userRoles['hasRoot'];
+        return $this->userRoles['hasRoot'] ?? false;
     }
 
     /**
@@ -160,5 +166,47 @@ trait PrivilegesTrait
             }
         }
         return false;
+    }
+
+    /**
+     * @throws NoServerConfigurationException
+     * @throws Exception
+     */
+    public function getUserInfo()
+    {
+        $this->connectManager();
+        $manager = $this->getManager();
+        $command = array(
+            'usersInfo' => array(
+                'user' => $this->getUserName() ?? '',
+                'db' => 'admin'
+            )
+        );
+        $cursor = $manager->executeCommand(
+            'admin',
+            new MongoDb\Driver\Command($command)
+        );
+
+        return $cursor->toArray()[0];
+    }
+
+    /**
+     * @throws NoServerConfigurationException
+     * @throws Exception
+     */
+    public function getRolesInfo()
+    {
+        $this->connectManager();
+        $manager = $this->getManager();
+        $command = array(
+            'rolesInfo' => 1,
+            'showPrivileges' => true
+        );
+        $cursor = $manager->executeCommand(
+            'admin',
+            new MongoDb\Driver\Command($command)
+        );
+
+        return $cursor->toArray()[0];
     }
 }

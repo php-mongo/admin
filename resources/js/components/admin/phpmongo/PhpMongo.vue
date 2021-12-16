@@ -81,6 +81,10 @@
 <template>
     <div ref="pmaMongoView" id="pma-mongo-view" class="pma-mongo-view align-left" v-show="show">
         <php-mongo-admin v-bind:pma="getComposerData"></php-mongo-admin>
+        <div class="mongo-space">
+            <p>&nbsp;</p>
+            <p>&nbsp;</p>
+        </div>
     </div>
 </template>
 

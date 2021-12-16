@@ -39,6 +39,14 @@
                 margin-left: 20px;
                 height: 20px;
             }
+
+            .close {
+                float: right;
+                border: 1px solid $lighterGrey;
+                font-weight: bolder;
+                margin: 0;
+                cursor: pointer;
+            }
         }
     }
 
@@ -48,7 +56,8 @@
   <transition name="slide-in-top">
     <div class="notification-container" v-show="show">
       <div class="error-notification">
-        <img src="img/error.svg"/> {{ errorMessage }}
+        <img src="img/error.svg"> {{ errorMessage }}
+        <img class="close" v-on:click="close" src="img/close-icon.svg">
       </div>
     </div>
   </transition>
@@ -69,6 +78,12 @@
             errorMessage: '',
             show: false
           }
+        },
+
+        methods: {
+            close() {
+                this.show = false;
+            }
         },
 
         /*

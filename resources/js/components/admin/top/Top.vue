@@ -307,7 +307,9 @@
                     "Alert: " + this.error.error :
                     this.error.message ?
                         "Alert: " + this.error.message :
-                        'Unhandled errors occurred'
+                        this.error ?
+                            "Alert: " + this.error :
+                            'Unhandled errors occurred'
             }
         },
 

@@ -511,7 +511,7 @@
             },
 
             resetPassword() {
-                window.location = '/setup'
+                window.location = 'setup'
             },
 
             forgotUsername() {
