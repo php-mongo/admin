@@ -145,9 +145,11 @@
                     return
                 }
                 let errorData = this.$store.getters.getAppErrorData
-                this.error = errorData.errors ?
-                    errorData.errors :
-                    { error: 'Unhandled errors occurred' }
+                if (errorData) {
+                    this.error = errorData.errors ?
+                        errorData.errors :
+                        { error: 'Unhandled errors occurred' }
+                }
             },
 
             setPermissionError() {

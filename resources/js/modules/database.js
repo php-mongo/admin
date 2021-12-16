@@ -389,13 +389,6 @@ export const database = {
                 'dbOwner',
             ];
             let controlUser = rootGetters.getIsControlUser;
-            if (controlUser) {
-                commit( 'setCanUserReadDatabase', true);
-                commit( 'setCanUserWriteDatabase', true);
-                commit( 'setCanUserCreateDatabase', true);
-                commit( 'setCanUserDropDatabase', true);
-                return;
-            }
             let roles = rootGetters.getUserRoles;
             let readAllowed = false,
                 writeAllowed = false,
@@ -425,13 +418,25 @@ export const database = {
                     });
                 });
             }
+
             commit( 'setCanUserReadDatabase', readAllowed);
             commit( 'setCanUserWriteDatabase', writeAllowed);
             commit( 'setCanUserCreateDatabase', createAllowed);
             commit( 'setCanUserDropDatabase', dropAllowed);
-            if (roles.isAnonymous && roles.isAnonymous === true) {
+
+            console.log("Is anonymous: " + rootGetters.getIsAnonymous);
+
+            if (rootGetters.getIsAnonymous === true) {
                 dispatch( 'setErrorData', { errors: 'Your MongoDB is not secured! You are connected with an anonymous user!'} );
             }
+
+            /*if (controlUser) {
+                commit( 'setCanUserReadDatabase', true);
+                commit( 'setCanUserWriteDatabase', true);
+                commit( 'setCanUserCreateDatabase', true);
+                commit( 'setCanUserDropDatabase', true);
+                return;
+            }*/
         }
     },
 
