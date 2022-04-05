@@ -1,27 +1,29 @@
 ### PmpMongoAdmin Setup Scripts
 
-### Files
-- apache/        (directory containing apache server configurations)
-  - global/      (global: server wide nested apache configurations)
-    - phpMongoAdmin.conf
-      - configured for localhost and private directory access
-    - phpMongoAdminPublic.php
-      - configured for public access - requires security enhancements
-  - virtualHost/ (vhost configuration for public and private access)
-    - vhost_phpMongoAdmin.conf
-      - configured for localhost and private directory access
-    - vhost_phpMongoAdminPublic.conf
-      - configured for public access - requires security enhancements
-      - includes an SSL <VirtualHost> specification
--nginx/          (directory containing apache server configurations)
-  - global/      (global: server wide nested apache configurations)
-    - phpMongoAdminPublic.php
-      - configured for localhost and private directory access
-  - serverBlock/ (Nginx version of VirtualHost)
-    - server_phpMongoAdmin.com
-      - configured as an Nginx server: equivalent to Apache's virtualhost
+### All Setup Files
+- apache/        
+  - <b>Directory containing Apache server configurations</b>
+    - global/      (global: server wide nested apache configurations)
+      - phpMongoAdmin.conf
+        - configured for localhost and private directory access
+      - phpMongoAdminPublic.php
+        - configured for public access - requires security enhancements
+    - virtualHost/ (vhost configuration for public and private access)
+      - vhost_phpMongoAdmin.conf
+        - configured for localhost and private directory access
+      - vhost_phpMongoAdminPublic.conf
+        - configured for public access - requires security enhancements
+        - includes an SSL <VirtualHost> specification
+- nginx/
+  - <b>Directory containing Nginx server configurations</b>
+    - global/      (global: server wide nested apache configurations)
+      - phpMongoAdminPublic.php
+        - configured for localhost and private directory access
+    - serverBlock/ (Nginx version of VirtualHost)
+      - server_phpMongoAdmin.com
+        - configured as an Nginx server: equivalent to Apache's virtualhost
 - remote-scripts/
-  - these scripts are meant for use on Linux distros
+  - <b>These scripts are meant for use on Linux (all) or Windows (docker only)</b>
   - custom.sh
     - wget https://phpmongoadmin.com/install/custom.sh -O - | bash
     - installs the application into the current working directory
@@ -46,21 +48,20 @@
     - installs the docker-compose-app repository to the current working directory
     - sets up Apache2 and PhpMongoAdmin only
     - provides initialisation of the docker setup script
+- Local Installation 
+  - <b>Use these scripts if you have downloaded or cloned the application</b>
+    - pmadefault.sh 
+    - <b>shell script - handles the default application installation</b>
+      - @deprecated
+        - to use:
+          - source setup/pmadefault.sh
+          - forhelp:
+            - pmainstall (without any options)
+    - pmainstall.sh 
+    - <b>shell script - provides alternative installation options</b>
+      - to use:
+        - source setup/pmainstall.sh
+        - for help:
+          - pmainstall (without any options)
 - 
-- pmacustom.sh  (shell script - handles the custom installation option)
-  - to use:
-    - source setup/pmacustom.sh
-    - for help:
-      - pmainstall (without any options)
-- pmadefault.sh (shell script - handles the default application installation)
-  - @deprecated
-    - to use:
-      - source setup/pmadefault.sh
-      - forhelp:
-        - pmainstall (without any options)
-- pmainstall.sh (shell script - provide multiple installation options)
-  - to use:
-    - source setup/pmainstall.sh
-    - for help:
-      - pmainstall (without any options)
-- SETUP.md      (this README file)
+- [App readme file](../README.md)
