@@ -15,16 +15,21 @@ PhpMongoAdmin is accessible, easy to setup, easy to learn and provides plenty of
 
 ## Learning MongoDB
 
-PhpMongoAdmin provides full [documentation](https://phpmongoadmin.com/support/documentation) along with some video tutorials, making it a breeze to get started with the management interface.
+PhpMongoAdmin currently provides limited [documentation](https://phpmongoadmin.com/support/documentation) including an installation guide, making it a breeze to get started with the admin interface.
 
 If you've used other tools like PhpMyAdmin or the old RockMongo application then you'll find that using PhpMongoAdmin will be very familiar.
 
 ## Quick Install (default mode)
-This application currently supports a quick-install script for Linux distributions with Apache: tested on Centos & Ubuntu.  
-The default installation location is: /usr/share/phpMongoAdmin  
-We recommend using a website that supports SSL to access the application: https://your-domain.com/phpmongoadmin   
+Please note the default installation location indicated below.  
+For a custom install use the guide here: [install docs](https://phpmongoadmin.com/support/documentation/installation)  
+
+This application supports several quick-install scripts for Linux distributions with Apache: tested on Centos & Ubuntu.  
+Our docker install scripts may also be run from Windows with Git Bash installed.  
+
+The <b>default installation location</b> is: /usr/share/phpMongoAdmin  
+We recommend using a website that supports SSL to access the application: https://your-domain.com/phpmongoadmin  
 Execute the following command as a sudo user:
-- wget https://phpmongoadmin.com/installation/default.sh -O - | bash
+- wget https://phpmongoadmin.com/install/default.sh -O - | bash
 - After the first stage completes, you will be given several choices for beginning the second stage of the installation process
 - You will get prompts for the following information and choices:
   - Will the installation be available for public access?
@@ -38,9 +43,13 @@ Execute the following command as a sudo user:
 - The easiest way to get started is use the mongodb username/password as your control user
   - This provides instant access after logging in to the application
 - Alternatively use the mongodb credentials to create a Server-Configuration after you have logged-in with your choice of user/password
-- More options are [detailed here](setup/SETUP.md)
+- 
+- A quick reference to all alternative setup scripts is [detailed here](setup/SETUP.md)
+- 
+- Please take note that this repository does not contain the docker-compose setup scripts
+- See all PhpMongoAdmin repositories [here:](https://github.com/php-mongo)
 
-####PhpMongoAdmin can be installed in numerous configuration, with more to come. Read out [installation docs](https://phpmongoadmin.com/support) for more options
+####PhpMongoAdmin can be installed in numerous configuration, with more to come. Please read the [installation docs](https://phpmongoadmin.com/support) for more options
 
 ## PhpMongoAdmin Sponsors
 

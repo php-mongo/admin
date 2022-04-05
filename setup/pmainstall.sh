@@ -481,7 +481,7 @@ pmainstall() {
       }
       HELP="Available actions:
         $(fmtHelp "run default" "Starts a default installation meant for private networks or localhost deployment")
-        $(fmtHelp "run default public" "Starts th the default installation process for a public deployment")
+        $(fmtHelp "run default public" "Starts the default installation process intended for a public deployment")
         $(fmtHelp "run vhost" "Starts the vhost <VirtualHost> installation process for private or localhost deployment")
         $(fmtHelp "run vhost public" "Starts the vhost installation process for public deployment - includes SSL integration")"
 
