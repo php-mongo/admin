@@ -289,7 +289,7 @@ pmainstall() {
       }
       HELP="Available actions:
         $(fmtHelp "run" "Starts a default installation meant for private networks or localhost deployment")
-        $(fmtHelp "run public" "Starts th the default installation process for a public deployment")"
+        $(fmtHelp "run public" "Starts the default installation process intended for a public deployment")"
 
       echo "${COLOR_NONE}$HELP"
       ;;
